@@ -13,6 +13,8 @@
 
 #include <DYAnalysis_76X/CommonCodes/DYAnalyzer.h>
 
+const int runcut = 285900;
+
 class ControlPlots
 {
 public:
@@ -116,18 +118,15 @@ public:
 	TH1D* h_mass_OS_BE;
 	TH1D* h_mass_OS_EE;
 
-	TH1D *h_mass_OS_HLTv4p2;
-	TH1D *h_mass_OS_HLTv4p2_BB;
-	TH1D *h_mass_OS_HLTv4p2_BE;
-	TH1D *h_mass_OS_HLTv4p2_EE;
+	TH1D *h_mass_OS_part1;
+	TH1D *h_mass_OS_part1_BB;
+	TH1D *h_mass_OS_part1_BE;
+	TH1D *h_mass_OS_part1_EE;
 
-	TH1D *h_mass_OS_HLTv4p3;
-	TH1D *h_mass_OS_HLTv4p3_BB;
-	TH1D *h_mass_OS_HLTv4p3_BE;
-	TH1D *h_mass_OS_HLTv4p3_EE;
-	TH1D *h_mass_OS_HLTv4p3_Split1;
-	TH1D *h_mass_OS_HLTv4p3_Split2;
-	TH1D *h_mass_OS_HLTv4p3_Split3;
+	TH1D *h_mass_OS_part2;
+	TH1D *h_mass_OS_part2_BB;
+	TH1D *h_mass_OS_part2_BE;
+	TH1D *h_mass_OS_part2_EE;
 
 	TH1D *h_muonHits;
 	TH1D *h_nMatches;
@@ -242,19 +241,16 @@ public:
 		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_BE );
 		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_EE );
 
-		h_mass_OS_HLTv4p2 = new TH1D("h_mass_OS_HLTv4p2_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p2 );
-		h_mass_OS_HLTv4p2_BB = new TH1D("h_mass_OS_HLTv4p2_BB_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p2_BB );
-		h_mass_OS_HLTv4p2_BE = new TH1D("h_mass_OS_HLTv4p2_BE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p2_BE );
-		h_mass_OS_HLTv4p2_EE = new TH1D("h_mass_OS_HLTv4p2_EE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p2_EE );
+		h_mass_OS_part1 = new TH1D("h_mass_OS_part1_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part1 );
+		h_mass_OS_part1_BB = new TH1D("h_mass_OS_part1_BB_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part1_BB );
+		h_mass_OS_part1_BE = new TH1D("h_mass_OS_part1_BE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part1_BE );
+		h_mass_OS_part1_EE = new TH1D("h_mass_OS_part1_EE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part1_EE );
 
-		h_mass_OS_HLTv4p3 = new TH1D("h_mass_OS_HLTv4p3_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3 );
-		h_mass_OS_HLTv4p3_BB = new TH1D("h_mass_OS_HLTv4p3_BB_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_BB );
-		h_mass_OS_HLTv4p3_BE = new TH1D("h_mass_OS_HLTv4p3_BE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_BE );
-		h_mass_OS_HLTv4p3_EE = new TH1D("h_mass_OS_HLTv4p3_EE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_EE );
+		h_mass_OS_part2 = new TH1D("h_mass_OS_part2_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part2 );
+		h_mass_OS_part2_BB = new TH1D("h_mass_OS_part2_BB_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part2_BB );
+		h_mass_OS_part2_BE = new TH1D("h_mass_OS_part2_BE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part2_BE );
+		h_mass_OS_part2_EE = new TH1D("h_mass_OS_part2_EE_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_part2_EE );
 
-		h_mass_OS_HLTv4p3_Split1 = new TH1D("h_mass_OS_HLTv4p3_Split1_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_Split1 );
-		h_mass_OS_HLTv4p3_Split2 = new TH1D("h_mass_OS_HLTv4p3_Split2_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_Split2 );
-		h_mass_OS_HLTv4p3_Split3 = new TH1D("h_mass_OS_HLTv4p3_Split3_"+Type, "", 10000, 0, 10000); Histo.push_back( h_mass_OS_HLTv4p3_Split3 );
 
 		h_muonHits = new TH1D("h_muonHits_"+Type, "", 50, 0, 50); Histo.push_back( h_muonHits );
 		h_nMatches = new TH1D("h_nMatches_"+Type, "", 7, 0, 7); Histo.push_back( h_nMatches );
@@ -346,9 +342,9 @@ public:
 		}
 
 		//-- Trigger Matched objects --//
-		if( analyzer->HLT == "HLT_IsoMu20_v* || HLT_IsoTkMu20_v*" )
+		if( analyzer->HLT == "HLT_PAL3Mu12_v*" )
 		{
-			if( recolep.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || recolep.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+			if( recolep.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 			{
 				h_Pt_TrigLeg->Fill( recolep.Pt, weight );
 				h_eta_TrigLeg->Fill( recolep.eta, weight );
@@ -463,60 +459,50 @@ public:
 
 			if( isMC == kFALSE ) // -- Data -- //
 			{
-				if( ntuple->runNum < 257932.5 ) // -- HLT v4.2 -- //
+				if( ntuple->runNum < runcut ) // -- HLT v4.2 -- //
 				{
-					h_mass_OS_HLTv4p2->Fill( reco_M, weight );
+					h_mass_OS_part1->Fill( reco_M, weight );
 
 					if( isBB == kTRUE )
-						h_mass_OS_HLTv4p2_BB->Fill( reco_M, weight );
+						h_mass_OS_part1_BB->Fill( reco_M, weight );
 					else if( isBE == kTRUE )
-						h_mass_OS_HLTv4p2_BE->Fill( reco_M, weight );
+						h_mass_OS_part1_BE->Fill( reco_M, weight );
 					else if( isEE == kTRUE )
-						h_mass_OS_HLTv4p2_EE->Fill( reco_M, weight );
+						h_mass_OS_part1_EE->Fill( reco_M, weight );
 				}
 				else // -- HLT v4.3 -- //
 				{
-					h_mass_OS_HLTv4p3->Fill( reco_M, weight );
+					h_mass_OS_part2->Fill( reco_M, weight );
 
 					if( isBB == kTRUE )
-						h_mass_OS_HLTv4p3_BB->Fill( reco_M, weight );
+						h_mass_OS_part2_BB->Fill( reco_M, weight );
 					else if( isBE == kTRUE )
-						h_mass_OS_HLTv4p3_BE->Fill( reco_M, weight );
+						h_mass_OS_part2_BE->Fill( reco_M, weight );
 					else if( isEE == kTRUE )
-						h_mass_OS_HLTv4p3_EE->Fill( reco_M, weight );
-
-					if( ntuple->runNum <= 258448 )
-						h_mass_OS_HLTv4p3_Split1->Fill( reco_M, weight );
-					else if( ntuple->runNum > 258448 && ntuple->runNum <= 259822 )
-						h_mass_OS_HLTv4p3_Split2->Fill( reco_M, weight );
-					else if( ntuple->runNum > 259822 )
-						h_mass_OS_HLTv4p3_Split3->Fill( reco_M, weight );
+						h_mass_OS_part2_EE->Fill( reco_M, weight );
 				}
 			}
 			else // -- MC -- //
 			{
-				h_mass_OS_HLTv4p2->Fill( reco_M, weight );
-				h_mass_OS_HLTv4p3->Fill( reco_M, weight );
+				h_mass_OS_part1->Fill( reco_M, weight );
+				h_mass_OS_part2->Fill( reco_M, weight );
 
 				if( isBB == kTRUE )
 				{
-					h_mass_OS_HLTv4p2_BB->Fill( reco_M, weight );
-					h_mass_OS_HLTv4p3_BB->Fill( reco_M, weight );
+					h_mass_OS_part1_BB->Fill( reco_M, weight );
+					h_mass_OS_part2_BB->Fill( reco_M, weight );
 				}
 				else if( isBE == kTRUE )
 				{
-					h_mass_OS_HLTv4p2_BE->Fill( reco_M, weight );
-					h_mass_OS_HLTv4p3_BE->Fill( reco_M, weight );
+					h_mass_OS_part1_BE->Fill( reco_M, weight );
+					h_mass_OS_part2_BE->Fill( reco_M, weight );
 				}
 				else if( isEE == kTRUE )
 				{
-					h_mass_OS_HLTv4p2_EE->Fill( reco_M, weight );
-					h_mass_OS_HLTv4p3_EE->Fill( reco_M, weight );
+					h_mass_OS_part1_EE->Fill( reco_M, weight );
+					h_mass_OS_part2_EE->Fill( reco_M, weight );
 				}
 
-				h_mass_OS_HLTv4p3_Split1->Fill( reco_M, weight );
-				h_mass_OS_HLTv4p3_Split2->Fill( reco_M, weight );
-				h_mass_OS_HLTv4p3_Split3->Fill( reco_M, weight );
 			}
 
 
@@ -1330,38 +1316,4 @@ public:
 			Histo[i_hist]->Write();
 	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
