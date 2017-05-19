@@ -28,10 +28,11 @@
 #include <Include/ControlPlots.h>
 
 static inline void loadBar(int x, int n, int r, int w);
-void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HLTname = "IsoMu20_OR_IsoTkMu20")
+void MuonPlots(Bool_t isCorrected = kFALSE, Bool_t doData = kTRUE, TString HLTname = "PAL3Mu12")
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
+   TString Type = (doData) ? "Data" : "MC";
 	cout << "Type: " << Type << endl;
 	TString isApplyMomCorr = "";
 	if( isCorrected == kTRUE )
@@ -52,26 +53,21 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 
 	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + ".root", "RECREATE");
 
-	TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
+   // TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
+   // TString BaseLocation = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/";
+	TString BaseLocation = "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/";
+
 	//Each ntuple directory & corresponding Tags
 	vector<TString> ntupleDirectory; vector<TString> Tag; vector<Double_t> Xsec; vector<Double_t> nEvents;
 
-	if( Type == "MC" )
+	if( !doData )
 	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
-	}
-	else if( Type == "Golden" )
-	{
-		// ntupleDirectory.push_back( "Run2015C/GoldenJSON/SingleMuon_v3_Run246908to256869" ); Tag.push_back( "Data" ); // -- Run2015C -- //
-	}
-	else if( Type == "MuonPhys" )
-	{
-		ntupleDirectory.push_back( "76X/v20160205_SingleMuon_RunC_Rereco_MuonPhys" ); Tag.push_back( "Data" ); // -- Run2015C -- //
+		analyzer->SetupMCsamples_v20170519("", &ntupleDirectory, &Tag, &Xsec, &nEvents);
 	}
 	else
 	{
-		cout << "ERROR: Possible Type: Golden, MuonPhys, and MC" << endl;
-		return;
+		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" );
+      // ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" );
 	}
 
 	//Loop for all samples
@@ -85,24 +81,21 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation + "/" + ntupleDirectory[i_tup]+"/ntuple_*.root");
-		if( Tag[i_tup] == "Data" && Type == "Golden" )
-		{
-			// -- Run2015D -- // 
-		}
-		else if( Tag[i_tup] == "Data" && Type == "MuonPhys" )
-		{
-			// -- Run2015D -- // 
-			chain->Add(BaseLocation+"/76X/v20160303_SingleMuon_RunD_Rereco_MuonPhys/*.root");
-		}
+      // if( Tag[i_tup].Contains("Data") && doData )
+      // {
+      //    // -- Run2015D -- // 
+      //    chain->Add(BaseLocation+"/80X/v20170519/*.root");
+      // }
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_Muon();
+		ntuple->TurnOnBranches_HLT();
 		
 		rochcor2015 *rmcor = new rochcor2015();
 
 		Bool_t isMC;
-		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
-		analyzer->SetupPileUpReWeighting_76X( isMC );
+		Tag[i_tup].Contains("Data") ? isMC = kFALSE : isMC = kTRUE;
+		analyzer->SetupPileUpReWeighting( isMC );
 
 		ControlPlots *Plots = new ControlPlots( Tag[i_tup], analyzer );
 
@@ -122,7 +115,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 
 		Int_t NEvents = chain->GetEntries();
 		cout << "\t[Total Events: " << NEvents << "]" << endl;
-		// NEvents = 100000;
+      // NEvents = 100000;
 		for(Int_t i=0; i<NEvents; i++)
 		{
 			loadBar(i+1, NEvents, 100, 100);
@@ -142,7 +135,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 			SumWeight += GenWeight;
 
 				// -- Pileup-Reweighting -- //
-			Double_t PUWeight = analyzer->PileUpWeightValue_76X( ntuple->nPileUp );
+			Double_t PUWeight = analyzer->PileUpWeightValue( ntuple->nPileUp );
 
 			Bool_t GenFlag = kFALSE;
 			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
@@ -170,7 +163,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 				Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
 			}
 
-			if( ntuple->isTriggered( analyzer->HLT ) && GenFlag)
+			if( ntuple->isTriggered( analyzer->HLT )  && GenFlag) 
 			{
 				//Collect Reconstruction level information
 				vector< Muon > MuonCollection;
@@ -184,7 +177,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE, TString Type = "MuonPhys", TString HL
 					{
 						float qter = 1.0;
 						
-						if( Tag[i_tup] == "Data" )
+						if( doData )
 							rmcor->momcor_data(mu.Momentum, mu.charge, 0, qter);
 						else
 							rmcor->momcor_mc(mu.Momentum, mu.charge, mu.trackerLayers, qter);

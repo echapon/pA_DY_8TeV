@@ -4,13 +4,14 @@
 #include <vector>
 #include "analysis.h"
 
+// UPDATED IN 2017
+// brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+const double lumi_part1 = 64413.589e-6; // mub-1 -> pb-1
+// brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+const double lumi_part2 = 115274.084e-6; // mub-1 -> pb-1
+const double lumi_all = lumi_part1 + lumi_part2;
+
 namespace DYana {
-   // UPDATED IN 2017
-   // brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-   const double lumi_part1 = 64413.589e-6; // mub-1 -> pb-1
-   // brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-   const double lumi_part2 = 115274.084e-6; // mub-1 -> pb-1
-   const double lumi_all = lumi_part1 + lumi_part2;
 
    // list of available processes (MC + data)
    enum SampleTag : int {
@@ -130,6 +131,25 @@ namespace DYana {
          case WTau:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWTau.root"; break;
          case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histData1.root"; break;
          case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histData2.root"; break;
+         default:        return "Unknown sample";
+      }
+   };
+
+   // path to ntuple in EOS
+   const char* NtupleDir(SampleTag s) {
+      switch(s) {
+         case DY1050:    return "Pyquen_DYtoLL_M_10to50_embd_pPb/crab_DY1050_DYntuple_20170516/170517_221329/0000/";
+         case DY50100:   return "Pyquen_DYtoLL_M_50to100_embd_pPb/crab_DY50100_DYntuple_20170516/170517_221504/0000/";
+         case DY100200:  return "Pyquen_DYtoLL_M_100to200_embd_pPb/crab_DY100200_DYntuple_20170516/170517_221541/0000/";
+         case DY200400:  return "Pyquen_DYtoLL_M_200to400_embd_pPb/crab_DY200400_DYntuple_20170516/170517_221931/0000/";
+         case DY4001000: return "Pyquen_DYtoLL_M_400to1000_embd_pPb/crab_DY4001000_DYntuple_20170516/170517_222251/0000/";
+         case WW:        return "Pythia6_WW_embd_pPb/crab_WW_DYntuple_20170518/170517_222918/0000/";
+         case WZ:        return "Pythia6_WZ_embd_pPb/crab_WZ_DYntuple_20170518/170517_223145/0000/";
+         case ZZ:        return "Pythia6_ZZ_embd_pPb/crab_ZZ_DYntuple_20170518/170517_223512/0000/";
+         case TT:        return "Pythia6_TTall_embd_pPb/crab_TTall_DYntuple_20170518/170517_224711/0000/";
+         case WE:        return "Pyquen_WjetsToENu_embd_pPb/crab_WjetsENu_DYntuple_20170518/170517_223816/0000/";
+         case WMu:        return "Pyquen_WjetsToMuNu_embd_pPb/crab_WjetsToMuNu_DYntuple_20170516/170516_163243/0000/";
+         case WTau:        return "Pyquen_WjetsToTauNu_embd_pPb/crab_WjetsTauNu_DYntuple_20170518/170517_224500/0000/";
          default:        return "Unknown sample";
       }
    };

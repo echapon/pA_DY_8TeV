@@ -12,15 +12,19 @@
 #include <TROOT.h>
 #include <TStyle.h>
 #include <TF1.h>
+#include <TLatex.h>
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/tdrstyle.C"
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h"
+#include "Include/tdrstyle.C"
+#include "Include/DYAnalyzer.h"
+#include "BkgEst/interface/defs.h"
 
-#define Lumi_HLTv4p3_Split1 618.174
-#define Lumi_HLTv4p3_Split2 633.070
-#define Lumi_HLTv4p3_Split3 715.510
+// #define Lumi_part2_Split1 618.174
+// #define Lumi_part2_Split2 633.070
+// #define Lumi_part2_Split3 715.510
 
 using namespace std;
+using DYana::binnum;
+const int nMassBin = binnum;
 
 class DrawControlPlotTool
 {
@@ -77,14 +81,15 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	gROOT->SetStyle( "tdrStyle" );
 	// tdrStyle->SetErrorX(0.5);
 
-	Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-										 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-										 830, 1000, 1500, 3000};
+   // Double_t MassBinEdges_temp[nMassBin+1] =
+   // {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
+   //                             64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
+   //                             110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
+   //                             200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
+   //                             830, 1000, 1500, 3000};
 
 	for(Int_t i=0; i<nMassBin+1; i++)
-		MassBinEdges[i] = MassBinEdges_temp[i];
+		MassBinEdges[i] = DYana::bins[i]; // MassBinEdges_temp[i];
 
 	// -- Get root file containing the histograms -- //
 	// FileLocation = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/Results_ROOTFiles/" + version; // -- 74X -- //
@@ -92,27 +97,27 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	if( version == "None" ) FileLocation = ".";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_MC_MomUnCorr.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomUnCorr.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //
+	analyzer->SetupMCsamples_v20170519("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )
 	{
 		if( Tag[i] == "ZZ" || Tag[i] == "WZ" || Tag[i] == "WW" )
 			color.push_back( kGreen );
-		else if( Tag[i] == "WJets" )
+		else if( Tag[i] == "WMu" )
 			color.push_back( kBlue );
 		else if( Tag[i].Contains("DYTauTau") )
 			color.push_back( kBlue-9 );
-		else if( Tag[i].Contains("DYMuMu") )
+		else if( Tag[i].Contains("DY") )
 			color.push_back( kOrange );
-		else if( Tag[i].Contains("ttbar") )
+		else if( Tag[i].Contains("TT") )
 			color.push_back( kRed );
 	}
 
@@ -126,8 +131,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 void DrawControlPlotTool::SetupHistogramNames()
 {
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
-	HistNames.push_back( "h_mass_OS_HLTv4p2" );				Variables.push_back( "OSMass_DYBin_HLTv4p2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.2)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3" );				Variables.push_back( "OSMass_DYBin_HLTv4p3" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.3)");
+	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.2)");
+	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.3)");
 	
 	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
 
@@ -151,8 +156,8 @@ void DrawControlPlotTool::SetupHistogramNames()
 
 	
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_M60to120" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
-	HistNames.push_back( "h_mass_OS_HLTv4p2" );				Variables.push_back( "OSMass_DYBin_HLTv4p2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.2)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3" );				Variables.push_back( "OSMass_DYBin_HLTv4p3" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.3)");
+	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.2)");
+	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (HLTv4.3)");
 
 	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_DYBin_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_DYBin_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
@@ -162,17 +167,17 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_M60to120_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
 	HistNames.push_back( "h_mass_OS_EE" );				Variables.push_back( "OSMass_M60to120_EE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, EE) [GeV]");
 
-	HistNames.push_back( "h_mass_OS_HLTv4p2_BB" );			Variables.push_back( "OSMass_DYBin_HLTv4p2_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (HLTv4.2)");
-	HistNames.push_back( "h_mass_OS_HLTv4p2_BE" );			Variables.push_back( "OSMass_DYBin_HLTv4p2_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (HLTv4.2)");
-	HistNames.push_back( "h_mass_OS_HLTv4p2_EE" );			Variables.push_back( "OSMass_DYBin_HLTv4p2_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (HLTv4.2)");
+	HistNames.push_back( "h_mass_OS_part1_BB" );			Variables.push_back( "OSMass_DYBin_part1_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (HLTv4.2)");
+	HistNames.push_back( "h_mass_OS_part1_BE" );			Variables.push_back( "OSMass_DYBin_part1_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (HLTv4.2)");
+	HistNames.push_back( "h_mass_OS_part1_EE" );			Variables.push_back( "OSMass_DYBin_part1_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (HLTv4.2)");
 	
-	HistNames.push_back( "h_mass_OS_HLTv4p3_BB" );			Variables.push_back( "OSMass_DYBin_HLTv4p3_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (HLTv4.3)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3_BE" );			Variables.push_back( "OSMass_DYBin_HLTv4p3_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (HLTv4.3)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3_EE" );			Variables.push_back( "OSMass_DYBin_HLTv4p3_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (HLTv4.3)");
+	HistNames.push_back( "h_mass_OS_part2_BB" );			Variables.push_back( "OSMass_DYBin_part2_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (HLTv4.3)");
+	HistNames.push_back( "h_mass_OS_part2_BE" );			Variables.push_back( "OSMass_DYBin_part2_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (HLTv4.3)");
+	HistNames.push_back( "h_mass_OS_part2_EE" );			Variables.push_back( "OSMass_DYBin_part2_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (HLTv4.3)");
 
-	HistNames.push_back( "h_mass_OS_HLTv4p3_Split1" );		Variables.push_back( "OSMass_DYBin_HLTv4p3_Split1" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split1)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3_Split2" );		Variables.push_back( "OSMass_DYBin_HLTv4p3_Split2" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split2)");
-	HistNames.push_back( "h_mass_OS_HLTv4p3_Split3" );		Variables.push_back( "OSMass_DYBin_HLTv4p3_Split3" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split3)");
+	HistNames.push_back( "h_mass_OS_part2_Split1" );		Variables.push_back( "OSMass_DYBin_part2_Split1" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split1)");
+	HistNames.push_back( "h_mass_OS_part2_Split2" );		Variables.push_back( "OSMass_DYBin_part2_Split2" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split2)");
+	HistNames.push_back( "h_mass_OS_part2_Split3" );		Variables.push_back( "OSMass_DYBin_part2_Split3" );		XTitles.push_back( "Invariant Mass(OS) [GeV] (HLTv4.3, Split3)");
 
 
 
@@ -277,23 +282,13 @@ void DrawControlPlotTool::NormalizationToLumi( vector< TH1D* > h_MC, TString Var
 	//////////////////////////////
 	// -- Set the luminosity -- //
 	//////////////////////////////
-	Double_t Luminosity = Lumi;
+	Double_t Luminosity = lumi_part1;
 
-	if( Variable.Contains("HLTv4p2") )
-		Luminosity = Lumi_HLTv4p2;
-	else if( Variable.Contains("HLTv4p3") )
+	if( Variable.Contains("part1") )
+		Luminosity = lumi_part1;
+	else if( Variable.Contains("part2") )
 	{
-		if( Variable.Contains("Split1") )
-			Luminosity = Lumi_HLTv4p3_Split1;
-		
-		else if( Variable.Contains("Split2") )
-			Luminosity = Lumi_HLTv4p3_Split2;
-		
-		else if( Variable.Contains("Split3") )
-			Luminosity = Lumi_HLTv4p3_Split3;
-
-		else // -- Total HLTv4.3 luminosity -- //
-			Luminosity = Lumi - Lumi_HLTv4p2;
+		Luminosity = lumi_part2;
 	}
 	cout << "Variable: " << Variable << ", Luminosity: " << Luminosity << endl;
 
@@ -319,27 +314,38 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		cout << "nHist > nTotalHist! ... " << nHist << " > " << nTotalHist << endl;
 		return;
 	}
+   cout << __LINE__ << endl;
 
 	for(Int_t i_hist=0; i_hist<nLoopHist; i_hist++)
 	{
+   cout << __LINE__ << endl;
 		// -- Get a histogram: Data -- //
 		f_input_Data->cd();
-		TH1D *h_data = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data" )->Clone();
+   cout << __LINE__ << endl;
+		TH1D *h_data = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data1" )->Clone(); // FIXME Data1 vs Data2 vs Data
+   cout << __LINE__ << endl;
 
 		// -- Get histograms: MC -- //
 		vector< TH1D* > h_MC;
 		f_input->cd();
 		Int_t nTag = Tag.size();
-		for(Int_t i_tag=0; i_tag<nTag; i_tag++)
+   cout << __LINE__ << endl;
+		for(Int_t i_tag=0; i_tag<nTag; i_tag++) {
+         cout << HistNames[i_hist]+"_"+Tag[i_tag]<< endl;
 			h_MC.push_back( (TH1D*)f_input->Get( HistNames[i_hist]+"_"+Tag[i_tag] )->Clone() );
+      }
 
+   cout << __LINE__ << endl;
 		this->NormalizationToLumi( h_MC, Variables[i_hist] );
+   cout << __LINE__ << endl;
 
 		this->RebinHistograms( *h_data, h_MC, Variables[i_hist] );
+   cout << __LINE__ << endl;
 
 		// -- Check the underflow & overflow -- //
 		Double_t UnderFlow = h_data->GetBinContent(0);
 		Double_t OverFlow = h_data->GetBinContent( h_data->GetNbinsX() + 1 );
+   cout << __LINE__ << endl;
 		if( UnderFlow != 0 || OverFlow != 0 )
 		{
 			cout << endl;
@@ -347,28 +353,34 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 			cout << "\t(UnderFlow, OverFlow) = " << "(" << UnderFlow << ", " << OverFlow << ")" << endl;
 			cout << endl;
 		}
+   cout << __LINE__ << endl;
 
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
 		/////////////////////////////////////////////////////////////////////////////////////////
-		if( Variables[i_hist] == "OSMass_DYBin" || Variables[i_hist] == "OSMass_DYBin_HLTv4p2" || Variables[i_hist] == "OSMass_DYBin_HLTv4p3" )
+		if( Variables[i_hist] == "OSMass_DYBin" || Variables[i_hist] == "OSMass_DYBin_part1" || Variables[i_hist] == "OSMass_DYBin_part2" )
 		{
+   cout << __LINE__ << endl;
 			vector< TH1D* > h_bkgs;
 			for(Int_t i_tag=0; i_tag<nTag; i_tag++)
 			{
 				if( !Tag[i_tag].Contains("DYMuMu") ) 
 					h_bkgs.push_back( h_MC[i_tag] );
 			}
+   cout << __LINE__ << endl;
 			this->StoreYieldHistogram( h_data, h_bkgs, "MCBasedBkg" );
+   cout << __LINE__ << endl;
 
 			if( DrawDataDriven == kTRUE )
 			{
+   cout << __LINE__ << endl;
 				TString Type = "All";
-				if( Variables[i_hist] == "OSMass_DYBin_HLTv4p2" ) Type = "HLTv4p2";
-				else if( Variables[i_hist] == "OSMass_DYBin_HLTv4p3" ) Type = "HLTv4p3";
+				if( Variables[i_hist] == "OSMass_DYBin_part1" ) Type = "part1";
+				else if( Variables[i_hist] == "OSMass_DYBin_part2" ) Type = "part2";
 				this->DrawMassHistogram_DataDrivenBkg(Type, h_data, h_MC);
 			}
 		}
+   cout << __LINE__ << endl;
 
 
 		//////////////////////////////////////////
@@ -380,15 +392,19 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		h_data->SetMarkerColor(kBlack);
 		h_data->SetMarkerSize(0.5);
 		h_data->SetFillColorAlpha(kWhite, 0);
+   cout << __LINE__ << endl;
 
 		/////////////////////////////////////////////////////////
 		// -- Make MC HStack & Set attributes: MC Histogram -- //
 		/////////////////////////////////////////////////////////u
 		THStack *hs = new THStack("hs_"+Variables[i_hist], "");
+   cout << __LINE__ << endl;
 
 		Int_t nMC = h_MC.size();
+   cout << __LINE__ << endl;
 		for(Int_t i_MC=0; i_MC<nMC; i_MC++)
 		{
+   cout << __LINE__ << endl;
 			if( NormType == "Zpeak" )
 				h_MC[i_MC]->Scale( Nfactor_overall );
 
@@ -398,6 +414,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 
 			hs->Add( h_MC[i_MC] );
 		}
+   cout << __LINE__ << endl;
 
 		//////////////////////////
 		// -- Set the legend -- //
@@ -734,13 +751,13 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	ChangeHistError_StatOnlyError(h_DYTauTau_emu, h_StatUnc_DYTauTau_emu);
 	ChangeHistError_StatOnlyError(h_WW_emu, h_StatUnc_WW_emu);
 
-	if( Type == "HLTv4p2" || Type == "HLTv4p3" )
+	if( Type == "part1" || Type == "part2" )
 	{
-		Double_t NormFactor = 0;
-		if( Type == "HLTv4p2" )
-			NormFactor = Lumi_HLTv4p2 / Lumi;
-		else if( Type == "HLTv4p3" )
-			NormFactor = (Lumi - Lumi_HLTv4p2) / Lumi;
+		Double_t NormFactor = 1;
+      if( Type == "part1" )
+         NormFactor = lumi_part1 / lumi_all;
+      else if( Type == "part2" )
+         NormFactor = lumi_part2 / lumi_all;
 
 		h_diJet_FR->Scale( NormFactor );
 		h_WJets_FR->Scale( NormFactor );
@@ -873,7 +890,7 @@ TH1D* DrawControlPlotTool::MakeMassHistogram( TString HLTType, TString Type )
 	TFile *f_MCBkg = TFile::Open( FileName ); f_MCBkg->cd();
 
 	TString HistName = "";
-	if( (HLTType == "HLTv4p2") || (HLTType == "HLTv4p3") )
+	if( (HLTType == "part1") || (HLTType == "part2") )
 		HistName = "h_mass_OS_"+HLTType+"_Norm_"+Type;
 	else
 		HistName = "h_mass_OS_Norm_"+Type;
@@ -891,10 +908,10 @@ TH1D* DrawControlPlotTool::MakeMassHistogram( TString HLTType, TString Type )
 	// 	if( Tag[i_tag] == Type )
 	// 	{
 	// 		Double_t Luminosity = Lumi;
-	// 		if( HLTType == "HLTv4p2" )
-	// 			Luminosity = Lumi_HLTv4p2;
-	// 		else if( HLTType == "HLTv4p3" )
-	// 			Luminosity = Lumi - Lumi_HLTv4p2;
+	// 		if( HLTType == "part1" )
+	// 			Luminosity = Lumi_part1;
+	// 		else if( HLTType == "part2" )
+	// 			Luminosity = Lumi - Lumi_part1;
 
 	// 		Double_t Norm = (Lumi * Xsec[i_tag] ) / nEvents[i_tag];
 	// 		printf( "[Normalization factor of %s (HLT Type = %s)] = %lf\n", Tag[i_tag].Data(), HLTType.Data(), Norm );
@@ -1114,7 +1131,7 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 			}
 
 			h_temp->Rebin(5);
-			Double_t Norm = (Lumi * Xsec[i_tag]) / nEvents[i_tag];
+			Double_t Norm = (lumi_all * Xsec[i_tag]) / nEvents[i_tag];
 			h_temp->Scale( Norm );
 
 			h_MC.push_back( h_temp );

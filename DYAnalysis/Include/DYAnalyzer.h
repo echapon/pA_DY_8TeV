@@ -15,11 +15,13 @@
 #include <iostream>
 #include <vector>
 
+#include <BkgEst/interface/defs.h>
+
 using namespace std;
 
-#define Lumi 2832.673 // -- Up to Run260627 (Full 2015 Data), MuonPhys_v2 JSON. unit: /pb, Updated at 2016.02.24 -- //
-#define Lumi_HLTv4p2 865.919 // -- integrated luminosity before Run 257933 -- //
-#define nMassBin 43
+// #define Lumi 2832.673 // -- Up to Run260627 (Full 2015 Data), MuonPhys_v2 JSON. unit: /pb, Updated at 2016.02.24 -- //
+// #define Lumi_HLTv4p2 865.919 // -- integrated luminosity before Run 257933 -- //
+// #define nMassBin 43
 
 
 TString GetBasePath()
@@ -66,6 +68,7 @@ public:
 	void SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	void SetupMCsamples_v20160131_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	void SetupMCsamples_v20160117_MiniAOD_JetMET( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
+	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
 
@@ -77,10 +80,6 @@ public:
 	//////////////////////////////////
 	void SetupPileUpReWeighting( Bool_t isMC );
 	Double_t PileUpWeightValue(Int_t PileUp_MC);
-
-	// -- for 76X -- //
-	void SetupPileUpReWeighting_76X( Bool_t isMC );
-	Double_t PileUpWeightValue_76X(Int_t PileUp_MC);
 
 
 	/////////////////////////////////////////
@@ -278,6 +277,14 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 		*SubPtCut = 10;
 		*LeadEtaCut = 2.5;
 		*SubEtaCut = 2.5;
+	}
+	else if( HLTname.Contains("PAL3Mu12") )
+	{
+		*HLT = "HLT_PAL3Mu12_v*"; // -- Exist only for the data; "HLT_Ele22_eta2p1_WP75_Gsf_v*" should be used for MC
+		*LeadPtCut = 15;
+		*SubPtCut = 10;
+		*LeadEtaCut = 2.4;
+		*SubEtaCut = 2.4;
 	}
 	else
 	{ 
@@ -903,6 +910,18 @@ void DYAnalyzer::SetupMCsamples_v20160117_MiniAOD_JetMET( TString Type, vector<T
 	return;
 }
 
+void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
+{
+   using namespace DYana;
+   for (int i=DY1050; i<Data1; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      ntupleDirectory->push_back(NtupleDir(tag));
+      Tag->push_back(Name(tag));
+      xsec->push_back(Xsec(tag));
+      nEvents->push_back(Nevts(tag));
+   }
+}
+
 Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple)
 {
 	Bool_t GenFlag = kFALSE;
@@ -1195,68 +1214,32 @@ void DYAnalyzer::SetupPileUpReWeighting( Bool_t isMC )
 {
 	if( isMC == kFALSE ) // -- for data -- //
 	{
-		for(Int_t i=0; i<52; i++)
-			PileUpWeight[i] = 1;
-
-		return;
-	}
-	
-	// -- Only for the MC -- //
-	TFile *f = new TFile(Path_CommonCodes + "ROOTFile_PUReWeight_v20160208_2nd_71mb.root");
-	f->cd();
-	TH1D *h_weight = (TH1D*)f->Get("h_PUReWeights");
-	if( h_weight == NULL )
-	{
-		cout << "ERROR! ... No Weight histogram!"<< endl;
-		return;
-	}
-
-	for(Int_t i=0; i<52; i++)
-	{
-		Int_t i_bin = i+1;
-		PileUpWeight[i] = h_weight->GetBinContent(i_bin);
-	}
-}
-
-Double_t DYAnalyzer::PileUpWeightValue(Int_t PileUp_MC)
-{
-	if( PileUp_MC < 0 || PileUp_MC > 51 )
-	{
-		cout << "[PileUp_MC = " << PileUp_MC << "]: NO CORRESPONDING PU Weight! ... it returns 0" << endl;
-		return 0;
-	}
-	return PileUpWeight[PileUp_MC];
-}
-
-void DYAnalyzer::SetupPileUpReWeighting_76X( Bool_t isMC )
-{
-	if( isMC == kFALSE ) // -- for data -- //
-	{
 		for(Int_t i=0; i<50; i++)
 			PileUpWeight[i] = 1;
 
 		return;
 	}
 	
-	// -- Only for the MC -- //
-	TString FileLocation = Path_CommonCodes + "ROOTFile_PUReWeight_76X_v20160404_71mb.root";
-	TFile *f = new TFile(FileLocation);
-	f->cd();
-	TH1D *h_weight = (TH1D*)f->Get("h_PUReWeights");
-	if( h_weight == NULL )
-	{
-		cout << "ERROR! ... No Weight histogram!"<< endl;
-		return;
-	}
+   // // -- Only for the MC -- //
+   // TString FileLocation = Path_CommonCodes + "ROOTFile_PUReWeight_76X_v20160404_71mb.root";
+   // TFile *f = new TFile(FileLocation);
+   // f->cd();
+   // TH1D *h_weight = (TH1D*)f->Get("h_PUReWeights");
+   // if( h_weight == NULL )
+   // {
+   //    cout << "ERROR! ... No Weight histogram!"<< endl;
+   //    return;
+   // }
 
+   // NO PU weight available yet (FIXME)
 	for(Int_t i=0; i<50; i++)
 	{
-		Int_t i_bin = i+1;
-		PileUpWeight[i] = h_weight->GetBinContent(i_bin);
+      // Int_t i_bin = i+1;
+		PileUpWeight[i] = 1.; // h_weight->GetBinContent(i_bin);
 	}
 }
 
-Double_t DYAnalyzer::PileUpWeightValue_76X(Int_t PileUp_MC)
+Double_t DYAnalyzer::PileUpWeightValue(Int_t PileUp_MC)
 {
 	if( PileUp_MC < 0 || PileUp_MC > 49 )
 	{
@@ -1717,7 +1700,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
 	{
 		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+		if( mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 		{
 			isExistHLTMatchedMuon = kTRUE;
 			break;
@@ -1771,7 +1754,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				Muon Mu = QMuonCollection[i_mu];
 
 				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || Mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+				if( Mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 				{
 					// -- Mu in this loop: QMuon Matched with HLT object -- //
 
@@ -1981,7 +1964,7 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
 	{
 		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+		if( mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 		{
 			isExistHLTMatchedMuon = kTRUE;
 			break;
@@ -2032,7 +2015,7 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 				Muon Mu = QMuonCollection[i_mu];
 
 				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || Mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+				if( Mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 				{
 					// -- Mu in this loop: QMuon Matched with HLT object -- //
 
@@ -2900,7 +2883,7 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
 	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
 	{
 		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+		if( mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 		{
 			isExistHLTMatchedMuon = kTRUE;
 			break;
@@ -2955,7 +2938,7 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
 				Muon Mu = QMuonCollection[i_mu];
 
 				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_IsoMu20_v*") || Mu.isTrigMatched(ntuple, "HLT_IsoTkMu20_v*") )
+				if( Mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
 				{
 					// -- Mu in this loop: QMuon Matched with HLT object -- //
 
