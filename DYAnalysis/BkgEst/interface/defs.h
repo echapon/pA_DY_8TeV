@@ -204,6 +204,11 @@ namespace DYana {
    bool EleSel(PhysicsElectron *el) {
       return el->acceptance(20,2.4) && el->WPMedium();
    };
+
+   // sgn switch pA vs Ap
+   int runsgn(int run) {
+      return (run>28500 && run<285900) ? -1 : 1;
+   };
 };
 
 #endif // ifndef def_h

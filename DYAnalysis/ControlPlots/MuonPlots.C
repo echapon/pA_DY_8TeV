@@ -28,11 +28,11 @@
 #include <Include/ControlPlots.h>
 
 static inline void loadBar(int x, int n, int r, int w);
-void MuonPlots(Bool_t isCorrected = kFALSE, Bool_t doData = kTRUE, TString HLTname = "PAL3Mu12")
+void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname = "PAL3Mu12")
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
-   TString Type = (doData) ? "Data" : "MC";
+   bool doData = Type.Contains("Data");
 	cout << "Type: " << Type << endl;
 	TString isApplyMomCorr = "";
 	if( isCorrected == kTRUE )
@@ -67,7 +67,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, Bool_t doData = kTRUE, TString HLTna
 	else
 	{
 		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" );
-      // ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" );
+      ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" );
 	}
 
 	//Loop for all samples
@@ -104,11 +104,12 @@ void MuonPlots(Bool_t isCorrected = kFALSE, Bool_t doData = kTRUE, TString HLTna
 		TH1D *h_nVertices_after = new TH1D("h_nVertices_after_"+Tag[i_tup], "", 50, 0, 50);
 
 		Bool_t isNLO = 0;
-		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets" )
-		{
-			isNLO = 1;
-			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
-		}
+      // NO NLO in pA
+      // if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets" )
+      // {
+      //    isNLO = 1;
+      //    cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
+      // }
 
 		Double_t SumWeight = 0;
 		Double_t SumWeight_Separated = 0;

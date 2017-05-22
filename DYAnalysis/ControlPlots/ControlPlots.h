@@ -130,19 +130,21 @@ public:
 
 	void FillHistograms_SingleMu(NtupleHandle *ntuple, TString HLT, Muon recolep)
 	{
+      using namespace DYana;
+
 		Double_t GenWeight;
 		ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
 
 		//-- Pt ,eta, phi --//
 		h_Pt->Fill( recolep.Pt, GenWeight );
-		h_eta->Fill( recolep.eta, GenWeight );
+		h_eta->Fill( runsgn(RunNum)*recolep.eta, GenWeight );
 		h_phi->Fill( recolep.phi, GenWeight );
 
 		//-- Barrel muons --//
 		if( fabs(recolep.eta) < 0.9 )
 		{
 			h_barrel_Pt->Fill( recolep.Pt, GenWeight );
-			h_barrel_eta->Fill( recolep.eta, GenWeight );
+			h_barrel_eta->Fill( runsgn(RunNum)*recolep.eta, GenWeight );
 			h_barrel_phi->Fill( recolep.phi, GenWeight );
 		}
 
@@ -156,13 +158,13 @@ public:
 		if( recolep.isTrigMatched(ntuple, HLT) )
 		{
 			h_Pt_TrigLeg->Fill( recolep.Pt, GenWeight );
-			h_eta_TrigLeg->Fill( recolep.eta, GenWeight );
+			h_eta_TrigLeg->Fill( runsgn(RunNum)*recolep.eta, GenWeight );
 			h_phi_TrigLeg->Fill( recolep.phi, GenWeight );
 		}
 		else
 		{
 			h_Pt_OtherLeg->Fill( recolep.Pt, GenWeight );
-			h_eta_OtherLeg->Fill( recolep.eta, GenWeight );
+			h_eta_OtherLeg->Fill( runsgn(RunNum)*recolep.eta, GenWeight );
 			h_phi_OtherLeg->Fill( recolep.phi, GenWeight );
 		}
 
@@ -205,21 +207,21 @@ public:
 		if( recolep1.Pt > recolep2.Pt )
 		{
 			h_lead_Pt->Fill( recolep1.Pt, GenWeight );
-			h_lead_eta->Fill( recolep1.eta, GenWeight );
+			h_lead_eta->Fill( runsgn(RunNum)*recolep1.eta, GenWeight );
 			h_lead_phi->Fill( recolep1.phi, GenWeight );
 
 			h_sub_Pt->Fill( recolep2.Pt, GenWeight );
-			h_sub_eta->Fill( recolep2.eta, GenWeight );
+			h_sub_eta->Fill( runsgn(RunNum)*recolep2.eta, GenWeight );
 			h_sub_phi->Fill( recolep2.phi, GenWeight );
 		}
 		else
 		{
 			h_lead_Pt->Fill( recolep2.Pt, GenWeight );
-			h_lead_eta->Fill( recolep2.eta, GenWeight );
+			h_lead_eta->Fill( runsgn(RunNum)*recolep2.eta, GenWeight );
 			h_lead_phi->Fill( recolep2.phi, GenWeight );
 
 			h_sub_Pt->Fill( recolep1.Pt, GenWeight );
-			h_sub_eta->Fill( recolep1.eta, GenWeight );
+			h_sub_eta->Fill( runsgn(RunNum)*recolep1.eta, GenWeight );
 			h_sub_phi->Fill( recolep1.phi, GenWeight );
 		}
 
@@ -268,41 +270,3 @@ public:
 			Histo[i_hist]->Write();
 	}
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
