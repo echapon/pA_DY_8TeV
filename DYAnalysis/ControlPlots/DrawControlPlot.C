@@ -5,6 +5,6 @@ void DrawControlPlot(TString version="None", Bool_t DrawDataDriven = kFALSE, TSt
 	DrawControlPlotTool *tool = new DrawControlPlotTool(version, DrawDataDriven, NormType);
 	// tool->GenLevelMassSpectrum();
 	tool->SetupHistogramNames();
-	tool->LoopForHistograms(3);
+	tool->LoopForHistograms(1);
 }
 

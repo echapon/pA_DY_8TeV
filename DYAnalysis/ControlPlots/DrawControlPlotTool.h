@@ -308,24 +308,29 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 	if( nHist > nTotalHist )
 	{
 		cout << "nHist > nTotalHist! ... " << nHist << " > " << nTotalHist << endl;
-		return;
+      return;
 	}
 
 	for(Int_t i_hist=0; i_hist<nLoopHist; i_hist++)
 	{
+      cout << i_hist << ": " << HistNames[i_hist] << endl;
 		// -- Get a histogram: Data -- //
 		f_input_Data->cd();
-		TH1D *h_data1 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data1" )->Clone(); 
-		TH1D *h_data2 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data2" )->Clone(); 
-      TH1D *h_data = NULL;
+      bool found1, found2;
+      found1 = f_input_Data->Get( HistNames[i_hist]+"_Data1" );
+      found2 = f_input_Data->Get( HistNames[i_hist]+"_Data2" );
+      TH1D *h_data = NULL, *h_data1 = NULL, *h_data2 = NULL;
+		if (found1) h_data1 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data1" )->Clone(); 
+		if (found2) h_data2 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data2" )->Clone(); 
+
       if (h_data1 && !h_data2) h_data = h_data1;
       else if (h_data2 && !h_data1) h_data = h_data2;
       else if (h_data1 && h_data2) {
          h_data = h_data1;
          h_data->Add(h_data2);
       } else {
-         cout << __FILE__ << ": " << __LINE__ << " Error, data histogram not found!" << endl;
-         return;
+         cout << __FILE__ << ": " << __LINE__ << " Error, data histogram " << HistNames[i_hist] << " not found!" << endl;
+         continue;
       }
 
 		// -- Get histograms: MC -- //
@@ -415,7 +420,8 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		legend->AddEntry(h_data, "Data");
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
-			if( Tag[i_MC] == "ttbar" )
+         cout << Tag[i_MC] << endl;
+			if( Tag[i_MC] == "TT" )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
 			else if( Tag[i_MC] == "ZZ" )
 				legend->AddEntry(h_MC[i_MC], "Diboson" );
@@ -499,7 +505,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets" )
+		if( Names[i_bkg] == "DiJet" || Names[i_bkg] == "WE" || Names[i_bkg] == "WMu" || Names[i_bkg] == "WTau" )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -508,7 +514,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 		}
 
 		// -- ttbar-like bkg -- //
-		else if( Names[i_bkg] == "ttbar" || Names[i_bkg] == "tW" || Names[i_bkg] == "WW" )
+		else if( Names[i_bkg] == "TT" || Names[i_bkg] == "tW" || Names[i_bkg] == "WW" )
 		{
 			if( h_ttbarlike == NULL )
 				h_ttbarlike = (TH1D*)h_temp->Clone();

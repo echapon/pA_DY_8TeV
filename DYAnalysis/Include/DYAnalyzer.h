@@ -64,10 +64,6 @@ public:
 	////////////////////////////
 	// -- Setup MC samples -- //
 	////////////////////////////
-	void SetupMCsamples_v20160412_76X_MINIAODv2_CheckPremix( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20160309_76X_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20160131_MiniAODv2( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20160117_MiniAOD_JetMET( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
@@ -209,12 +205,20 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
 {
    using namespace DYana;
-   for (int i=DY1050; i<Data1; i++) {
+   for (int i=0; i<Data1; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       ntupleDirectory->push_back(NtupleDir(tag));
       Tag->push_back(Name(tag));
       xsec->push_back(Xsec(tag));
       nEvents->push_back(Nevts(tag));
+      if (IsDY(tag)) { // separate mumu and tautau
+         Tag->back().ReplaceAll("DY","DYTauTau");
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         Tag->back().ReplaceAll("DY","DYMuMu");
+      }
    }
 }
 
@@ -237,48 +241,42 @@ Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *n
 
 		if( GenLeptonCollection.size() == 2 ) // -- Select the events containing 2 muons from hard-process -- //
 		{
-			if( Tag == "DYMuMu_M50to200" ) // -- Select only evetns withtin 50 < M < 200 -- //
+			if( Tag == "DYMuMu1050" ) // -- Select only evetns withtin 10 < M < 50 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 200 )
+				if( reco_M >= 10 && reco_M <= 50 )
 					GenFlag = kTRUE;
-			}
-			else if( Tag == "DYMuMu_M50to400" ) // -- Select only evetns withtin 50 < M < 400 -- //
+			} else if ( Tag == "DYMuMu50100" ) // -- Select only evetns withtin 50 < M < 100 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 400 )
+				if( reco_M >= 50 && reco_M <= 100 )
 					GenFlag = kTRUE;
-			}
-			else if( Tag == "DYMuMu_M50to100" || Tag == "DYMuMu_Photos_M50to100" ) // -- Select only evetns withtin 50 < M < 200 -- //
+			} else if( Tag == "DYMuMu100200" ) // -- Select only evetns withtin 100 < M < 200 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 100 )
+				if( reco_M >= 100 && reco_M <= 200 )
 					GenFlag = kTRUE;
-			}
-			else if( Tag == "DYMuMu_M50to120" )
+			} else if( Tag == "DYMuMu200400" ) // -- Select only evetns withtin 200 < M < 400 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 120 )
+				if( reco_M >= 200 && reco_M <= 400 )
 					GenFlag = kTRUE;
-			}
-			else if( Tag == "DYMuMu_M120to200" )
+			} else if( Tag == "DYMuMu4001000" ) // -- Select only evetns withtin 400 < M < 1000 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M > 120 )
+				if( reco_M >= 400 && reco_M <= 1000 )
 					GenFlag = kTRUE;
-			}
-			else
-				GenFlag = kTRUE;
+			} else GenFlag = kTRUE;
 		}
 	}
 	else if( Tag.Contains("DYEE") )
@@ -435,24 +433,42 @@ Bool_t DYAnalyzer::SeparateDYLLSample(TString Tag, NtupleHandle *ntuple)
 
 		if( GenLeptonCollection.size() == 2 ) // -- Select the events containing 2 muons from hard-process -- //
 		{
-			if( Tag == "DYMuMu_M50to200" ) // -- Select only evetns withtin 50 < M < 200 -- //
+			if( Tag == "DYMuMu1050" ) // -- Select only evetns withtin 10 < M < 50 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 200 )
+				if( reco_M >= 10 && reco_M <= 50 )
 					GenFlag = kTRUE;
-			}
-			else if( Tag == "DYMuMu_M50to400" ) // -- Select only evetns withtin 50 < M < 400 -- //
+			} else if ( Tag == "DYMuMu50100" ) // -- Select only evetns withtin 50 < M < 100 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
-				if( reco_M < 400 )
+				if( reco_M >= 50 && reco_M <= 100 )
 					GenFlag = kTRUE;
-			}
-			else
-				GenFlag = kTRUE;
+			} else if( Tag == "DYMuMu100200" ) // -- Select only evetns withtin 100 < M < 200 -- //
+			{
+				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+				Double_t reco_M = (v1 + v2).M();
+				if( reco_M >= 100 && reco_M <= 200 )
+					GenFlag = kTRUE;
+			} else if( Tag == "DYMuMu200400" ) // -- Select only evetns withtin 200 < M < 400 -- //
+			{
+				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+				Double_t reco_M = (v1 + v2).M();
+				if( reco_M >= 200 && reco_M <= 400 )
+					GenFlag = kTRUE;
+			} else if( Tag == "DYMuMu4001000" ) // -- Select only evetns withtin 400 < M < 1000 -- //
+			{
+				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+				Double_t reco_M = (v1 + v2).M();
+				if( reco_M >= 400 && reco_M <= 1000 )
+					GenFlag = kTRUE;
+			} else GenFlag = kTRUE;
 		}
 	}
 	else if( Tag.Contains("DYEE") )

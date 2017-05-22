@@ -15,18 +15,18 @@ namespace DYana {
 
    // list of available processes (MC + data)
    enum SampleTag : int {
-      DY1050=0,
+      TT=0,
+      WW,
+      WZ,
+      ZZ,
+      WE,
+      WMu,
+      WTau,
+      DY1050,
       DY50100,
       DY100200,
       DY200400,
       DY4001000,
-      WW,
-      WZ,
-      ZZ,
-      TT,
-      WE,
-      WMu,
-      WTau,
       Data1,
       Data2,
       ALL
@@ -35,18 +35,18 @@ namespace DYana {
 
    std::vector<SampleTag> allSamples() {
       std::vector<SampleTag> v;
+      v.push_back(TT);
+      v.push_back(WW);
+      v.push_back(WZ);
+      v.push_back(ZZ);
+      v.push_back(WE);
+      v.push_back(WMu);
+      v.push_back(WTau);
       v.push_back(DY1050);
       v.push_back(DY50100);
       v.push_back(DY100200);
       v.push_back(DY200400);
       v.push_back(DY4001000);
-      v.push_back(WW);
-      v.push_back(WZ);
-      v.push_back(ZZ);
-      v.push_back(TT);
-      v.push_back(WE);
-      v.push_back(WMu);
-      v.push_back(WTau);
       v.push_back(Data1);
       v.push_back(Data2);
       return v;
@@ -56,18 +56,18 @@ namespace DYana {
    // xsec for each process (in pb)
    double Xsec(SampleTag s) {
       switch (s) {
-         case DY1050:    return 8453; break;
-         case DY50100:   return 1321; break;
-         case DY100200:  return 195.5; break;
-         case DY200400:  return 5.94; break;
-         case DY4001000: return 0.356; break;
-         case WW:        return 3.728; break;
-         case WZ:        return 1.339; break;
-         case ZZ:        return 0.5422; break;
-         case TT:        return 14.42; break;
-         case WE:        return 4199; break;
-         case WMu:       return 4579; break;
-         case WTau:      return 3600; break;
+         case DY1050:    return 208.*8453; break;
+         case DY50100:   return 208.*1321; break;
+         case DY100200:  return 208.*195.5; break;
+         case DY200400:  return 208.*5.94; break;
+         case DY4001000: return 208.*0.356; break;
+         case WW:        return 208.*3.728; break;
+         case WZ:        return 208.*1.339; break;
+         case ZZ:        return 208.*0.5422; break;
+         case TT:        return 208.*14.42; break;
+         case WE:        return 208.*4199; break;
+         case WMu:       return 208.*4579; break;
+         case WTau:      return 208.*3600; break;
          default:        return -1;
       }
    };
