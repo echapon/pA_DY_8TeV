@@ -14,9 +14,9 @@
 #include <TF1.h>
 #include <TLatex.h>
 
-#include "Include/tdrstyle.C"
-#include "Include/DYAnalyzer.h"
-#include "BkgEst/interface/defs.h"
+#include <Include/tdrstyle.C>
+#include <Include/DYAnalyzer.h>
+#include <BkgEst/interface/defs.h>
 
 // #define Lumi_part2_Split1 618.174
 // #define Lumi_part2_Split2 633.070
@@ -111,7 +111,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	{
 		if( Tag[i] == "ZZ" || Tag[i] == "WZ" || Tag[i] == "WW" )
 			color.push_back( kGreen );
-		else if( Tag[i] == "WMu" )
+		else if( Tag[i] == "WMu" || Tag[i] == "WE" || Tag[i] == "WTau" )
 			color.push_back( kBlue );
 		else if( Tag[i].Contains("DYTauTau") )
 			color.push_back( kBlue-9 );
@@ -425,11 +425,11 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
 			else if( Tag[i_MC] == "ZZ" )
 				legend->AddEntry(h_MC[i_MC], "Diboson" );
-			else if( Tag[i_MC] == "WJets" )
+			else if( Tag[i_MC] == "WMu" )
 				legend->AddEntry(h_MC[i_MC], "WJets" );
-			else if( Tag[i_MC] == "DYMuMu_M10to50" )
+			else if( Tag[i_MC] =="DYMuMu1050" )
 				legend->AddEntry(h_MC[i_MC], "DYMuMu" );
-			else if( Tag[i_MC] == "DYTauTau" )
+			else if( Tag[i_MC] == "DYTauTau1050") 
 				legend->AddEntry(h_MC[i_MC], "DYTauTau" );
 		}
 

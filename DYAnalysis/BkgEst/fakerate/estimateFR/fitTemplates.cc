@@ -1,32 +1,44 @@
-#include "../interface/tdrstyle.C"
-#include "../interface/CMS_lumi.C"
+#include "TFile.h"
+#include "TH1.h"
+#include "TLegend.h"
+#include "TCanvas.h"
+#include "RooRealVar.h"
+#include "RooDataHist.h"
+#include "RooHistPdf.h"
+#include "RooPlot.h"
+#include "RooAddPdf.h"
+#include "RooFitResult.h"
+
+#include "../../interface/tdrstyle.C"
+#include "../../interface/CMS_lumi.C"
+#include "../../interface/defs.h"
 using namespace RooFit;
+using namespace DYana;
 
 void fitTemplates(const TString& category)
 {
-	//Get ROOT Files
-	TFile *f0 = new TFile("histograms/hist0.root");
-	TFile *f1 = new TFile("histograms/hist1.root");
-	TFile *f2 = new TFile("histograms/hist2.root");
-	TFile *f5 = new TFile("histograms/hist5.root");
-	TFile *f6 = new TFile("histograms/hist6.root");
-	TFile *f11 = new TFile("histograms/hist11.root");
-	TFile *f12 = new TFile("histograms/hist12.root");
-	TFile *f13 = new TFile("histograms/hist13.root");
+   //Get ROOT Files
+   TFile* file[NSamples+2];
+   for (int i=0; i<ALL; i++) file[i] = new TFile(PathFRHistos(static_cast<SampleTag>(i)));
+   file[QCD] = new TFile(PathFRHistos(QCD));
 
 	//Get Histograms
-	TH1D *h_ttbar = (TH1D*)f1->Get( "denominator_" + category );
-	TH1D *h_WJets = (TH1D*)f2->Get( "denominator_" + category );
-	TH1D *h_DYJets = (TH1D*)f0->Get( "denominator_" + category );
-	TH1D *h_QCD = (TH1D*)f5->Get( "denominator_" + category );
-	TH1D *h_WW = (TH1D*)f11->Get( "denominator_" + category );
-	TH1D *h_WZ = (TH1D*)f12->Get( "denominator_" + category );
-	TH1D *h_ZZ = (TH1D*)f13->Get( "denominator_" + category );
+	TH1D *h_ttbar = (TH1D*)file[TT]->Get( "denominator_" + category );
+	TH1D *h_WJets = (TH1D*)file[WMu]->Get( "denominator_" + category );
+	TH1D *h_DYJets = (TH1D*)file[DY1050]->Get( "denominator_" + category );
+   for (int i=DY50100; i<=DY4001000; i++) {
+      h_DYJets->Add((TH1D*)file[i]->Get( "denominator_" + category ));
+   }
+	TH1D *h_QCD = (TH1D*)file[QCD]->Get( "denominator_" + category );
+	TH1D *h_WW = (TH1D*)file[WW]->Get( "denominator_" + category );
+	TH1D *h_WZ = (TH1D*)file[WZ]->Get( "denominator_" + category );
+	TH1D *h_ZZ = (TH1D*)file[ZZ]->Get( "denominator_" + category );
 
-	TH1D *h_data = (TH1D*)f6->Get( "denominator_" + category );
+   TH1D *h_data = (TH1D*)file[Data1]->Get( "denominator_" + category );
+   h_data->Add((TH1D*)file[Data2]->Get( "denominator_" + category ));
 
 	//Convert TH1D to RooDataHist
-	RooRealVar obs("obs", "TrkIso/p_{T}", 0, 5);
+	RooRealVar obs("obs", "PFIso/p_{T}", 0, 1);
 
 	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", obs, h_ttbar);
 	RooDataHist *RooHist_WJets = new RooDataHist("RooHist_WJets", "RooHistogram_WJets", obs, h_WJets);
@@ -48,30 +60,35 @@ void fitTemplates(const TString& category)
 
 	// Construct model = n_ttbar * ttbar + n_WJets * WJets
 
-	Double_t Lumi = 2765;
-	Double_t xsec_ttbar = 831.76; Double_t Nprocessed_ttbar = 187625980; Double_t Npass_ttbar = h_ttbar->Integral();
+	Double_t Lumi = lumi_all;
+	Double_t xsec_ttbar = Xsec(TT); Double_t Nprocessed_ttbar = Nevts(TT); Double_t Npass_ttbar = h_ttbar->Integral();
 	Double_t NN_ttbar = ((xsec_ttbar * Lumi) / Nprocessed_ttbar) * Npass_ttbar;
 	cout << "N_ttbar: "<< Npass_ttbar << endl;
 	cout << "N_ttbar: "<< NN_ttbar << endl;
 
-	Double_t xsec_DYJets = 3*2008.4; Double_t Nprocessed_DYJets = 8.1236e+07; Double_t Npass_DYJets = h_DYJets->Integral();
+	Double_t xsec_DYJets = 0; Double_t Nprocessed_DYJets = 0; Double_t Npass_DYJets = h_DYJets->Integral();
+   for (int i=DY1050; i<=DY4001000; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      xsec_DYJets+=Xsec(tag);
+      Nprocessed_DYJets+=Nevts(tag);
+   }
 	Double_t NN_DYJets = ((xsec_DYJets * Lumi) / Nprocessed_DYJets) * Npass_DYJets;
 	cout << "N_DYJets: "<< NN_DYJets << endl;
 
-	Double_t xsec_WJets = 60290; Double_t Nprocessed_WJets = 1.65208e+07; Double_t Npass_WJets = h_WJets->Integral();
+	Double_t xsec_WJets = Xsec(WMu); Double_t Nprocessed_WJets = Nevts(WMu); Double_t Npass_WJets = h_WJets->Integral();
 	Double_t NN_WJets = ((xsec_WJets * Lumi) / Nprocessed_WJets) * Npass_WJets;
 	cout << "N_WJets: "<< NN_WJets << endl;
 
-	Double_t xsec_WW = 63.21; Double_t Nprocessed_WW = 988416; Double_t Npass_WW = h_WW->Integral();
+	Double_t xsec_WW = Xsec(WW); Double_t Nprocessed_WW = Nevts(WW); Double_t Npass_WW = h_WW->Integral();
 	Double_t NN_WW = ((xsec_WW * Lumi) / Nprocessed_WW) * Npass_WW;
 	cout << "N_WW: "<< Npass_WW << endl;
 	cout << "N_WW: "<< NN_WW << endl;
 
-	Double_t xsec_WZ = 22.82; Double_t Nprocessed_WZ = 999996; Double_t Npass_WZ = h_WZ->Integral();
+	Double_t xsec_WZ = Xsec(WZ); Double_t Nprocessed_WZ = Nevts(WZ); Double_t Npass_WZ = h_WZ->Integral();
 	Double_t NN_WZ = ((xsec_WZ * Lumi) / Nprocessed_WZ) * Npass_WZ;
 	cout << "N_WZ: "<< NN_WZ << endl;
 
-	Double_t xsec_ZZ = 10.32; Double_t Nprocessed_ZZ = 985598; Double_t Npass_ZZ = h_ZZ->Integral();
+	Double_t xsec_ZZ = Xsec(ZZ); Double_t Nprocessed_ZZ = Nevts(ZZ); Double_t Npass_ZZ = h_ZZ->Integral();
 	Double_t NN_ZZ = ((xsec_ZZ * Lumi) / Nprocessed_ZZ) * Npass_ZZ;
 	cout << "N_ZZ: "<< NN_ZZ << endl;
 
@@ -90,13 +107,13 @@ void fitTemplates(const TString& category)
 	// Double_t N_DYJets = ((xsec_DYJets * Lumi) / Nprocessed_DYJets) * Npass_DYJets;
 	// cout << "N_DYJets: "<< N_DYJets << " Range: " << N_DYJets*0.5 << " " << N_DYJets*1.5 << endl;
 
-	RooRealVar n_ttbar("n_ttbar", "n_ttbar", N_ttbar, N_ttbar*0.95, N_ttbar*1.05);
-	RooRealVar n_WJets("n_WJets", "n_WJets", N_WJets, N_WJets*0.5, N_WJets*1.5);
-	RooRealVar n_DYJets("n_DYJets", "n_DYJets", N_DYJets, N_DYJets*0.95, N_DYJets*1.05);
-	RooRealVar n_QCD("n_QCD", "n_QCD", N_QCD, N_QCD*0.5, N_QCD*1.5);
-	RooRealVar n_WW("n_WW", "n_WW", N_WW, 0.95*N_WW, N_WW*1.05);
-	RooRealVar n_WZ("n_WZ", "n_WZ", N_WZ, 0.95*N_WZ, N_WZ*1.05);
-	RooRealVar n_ZZ("n_ZZ", "n_ZZ", N_ZZ, 0.95*N_ZZ, N_ZZ*1.05);
+	RooRealVar n_ttbar("n_ttbar", "n_ttbar", N_ttbar, N_ttbar*0.1, N_ttbar*10);
+	RooRealVar n_WJets("n_WJets", "n_WJets", N_WJets, N_WJets*0.01, N_WJets*100);
+	RooRealVar n_DYJets("n_DYJets", "n_DYJets", N_DYJets, N_DYJets*0.1, N_DYJets*10);
+	RooRealVar n_QCD("n_QCD", "n_QCD", N_QCD, N_QCD*0.01, N_QCD*100);
+	RooRealVar n_WW("n_WW", "n_WW", N_WW, 0.1*N_WW, N_WW*10);
+	RooRealVar n_WZ("n_WZ", "n_WZ", N_WZ, 0.1*N_WZ, N_WZ*10);
+	RooRealVar n_ZZ("n_ZZ", "n_ZZ", N_ZZ, 0.1*N_ZZ, N_ZZ*10);
   	RooAddPdf model( "model","model",RooArgList(*pdf_QCD, *pdf_WJets, *pdf_DYJets, *pdf_ttbar, *pdf_WW, *pdf_WZ, *pdf_ZZ), RooArgList(n_QCD, n_WJets, n_DYJets, n_ttbar, n_WW, n_WZ, n_ZZ) );
   	//RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
 
@@ -114,7 +131,7 @@ void fitTemplates(const TString& category)
   	c1_1->SetBottomMargin(0.25);
   	c1_1->SetRightMargin(0.03);
   	c1_1->SetLeftMargin(0.09);
-  	c1_1->SetFillStyle(0.01);
+  	c1_1->SetFillStyle(0);
 	c1_1->SetLogy();
 
 	RooPlot* frame1 = obs.frame( Title(" ") ) ;
@@ -185,7 +202,7 @@ void fitTemplates(const TString& category)
 	h_ratio->SetTitle("");
 	h_ratio->GetXaxis()->SetMoreLogLabels();
 	h_ratio->GetXaxis()->SetNoExponent();
-	h_ratio->GetXaxis()->SetTitle( "TrkIso/p_{T}" );
+	h_ratio->GetXaxis()->SetTitle( "PFIso/p_{T}" );
 	h_ratio->GetYaxis()->SetTitle("data/MC");
 	h_ratio->GetXaxis()->SetTitleSize(0.13);
 	h_ratio->GetYaxis()->SetTitleSize(0.09);

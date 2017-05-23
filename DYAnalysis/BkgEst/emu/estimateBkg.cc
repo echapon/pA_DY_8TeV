@@ -41,7 +41,7 @@ void estimateBkg() {
     // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
 
     TFile* file[NSamples];
-    for (int i=DY1050; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
+    for (int i=0; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
 
     double norm_part1[NSamples];
     double norm_part2[NSamples];
@@ -50,7 +50,7 @@ void estimateBkg() {
     TH1D* emuSS[NSamples];
     TH1D* dimu[NSamples];
 
-    for(int i=DY1050;i<Data1;i++) {
+    for(int i=0;i<Data1;i++) {
         SampleTag tag = static_cast<SampleTag>(i);
         norm_part1[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
         norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);

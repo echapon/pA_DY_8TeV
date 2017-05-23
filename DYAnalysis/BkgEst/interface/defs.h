@@ -29,7 +29,8 @@ namespace DYana {
       DY4001000,
       Data1,
       Data2,
-      ALL
+      ALL,
+      QCD // put QCD after all so that it is not included in the "default" list of samples
    };
    const int NSamples = ALL;
 
@@ -68,6 +69,7 @@ namespace DYana {
          case WE:        return 208.*4199; break;
          case WMu:       return 208.*4579; break;
          case WTau:      return 208.*3600; break;
+         case QCD:       return 208.*3.68e11*0.00039; break;
          default:        return -1;
       }
    };
@@ -87,6 +89,7 @@ namespace DYana {
          case WE:        return 99e3; break;
          case WMu:       return 99e3; break;
          case WTau:      return 100e3; break;
+         case QCD:       return 905011; break;
          default:        return -1;
       }
    };
@@ -110,11 +113,12 @@ namespace DYana {
          case Data1:     return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/ntuple_skim_*root"; break;
                          // case Data2:     return "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/tree_data2.root"; break;
          case Data2:     return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/ntuple_skim_*root"; break;
+         case QCD:       return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/QCD/crab_QCD_DYntuple_20170522/170522_124914/0000/ntuple_skim*root"; break;
          default:        return "Unknown sample";
       }
    };
 
-   // path to the histos
+   // path to the histos for emu
    const char* PathHistos(SampleTag s) {
       switch (s) {
          case DY1050:    return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histDY1050.root"; break;
@@ -129,8 +133,31 @@ namespace DYana {
          case WE:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWE.root"; break;
          case WMu:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWMu.root"; break;
          case WTau:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWTau.root"; break;
+         case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histQCD.root"; break;
          case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histData1.root"; break;
          case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histData2.root"; break;
+         default:        return "Unknown sample";
+      }
+   };
+
+   // path to the histos for fake rate
+   const char* PathFRHistos(SampleTag s) {
+      switch (s) {
+         case DY1050:    return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRDY1050.root"; break;
+         case DY50100:   return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRDY50100.root"; break;
+         case DY100200:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRDY100200.root"; break;
+         case DY200400:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRDY200400.root"; break;
+         case DY4001000: return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRDY4001000.root"; break;
+         case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWW.root"; break;
+         case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWZ.root"; break;
+         case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRZZ.root"; break;
+         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRTT.root"; break;
+         case WE:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWE.root"; break;
+         case WMu:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWMu.root"; break;
+         case WTau:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWTau.root"; break;
+         case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRQCD.root"; break;
+         case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRData1.root"; break;
+         case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRData2.root"; break;
          default:        return "Unknown sample";
       }
    };
@@ -148,8 +175,9 @@ namespace DYana {
          case ZZ:        return "Pythia6_ZZ_embd_pPb/crab_ZZ_DYntuple_20170518/170517_223512/0000/";
          case TT:        return "Pythia6_TTall_embd_pPb/crab_TTall_DYntuple_20170518/170517_224711/0000/";
          case WE:        return "Pyquen_WjetsToENu_embd_pPb/crab_WjetsENu_DYntuple_20170518/170517_223816/0000/";
-         case WMu:        return "Pyquen_WjetsToMuNu_embd_pPb/crab_WjetsToMuNu_DYntuple_20170516/170516_163243/0000/";
-         case WTau:        return "Pyquen_WjetsToTauNu_embd_pPb/crab_WjetsTauNu_DYntuple_20170518/170517_224500/0000/";
+         case WMu:       return "Pyquen_WjetsToMuNu_embd_pPb/crab_WjetsToMuNu_DYntuple_20170516/170516_163243/0000/";
+         case WTau:      return "Pyquen_WjetsToTauNu_embd_pPb/crab_WjetsTauNu_DYntuple_20170518/170517_224500/0000/";
+         case QCD:       return "QCD/crab_QCD_DYntuple_20170522/170522_124914/0000/";
          default:        return "Unknown sample";
       }
    };
@@ -169,6 +197,7 @@ namespace DYana {
          case WE:        return "WE";
          case WMu:       return "WMu";
          case WTau:      return "WTau";
+         case QCD:       return "QCD";
          case Data1:     return "Data1";
          case Data2:     return "Data2";
          default:        return "UnknownSample";

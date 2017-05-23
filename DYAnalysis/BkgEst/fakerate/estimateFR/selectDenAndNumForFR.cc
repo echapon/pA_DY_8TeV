@@ -52,13 +52,13 @@ void selectDenAndNumForFR(SampleTag index)
     TH1D* denominator_eta = new TH1D("denominator_eta","",48,-2.4,2.4); 
     TH1D* numerator_eta = new TH1D("numerator_eta","",48,-2.4,2.4); 
 
-    TH1D* denominator = new TH1D("denominator","",100,0,5);
-    TH1D* denominator_barrel = new TH1D("denominator_barrel","",100,0,5);
-    TH1D* denominator_endcap = new TH1D("denominator_endcap","",100,0,5);
+    TH1D* denominator = new TH1D("denominator","",100,0,1);
+    TH1D* denominator_barrel = new TH1D("denominator_barrel","",100,0,1);
+    TH1D* denominator_endcap = new TH1D("denominator_endcap","",100,0,1);
 
-    TH1D* numerator = new TH1D("numerator","",100,0,5);
-    TH1D* numerator_barrel = new TH1D("numerator_barrel","",100,0,5);
-    TH1D* numerator_endcap = new TH1D("numerator_endcap","",100,0,5);
+    TH1D* numerator = new TH1D("numerator","",100,0,1);
+    TH1D* numerator_barrel = new TH1D("numerator_barrel","",100,0,1);
+    TH1D* numerator_endcap = new TH1D("numerator_endcap","",100,0,1);
 
     denominator_pt->Sumw2();
     denominator_pt_barrel->Sumw2();
@@ -125,8 +125,8 @@ void selectDenAndNumForFR(SampleTag index)
 
             PhysicsMuon mu = passingMuons->at(j);
             pt = mu.pt;
-            eta = mu.eta;
-            iso = mu.isolationR03_sumpt/mu.pt;
+            eta = runsgn(event->run) * mu.eta;
+            iso = (mu.PfChargedHadronIsoR03 + mu.PfNeutralHadronIsoR03 + mu.PfGammaIsoR03)/mu.pt;
 
             if( !mu.highPtMuonID() ) continue;
             cnt[3]++;
@@ -144,7 +144,7 @@ void selectDenAndNumForFR(SampleTag index)
                 denominator_pt_endcap->Fill(pt,wt);
             } 
 
-            if( !mu.isolation(0.1) ) continue; 
+            if( !mu.isolation(0.15) ) continue; 
             cnt[4]++;
 
             numerator_pt->Fill(pt,wt);

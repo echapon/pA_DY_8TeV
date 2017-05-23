@@ -4,8 +4,8 @@
 // -- 2016.11.04 (v02): include v02 headers, SeparateDYLLSample_LHEInfo -> add DYEE case
 #pragma once
 
-#include <Include/Object.h>
-#include <Include/NtupleHandle.h>
+#include "Include/Object.h"
+#include "Include/NtupleHandle.h"
 
 #include <TSystem.h>
 #include <TH1D.h>
@@ -15,7 +15,7 @@
 #include <iostream>
 #include <vector>
 
-#include <BkgEst/interface/defs.h>
+#include "BkgEst/interface/defs.h"
 
 using namespace std;
 
@@ -213,12 +213,16 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
       nEvents->push_back(Nevts(tag));
       if (IsDY(tag)) { // separate mumu and tautau
          Tag->back().ReplaceAll("DY","DYTauTau");
-         ntupleDirectory->push_back(NtupleDir(tag));
-         Tag->push_back(Name(tag));
-         xsec->push_back(Xsec(tag));
-         nEvents->push_back(Nevts(tag));
-         Tag->back().ReplaceAll("DY","DYMuMu");
       }
+   }
+   // and add DYMuMu
+   for (int i=DY1050; i<Data1; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      ntupleDirectory->push_back(NtupleDir(tag));
+      Tag->push_back(Name(tag));
+      xsec->push_back(Xsec(tag));
+      nEvents->push_back(Nevts(tag));
+      Tag->back().ReplaceAll("DY","DYMuMu");
    }
 }
 

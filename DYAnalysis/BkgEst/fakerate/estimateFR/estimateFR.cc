@@ -17,6 +17,7 @@
 #include <TColor.h>
 #include <TLatex.h>
 #include <TEfficiency.h>
+#include <TFrame.h>
 
 #include <iostream>
 #include <string>
@@ -29,6 +30,7 @@
 #include "../../interface/CMS_lumi.C"
 #include "../../interface/defs.h"
 using namespace std;
+using namespace DYana;
 
 void setDataHist(TH1D* hist);
 void setMCHist(TH1D* hist, const int& color);
@@ -39,60 +41,61 @@ TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator);
 void estimateFR() {
 
 
-    TFile* file[NSamples];
-    for (int i=DY1050; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
+    TFile* file[NSamples+2];
+    for (int i=0; i<ALL; i++) file[i] = new TFile(PathFRHistos(static_cast<SampleTag>(i)));
+    file[QCD] = new TFile(PathFRHistos(QCD));
 
-    TH1D* denominator_pt_fit_barrel[NSamples];
-    TH1D* denominator_pt_fit_endcap[NSamples];
-    TH1D* denominator_pt_xsec_barrel[NSamples];
-    TH1D* denominator_pt_xsec_endcap[NSamples];
+    TH1D* denominator_pt_fit_barrel[NSamples+2];
+    TH1D* denominator_pt_fit_endcap[NSamples+2];
+    TH1D* denominator_pt_xsec_barrel[NSamples+2];
+    TH1D* denominator_pt_xsec_endcap[NSamples+2];
 
-    TH1D* numerator_pt_barrel[NSamples];
-    TH1D* numerator_pt_endcap[NSamples];
+    TH1D* numerator_pt_barrel[NSamples+2];
+    TH1D* numerator_pt_endcap[NSamples+2];
 
-    TH1D* denominator_barrel[NSamples];
-    TH1D* denominator_endcap[NSamples];
+    TH1D* denominator_barrel[NSamples+2];
+    TH1D* denominator_endcap[NSamples+2];
 
-    double norm_part1[NSamples];
-    double norm_part2[NSamples];
-    double norm_fit_barrel[NSamples];
-    double norm_fit_endcap[NSamples];
+    double norm_part1[NSamples+2];
+    double norm_part2[NSamples+2];
+    double norm_fit_barrel[NSamples+2];
+    double norm_fit_endcap[NSamples+2];
 
-    cout<<__LINE__<<endl;
-    for(int i=DY1050;i<=Data2;i++) {
-        SampleTag tag = static_cast<SampleTag>(i);
-        denominator_pt_fit_barrel[i] = (TH1D*)f[i]->Get("denominator_pt_barrel")->Clone("denominator_pt_fit_barrel"+TString(Name(tag)));
-        denominator_pt_xsec_barrel[i] = (TH1D*)f[i]->Get("denominator_pt_barrel")->Clone("denominator_pt_xsec_barrel"+TString(Name(tag)));
-        denominator_barrel[i] = (TH1D*)f[i]->Get("denominator_barrel")->Clone("denominator_barrel"+TString(Name(tag)));
-        numerator_pt_barrel[i] = (TH1D*)f[i]->Get("numerator_pt_barrel")->Clone("numerator_pt_barrel"+TString(Name(tag)));
-        denominator_pt_fit_endcap[i] = (TH1D*)f[i]->Get("denominator_pt_endcap")->Clone("denominator_pt_fit_endcap"+TString(Name(tag)));
-        denominator_pt_xsec_endcap[i] = (TH1D*)f[i]->Get("denominator_pt_endcap")->Clone("denominator_pt_xsec_endcap"+TString(Name(tag)));
-        denominator_endcap[i] = (TH1D*)f[i]->Get("denominator_endcap")->Clone("denominator_endcap"+TString(Name(tag)));
-        numerator_pt_endcap[i] = (TH1D*)f[i]->Get("numerator_pt_endcap")->Clone("numerator_pt_endcap"+TString(Name(tag)));
+    for(int i=0;i<=QCD;i++) {
+       if (i==ALL) continue;
+       SampleTag tag = static_cast<SampleTag>(i);
+       denominator_pt_fit_barrel[i] = (TH1D*)file[i]->Get("denominator_pt_barrel")->Clone("denominator_pt_fit_barrel"+TString(Name(tag)));
+       denominator_pt_xsec_barrel[i] = (TH1D*)file[i]->Get("denominator_pt_barrel")->Clone("denominator_pt_xsec_barrel"+TString(Name(tag)));
+       denominator_barrel[i] = (TH1D*)file[i]->Get("denominator_barrel")->Clone("denominator_barrel"+TString(Name(tag)));
+       numerator_pt_barrel[i] = (TH1D*)file[i]->Get("numerator_pt_barrel")->Clone("numerator_pt_barrel"+TString(Name(tag)));
+       denominator_pt_fit_endcap[i] = (TH1D*)file[i]->Get("denominator_pt_endcap")->Clone("denominator_pt_fit_endcap"+TString(Name(tag)));
+       denominator_pt_xsec_endcap[i] = (TH1D*)file[i]->Get("denominator_pt_endcap")->Clone("denominator_pt_xsec_endcap"+TString(Name(tag)));
+       denominator_endcap[i] = (TH1D*)file[i]->Get("denominator_endcap")->Clone("denominator_endcap"+TString(Name(tag)));
+       numerator_pt_endcap[i] = (TH1D*)file[i]->Get("numerator_pt_endcap")->Clone("numerator_pt_endcap"+TString(Name(tag)));
 
-        if(IsData(tag)) {
-            setDataHist( denominator_pt_fit_barrel[i] );
-            setDataHist( denominator_pt_xsec_barrel[i] );
-            setDataHist( denominator_barrel[i] );
-            setDataHist( numerator_pt_barrel[i] );
-            setDataHist( denominator_pt_fit_endcap[i] );
-            setDataHist( denominator_pt_xsec_endcap[i] );
-            setDataHist( denominator_endcap[i] );
-            setDataHist( numerator_pt_endcap[i] );
-        }
-        else {
-            setMCHist( denominator_pt_fit_barrel[i], i );
-            setMCHist( denominator_pt_xsec_barrel[i], i );
-            setMCHist( denominator_barrel[i], i );
-            setMCHist( numerator_pt_barrel[i], i );
-            setMCHist( denominator_pt_fit_endcap[i], i );
-            setMCHist( denominator_pt_xsec_endcap[i], i );
-            setMCHist( denominator_endcap[i], i );
-            setMCHist( numerator_pt_endcap[i], i );
-        }
+       if(IsData(tag)) {
+          setDataHist( denominator_pt_fit_barrel[i] );
+          setDataHist( denominator_pt_xsec_barrel[i] );
+          setDataHist( denominator_barrel[i] );
+          setDataHist( numerator_pt_barrel[i] );
+          setDataHist( denominator_pt_fit_endcap[i] );
+          setDataHist( denominator_pt_xsec_endcap[i] );
+          setDataHist( denominator_endcap[i] );
+          setDataHist( numerator_pt_endcap[i] );
+       }
+       else {
+          setMCHist( denominator_pt_fit_barrel[i], i );
+          setMCHist( denominator_pt_xsec_barrel[i], i );
+          setMCHist( denominator_barrel[i], i );
+          setMCHist( numerator_pt_barrel[i], i );
+          setMCHist( denominator_pt_fit_endcap[i], i );
+          setMCHist( denominator_pt_xsec_endcap[i], i );
+          setMCHist( denominator_endcap[i], i );
+          setMCHist( numerator_pt_endcap[i], i );
+       }
 
-        norm_part1[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
-        norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
+       norm_part1[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
+       norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
     }
 
     // EC: what is this??
@@ -112,23 +115,31 @@ void estimateFR() {
     // norm_fit_endcap[12] = 1.0673e+03/denominator_endcap[12]->Integral();
     // norm_fit_endcap[13] = 4.7170e+02/denominator_endcap[13]->Integral();
 
-    for(int i=DY1050;i<=Data2;i++) {
-        // denominator_barrel[i]->Scale(norm_fit_barrel[i]);
-        // denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
-        denominator_pt_xsec_barrel[i]->Scale(norm_xsec[i]);
-        numerator_pt_barrel[i]->Scale(norm_xsec[i]);
+    for(int i=0;i<=QCD;i++) {
+       if (i==ALL) continue;
+       SampleTag tag = static_cast<SampleTag>(i);
+       // denominator_barrel[i]->Scale(norm_fit_barrel[i]);
+       // denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
+       denominator_pt_xsec_barrel[i]->Scale(Xsec(tag));
+       numerator_pt_barrel[i]->Scale(Xsec(tag));
 
-        // denominator_endcap[i]->Scale(norm_fit_endcap[i]);
-        // denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
-        denominator_pt_xsec_endcap[i]->Scale(norm_xsec[i]);
-        numerator_pt_endcap[i]->Scale(norm_xsec[i]);
+       // denominator_endcap[i]->Scale(norm_fit_endcap[i]);
+       // denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
+       denominator_pt_xsec_endcap[i]->Scale(Xsec(tag));
+       numerator_pt_endcap[i]->Scale(Xsec(tag));
     }
 
-    // TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
-    // TH1D* FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
+    cout << __LINE__ << endl;
+    TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
+    cout << __LINE__ << endl;
+    TH1D* FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
+    cout << __LINE__ << endl;
 
+    cout << __LINE__ << endl;
     TH1D* FR_xsec_barrel = (TH1D*)FRBytRatio(numerator_pt_barrel, denominator_pt_xsec_barrel);
+    cout << __LINE__ << endl;
     TH1D* FR_xsec_endcap = (TH1D*)FRBytRatio(numerator_pt_endcap, denominator_pt_xsec_endcap);
+    cout << __LINE__ << endl;
 
     int W = 1200;
     int H = 1200;
@@ -277,22 +288,49 @@ void setMCHist(TH1D* hist, const int& color) {
 
 TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 
-    TString name = ( ((TString)(denominator[5]->GetName())).Contains("barrel") ) ? "FR_template_barrel" : "FR_template_endcap";
+    cout << __LINE__ << endl;
+    TString name = ( ((TString)(denominator[QCD]->GetName())).Contains("barrel") ) ? "FR_template_barrel" : "FR_template_endcap";
+    cout << __LINE__ << endl;
 
-    TH1D* num = (TH1D*)numerator[5]->Clone(name);
-    TH1D* den = (TH1D*)numerator[0]->Clone(name+"_");
+    cout << __LINE__ << endl;
+    TH1D* num = (TH1D*)numerator[Data1]->Clone(name);
+    cout << __LINE__ << endl;
+    num->Add(numerator[Data2]);
+    cout << __LINE__ << endl;
+    TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY50100]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY100200]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY200400]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY4001000]);
+    cout << __LINE__ << endl;
 
-    num->Multiply(numerator[6]);
+    cout << __LINE__ << endl;
+    num->Multiply(numerator[QCD]);
+    cout << __LINE__ << endl;
 
-    den->Add(numerator[1]);
-    den->Add(numerator[2]);
-    den->Add(numerator[5]);
-    den->Add(numerator[11]);
-    den->Add(numerator[12]);
-    den->Add(numerator[13]);
-    den->Multiply(denominator[5]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[TT]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[WMu]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[QCD]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[WW]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[WZ]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[ZZ]);
+    cout << __LINE__ << endl;
+    den->Multiply(denominator[QCD]);
+    cout << __LINE__ << endl;
 
+    cout << __LINE__ << endl;
     num->Divide(den);
+    cout << __LINE__ << endl;
 
     delete den;
     return num;
@@ -300,29 +338,81 @@ TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 
 TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
 
-    TString name = ( ((TString)(denominator[5]->GetName())).Contains("barrel") ) ? "FR_xsec_barrel" : "FR_xsec_endcap";
+    cout << __LINE__ << endl;
+    TString name = ( ((TString)(denominator[QCD]->GetName())).Contains("barrel") ) ? "FR_xsec_barrel" : "FR_xsec_endcap";
+    cout << __LINE__ << endl;
 
-    TH1D* num = (TH1D*)denominator[0]->Clone(name);
-    TH1D* den = (TH1D*)numerator[0]->Clone(name+"_");
+    cout << __LINE__ << endl;
+    TH1D* num = (TH1D*)denominator[DY1050]->Clone(name);
+    cout << __LINE__ << endl;
+    num->Add(numerator[DY50100]);
+    cout << __LINE__ << endl;
+    num->Add(numerator[DY100200]);
+    cout << __LINE__ << endl;
+    num->Add(numerator[DY200400]);
+    cout << __LINE__ << endl;
+    num->Add(numerator[DY4001000]);
+    cout << __LINE__ << endl;
+    TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY50100]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY100200]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY200400]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[DY4001000]);
+    cout << __LINE__ << endl;
 
-    num->Add(denominator[1]);
-    num->Add(denominator[2]);
-    num->Add(denominator[5]);
-    num->Add(denominator[11]);
-    num->Add(denominator[12]);
-    num->Add(denominator[13]);
-    num->Multiply(numerator[5]);
-    num->Multiply(numerator[6]);
+    cout << __LINE__ << endl;
+    num->Add(denominator[TT]);
+    cout << __LINE__ << endl;
+    num->Add(denominator[WMu]);
+    cout << __LINE__ << endl;
+    cout << num->GetNbinsX() << " " << denominator[QCD]->GetName() << endl;
+    num->Add(denominator[QCD]);
+    cout << __LINE__ << endl;
+    cout << num->GetNbinsX() << " " << denominator[WW]->GetName() << endl;
+    num->Add(denominator[WW]);
+    cout << __LINE__ << endl;
+    num->Add(denominator[WZ]);
+    cout << __LINE__ << endl;
+    num->Add(denominator[ZZ]);
+    cout << __LINE__ << endl;
+    num->Multiply(numerator[QCD]);
+    cout << __LINE__ << endl;
+    TH1D *num_dataAll = (TH1D*) numerator[Data1]->Clone(name+"_tmp");
+    cout << __LINE__ << endl;
+    num_dataAll->Add(numerator[Data2]);
+    cout << __LINE__ << endl;
+    num->Multiply(num_dataAll);
+    cout << __LINE__ << endl;
 
-    den->Add(numerator[1]);
-    den->Add(numerator[2]);
-    den->Add(numerator[5]);
-    den->Add(numerator[11]);
-    den->Add(numerator[12]);
-    den->Add(numerator[13]);
-    den->Multiply(denominator[5]);
-    den->Multiply(denominator[6]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[TT]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[WMu]);
+    cout << __LINE__ << endl;
+    cout << den->GetNbinsX() << " " << numerator[QCD]->GetName() << endl;
+    den->Add(numerator[QCD]);
+    cout << __LINE__ << endl;
+    cout << den->GetNbinsX() << " " << numerator[WW]->GetName() << endl;
+    den->Add(numerator[WW]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[WZ]);
+    cout << __LINE__ << endl;
+    den->Add(numerator[ZZ]);
+    cout << __LINE__ << endl;
+    den->Multiply(denominator[QCD]);
+    cout << __LINE__ << endl;
+    TH1D *den_dataAll = (TH1D*) denominator[Data1]->Clone(name+"_tmp");
+    cout << __LINE__ << endl;
+    den_dataAll->Add(denominator[Data2]);
+    cout << __LINE__ << endl;
+    den->Multiply(den_dataAll);
+    cout << __LINE__ << endl;
 
+    cout << __LINE__ << endl;
     num->Divide(den);
 
     delete den;
