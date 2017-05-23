@@ -98,48 +98,51 @@ void estimateFR() {
        norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
     }
 
-    // EC: what is this??
-    // norm_fit_barrel[0] = 6.0827e+05/denominator_barrel[0]->Integral();
-    // norm_fit_barrel[1] = 1.3244e+05/denominator_barrel[1]->Integral();
-    // norm_fit_barrel[2] = 1.8218e+06/denominator_barrel[2]->Integral();
-    // norm_fit_barrel[5] = 2.7482e+06/denominator_barrel[5]->Integral();
-    // norm_fit_barrel[11] = 4.4531e+03/denominator_barrel[11]->Integral();
-    // norm_fit_barrel[12] = 1.4433e+03/denominator_barrel[12]->Integral();
-    // norm_fit_barrel[13] = 6.3316e+02/denominator_barrel[13]->Integral();
+    // NB: the numbers below are the output of fitTemplate.cc
+    double intDY_barrel=0, intDY_endcap=0;
+    for (int i=DY1050; i<=DY4001000; i++) {
+       intDY_barrel+=denominator_barrel[i];
+       intDY_endcap+=denominator_endcap[i];
+    }
+    for (int i=DY1050; i<=DY4001000; i++) {
+       norm_fit_barrel[i] = 6.0827e+05/intDY_barrel;
+    }
+    norm_fit_barrel[TT] = 1.3244e+05/denominator_barrel[TT]->Integral();
+    norm_fit_barrel[WMu] = 1.8218e+06/denominator_barrel[WMu]->Integral();
+    norm_fit_barrel[QCD] = 2.7482e+06/denominator_barrel[QCD]->Integral();
+    norm_fit_barrel[WW] = 4.4531e+03/denominator_barrel[WW]->Integral();
+    norm_fit_barrel[WZ] = 1.4433e+03/denominator_barrel[WZ]->Integral();
+    norm_fit_barrel[ZZ] = 6.3316e+02/denominator_barrel[ZZ]->Integral();
 
-    // norm_fit_endcap[0] = 4.8779e+05/denominator_endcap[0]->Integral();
-    // norm_fit_endcap[1] = 5.8684e+04/denominator_endcap[1]->Integral();
-    // norm_fit_endcap[2] = 1.4858e+06/denominator_endcap[2]->Integral();
-    // norm_fit_endcap[5] = 1.3886e+06/denominator_endcap[5]->Integral();
-    // norm_fit_endcap[11] = 3.4160e+03/denominator_endcap[11]->Integral();
-    // norm_fit_endcap[12] = 1.0673e+03/denominator_endcap[12]->Integral();
-    // norm_fit_endcap[13] = 4.7170e+02/denominator_endcap[13]->Integral();
+    for (int i=DY1050; i<=DY4001000; i++) {
+       norm_fit_endcap[i] = 4.8779e+05/intDY_barrel;
+    }
+    norm_fit_endcap[TT] = 5.8684e+04/denominator_endcap[TT]->Integral();
+    norm_fit_endcap[WMu] = 1.4858e+06/denominator_endcap[WMu]->Integral();
+    norm_fit_endcap[QCD] = 1.3886e+06/denominator_endcap[QCD]->Integral();
+    norm_fit_endcap[WW] = 3.4160e+03/denominator_endcap[WW]->Integral();
+    norm_fit_endcap[WZ] = 1.0673e+03/denominator_endcap[WZ]->Integral();
+    norm_fit_endcap[ZZ] = 4.7170e+02/denominator_endcap[ZZ]->Integral();
 
     for(int i=0;i<=QCD;i++) {
        if (i==ALL) continue;
        SampleTag tag = static_cast<SampleTag>(i);
-       // denominator_barrel[i]->Scale(norm_fit_barrel[i]);
-       // denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
+       denominator_barrel[i]->Scale(norm_fit_barrel[i]);
+       denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
        denominator_pt_xsec_barrel[i]->Scale(Xsec(tag));
        numerator_pt_barrel[i]->Scale(Xsec(tag));
 
-       // denominator_endcap[i]->Scale(norm_fit_endcap[i]);
-       // denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
+       denominator_endcap[i]->Scale(norm_fit_endcap[i]);
+       denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
        denominator_pt_xsec_endcap[i]->Scale(Xsec(tag));
        numerator_pt_endcap[i]->Scale(Xsec(tag));
     }
 
-    cout << __LINE__ << endl;
     TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
-    cout << __LINE__ << endl;
     TH1D* FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     TH1D* FR_xsec_barrel = (TH1D*)FRBytRatio(numerator_pt_barrel, denominator_pt_xsec_barrel);
-    cout << __LINE__ << endl;
     TH1D* FR_xsec_endcap = (TH1D*)FRBytRatio(numerator_pt_endcap, denominator_pt_xsec_endcap);
-    cout << __LINE__ << endl;
 
     int W = 1200;
     int H = 1200;
@@ -288,49 +291,27 @@ void setMCHist(TH1D* hist, const int& color) {
 
 TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 
-    cout << __LINE__ << endl;
     TString name = ( ((TString)(denominator[QCD]->GetName())).Contains("barrel") ) ? "FR_template_barrel" : "FR_template_endcap";
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     TH1D* num = (TH1D*)numerator[Data1]->Clone(name);
-    cout << __LINE__ << endl;
     num->Add(numerator[Data2]);
-    cout << __LINE__ << endl;
     TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
-    cout << __LINE__ << endl;
     den->Add(numerator[DY50100]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY100200]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY200400]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY4001000]);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     num->Multiply(numerator[QCD]);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     den->Add(numerator[TT]);
-    cout << __LINE__ << endl;
     den->Add(numerator[WMu]);
-    cout << __LINE__ << endl;
     den->Add(numerator[QCD]);
-    cout << __LINE__ << endl;
     den->Add(numerator[WW]);
-    cout << __LINE__ << endl;
     den->Add(numerator[WZ]);
-    cout << __LINE__ << endl;
     den->Add(numerator[ZZ]);
-    cout << __LINE__ << endl;
     den->Multiply(denominator[QCD]);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     num->Divide(den);
-    cout << __LINE__ << endl;
 
     delete den;
     return num;
@@ -338,81 +319,45 @@ TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 
 TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
 
-    cout << __LINE__ << endl;
     TString name = ( ((TString)(denominator[QCD]->GetName())).Contains("barrel") ) ? "FR_xsec_barrel" : "FR_xsec_endcap";
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     TH1D* num = (TH1D*)denominator[DY1050]->Clone(name);
-    cout << __LINE__ << endl;
     num->Add(numerator[DY50100]);
-    cout << __LINE__ << endl;
     num->Add(numerator[DY100200]);
-    cout << __LINE__ << endl;
     num->Add(numerator[DY200400]);
-    cout << __LINE__ << endl;
     num->Add(numerator[DY4001000]);
-    cout << __LINE__ << endl;
     TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
-    cout << __LINE__ << endl;
     den->Add(numerator[DY50100]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY100200]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY200400]);
-    cout << __LINE__ << endl;
     den->Add(numerator[DY4001000]);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     num->Add(denominator[TT]);
-    cout << __LINE__ << endl;
     num->Add(denominator[WMu]);
-    cout << __LINE__ << endl;
     cout << num->GetNbinsX() << " " << denominator[QCD]->GetName() << endl;
     num->Add(denominator[QCD]);
-    cout << __LINE__ << endl;
     cout << num->GetNbinsX() << " " << denominator[WW]->GetName() << endl;
     num->Add(denominator[WW]);
-    cout << __LINE__ << endl;
     num->Add(denominator[WZ]);
-    cout << __LINE__ << endl;
     num->Add(denominator[ZZ]);
-    cout << __LINE__ << endl;
     num->Multiply(numerator[QCD]);
-    cout << __LINE__ << endl;
     TH1D *num_dataAll = (TH1D*) numerator[Data1]->Clone(name+"_tmp");
-    cout << __LINE__ << endl;
     num_dataAll->Add(numerator[Data2]);
-    cout << __LINE__ << endl;
     num->Multiply(num_dataAll);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     den->Add(numerator[TT]);
-    cout << __LINE__ << endl;
     den->Add(numerator[WMu]);
-    cout << __LINE__ << endl;
     cout << den->GetNbinsX() << " " << numerator[QCD]->GetName() << endl;
     den->Add(numerator[QCD]);
-    cout << __LINE__ << endl;
     cout << den->GetNbinsX() << " " << numerator[WW]->GetName() << endl;
     den->Add(numerator[WW]);
-    cout << __LINE__ << endl;
     den->Add(numerator[WZ]);
-    cout << __LINE__ << endl;
     den->Add(numerator[ZZ]);
-    cout << __LINE__ << endl;
     den->Multiply(denominator[QCD]);
-    cout << __LINE__ << endl;
     TH1D *den_dataAll = (TH1D*) denominator[Data1]->Clone(name+"_tmp");
-    cout << __LINE__ << endl;
     den_dataAll->Add(denominator[Data2]);
-    cout << __LINE__ << endl;
     den->Multiply(den_dataAll);
-    cout << __LINE__ << endl;
 
-    cout << __LINE__ << endl;
     num->Divide(den);
 
     delete den;
