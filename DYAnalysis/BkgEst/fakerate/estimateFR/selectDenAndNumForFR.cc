@@ -115,7 +115,7 @@ void selectDenAndNumForFR(SampleTag index)
 
             PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
 
-            if( mu_->acceptance(25,2.4) ) {
+            if( mu_->acceptance(15,2.4) ) {
                 passingMuons->push_back(*mu_);
             }
         }

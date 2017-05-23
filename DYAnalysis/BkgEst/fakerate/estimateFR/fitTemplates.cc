@@ -118,7 +118,7 @@ void fitTemplates(const TString& category)
   	//RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
 
   	//RooFitResult* r = pdf_WJets->fitTo( *RooHist_data, Save() );
-  	RooFitResult* r = model.fitTo( *RooHist_data, Save() );
+     // RooFitResult* r = model.fitTo( *RooHist_data, Save() );
 
   	TCanvas *c_fit = new TCanvas("c_fit", "", 800, 800);
   	c_fit->cd();
@@ -153,7 +153,7 @@ void fitTemplates(const TString& category)
 	RooHist_data->plotOn(frame1, DataError(RooAbsData::SumW2));
 	//model.paramOn(frame1, Layout(0.65,0.9,0.9) );
 	frame1->Draw();
-	r->Print();
+   // r->Print();
 
 	TLegend *leg1 = new TLegend(0.65,0.7,.95,.97);
 	leg1->SetFillColor(kWhite);
