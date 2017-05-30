@@ -372,9 +372,9 @@ double vertexFitChi2(std::vector<NtupleEmu> emus, std::pair<PhysicsElectron,int>
   return chi2;
 }
 
-bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsMuon,PhysicsMuon>* dimuon) {
+bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsMuon,PhysicsMuon>* dimuon, double& chi2min) {
 	bool flag = false;
-	double min = 20;
+	chi2min = 20;
 	pair<PhysicsMuon,int> mu1;
 	pair<PhysicsMuon,int> mu2;
 
@@ -390,9 +390,9 @@ bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<Ntupl
 
 				if(triggerMatch(triggerobjects, mu1.first,"HLT_PAL3Mu12_v")) {
 					if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
-						if(vertexFitChi2(dimuons,mu1,mu2)<min) {
+						if(vertexFitChi2(dimuons,mu1,mu2)<chi2min) {
 							flag = true;
-							min = vertexFitChi2(dimuons,mu1,mu2);
+							chi2min = vertexFitChi2(dimuons,mu1,mu2);
 							dimuon->first = mu1.first;
 							dimuon->second = mu2.first;
 						}
@@ -403,9 +403,9 @@ bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<Ntupl
 	}
 	return flag;
 }
-bool emuDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleEmu> emus, vector<pair<PhysicsElectron,int>>* electrons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsElectron,PhysicsMuon>* emu) {
+bool emuDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleEmu> emus, vector<pair<PhysicsElectron,int>>* electrons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsElectron,PhysicsMuon>* emu, double& chi2min) {
 	bool flag = false;
-	double min = 20;
+	chi2min = 20;
 	pair<PhysicsMuon,int> mu;
 	pair<PhysicsElectron,int> el;
 
@@ -419,9 +419,9 @@ bool emuDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleEm
 			if(!triggerMatch(triggerobjects, mu.first,"HLT_PAL3Mu12_v")) continue;
 
 			if( openingAngle(emus,el,mu)<M_PI-0.005 ) {
-				if( vertexFitChi2(emus,el,mu)<min ) {
+				if( vertexFitChi2(emus,el,mu)<chi2min ) {
 					flag = true;
-					min = vertexFitChi2(emus,el,mu);
+					chi2min = vertexFitChi2(emus,el,mu);
 					emu->first = el.first;
 					emu->second = mu.first;
 				}
