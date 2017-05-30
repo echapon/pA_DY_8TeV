@@ -111,7 +111,7 @@ void selectEmuEvts(SampleTag index)
 				//cout<<mu->pt<<endl;
                 pair<PhysicsMuon,int> taggedmu = {*mu,j};
                 passingMuons->push_back(taggedmu);
-                if(mu->pt > 22) leadingMu = true;
+                if(mu->pt > 15) leadingMu = true;
             } 
         } 
 
@@ -123,7 +123,7 @@ void selectEmuEvts(SampleTag index)
                 totalEl += weight;
                 pair<PhysicsElectron,int> taggedel = {*el,j};
                 passingElectrons->push_back(taggedel);
-                if(el->pt > 25) leadingEl = true;
+                if(el->pt > 15) leadingEl = true;
             } 
         } 
 
@@ -134,7 +134,7 @@ void selectEmuEvts(SampleTag index)
               event->TriggerSelection("HLT_PAL3Mu12_v") ) { //Single electron spectra
             for(unsigned j=0; j!=passingElectrons->size(); j++) { 
                 PhysicsElectron el = passingElectrons->at(j).first;
-                if( el.acceptance(30,2.1) ) { 
+                if( el.acceptance(15,2.1) ) { 
                     el_etSC->Fill(el.etSC,weight);
                     el_etaSC->Fill(el.etaSC,weight);
                     el_phi->Fill(el.phi,weight);
@@ -174,6 +174,22 @@ void selectEmuEvts(SampleTag index)
 
     f->Close();
 
+    // clean behind ourselves
+    if (f) delete f;
+    if (chain) delete chain;
+    if (event) delete event;
+    if (passingMuons) delete passingMuons;
+    if (passingElectrons) delete passingElectrons;
+    if (dimuon) delete dimuon;
+    if (emu) delete emu;
+    if (el_etSC) delete el_etSC;
+    if (el_etaSC) delete el_etaSC;
+    if (el_phi) delete el_phi;
+    if (emu_mass) delete emu_mass;
+    if (emuSS_mass) delete emuSS_mass;
+    if (dimu_mass) delete dimu_mass;
+    if (dimuSS_mass) delete dimuSS_mass;
+
     cout<<"# of emu tries = "<<tryEmu<<endl;
     cout<<"# of passing muons = "<<totalMu<<endl;
     cout<<"# of passing electrons = "<<totalEl<<endl;
@@ -182,4 +198,13 @@ void selectEmuEvts(SampleTag index)
     cout<<"# of OK dimu = "<<okDimu<<endl;
     cout<<"Weighted sum = "<<weightedSum<<endl;
     cout<<"Success"<<endl;
+}
+
+// produce all plots
+void selectEmuEvts() {
+   for (int i=0; i<=QCD; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      if (tag==ALL) continue;
+      selectEmuEvts(tag);
+   }
 }

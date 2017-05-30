@@ -386,7 +386,7 @@ bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<Ntupl
 				mu1 = muons->at(i);
 				mu2 = muons->at(j);
 
-				if( mu1.first.pt<=22 && mu2.first.pt<=22 ) continue;
+				if( mu1.first.pt<=15 && mu2.first.pt<=15 ) continue;
 
 				if(triggerMatch(triggerobjects, mu1.first,"HLT_PAL3Mu12_v")) {
 					if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
@@ -414,7 +414,7 @@ bool emuDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleEm
 			mu = muons->at(i);
 			el = electrons->at(j);
 
-			if( mu.first.pt<=22 && el.first.etSC<=22 ) continue;
+			if( mu.first.pt<=15 && el.first.etSC<=15 ) continue;
 
 			if(!triggerMatch(triggerobjects, mu.first,"HLT_PAL3Mu12_v")) continue;
 
@@ -445,7 +445,7 @@ bool dijetDY(std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* m
 				mu1 = muons->at(i);
 				mu2 = muons->at(j);
 
-				if( mu1.first.pt<=22 && mu2.first.pt<=22 ) continue;
+				if( mu1.first.pt<=15 && mu2.first.pt<=15 ) continue;
 
 				if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
 					if(vertexFitChi2(dimuons,mu1,mu2)<min) {
@@ -467,7 +467,7 @@ bool wjetsDY(std::vector<NtupleDimuon> dimuons, pair<PhysicsMuon,int> mu1, pair<
 	const double min = 20;
 
 
-	if( mu1.first.pt>22 || mu2.first.pt>22 ) {
+	if( mu1.first.pt>15 || mu2.first.pt>15 ) {
 		if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
 			if(vertexFitChi2(dimuons,mu1,mu2)<min) {
 				flag = true;

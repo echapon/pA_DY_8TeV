@@ -43,6 +43,8 @@ void estimateBkg() {
     TFile* file[NSamples];
     for (int i=0; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
 
+    TFile* g = new TFile("result/emu.root","RECREATE");
+
     double norm_part1[NSamples];
     double norm_part2[NSamples];
 
@@ -92,8 +94,8 @@ void estimateBkg() {
 
     // DY M50 + M10to50
     TH1D* emu_DYtautau = emu[DY1050];
-    TH1D* emuSS_DYtautau = emu[DY1050];
-    TH1D* dimu_DYtautau = emu[DY1050];
+    TH1D* emuSS_DYtautau = emuSS[DY1050];
+    TH1D* dimu_DYtautau = dimu[DY1050];
     for (int i=DY50100; i<=DY4001000; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
        emu_DYtautau->Add(emu[tag]);
@@ -193,6 +195,12 @@ void estimateBkg() {
     emu_stackBkg->Add(emu_QCD);
     legend->AddEntry(emu_QCD,"QCD","F");
 
+    TCanvas *c1 = new TCanvas();
+    emu_data->Draw();
+    emu_stackBkg->Draw("same");
+    legend->Draw();
+    c1->SaveAs("plot.pdf");
+
     TH1D* emu_ratio = (TH1D*)emu_data->Clone("emu_ratio");
     emu_ratio->Divide(emu_data,emu_sumBkg,1.0,1.0,"B");
 
@@ -258,28 +266,28 @@ void estimateBkg() {
     // dimu_tW->SetName("tW_MC");
     dimu[WW]->SetName("WW_MC");
 
-    TFile* g = new TFile("result/emu.root","RECREATE");
 
-    data_driven_ttbar->Write();
-    data_driven_DYtautau->Write();
-    // data_driven_tW->Write();
-    data_driven_WW->Write();
+    // data_driven_ttbar->Write();
+    // data_driven_DYtautau->Write();
+    // // data_driven_tW->Write();
+    // data_driven_WW->Write();
 
-    dimu[TT]->Write();
-    dimu_DYtautau->Write();
-    // dimu_tW->Write();
-    dimu[WW]->Write();
+    // dimu[TT]->Write();
+    // dimu_DYtautau->Write();
+    // // dimu_tW->Write();
+    // dimu[WW]->Write();
 
-    ttbar_systematic->Write();
-    DYtautau_systematic->Write();
-    // tW_systematic->Write();
-    WW_systematic->Write();
+    // ttbar_systematic->Write();
+    // DYtautau_systematic->Write();
+    // // tW_systematic->Write();
+    // WW_systematic->Write();
 
-    ttbar_stat->Write();
-    DYtautau_stat->Write();
-    // tW_stat->Write();
-    WW_stat->Write();
+    // ttbar_stat->Write();
+    // DYtautau_stat->Write();
+    // // tW_stat->Write();
+    // WW_stat->Write();
 
+    g->Write();
     g->Close();
 
 }
