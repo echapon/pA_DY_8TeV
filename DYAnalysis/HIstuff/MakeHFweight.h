@@ -22,6 +22,7 @@
 struct HistPack {
    TH1F* h_nVertices;
    TH1F* h_mass;
+   TH1F* h_rap;
    TH1F* h_hiHF;
    TH1F* h_hiHFplus;
    TH1F* h_hiHFminus;

@@ -55,6 +55,7 @@ void MakeHFweight::Loop(HistPack& thepack)
 
    thepack.h_nVertices = new TH1F("h_nVertices_"+thepack.label, "Number of vertices;nPV;Events", 10, 0, 10);
    thepack.h_mass = new TH1F("h_mass_"+thepack.label, "Mass;M_{#mu#mu} [GeV/c^{2}];Events", 100, 70, 110);
+   thepack.h_rap = new TH1F("h_rap_"+thepack.label, "Rapidity;y;Events", 100, -2.4,2.4);
    thepack.h_hiHF = new TH1F("h_hiHF_"+thepack.label, "HF energy;hiHF;Events", 46, bins);
    thepack.h_hiHFplus = new TH1F("h_hiHFplus_"+thepack.label, "HF energy (plus);hiHFplus;Events", 47, binsplus);
    thepack.h_hiHFminus = new TH1F("h_hiHFminus_"+thepack.label, "HF energy (minus);hiHFminus;Events", 32, binsminus);
@@ -90,8 +91,8 @@ void MakeHFweight::Loop(HistPack& thepack)
       if (min(Muon_pT[0],Muon_pT[1])<10) continue;
       if (fabs(Muon_eta[0])>2.4 || fabs(Muon_eta[1])>2.4) continue;
 
-      TLorentzVector mu1; mu1.SetPtEtaPhiM(Muon_pT[0],Muon_eta[0],Muon_phi[0],muon_mass);
-      TLorentzVector mu2; mu2.SetPtEtaPhiM(Muon_pT[1],Muon_eta[1],Muon_phi[1],muon_mass);
+      TLorentzVector mu1; mu1.SetPtEtaPhiM(Muon_pT[0],DYana::runsgn(runNum)*Muon_eta[0],Muon_phi[0],muon_mass);
+      TLorentzVector mu2; mu2.SetPtEtaPhiM(Muon_pT[1],DYana::runsgn(runNum)*Muon_eta[1],Muon_phi[1],muon_mass);
       TLorentzVector mumu = mu1+mu2;
 
       if (mumu.M()<70 || mumu.M()>110) continue;
@@ -107,6 +108,7 @@ void MakeHFweight::Loop(HistPack& thepack)
       // fill histos
       thepack.h_nVertices->Fill(nVertices);
       thepack.h_mass->Fill(mumu.M());
+      thepack.h_rap->Fill(mumu.Rapidity());
       thepack.h_hiHF->Fill(hiHF);
       thepack.h_hiHFplus->Fill(myHFplus);
       thepack.h_hiHFminus->Fill(myHFminus);
@@ -122,6 +124,7 @@ void MakeHFweight::Loop(HistPack& thepack)
    // normalise histos
    thepack.h_nVertices->Scale(1./thepack.h_nVertices->Integral());
    thepack.h_mass->Scale(1./thepack.h_mass->Integral());
+   thepack.h_rap->Scale(1./thepack.h_rap->Integral());
    thepack.h_hiHF->Scale(1./thepack.h_hiHF->Integral());
    thepack.h_hiHFplus->Scale(1./thepack.h_hiHFplus->Integral());
    thepack.h_hiHFminus->Scale(1./thepack.h_hiHFminus->Integral());
