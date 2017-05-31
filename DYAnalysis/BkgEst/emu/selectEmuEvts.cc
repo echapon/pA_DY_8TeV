@@ -185,45 +185,25 @@ void selectEmuEvts(SampleTag index)
     f->Write();
     f->Close();
 
-    cout << __LINE__ << endl;
     // clean behind ourselves
     if (f) delete f;
-    cout << __LINE__ << endl;
     if (chain) delete chain;
-    cout << __LINE__ << endl;
     if (event) delete event;
-    cout << __LINE__ << endl;
     if (passingMuons) delete passingMuons;
-    cout << __LINE__ << endl;
     if (passingElectrons) delete passingElectrons;
-    cout << __LINE__ << endl;
     if (dimuon) delete dimuon;
-    cout << __LINE__ << endl;
     if (emu) delete emu;
-    cout << __LINE__ << endl;
-    cout << el_etSC << endl;
     // if (el_etSC) delete el_etSC;
-    // cout << __LINE__ << endl;
     // if (el_etaSC) delete el_etaSC;
-    // cout << __LINE__ << endl;
     // if (el_phi) delete el_phi;
-    // cout << __LINE__ << endl;
     // if (emu_mass) delete emu_mass;
-    // cout << __LINE__ << endl;
     // if (emuSS_mass) delete emuSS_mass;
-    // cout << __LINE__ << endl;
     // if (dimu_mass) delete dimu_mass;
-    // cout << __LINE__ << endl;
     // if (dimuSS_mass) delete dimuSS_mass;
-    // cout << __LINE__ << endl;
     // if (emu_chi2) delete emu_chi2;
-    // cout << __LINE__ << endl;
     // if (emuSS_chi2) delete emuSS_chi2;
-    // cout << __LINE__ << endl;
     // if (dimu_chi2) delete dimu_chi2;
-    // cout << __LINE__ << endl;
     // if (dimuSS_chi2) delete dimuSS_chi2;
-    // cout << __LINE__ << endl;
 
     cout<<"# of emu tries = "<<tryEmu<<endl;
     cout<<"# of passing muons = "<<totalMu<<endl;
