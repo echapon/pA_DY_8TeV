@@ -37,6 +37,8 @@ void removeNegativeBins( TH1D* hist );
 
 void estimateBkg() {
 
+   setTDRStyle();
+
     // const int binnum = 43;
     // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
 
@@ -45,8 +47,7 @@ void estimateBkg() {
 
     TFile* g = new TFile("result/emu.root","RECREATE");
 
-    double norm_part1[NSamples];
-    double norm_part2[NSamples];
+    double norm[NSamples];
 
     TH1D* emu[NSamples];
     TH1D* emuSS[NSamples];
@@ -54,16 +55,15 @@ void estimateBkg() {
 
     for(int i=0;i<Data1;i++) {
         SampleTag tag = static_cast<SampleTag>(i);
-        norm_part1[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
-        norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
+        norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
 
         emu[i] = (TH1D*)file[i]->Get("emu_mass")->Clone("emu"+TString(Name(tag)));
         emuSS[i] = (TH1D*)file[i]->Get("emuSS_mass")->Clone("emuSS"+TString(Name(tag)));
         dimu[i] = (TH1D*)file[i]->Get("dimu_mass")->Clone("dimu"+TString(Name(tag)));
 
-        emu[i]->Scale(norm_part1[i]);
-        emuSS[i]->Scale(norm_part1[i]);
-        dimu[i]->Scale(norm_part2[i]);
+        emu[i]->Scale(norm[i]);
+        emuSS[i]->Scale(norm[i]);
+        dimu[i]->Scale(norm[i]);
 
         emu[i]->SetFillColor(i+2);
         emuSS[i]->SetFillColor(i+2);
@@ -88,9 +88,9 @@ void estimateBkg() {
     emu_data->SetMarkerSize(3);
     emu_data->SetStats(kFALSE);
 
-    emuSS_data->SetMarkerStyle(33);
-    emuSS_data->SetMarkerSize(3);
-    emuSS_data->SetStats(kFALSE);
+    // emuSS_data->SetMarkerStyle(33);
+    // emuSS_data->SetMarkerSize(3);
+    // emuSS_data->SetStats(kFALSE);
 
     // DY M50 + M10to50
     TH1D* emu_DYtautau = emu[DY1050];
@@ -197,9 +197,9 @@ void estimateBkg() {
 
     TCanvas *c1 = new TCanvas();
     emu_data->Draw();
-    emu_stackBkg->Draw("same");
+    emu_stackBkg->Draw("hist same");
     legend->Draw();
-    c1->SaveAs("plot.pdf");
+    c1->SaveAs("plot.root");
 
     TH1D* emu_ratio = (TH1D*)emu_data->Clone("emu_ratio");
     emu_ratio->Divide(emu_data,emu_sumBkg,1.0,1.0,"B");
