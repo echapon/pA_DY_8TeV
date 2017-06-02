@@ -43,7 +43,7 @@ public:
 
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< Int_t > color;
 
-	Int_t Nfactor_overall;
+	double Nfactor_overall;
 	
 	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg);
 	virtual void SetupHistogramNames();
@@ -244,7 +244,8 @@ Double_t DrawControlPlotTool::Calc_NormFactor()
 {
 	// -- Get histograms: data -- //
 	f_input_Data->cd();
-	TH1D *h_data = (TH1D*)f_input_Data->Get( "h_mass_OS_Data" )->Clone();
+	TH1D *h_data = (TH1D*)f_input_Data->Get( "h_mass_OS_Data1" )->Clone();
+   h_data->Add((TH1D*)f_input_Data->Get( "h_mass_OS_Data2" ));
 
 	// -- Get histograms: MC -- //
 	vector< TH1D* > h_MC;
@@ -295,7 +296,8 @@ void DrawControlPlotTool::NormalizationToLumi( vector< TH1D* > h_MC, TString Var
 	for(Int_t i=0; i<nMC; i++)
 	{
 		Double_t Norm = (Luminosity * Xsec[i]) / nEvents[i];
-		// cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Lumi << "/pb: " << Norm << endl;
+      // cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Luminosity << "/pb: " <<
+         // Norm <<  " = (" << Luminosity << " * " << Xsec[i] << ") / " << nEvents[i] <<  endl;
 		h_MC[i]->Scale( Norm );
 	}
 }
@@ -317,8 +319,8 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		// -- Get a histogram: Data -- //
 		f_input_Data->cd();
       bool found1, found2;
-      found1 = f_input_Data->Get( HistNames[i_hist]+"_Data1" );
-      found2 = f_input_Data->Get( HistNames[i_hist]+"_Data2" );
+      found1 = !Variables[i_hist].Contains("part2") && f_input_Data->Get( HistNames[i_hist]+"_Data1" );
+      found2 = !Variables[i_hist].Contains("part1") && f_input_Data->Get( HistNames[i_hist]+"_Data2" );
       TH1D *h_data = NULL, *h_data1 = NULL, *h_data2 = NULL;
 		if (found1) h_data1 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data1" )->Clone(); 
 		if (found2) h_data2 = (TH1D*)f_input_Data->Get( HistNames[i_hist]+"_Data2" )->Clone(); 
@@ -329,7 +331,6 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
          h_data = h_data1;
          h_data->Add(h_data2);
       } else {
-         cout << __FILE__ << ": " << __LINE__ << " Error, data histogram " << HistNames[i_hist] << " not found!" << endl;
          continue;
       }
 
@@ -407,6 +408,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 
 			hs->Add( h_MC[i_MC] );
 		}
+
 
 		//////////////////////////
 		// -- Set the legend -- //
@@ -505,7 +507,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "DiJet" || Names[i_bkg] == "WE" || Names[i_bkg] == "WMu" || Names[i_bkg] == "WTau" )
+		if( Names[i_bkg] == "QCD" || Names[i_bkg] == "WE" || Names[i_bkg] == "WMu" || Names[i_bkg] == "WTau" )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
