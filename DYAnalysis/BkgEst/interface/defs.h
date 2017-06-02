@@ -57,11 +57,18 @@ namespace DYana {
    // xsec for each process (in pb)
    double Xsec(SampleTag s) {
       switch (s) {
-         case DY1050:    return 208.*8453; break;
-         case DY50100:   return 208.*1321; break;
-         case DY100200:  return 208.*195.5; break;
-         case DY200400:  return 208.*5.94; break;
-         case DY4001000: return 208.*0.356; break;
+         // MCFM
+         case DY1050:    return 208.*4975.42; break;
+         case DY50100:   return 208.*1119.50; break;
+         case DY100200:  return 208.*44.2137; break;
+         case DY200400:  return 208.*1.39947; break;
+         case DY4001000: return 208.*0.114477; break;
+         // // PYTHIA
+         // case DY1050:    return 208.*8453; break;
+         // case DY50100:   return 208.*1321; break;
+         // case DY100200:  return 208.*195.5; break;
+         // case DY200400:  return 208.*5.94; break;
+         // case DY4001000: return 208.*0.356; break;
          case WW:        return 208.*3.728; break;
          case WZ:        return 208.*1.339; break;
          case ZZ:        return 208.*0.5422; break;
