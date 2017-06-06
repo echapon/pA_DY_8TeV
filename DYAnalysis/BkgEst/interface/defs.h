@@ -58,21 +58,25 @@ namespace DYana {
    double Xsec(SampleTag s) {
       switch (s) {
          // MCFM
-         case DY1050:    return 208.*4975.42; break;
-         case DY50100:   return 208.*1119.50; break;
-         case DY100200:  return 208.*44.2137; break;
-         case DY200400:  return 208.*1.39947; break;
-         case DY4001000: return 208.*0.114477; break;
+         case DY1050:    return 3.*208.*4975.42; break; // MCFM only generates p(p/n) and 1 flavour
+         case DY50100:   return 3.*208.*1119.50; break; // MCFM only generates p(p/n) and 1 flavour
+         case DY100200:  return 3.*208.*44.2137; break; // MCFM only generates p(p/n) and 1 flavour
+         case DY200400:  return 3.*208.*1.39947; break; // MCFM only generates p(p/n) and 1 flavour
+         case DY4001000: return 3.*208.*0.114477; break; // MCFM only generates p(p/n) and 1 flavour
+         case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
+         case WZ:        return 3.*(1./10.63e-2)*208.*45.9629e-3; break; // MCFM: p(p/n), W(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
+         case ZZ:        return 3.*3.*208.*18.0587e-3; break; // MCFM only generates p(p/n) and 1 flavour
+         case TT:        return 56.6e3; break; // according to DDE: NNLO (MCFM + Top++, NNPDF3.0+EPS09)
          // // PYTHIA
          // case DY1050:    return 208.*8453; break;
          // case DY50100:   return 208.*1321; break;
          // case DY100200:  return 208.*195.5; break;
          // case DY200400:  return 208.*5.94; break;
          // case DY4001000: return 208.*0.356; break;
-         case WW:        return 208.*3.728; break;
-         case WZ:        return 208.*1.339; break;
-         case ZZ:        return 208.*0.5422; break;
-         case TT:        return 208.*14.42; break;
+         // case WW:        return 208.*3.728; break;
+         // case WZ:        return 208.*1.339; break;
+         // case ZZ:        return 208.*0.5422; break;
+         // case TT:        return 208.*14.42; break;
          case WE:        return 208.*4199; break;
          case WMu:       return 208.*4579; break;
          case WTau:      return 208.*3600; break;
