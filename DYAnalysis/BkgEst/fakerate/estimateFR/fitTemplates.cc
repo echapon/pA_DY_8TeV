@@ -38,7 +38,7 @@ void fitTemplates(const TString& category)
    h_data->Add((TH1D*)file[Data2]->Get( "denominator_" + category ));
 
 	//Convert TH1D to RooDataHist
-	RooRealVar obs("obs", "PFIso/p_{T}", 0, 1);
+	RooRealVar obs("obs", "p_{T}", 0, 1);
 
 	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", obs, h_ttbar);
 	RooDataHist *RooHist_WJets = new RooDataHist("RooHist_WJets", "RooHistogram_WJets", obs, h_WJets);
@@ -115,10 +115,10 @@ void fitTemplates(const TString& category)
 	RooRealVar n_WZ("n_WZ", "n_WZ", N_WZ, 0.1*N_WZ, N_WZ*10);
 	RooRealVar n_ZZ("n_ZZ", "n_ZZ", N_ZZ, 0.1*N_ZZ, N_ZZ*10);
   	RooAddPdf model( "model","model",RooArgList(*pdf_QCD, *pdf_WJets, *pdf_DYJets, *pdf_ttbar, *pdf_WW, *pdf_WZ, *pdf_ZZ), RooArgList(n_QCD, n_WJets, n_DYJets, n_ttbar, n_WW, n_WZ, n_ZZ) );
-  	//RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
+     // RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
 
-  	//RooFitResult* r = pdf_WJets->fitTo( *RooHist_data, Save() );
-     // RooFitResult* r = model.fitTo( *RooHist_data, Save() );
+   // RooFitResult* r = pdf_WJets->fitTo( *RooHist_data, Save() );
+   RooFitResult* r = model.fitTo( *RooHist_data, Save() );
 
   	TCanvas *c_fit = new TCanvas("c_fit", "", 800, 800);
   	c_fit->cd();
@@ -153,7 +153,7 @@ void fitTemplates(const TString& category)
 	RooHist_data->plotOn(frame1, DataError(RooAbsData::SumW2));
 	//model.paramOn(frame1, Layout(0.65,0.9,0.9) );
 	frame1->Draw();
-   // r->Print();
+   r->Print();
 
 	TLegend *leg1 = new TLegend(0.65,0.7,.95,.97);
 	leg1->SetFillColor(kWhite);

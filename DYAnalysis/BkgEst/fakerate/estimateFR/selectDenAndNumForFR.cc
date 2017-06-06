@@ -28,6 +28,7 @@
 #include <vector>
 #include "../../interface/analysis.h"
 #include "../../interface/defs.h"
+#include "../../../HIstuff/HFweight.h"
 
 using namespace std;
 using namespace DYana;
@@ -39,6 +40,8 @@ void selectDenAndNumForFR(SampleTag index)
     PhysicsEvent* event = new PhysicsEvent();
     vector<PhysicsMuon>* passingMuons = new vector<PhysicsMuon>;
 
+    // the tool for HF reweighting
+    HFweight hfTool;
 
     TFile* f = new TFile("histograms/histFR"+TString(Name(index))+".root","RECREATE");
     TH1D* denominator_pt = new TH1D("denominator_pt","",ptbinnum,ptbin); 
@@ -102,6 +105,7 @@ void selectDenAndNumForFR(SampleTag index)
         chain->GetEntry(i);
         if(mc) {
             wt = event->weight;
+            wt = wt * hfTool.weight(event->hiHFminus,HFweight::minus,true);
             wtsum += wt;
         }
         cnt[0]++;

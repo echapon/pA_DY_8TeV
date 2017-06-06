@@ -56,8 +56,7 @@ void estimateFR() {
     TH1D* denominator_barrel[NSamples+2];
     TH1D* denominator_endcap[NSamples+2];
 
-    double norm_part1[NSamples+2];
-    double norm_part2[NSamples+2];
+    double norm_all[NSamples+2];
     double norm_fit_barrel[NSamples+2];
     double norm_fit_endcap[NSamples+2];
 
@@ -94,48 +93,47 @@ void estimateFR() {
           setMCHist( numerator_pt_endcap[i], i );
        }
 
-       norm_part1[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
-       norm_part2[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
+       norm_all[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
     }
 
     // NB: the numbers below are the output of fitTemplate.cc
     double intDY_barrel=0, intDY_endcap=0;
     for (int i=DY1050; i<=DY4001000; i++) {
-       intDY_barrel+=denominator_barrel[i];
-       intDY_endcap+=denominator_endcap[i];
+       intDY_barrel+=denominator_barrel[i]->Integral();
+       intDY_endcap+=denominator_endcap[i]->Integral();
     }
     for (int i=DY1050; i<=DY4001000; i++) {
-       norm_fit_barrel[i] = 6.0827e+05/intDY_barrel;
+       norm_fit_barrel[i] = 1.8340e+04/intDY_barrel;
     }
-    norm_fit_barrel[TT] = 1.3244e+05/denominator_barrel[TT]->Integral();
-    norm_fit_barrel[WMu] = 1.8218e+06/denominator_barrel[WMu]->Integral();
-    norm_fit_barrel[QCD] = 2.7482e+06/denominator_barrel[QCD]->Integral();
-    norm_fit_barrel[WW] = 4.4531e+03/denominator_barrel[WW]->Integral();
-    norm_fit_barrel[WZ] = 1.4433e+03/denominator_barrel[WZ]->Integral();
-    norm_fit_barrel[ZZ] = 6.3316e+02/denominator_barrel[ZZ]->Integral();
+    norm_fit_barrel[TT] = 1.5495e+04/denominator_barrel[TT]->Integral();
+    norm_fit_barrel[WMu] = 8.3640e+04/denominator_barrel[WMu]->Integral();
+    norm_fit_barrel[QCD] = 1.4770e+05/denominator_barrel[QCD]->Integral();
+    norm_fit_barrel[WW] = 7.1414e+02/denominator_barrel[WW]->Integral();
+    norm_fit_barrel[WZ] = 1.8417e+02/denominator_barrel[WZ]->Integral();
+    norm_fit_barrel[ZZ] = 1.4233e+01/denominator_barrel[ZZ]->Integral();
 
     for (int i=DY1050; i<=DY4001000; i++) {
-       norm_fit_endcap[i] = 4.8779e+05/intDY_barrel;
+       norm_fit_endcap[i] = 1.4295e+04/intDY_barrel;
     }
-    norm_fit_endcap[TT] = 5.8684e+04/denominator_endcap[TT]->Integral();
-    norm_fit_endcap[WMu] = 1.4858e+06/denominator_endcap[WMu]->Integral();
-    norm_fit_endcap[QCD] = 1.3886e+06/denominator_endcap[QCD]->Integral();
-    norm_fit_endcap[WW] = 3.4160e+03/denominator_endcap[WW]->Integral();
-    norm_fit_endcap[WZ] = 1.0673e+03/denominator_endcap[WZ]->Integral();
-    norm_fit_endcap[ZZ] = 4.7170e+02/denominator_endcap[ZZ]->Integral();
+    norm_fit_endcap[TT] = 7.5868e+03/denominator_endcap[TT]->Integral();
+    norm_fit_endcap[WMu] = 8.4252e+04/denominator_endcap[WMu]->Integral();
+    norm_fit_endcap[QCD] = 1.0105e+05/denominator_endcap[QCD]->Integral();
+    norm_fit_endcap[WW] = 5.6528e+02/denominator_endcap[WW]->Integral();
+    norm_fit_endcap[WZ] = 1.4257e+02/denominator_endcap[WZ]->Integral();
+    norm_fit_endcap[ZZ] = 1.0795e+01/denominator_endcap[ZZ]->Integral();
 
     for(int i=0;i<=QCD;i++) {
        if (i==ALL) continue;
        SampleTag tag = static_cast<SampleTag>(i);
        denominator_barrel[i]->Scale(norm_fit_barrel[i]);
        denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
-       denominator_pt_xsec_barrel[i]->Scale(Xsec(tag));
-       numerator_pt_barrel[i]->Scale(Xsec(tag));
+       denominator_pt_xsec_barrel[i]->Scale(norm_all[i]);
+       numerator_pt_barrel[i]->Scale(norm_all[i]);
 
        denominator_endcap[i]->Scale(norm_fit_endcap[i]);
        denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
-       denominator_pt_xsec_endcap[i]->Scale(Xsec(tag));
-       numerator_pt_endcap[i]->Scale(Xsec(tag));
+       denominator_pt_xsec_endcap[i]->Scale(norm_all[i]);
+       numerator_pt_endcap[i]->Scale(norm_all[i]);
     }
 
     TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
@@ -216,8 +214,8 @@ void estimateFR() {
   
 
     TLegend* legend2 = new TLegend(.45,.65,.75,.89);
-    legend2->AddEntry(FR_template_barrel,"Template fitting");
-    legend2->AddEntry(FR_xsec_barrel,"Ratio method");
+    legend2->AddEntry(FR_template_barrel,"Template fitting","lp");
+    legend2->AddEntry(FR_xsec_barrel,"Ratio method","lp");
     legend2->SetBorderSize(0);
 
     ptFrame->Draw();
@@ -225,8 +223,8 @@ void estimateFR() {
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    FR_template_barrel->Draw("EPSAME");
-    FR_xsec_barrel->Draw("EPSAME");
+    FR_template_barrel->Draw("");
+    FR_xsec_barrel->Draw("same");
     legend2->Draw("SAME");
     canv->Print("print/FR_Barrel.pdf");
 
@@ -236,8 +234,8 @@ void estimateFR() {
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    FR_template_endcap->Draw("EPSAME");
-    FR_xsec_endcap->Draw("EPSAME");
+    FR_template_endcap->Draw("");
+    FR_xsec_endcap->Draw("same");
     legend2->Draw("SAME");
     canv->Print("print/FR_Endcap.pdf");
 
@@ -334,9 +332,7 @@ TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
 
     num->Add(denominator[TT]);
     num->Add(denominator[WMu]);
-    cout << num->GetNbinsX() << " " << denominator[QCD]->GetName() << endl;
     num->Add(denominator[QCD]);
-    cout << num->GetNbinsX() << " " << denominator[WW]->GetName() << endl;
     num->Add(denominator[WW]);
     num->Add(denominator[WZ]);
     num->Add(denominator[ZZ]);
@@ -347,9 +343,7 @@ TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
 
     den->Add(numerator[TT]);
     den->Add(numerator[WMu]);
-    cout << den->GetNbinsX() << " " << numerator[QCD]->GetName() << endl;
     den->Add(numerator[QCD]);
-    cout << den->GetNbinsX() << " " << numerator[WW]->GetName() << endl;
     den->Add(numerator[WW]);
     den->Add(numerator[WZ]);
     den->Add(numerator[ZZ]);
