@@ -198,6 +198,7 @@ void estimateBkg() {
     TCanvas *c1 = new TCanvas();
     emu_data->Draw();
     emu_stackBkg->Draw("hist same");
+    emu_data->Draw("same");
     legend->Draw();
     c1->SaveAs("plot.root");
 
