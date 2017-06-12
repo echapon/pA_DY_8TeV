@@ -26,35 +26,19 @@
 #include <sstream>
 #include <iomanip>
 #include <vector>
-#include "../interface/analysis.h"
+#include "../../interface/analysis.h"
+#include "../../interface/defs.h"
 using namespace std;
+using namespace DYana;
 
-void applyFR(int index) {
+void applyFR(SampleTag index) {
 
     cout<<"Chain"<<endl;
     bool mc = false;
     PhysicsEvent* event = new PhysicsEvent();
-    TChain* chain = new TChain("tree/physicsTree");
-    if(index==-1) {
-        chain->Add("/data4/Users/knam/13TeV/76X_38T/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns/MuonPhys/Run2015C_25ns-16Dec2015-v1/*.root");
-        chain->Add("/data4/Users/knam/13TeV/76X_38T/Cert_13TeV_16Dec2015ReReco_Collisions15_25ns/MuonPhys/Run2015D-16Dec2015-v1/*.root");
-    }
-    else {
-        mc = true;
-        if(index==0) chain->Add("/data4/Users/knam/13TeV/76X_v1/DYJetsToLL_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/M-50_ext4/*.root");
-        else if(index==100) chain->Add("/data4/Users/knam/13TeV/76X_v1/DYJetsToLL_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/M-10to50/*.root");
-        else if(index==1) chain->Add("/data4/Users/knam/13TeV/76X_v1/TT_TuneCUETP8M1_13TeV-amcatnlo-pythia8/*.root");
-        else if(index==2) chain->Add("/data4/Users/knam/13TeV/76X_v1/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/*.root");
-        else if(index==11) chain->Add("/data4/Users/knam/13TeV/76X_v1/WW_TuneCUETP8M1_13TeV-pythia8/*.root");
-        else if(index==12) chain->Add("/data4/Users/knam/13TeV/76X_v1/WZ_TuneCUETP8M1_13TeV-pythia8/*.root");
-        else if(index==13) chain->Add("/data4/Users/knam/13TeV/76X_v1/ZZ_TuneCUETP8M1_13TeV-pythia8/*.root");
-        else if(index==14) chain->Add("/data4/Users/knam/13TeV/76X_v1/ST_tW_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/top/*.root");
-        else if(index==15) chain->Add("/data4/Users/knam/13TeV/76X_v1/ST_tW_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/antitop/*.root");
-        else {
-            cout<<"Wrong input"<<endl;
-            return;
-        }
-    }
+    TChain* chain = new TChain("kwtuple/physicsTree");
+    bool isData = IsData(index);;
+    chain->Add(PathTuple(index));
     chain->SetBranchAddress("event",&event);  
     cout<<"# of events = "<<chain->GetEntries()<<endl;
 
@@ -62,8 +46,10 @@ void applyFR(int index) {
     vector<pair<PhysicsMuon,int>>* failingMuons = new vector<pair<PhysicsMuon,int>>;
     pair<PhysicsMuon,PhysicsMuon>* tempMuons = new pair<PhysicsMuon,PhysicsMuon>;
 
-    int binnum = 43;
-    double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
+    // int binnum = 43;
+    // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
+
+    TFile* f = new TFile("histograms/fake"+TString(Name(index))+".root","RECREATE");
 
     TH1D* histDijet1 = new TH1D("histDijet1","",binnum,bins);
     TH1D* histDijet2 = new TH1D("histDijet2","",binnum,bins);
@@ -255,39 +241,17 @@ void applyFR(int index) {
         } 
     }
 
-    if(index==-1) index=6;
-    TFile* f = new TFile("histograms/fake"+TString::Itoa(index,10)+".root","RECREATE");
 
-    histDijet1->Write();
-    histDijet2->Write();
-    histWJets1->Write();
-    histWJets2->Write();
-    fitDijet1->Write();
-    fitDijet2->Write();
-    fitWJets1->Write();
-    fitWJets2->Write();
-    rapDijet1->Write();
-    rapDijet2->Write();
-    rapWJets1->Write();
-    rapWJets2->Write();
-
-    histSameDijet1->Write();
-    histSameDijet2->Write();
-    histSameWJets1->Write();
-    histSameWJets2->Write();
-    fitSameDijet1->Write();
-    fitSameDijet2->Write();
-    fitSameWJets1->Write();
-    fitSameWJets2->Write();
-    rapSameDijet1->Write();
-    rapSameDijet2->Write();
-    rapSameWJets1->Write();
-    rapSameWJets2->Write();
-
-    histPass->Write();
-    histFail->Write();
-
+    f->Write();
     f->Close();
+
+    // clean behind ourselves
+    if (f) delete f;
+    if (chain) delete chain;
+    if (event) delete event;
+    if (passingMuons) delete passingMuons;
+    if (failingMuons) delete failingMuons;
+    if (tempMuons) delete tempMuons;
 
     cout<<"# of passing muons = "<<nPass<<endl;
     cout<<"# of failing muons = "<<nFail<<endl;
@@ -298,4 +262,14 @@ void applyFR(int index) {
 
     cout<<"Success"<<endl;
     cout<<wtsum<<endl;
+}
+
+// produce all plots
+void applyFR() {
+   for (int i=0; i<=QCD; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      if (tag==ALL) continue;
+      cout << Name(tag) << endl;
+      applyFR(tag);
+   }
 }
