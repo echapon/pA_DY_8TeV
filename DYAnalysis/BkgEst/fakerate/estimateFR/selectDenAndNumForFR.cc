@@ -110,7 +110,7 @@ void selectDenAndNumForFR(SampleTag index)
         }
         cnt[0]++;
 
-        if(!event->TriggerSelection("HLT_PAL3Mu12_v") ) continue;
+        if(!event->TriggerSelection(cuts::trig) ) continue;
         cnt[1]++;
 
         passingMuons->clear();
@@ -119,7 +119,7 @@ void selectDenAndNumForFR(SampleTag index)
 
             PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
 
-            if( mu_->acceptance(15,2.4) ) {
+            if( mu_->acceptance(cuts::ptmin1,cuts::etamax) ) {
                 passingMuons->push_back(*mu_);
             }
         }
@@ -148,7 +148,7 @@ void selectDenAndNumForFR(SampleTag index)
                 denominator_pt_endcap->Fill(pt,wt);
             } 
 
-            if( !mu.isolation(0.15) ) continue; 
+            if( !mu.isolation(cuts::isomax) ) continue; 
             cnt[4]++;
 
             numerator_pt->Fill(pt,wt);

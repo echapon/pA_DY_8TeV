@@ -66,20 +66,8 @@ void applyFR(SampleTag index) {
     TH1D* rapSameDijet1 = new TH1D("rapSameDijet1","",48,-2.4,2.4);
     TH1D* rapSameDijet2 = new TH1D("rapSameDijet2","",48,-2.4,2.4);
 
-    histDijet1->Sumw2();
-    histDijet2->Sumw2();
-    histSameDijet1->Sumw2();
-    histSameDijet2->Sumw2();
 
-    fitDijet1->Sumw2();
-    fitDijet2->Sumw2();
-    fitSameDijet1->Sumw2();
-    fitSameDijet2->Sumw2();
 
-    rapDijet1->Sumw2();
-    rapDijet2->Sumw2();
-    rapSameDijet1->Sumw2();
-    rapSameDijet2->Sumw2();
 
     TH1D* histWJets1 = new TH1D("histWJets1","",binnum,bins);
     TH1D* histWJets2 = new TH1D("histWJets2","",binnum,bins);
@@ -99,20 +87,10 @@ void applyFR(SampleTag index) {
     TH1D* histPass = new TH1D("histPass","",10,0,10);
     TH1D* histFail = new TH1D("histFail","",10,0,10);
 
-    histWJets1->Sumw2();
-    histWJets2->Sumw2();
-    histSameWJets1->Sumw2();
-    histSameWJets2->Sumw2();
 
-    fitWJets1->Sumw2();
-    fitWJets2->Sumw2();
-    fitSameWJets1->Sumw2();
-    fitSameWJets2->Sumw2();
+    initFRhistos();
 
-    rapWJets1->Sumw2();
-    rapWJets2->Sumw2();
-    rapSameWJets1->Sumw2();
-    rapSameWJets2->Sumw2();
+
 
     double pt = 0;
     double eta = 0;
@@ -146,10 +124,10 @@ void applyFR(SampleTag index) {
 
         for(unsigned j=0; j!=event->muons.size(); j++) {
             PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
-            if( mu_->highPtMuonID() && mu_->acceptance(10,2.4) ) {
-                if( mu_->pt > 22 ) leading = true;
+            if( mu_->tightMuonID() && mu_->acceptance(cuts::ptmin2,cuts::etamax) ) {
+                if( mu_->pt > cuts::ptmin1 ) leading = true;
 
-                if( mu_->isolation(0.1) ) passingMuons->push_back({*mu_,j});
+                if( mu_->isolation(cuts::isomax) ) passingMuons->push_back({*mu_,j});
                 else failingMuons->push_back({*mu_,j});        
             }
         }
@@ -185,7 +163,7 @@ void applyFR(SampleTag index) {
                 rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
 
                 if( sign < 0 ) {
-                    if( mass > 15 && mass < 3000) {
+                    if( mass > bins[0] && mass < bins[binnum-1]) {
                     	histDijet1->Fill(mass, weight_template);
                     	histDijet2->Fill(mass, weight_ratio);
                     	fitDijet1->Fill(mass, weight_template);
@@ -195,7 +173,7 @@ void applyFR(SampleTag index) {
                     }
                 }
                 else {
-                    if( mass > 15 && mass < 3000) {
+                    if( mass > bins[0] && mass < bins[binnum-1]) {
                     	histSameDijet1->Fill(mass, weight_template);
                     	histSameDijet2->Fill(mass, weight_ratio);
                     	fitSameDijet1->Fill(mass, weight_template);
@@ -218,7 +196,7 @@ void applyFR(SampleTag index) {
                 rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
 
                 if( sign < 0 ) {
-                    if( mass > 15 && mass < 3000) {
+                    if( mass > bins[0] && mass < bins[binnum-1]) {
                     	histWJets1->Fill(mass, weight_template);
                     	histWJets2->Fill(mass, weight_ratio);
                     	fitWJets1->Fill(mass, weight_template);
@@ -228,7 +206,7 @@ void applyFR(SampleTag index) {
                     }
                 }
                 else {
-                    if( mass > 15 && mass < 3000) {
+                    if( mass > bins[0] && mass < bins[binnum-1]) {
                     	histSameWJets1->Fill(mass, weight_template);
                     	histSameWJets2->Fill(mass, weight_ratio);
                     	fitSameWJets1->Fill(mass, weight_template);
