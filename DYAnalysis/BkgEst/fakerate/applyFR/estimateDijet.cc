@@ -80,188 +80,131 @@ void estimateDijet() {
     TH1D* dijetSS_template[NSamples+2];
     TH1D* dijet_ratio[NSamples+2];
     TH1D* dijetSS_ratio[NSamples+2];
-
-    // WTF 5 index??
-    dijet_template[5] = (TH1D*)f[Data1]->Get("histDijet1");
-    dijet_template[5]->Add((TH1D*)f[Data2]->Get("histDijet1"));
-    dijet_template[5]->SetFillColor(7);
-    dijet_template[5]->SetStats(kFALSE);
-    dijet_template[5]->Sumw2();
-
-    dijetSS_template[5] = (TH1D*)f[Data1]->Get("histSameDijet1");
-    dijetSS_template[5]->Add((TH1D*)f[Data2]->Get("histSameDijet1"));
-    dijetSS_template[1] = (TH1D*)f[DY1050]->Get("histSameDijet1");
-    dijetSS_template[1] = (TH1D*)f[DY1050]->Get("histSameDijet1");
-    for (int i=DY50100; i<=DY4001000; i++) {
-       dijetSS_template[1]->Add((TH1D*)f[i]->Get("histSameDijet1"));
-    }
-    dijetSS_template[5]->SetLineColor(1);
-    dijetSS_template[5]->SetMarkerColor(1);
-    dijetSS_template[5]->SetMarkerStyle(22);
-    dijetSS_template[5]->SetMarkerSize(3);
-    dijetSS_template[5]->SetStats(kFALSE);
-    dijetSS_template[5]->Sumw2();
-
-    /////////
-    wjets_template[0] = (TH1D*)f[DY1050]->Get("histWJets1");
-    for (int i=DY50100; i<=DY4001000; i++) {
-       wjets_template[0]->Add((TH1D*)f[i]->Get("histWJets1"));
-    }
-    wjets_template[0]->SetFillColor(2);
-    wjets_template[0]->SetStats(kFALSE);
-    wjets_template[0]->Sumw2();
-
-    wjets_template[1] = (TH1D*)f[TT]->Get("histWJets1");
-    wjets_template[1]->SetFillColor(3);
-    wjets_template[1]->SetStats(kFALSE);
-    wjets_template[1]->Sumw2();
-    /////////
-
-    dijet_template[0] = (TH1D*)f[DY1050]->Get("histDijet1");
-    for (int i=DY50100; i<=DY4001000; i++) {
-       dijet_template[0]->Add((TH1D*)f[i]->Get("histSameDijet1"));
-    }
-    dijet_template[0]->SetFillColor(2);
-    dijet_template[0]->SetStats(kFALSE);
-    dijet_template[0]->Sumw2();
-
-    dijet_template[1] = (TH1D*)f[TT]->Get("histDijet1");
-    dijet_template[1]->SetFillColor(3);
-    dijet_template[1]->SetStats(kFALSE);
-    dijet_template[1]->Sumw2();
-    cout<<"ttbar OS before = "<<dijet_template[1]->Integral()<<endl;
-    cout<<"ttbar SS before = "<<dijetSS_template[1]->Integral()<<endl;
-
-    dijet_ratio[5] = (TH1D*)f[Data1]->Get("histDijet2");
-    dijet_ratio[5]->Add((TH1D*)f[Data2]->Get("histDijet2"));
-    dijet_ratio[5]->SetFillColor(7);
-    dijet_ratio[5]->SetStats(kFALSE);
-    dijet_ratio[5]->Sumw2();
-
-    dijetSS_ratio[5] = (TH1D*)f[Data1]->Get("histSameDijet2");
-    dijetSS_ratio[5]->Add((TH1D*)f[Data1]->Get("histSameDijet2"));
-    dijetSS_ratio[1] = (TH1D*)f[TT]->Get("histSameDijet2");
-    dijetSS_ratio[5]->SetLineColor(1);
-    dijetSS_ratio[5]->SetMarkerColor(1);
-    dijetSS_ratio[5]->SetMarkerStyle(22);
-    dijetSS_ratio[5]->SetMarkerSize(3);
-    dijetSS_ratio[5]->SetStats(kFALSE);
-    dijetSS_ratio[5]->Sumw2();
-
-    dijet_ratio[0] = (TH1D*)f[DY1050]->Get("histDijet2");
-    for (int i=DY50100; i<=DY4001000; i++) {
-       dijet_ratio[0]->Add((TH1D*)f[i]->Get("histDijet2"));
-    }
-    dijet_ratio[0]->SetFillColor(2);
-    dijet_ratio[0]->SetStats(kFALSE);
-    dijet_ratio[0]->Sumw2();
-
-    dijet_ratio[1] = (TH1D*)f[TT]->Get("histDijet2");
-    dijet_ratio[1]->SetFillColor(3);
-    dijet_ratio[1]->SetStats(kFALSE);
-    dijet_ratio[1]->Sumw2();
-
-
     double norm[NSamples+2];
-    for(int i=0;i<=QCD;i++) {
-       if (i==ALL) continue;
+
+    for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
        norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
-       cout<<norm[i]<<endl;
-    }
-    ////
-    wjets_template[0]->Scale(norm[0]); // DY
-    wjets_template[3]->Scale(norm[3]); // DY
-    wjets_template[0]->Add(wjets_template[3]); //DY
-    wjets_template[1]->Scale(norm[1]); // ttbar
-    ////
+       cout<< "norm[" << i << "] = " << norm[i]<<endl;
 
-    dijet_template[0]->Scale(norm[0]); // DY
-    dijet_template[3]->Scale(norm[3]); // DY
-    dijet_template[0]->Add(dijet_template[3]); // DY
-    dijet_template[1]->Scale(norm[1]); // ttbar
-    dijet_ratio[0]->Scale(norm[0]); // DY
-    dijet_ratio[3]->Scale(norm[3]); // DY
-    dijet_ratio[0]->Add(dijet_ratio[3]);
-    dijet_ratio[1]->Scale(norm[1]);
-    cout<<"DY(template): "<<dijet_template[0]->Integral()<<endl;
-    cout<<"DY(ratio): "<<dijet_template[0]->Integral()<<endl;
+       dijet_template[i] = (TH1D*)f[i]->Get("histDijet1");
+       dijet_template[i]->Scale(norm[i]);
+       dijet_template[i]->SetStats(kFALSE);
+
+       dijetSS_template[i] = (TH1D*)f[i]->Get("histSameDijet1");
+       dijetSS_template[i]->Scale(norm[i]);
+       dijetSS_template[i]->SetStats(kFALSE);
+
+       wjets_template[i] = (TH1D*)f[i]->Get("histWJets1");
+       wjets_template[i]->Scale(norm[i]);
+       wjets_template[i]->SetStats(kFALSE);
+
+       dijet_ratio[i] = (TH1D*)f[i]->Get("histDijet2");
+       dijet_ratio[i]->Scale(norm[i]);
+       dijet_ratio[i]->SetStats(kFALSE);
+
+       dijetSS_ratio[i] = (TH1D*)f[i]->Get("histSameDijet2");
+       dijetSS_ratio[i]->Scale(norm[i]);
+       dijetSS_ratio[i]->SetStats(kFALSE);
+
+       // put histos in an array for easy style setting
+       TH1D* h[5] = {dijet_template[i], dijetSS_template[i], wjets_template[i], dijet_ratio[i], dijetSS_ratio[i]};
+       for (int j=0; j<5; j++) {
+          h[j]->GetXaxis()->SetTitle("Mass[GeV]");
+          h[j]->GetYaxis()->SetTitleOffset(1.5);
+          h[j]->GetYaxis()->SetTitle("Number of events");
+          //h[j]->GetXaxis()->SetTitleSize(0.032);
+          //h[j]->GetYaxis()->SetTitleSize(0.032);
+          h[j]->GetXaxis()->SetLabelSize(0.025);
+          h[j]->GetYaxis()->SetLabelSize(0.025);
+          h[j]->GetXaxis()->SetMoreLogLabels();
+
+          // remove negative bins
+          for(int k=1; k<binnum+3; k++) {
+             if(h[j]->GetBinContent(i) < 0) {
+                h[j]->SetBinContent(k,0.0);
+                h[j]->SetBinError(k,0.0);
+             }
+          }
+       } // j loop on histos
+
+       // add histos together
+       bool toadd = false;
+       SampleTag tagtoadd;
+       if (IsDY(tag)) {
+          // style 
+          for (int j=0; j<5; j++) {
+             h[j]->SetFillColor(2);
+             // h[j]->SetmarkerColor(2);
+             // h[j]->SetmarkerStyle(22);
+          }
+
+          if (tag != DY1050) {
+             toadd = true;
+             tagtoadd = DY1050;
+          }
+       }
+       if (IsData(tag)) {
+          // style 
+          for (int j=0; j<5; j++) {
+             h[j]->SetLineColor(1);
+             h[j]->SetMarkerColor(1);
+             h[j]->SetMarkerStyle(22);
+          }
+
+          if (tag != Data1) {
+             toadd = true;
+             tagtoadd = Data1;
+          }
+       }
+       if (IsDiboson(tag)) {
+          // style 
+          for (int j=0; j<5; j++) {
+             h[j]->SetFillColor(3);
+          }
+
+          if (tag != WW) {
+             toadd = true;
+             tagtoadd = WW;
+          }
+       }
+       if (IsWjets(tag)) {
+          // style 
+          for (int j=0; j<5; j++) {
+             h[j]->SetFillColor(4);
+          }
+
+          if (tag != WE) {
+             toadd = true;
+             tagtoadd = WE;
+          }
+       }
+       if (tag==TT) {
+          for (int j=0; j<5; j++) {
+             h[j]->SetFillColor(6);
+          }
+       }
+
+       if (toadd) {
+          dijet_template[tagtoadd]->Add(dijet_template[i]);
+          dijetSS_template[tagtoadd]->Add(dijetSS_template[i]);
+          wjets_template[tagtoadd]->Add(wjets_template[i]);
+          dijet_ratio[tagtoadd]->Add(dijet_ratio[i]);
+          dijetSS_ratio[tagtoadd]->Add(dijetSS_ratio[i]);
+       }
+    } // sample loop
+
+    cout<<"ttbar OS before = "<<dijet_template[TT]->Integral()<<endl;
+    cout<<"ttbar SS before = "<<dijetSS_template[TT]->Integral()<<endl;
+
+    cout<<"DY(template): "<<dijet_template[DY1050]->Integral()<<endl;
+    cout<<"DY(ratio): "<<dijet_template[DY1050]->Integral()<<endl;
 
     setTDRStyle();
     tdrGrid(true);
 
     lumiTextSize = 0.6;
     cmsTextSize = 1.0;
-
-    dijet_template[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_template[5]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_template[5]->GetYaxis()->SetTitle("Number of events");
-    //dijet_template[5]->GetXaxis()->SetTitleSize(0.032);
-    //dijet_template[5]->GetYaxis()->SetTitleSize(0.032);
-    dijet_template[5]->GetXaxis()->SetLabelSize(0.025);
-    dijet_template[5]->GetYaxis()->SetLabelSize(0.025);
-    dijet_template[5]->GetXaxis()->SetMoreLogLabels(); 
-
-    dijetSS_template[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijetSS_template[5]->GetYaxis()->SetTitleOffset(1.5);
-    dijetSS_template[5]->GetYaxis()->SetTitle("Number of events");
-    //dijetSS_template[5]->GetXaxis()->SetTitleSize(0.032);
-    //dijetSS_template[5]->GetYaxis()->SetTitleSize(0.032);
-    dijetSS_template[5]->GetXaxis()->SetLabelSize(0.025);
-    dijetSS_template[5]->GetYaxis()->SetLabelSize(0.025);
-    dijetSS_template[5]->GetXaxis()->SetMoreLogLabels();
-
-    dijet_template[0]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_template[0]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_template[0]->GetYaxis()->SetTitle("Number of events");
-    //dijet_template[0]->GetXaxis()->SetTitleSize(0.032);
-    //dijet_template[0]->GetYaxis()->SetTitleSize(0.032);
-    dijet_template[0]->GetXaxis()->SetLabelSize(0.025);
-    dijet_template[0]->GetYaxis()->SetLabelSize(0.025);
-    dijet_template[0]->GetXaxis()->SetMoreLogLabels(); 
-
-    dijet_template[1]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_template[1]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_template[1]->GetYaxis()->SetTitle("Number of events");
-    //dijet_template[1]->GetXaxis()->SetTitleSize(0.032);
-    //dijet_template[1]->GetYaxis()->SetTitleSize(0.032);
-    dijet_template[1]->GetXaxis()->SetLabelSize(0.025);
-    dijet_template[1]->GetYaxis()->SetLabelSize(0.025);
-    dijet_template[1]->GetXaxis()->SetMoreLogLabels(); 
-
-    dijet_ratio[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_ratio[5]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_ratio[5]->GetYaxis()->SetTitle("Number of events");
-    //dijet_ratio[5]->GetXaxis()->SetTitleSize(0.032);
-    //dijet_ratio[5]->GetYaxis()->SetTitleSize(0.032);
-    dijet_ratio[5]->GetXaxis()->SetLabelSize(0.025);
-    dijet_ratio[5]->GetYaxis()->SetLabelSize(0.025);
-    dijet_ratio[5]->GetXaxis()->SetMoreLogLabels(); 
-
-    dijetSS_ratio[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijetSS_ratio[5]->GetYaxis()->SetTitleOffset(1.5);
-    dijetSS_ratio[5]->GetYaxis()->SetTitle("Number of events");
-    //dijetSS_ratio[5]->GetXaxis()->SetTitleSize(0.032);
-    //dijetSS_ratio[5]->GetYaxis()->SetTitleSize(0.032);
-    dijetSS_ratio[5]->GetXaxis()->SetLabelSize(0.025);
-    dijetSS_ratio[5]->GetYaxis()->SetLabelSize(0.025);
-    dijetSS_ratio[5]->GetXaxis()->SetMoreLogLabels();
-
-    dijet_ratio[0]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_ratio[0]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_ratio[0]->GetYaxis()->SetTitle("Number of events");
-    //dijet_ratio[0]->GetXaxis()->SetTitleSize(0.032);
-    //dijet_ratio[0]->GetYaxis()->SetTitleSize(0.032);
-    dijet_ratio[0]->GetXaxis()->SetLabelSize(0.025);
-    dijet_ratio[0]->GetYaxis()->SetLabelSize(0.025);
-    dijet_ratio[0]->GetXaxis()->SetMoreLogLabels(); 
-
-    dijet_ratio[1]->GetXaxis()->SetTitle("Mass[GeV]");
-    dijet_ratio[1]->GetYaxis()->SetTitleOffset(1.5);
-    dijet_ratio[1]->GetYaxis()->SetTitle("Number of events");
-    dijet_ratio[1]->GetXaxis()->SetLabelSize(0.025);
-    dijet_ratio[1]->GetYaxis()->SetLabelSize(0.025);
-    dijet_ratio[1]->GetXaxis()->SetMoreLogLabels(); 
 
     setTDRStyle();
     tdrGrid(true);
@@ -276,53 +219,34 @@ void estimateDijet() {
     canv->SetBottomMargin( B/H );
 
     /////
-    for(int i=1; i<binnum+3; i++) {
-    if(wjets_template[0]->GetBinContent(i) < 0) {
-      wjets_template[0]->SetBinContent(i,0.0);
-      wjets_template[0]->SetBinError(i,0.0);
-    }
-    }
-    for(int i=1; i<binnum+3; i++) {
-        if(dijet_template[0]->GetBinContent(i) < 0) {
-            dijet_template[0]->SetBinContent(i,0.0);
-            dijet_template[0]->SetBinError(i,0.0);
-        }
-    }
-    dijet_template[5]->Add(dijet_template[0],-1.0);
-    dijet_template[5]->Add(dijet_template[1],-1.0);
+    // subtract MC from data here
+    dijet_template[Data1]->Add(dijet_template[DY1050],-1.0);
+    dijet_template[Data1]->Add(dijet_template[TT],-1.0);
+    dijet_template[Data1]->Add(dijet_template[WW],-1.0);
 
-    dijet_ratio[5]->Add(dijet_ratio[0],-1.0);
-    dijet_ratio[5]->Add(dijet_ratio[1],-1.0);
+    dijet_ratio[Data1]->Add(dijet_ratio[DY1050],-1.0);
+    dijet_ratio[Data1]->Add(dijet_ratio[TT],-1.0);
+    dijet_ratio[Data1]->Add(dijet_ratio[WW],-1.0);
 
-    for(int i=1; i<binnum+3; i++) {
-        if(dijet_template[5]->GetBinContent(i) < 0) {
-            dijet_template[5]->SetBinContent(i,0.0);
-            dijet_template[5]->SetBinError(i,0.0);
-        }
-        if(dijet_ratio[5]->GetBinContent(i) < 0) {
-            dijet_ratio[5]->SetBinContent(i,0.0);
-            dijet_ratio[5]->SetBinError(i,0.0);
-        }
-    }
 
     //dijet_template[5]->Smooth();
     TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(dijet_template[5],"Opposite sign", "F");
-    legg->AddEntry(dijetSS_template[5],"Same sign", "P");
+    legg->AddEntry(dijet_template[Data1],"Opposite sign", "F");
+    legg->AddEntry(dijetSS_template[Data1],"Same sign", "P");
 
-    dijet_template[5]->Draw("HIST");
+    dijet_template[Data1]->Draw("HIST");
     CMS_lumi(canv,4,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
     canv->Print("print/dijet_template.pdf");
-    dijetSS_template[5]->Draw("EPSAME");
+    dijetSS_template[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
     canv->Print("print/dijetBoth_template.pdf");
     canv->Clear();
-    dijetSS_template[5]->SetFillColor(7);
-    dijetSS_template[5]->Draw("HIST");
+    dijetSS_template[Data1]->SetFillColor(7);
+    dijetSS_template[Data1]->Draw("HIST");
     CMS_lumi(canv,4,11);
     canv->Update();
     canv->RedrawAxis();
@@ -331,19 +255,19 @@ void estimateDijet() {
     canv->Print("print/dijetSS_template.pdf");
     canv->Clear();
 
-    dijet_ratio[5]->Draw("HIST");
+    dijet_ratio[Data1]->Draw("HIST");
     CMS_lumi(canv,4,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
     canv->Print("print/dijet_ratio.pdf");
-    dijetSS_ratio[5]->Draw("EPSAME");
+    dijetSS_ratio[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
     canv->Print("print/dijetBoth_ratio.pdf");
     canv->Clear();
-    dijetSS_ratio[5]->SetFillColor(7);
-    dijetSS_ratio[5]->Draw("HIST");
+    dijetSS_ratio[Data1]->SetFillColor(7);
+    dijetSS_ratio[Data1]->Draw("HIST");
     CMS_lumi(canv,4,11);
     canv->Update();
     canv->RedrawAxis();
@@ -353,26 +277,26 @@ void estimateDijet() {
     canv->Clear();
 
     double error = 0;
-    dijet_template[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(template) = "<<dijet_template[5]->Integral(1,45)<<"+-"<<error<<endl;
+    dijet_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(template) = "<<dijet_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    dijetSS_template[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(template) SS = "<<dijetSS_template[5]->Integral(1,45)<<"+-"<<error<<endl;
+    dijetSS_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(template) SS = "<<dijetSS_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    dijet_ratio[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(ratio) = "<<dijet_ratio[5]->Integral(1,45)<<"+-"<<error<<endl;
+    dijet_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(ratio) = "<<dijet_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    dijetSS_ratio[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(ratio) SS = "<<dijetSS_ratio[5]->Integral(1,45)<<"+-"<<error<<endl;
+    dijetSS_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(ratio) SS = "<<dijetSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
 
-    TH1D* dijet = (TH1D*)dijet_template[5]->Clone();
+    TH1D* dijet = (TH1D*)dijet_template[Data1]->Clone();
     dijet->Sumw2();
     dijet->SetName("dijet");
 
     for(int i=1; i<46; i++) {
-        if(dijet_template[5]->GetBinContent(i) < 0) {
-          dijet_template[5]->SetBinContent(i,0.0);
-          dijet_template[5]->SetBinError(i,0.0);
+        if(dijet_template[Data1]->GetBinContent(i) < 0) {
+          dijet_template[Data1]->SetBinContent(i,0.0);
+          dijet_template[Data1]->SetBinError(i,0.0);
         }
     }
 
@@ -382,7 +306,7 @@ void estimateDijet() {
 
     for(int i=1; i<binnum+1; i++) {
 
-        double systematic = fabs(dijet->GetBinContent(i) - dijet_ratio[5]->GetBinContent(i));
+        double systematic = fabs(dijet->GetBinContent(i) - dijet_ratio[Data1]->GetBinContent(i));
         double stat = dijet->GetBinError(i);
         double total = sqrt( systematic*systematic + stat*stat );
         if(dijet->GetBinContent(i)==0) {
