@@ -172,6 +172,26 @@ namespace DYana {
          default:        return "Unknown sample";
       }
    };
+   const char* PathFRHistos2(SampleTag s) {
+      switch (s) {
+         case DY1050:    return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeDY1050.root"; break;
+         case DY50100:   return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeDY50100.root"; break;
+         case DY100200:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeDY100200.root"; break;
+         case DY200400:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeDY200400.root"; break;
+         case DY4001000: return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeDY4001000.root"; break;
+         case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWW.root"; break;
+         case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWZ.root"; break;
+         case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeZZ.root"; break;
+         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeTT.root"; break;
+         case WE:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWE.root"; break;
+         case WMu:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWMu.root"; break;
+         case WTau:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWTau.root"; break;
+         case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeQCD.root"; break;
+         case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeData1.root"; break;
+         case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeData2.root"; break;
+         default:        return "Unknown sample";
+      }
+   };
 
    // path to ntuple in EOS
    const char* NtupleDir(SampleTag s) {
@@ -222,6 +242,16 @@ namespace DYana {
 
    bool IsDY(SampleTag s) {
       if (s==DY1050 || s==DY50100 || s==DY100200 || s==DY200400 || s==DY4001000) return true;
+      else return false;
+   };
+
+   bool IsDiboson(SampleTag s) {
+      if (s==WW || s==WZ || s==ZZ) return true;
+      else return false;
+   };
+
+   bool IsWjets(SampleTag s) {
+      if (s==WE || s==WMu || s==WTau) return true;
       else return false;
    };
 

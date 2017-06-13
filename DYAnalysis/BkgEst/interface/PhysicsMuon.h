@@ -19,24 +19,27 @@ public:
 	}
 
   bool looseMuonID() {
-    if( isPFMuon && (isGlobalMuon||isTrackerMuon) && fabs(dxyVTX) < 0.2 && fabs(dzVTX) < 0.5 )
-      return true;
-    else
-      return false;
+    // if( isPFMuon && (isGlobalMuon||isTrackerMuon) && fabs(dxyVTX) < 0.2 && fabs(dzVTX) < 0.5 )
+    //   return true;
+    // else
+    //   return false;
+    return isLooseMuon;
   }
 
   bool tightMuonID() {
-    if( isPFMuon && isGlobalMuon && normalizedChi2 < 10 && nValidMuonHits>0 && nMatchedStations>1 && nValidPixelHits>0 && nTrackerLayers>5 && fabs(dxyVTX) < 0.2 && fabs(dzVTX) < 0.5 )
-      return true;
-    else
-      return false;
+    // if( isPFMuon && isGlobalMuon && normalizedChi2 < 10 && nValidMuonHits>0 && nMatchedStations>1 && nValidPixelHits>0 && nTrackerLayers>5 && fabs(dxyVTX) < 0.2 && fabs(dzVTX) < 0.5 )
+    //   return true;
+    // else
+    //   return false;
+    return isTightMuon;
   }
 
 	bool highPtMuonID() {
-		if( isGlobalMuon && nValidMuonHits>0 && nMatchedStations>1 && nValidPixelHits>0 && nTrackerLayers>5 && fabs(dxyVTX)<0.2 && muonBestTrack_ptError/muonBestTrack_pt<0.3 )
-			return true;
-		else
-			return false;
+      // if( isGlobalMuon && nValidMuonHits>0 && nMatchedStations>1 && nValidPixelHits>0 && nTrackerLayers>5 && fabs(dxyVTX)<0.2 && muonBestTrack_ptError/muonBestTrack_pt<0.3 )
+      //    return true;
+      // else
+      //    return false;
+      return isHighPtMuon;
 	}
 	bool isolation(double iso) {
       double theiso;
