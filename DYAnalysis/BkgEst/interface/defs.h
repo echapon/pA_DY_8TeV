@@ -33,6 +33,14 @@ namespace DYana {
       QCD // put QCD after all so that it is not included in the "default" list of samples
    };
    const int NSamples = ALL;
+   const SampleTag VVFirst = WW;
+   const SampleTag VVLast = ZZ;
+   const SampleTag WFirst = WE;
+   const SampleTag WLast = WTau;
+   const SampleTag DYFirst = DY1050;
+   const SampleTag DYLast = DY4001000;
+   const SampleTag DataFirst = Data1;
+   const SampleTag DataLast = Data2;
 
    std::vector<SampleTag> allSamples() {
       std::vector<SampleTag> v;

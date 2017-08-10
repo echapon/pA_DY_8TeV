@@ -476,7 +476,7 @@ void DrawLine( TF1*& f_line, Int_t color = kRed )
 
 void Latex_Preliminary( TLatex &latex, Double_t lumi  )
 {
-	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (13 TeV)}}");
+	latex.DrawLatexNDC(0.70, 0.96, "#font[42]{#scale[0.8]{"+TString::Format("%.2lf", lumi)+" fb^{-1} (8.16 TeV)}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 }
@@ -497,7 +497,7 @@ void Latex_Preliminary_NoDataInfo( TLatex &latex )
 
 void Latex_Simulation( TLatex &latex )
 {
-	latex.DrawLatexNDC(0.82, 0.96, "#font[42]{#scale[0.8]{13 TeV}}");
+	latex.DrawLatexNDC(0.82, 0.96, "#font[42]{#scale[0.8]{8.16 TeV}}");
 	latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
 	latex.DrawLatexNDC(0.25, 0.96, "#font[42]{#it{#scale[0.8]{Simulation}}}");
 }

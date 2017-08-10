@@ -657,7 +657,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	latex.DrawLatexNDC(0.14, 0.88, "CMS Preliminary");
 
 	c->SaveAs(CanvasName+".pdf");
-	// c->SaveAs(CanvasName+".C");
+   c->SaveAs(CanvasName+".root");
 }
 
 void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_bkgs, TString Type )
@@ -1043,6 +1043,7 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
 	// f_output->cd();
 	// c->Write();
 	c->SaveAs("c_"+Variable+".pdf");
+	c->SaveAs("c_"+Variable+".root");
 
 }
 
@@ -1184,6 +1185,7 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 	legend->Draw();
 
 	c_hs->SaveAs(CanvasName+".pdf");
+	c_hs->SaveAs(CanvasName+".root");
 }
 
 void DrawControlPlotTool::ChangeHistError_StatOnlyError(TH1D *h_mass, TH1D *h_StatUnc)

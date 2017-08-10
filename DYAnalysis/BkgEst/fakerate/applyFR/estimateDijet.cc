@@ -198,7 +198,7 @@ void estimateDijet() {
     cout<<"ttbar SS before = "<<dijetSS_template[TT]->Integral()<<endl;
 
     cout<<"DY(template): "<<dijet_template[DY1050]->Integral()<<endl;
-    cout<<"DY(ratio): "<<dijet_template[DY1050]->Integral()<<endl;
+    cout<<"DY(ratio): "<<dijet_ratio[DY1050]->Integral()<<endl;
 
     setTDRStyle();
     tdrGrid(true);
@@ -289,16 +289,20 @@ void estimateDijet() {
     dijetSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(ratio) SS = "<<dijetSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
 
-    TH1D* dijet = (TH1D*)dijet_template[Data1]->Clone();
-    dijet->Sumw2();
-    dijet->SetName("dijet");
-
-    for(int i=1; i<46; i++) {
+    for(int i=1; i<binnum+1; i++) {
         if(dijet_template[Data1]->GetBinContent(i) < 0) {
           dijet_template[Data1]->SetBinContent(i,0.0);
           dijet_template[Data1]->SetBinError(i,0.0);
         }
+        if(dijet_ratio[Data1]->GetBinContent(i) < 0) {
+          dijet_ratio[Data1]->SetBinContent(i,0.0);
+          dijet_ratio[Data1]->SetBinError(i,0.0);
+        }
     }
+
+    TH1D* dijet = (TH1D*)dijet_ratio[Data1]->Clone(); // !!EC: change the default from template to ratio
+    dijet->Sumw2();
+    dijet->SetName("dijet");
 
     TH1D* dijet_total      = new TH1D("dijet_total","",binnum,bins);
     TH1D* dijet_systematic = new TH1D("dijet_systematic","",binnum,bins);
