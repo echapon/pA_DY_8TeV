@@ -35,6 +35,8 @@ HFweight::HFweight(const char* weightfile) {
    if (!f || !f->IsOpen()) {
       cout << "Error! could not find HF weight file " << weightfile << endl;
       return;
+   } else {
+      cout << "Opened " << weightfile << " for HF weights." << endl;
    }
 
    h_hiHF_ratio = (TH1F*) f->Get("h_hiHF_ratio");

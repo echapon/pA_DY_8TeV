@@ -19,14 +19,18 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
-#include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
+// #include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
+// #include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
+#include <BkgEst/interface/defs.h>
+#include <HIstuff/HFweight.h>
+
+using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTname = "IsoMu20_OR_IsoTkMu20" )
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*" )
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -36,6 +40,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Roochester Muon Momentum Correction..." << endl;
+		cout << "NOT IMPLEMENTED YET" << endl;
 		isApplyMomCorr = "MomCorr";
 	}
 	else
@@ -48,67 +53,58 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	totaltime.Start();
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
-	analyzer->SetupEfficiencyScaleFactor( "ROOTFile_TagProbeEfficiency_76X_v20160502.root" );
 
 	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + Sample + "_" + HLTname + ".root", "RECREATE");
 
-	// const Int_t nMassBin = 43;
-	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-										 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-										 830, 1000, 1500, 3000};
-
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
- 	TH1D *h_mass_AccTotal = new TH1D("h_mass_AccTotal", "", nMassBin, MassBinEdges);
-	TH1D *h_mass_AccPass = new TH1D("h_mass_AccPass", "", nMassBin, MassBinEdges);
-	TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", nMassBin, MassBinEdges);
-	TH1D *h_mass_EffPass = new TH1D("h_mass_EffPass", "", nMassBin, MassBinEdges);	 
+ 	TH1D *h_mass_AccTotal = new TH1D("h_mass_AccTotal", "", binnum, bins);
+	TH1D *h_mass_AccPass = new TH1D("h_mass_AccPass", "", binnum, bins);
+	TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", binnum, bins);
+	TH1D *h_mass_EffPass = new TH1D("h_mass_EffPass", "", binnum, bins);	 
 
 	// -- After applying efficiency correction -- //
-	TH1D *h_mass_EffPass_Corr_HLTv4p2 = new TH1D("h_mass_EffPass_Corr_HLTv4p2", "", nMassBin, MassBinEdges);
-	TH1D *h_mass_EffPass_Corr_HLTv4p3 = new TH1D("h_mass_EffPass_Corr_HLTv4p3", "", nMassBin, MassBinEdges);
+	TH1D *h_mass_EffPass_Corr_tnp = new TH1D("h_mass_EffPass_Corr_tnp", "", binnum, bins);
 
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 
-	if( Sample == "aMCNLO" )
-	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
-	}
-	if( Sample == "Powheg" )
-	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents);
-	}
+   analyzer->SetupMCsamples_v20170519(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+
+   // initialise the HF reweighting tool
+   HFweight hftool;
 
 	// -- Loop for all samples -- //
 	const Int_t Ntup = ntupleDirectory.size();
 	for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 	{
+      // loop only on DYMuMu!
+      if (!Tag[i_tup].Contains("DYMuMu")) continue;
+
 		TStopwatch looptime;
 		looptime.Start();
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
-		TH1D* h_mass = new TH1D("h_mass_"+Tag[i_tup], "", 800, 0, 8000);
+		TH1D* h_mass = new TH1D("h_mass_"+Tag[i_tup], "", 600, 0, 600);
 
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_Muon();
+		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
+		ntuple->TurnOnBranches_HI();
 
-		rochcor2015 *rmcor = new rochcor2015();
+      // rochcor2015 *rmcor = new rochcor2015();
 
 		Bool_t isMC;
 		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
-		analyzer->SetupPileUpReWeighting_76X( isMC );
 
 		Bool_t isNLO = 0;
-		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets" )
+		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" )
 		{
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
@@ -120,7 +116,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 		Int_t NEvents = chain->GetEntries();
 		cout << "\t[Total Events: " << NEvents << "]" << endl; 
 
-		Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 		// NEvents = 1000;
@@ -141,7 +137,8 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 			SumWeights += GenWeight;
 
 			Int_t PU = ntuple->nPileUp;
-			Double_t PUWeight = analyzer->PileUpWeightValue_76X( PU );
+         // ADD HF weight !!
+         Double_t PUWeight = hftool.weight(ntuple->hiHF,HFweight::HFside::both); 
 
 			Double_t TotWeight = norm * GenWeight;
 
@@ -187,8 +184,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 					h_mass_AccTotal->Fill( gen_M, TotWeight );
 				} 	
 
-				Double_t Eff_SF_HLTv4p2 = -999; // -- Efficiency correction factor -- //
-				Double_t Eff_SF_HLTv4p3 = -999; // -- Efficiency correction factor -- //
+				Double_t TnpWeight = 1.; // -- Efficiency correction factor -- //
 
 				// -- Calculate the efficiency among the events passing acceptance condition -- //
 				if( Flag_PassAcc == kTRUE )
@@ -207,17 +203,18 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 							// -- Apply Rochester momentum scale correction -- //
 							if( isCorrected == kTRUE )
 							{
-								float qter = 1.0;
-								
-								if( Tag[i_tup] == "Data" )
-									rmcor->momcor_data(mu.Momentum, mu.charge, 0, qter);
-								else
-									rmcor->momcor_mc(mu.Momentum, mu.charge, mu.trackerLayers, qter);
+                        // not implemented yet // FIXME
+                        // float qter = 1.0;
+                        // 
+                        // if( Tag[i_tup] == "Data" )
+                        //    rmcor->momcor_data(mu.Momentum, mu.charge, 0, qter);
+                        // else
+                        //    rmcor->momcor_mc(mu.Momentum, mu.charge, mu.trackerLayers, qter);
 
-								// -- Change Muon pT, eta and phi with updated(corrected) one -- //
-								mu.Pt = mu.Momentum.Pt();
-								mu.eta = mu.Momentum.Eta();
-								mu.phi = mu.Momentum.Phi();
+                        // // -- Change Muon pT, eta and phi with updated(corrected) one -- //
+                        // mu.Pt = mu.Momentum.Pt();
+                        // mu.eta = mu.Momentum.Eta();
+                        // mu.phi = mu.Momentum.Phi();
 							}
 							
 							MuonCollection.push_back( mu );
@@ -230,10 +227,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 
 						if( isPassEventSelection == kTRUE )
 						{
-							Eff_SF_HLTv4p2 = analyzer->EfficiencySF_EventWeight_HLTv4p2( SelectedMuonCollection[0], SelectedMuonCollection[1] );
-							Eff_SF_HLTv4p3 = analyzer->EfficiencySF_EventWeight_HLTv4p3( SelectedMuonCollection[0], SelectedMuonCollection[1] );
-
-							// printf("( SF_HLTv4p2, SF_HLTv4p3 ) = (%.5lf, %.5lf)\n", Eff_SF_HLTv4p2, Eff_SF_HLTv4p3);
+                     // FIXME tnp weight here
 
 							Flag_PassEff = kTRUE;
 							Flag_PassAccEff = kTRUE;
@@ -246,8 +240,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 					{
 						h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
 						h_mass_EffPass->Fill( gen_M, TotWeight * PUWeight );
-						h_mass_EffPass_Corr_HLTv4p2->Fill( gen_M, TotWeight  * PUWeight * Eff_SF_HLTv4p2 );
-						h_mass_EffPass_Corr_HLTv4p3->Fill( gen_M, TotWeight  * PUWeight * Eff_SF_HLTv4p3 );
+						h_mass_EffPass_Corr_tnp->Fill( gen_M, TotWeight  * PUWeight * TnpWeight );
 					}
 					else
 						h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
@@ -285,8 +278,7 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	h_mass_AccPass->Write();
 	h_mass_EffTotal->Write();
 	h_mass_EffPass->Write();
-	h_mass_EffPass_Corr_HLTv4p2->Write();
-	h_mass_EffPass_Corr_HLTv4p3->Write();
+	h_mass_EffPass_Corr_tnp->Write();
 
 	TEfficiency *Acc_Mass = new TEfficiency(*h_mass_AccPass, *h_mass_AccTotal);
 	Acc_Mass->SetName("TEff_Acc_Mass");
@@ -297,25 +289,13 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	// TEfficiency *AccEff_Mass = new TEfficiency(*h_mass_EffPass, *h_mass_AccTotal);
 	// AccEff_Mass->SetName("TEff_AccEff_Mass");
 
-	TEfficiency *Eff_Mass_Corr_HLTv4p2 = new TEfficiency(*h_mass_EffPass_Corr_HLTv4p2, *h_mass_EffTotal);
-	Eff_Mass_Corr_HLTv4p2->SetName("TEff_Eff_Mass_Corr_HLTv4p2");
-
-	// TEfficiency *AccEff_Mass_Corr_HLTv4p2 = new TEfficiency(*h_mass_EffPass_Corr_HLTv4p2, *h_mass_AccTotal);
-	// AccEff_Mass_Corr_HLTv4p2->SetName("TEff_AccEff_Mass_Corr_HLTv4p2");
-
-	TEfficiency *Eff_Mass_Corr_HLTv4p3 = new TEfficiency(*h_mass_EffPass_Corr_HLTv4p3, *h_mass_EffTotal);
-	Eff_Mass_Corr_HLTv4p3->SetName("TEff_Eff_Mass_Corr_HLTv4p3");
-
-	// TEfficiency *AccEff_Mass_Corr_HLTv4p3 = new TEfficiency(*h_mass_EffPass_Corr_HLTv4p3, *h_mass_AccTotal);
-	// AccEff_Mass_Corr_HLTv4p3->SetName("TEff_AccEff_Mass_Corr_HLTv4p3");
+	TEfficiency *Eff_Mass_Corr_tnp = new TEfficiency(*h_mass_EffPass_Corr_tnp, *h_mass_EffTotal);
+	Eff_Mass_Corr_tnp->SetName("TEff_Eff_Mass_Corr_tnp");
 
 	Acc_Mass->Write();
 	Eff_Mass->Write();
 	// AccEff_Mass->Write();
-	Eff_Mass_Corr_HLTv4p2->Write();
-	// AccEff_Mass_Corr_HLTv4p2->Write();
-	Eff_Mass_Corr_HLTv4p3->Write();
-	// AccEff_Mass_Corr_HLTv4p3->Write();
+	Eff_Mass_Corr_tnp->Write();
 
 	TCanvas *c_Acc_Mass = new TCanvas("c_Acc_Mass", "", 800, 600);
 	c_Acc_Mass->cd();
@@ -332,25 +312,10 @@ void Acc_Eff(Bool_t isCorrected = kTRUE, TString Sample = "aMCNLO", TString HLTn
 	// AccEff_Mass->Draw("AP");
 	// c_AccEff_Mass->Write();
 
-	TCanvas *c_Eff_Mass_Corr_HLTv4p2 = new TCanvas("c_Eff_Mass_Corr_HLTv4p2", "", 800, 600);
-	c_Eff_Mass_Corr_HLTv4p2->cd();
-	Eff_Mass_Corr_HLTv4p2->Draw("AP");
-	c_Eff_Mass_Corr_HLTv4p2->Write();
-
-	// TCanvas *c_AccEff_Mass_Corr_HLTv4p2 = new TCanvas("c_AccEff_Mass_Corr_HLTv4p2", "", 800, 600);
-	// c_AccEff_Mass_Corr_HLTv4p2->cd();
-	// AccEff_Mass_Corr_HLTv4p2->Draw("AP");
-	// c_AccEff_Mass_Corr_HLTv4p2->Write();
-
-	TCanvas *c_Eff_Mass_Corr_HLTv4p3 = new TCanvas("c_Eff_Mass_Corr_HLTv4p3", "", 800, 600);
-	c_Eff_Mass_Corr_HLTv4p3->cd();
-	Eff_Mass_Corr_HLTv4p3->Draw("AP");
-	c_Eff_Mass_Corr_HLTv4p3->Write();
-
-	// TCanvas *c_AccEff_Mass_Corr_HLTv4p3 = new TCanvas("c_AccEff_Mass_Corr_HLTv4p3", "", 800, 600);
-	// c_AccEff_Mass_Corr_HLTv4p3->cd();
-	// AccEff_Mass_Corr_HLTv4p3->Draw("AP");
-	// c_AccEff_Mass_Corr_HLTv4p3->Write();
+	TCanvas *c_Eff_Mass_Corr_tnp = new TCanvas("c_Eff_Mass_Corr_tnp", "", 800, 600);
+	c_Eff_Mass_Corr_tnp->cd();
+	Eff_Mass_Corr_tnp->Draw("AP");
+	c_Eff_Mass_Corr_tnp->Write();
 
 	Double_t TotalRunTime = totaltime.CpuTime();
 	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;

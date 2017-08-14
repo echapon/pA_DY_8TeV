@@ -287,26 +287,50 @@ public:
     Double_t pfMET_Type1_Py;
     Double_t pfMET_Type1_SumEt;
 
+    // -- HI variables
+    Int_t           hiBin;
+    Float_t         hiHF;
+    Float_t         hiHFplus;
+    Float_t         hiHFminus;
+    Float_t         hiHFplusEta4;
+    Float_t         hiHFminusEta4;
+    Float_t         hiZDC;
+    Float_t         hiZDCplus;
+    Float_t         hiZDCminus;
+    Float_t         hiHFhit;
+    Float_t         hiHFhitPlus;
+    Float_t         hiHFhitMinus;
+    Float_t         hiET;
+    Float_t         hiEE;
+    Float_t         hiEB;
+    Float_t         hiEEplus;
+    Float_t         hiEEminus;
+    Int_t           hiNpix;
+    Int_t           hiNpixelTracks;
+    Int_t           hiNtracks;
+    Int_t           hiNtracksPtCut;
+    Int_t           hiNtracksEtaCut;
+    Int_t           hiNtracksEtaPtCut;
 
 
     // -- Constructor -- //
     NtupleHandle(TChain *chainptr)
     {
-    	chain = chainptr;
-        chain->SetBranchStatus("*", 0);
+       chain = chainptr;
+       chain->SetBranchStatus("*", 0);
 
-    	// -- Event Information -- //
-    	chain->SetBranchStatus("nVertices", 1);
-    	chain->SetBranchStatus("runNum", 1);
-        chain->SetBranchStatus("lumiBlock", 1);
-        chain->SetBranchStatus("evtNum", 1);
-    	chain->SetBranchStatus("nPileUp", 1);
+       // -- Event Information -- //
+       chain->SetBranchStatus("nVertices", 1);
+       chain->SetBranchStatus("runNum", 1);
+       chain->SetBranchStatus("lumiBlock", 1);
+       chain->SetBranchStatus("evtNum", 1);
+       chain->SetBranchStatus("nPileUp", 1);
 
-    	chain->SetBranchAddress("nVertices", &nVertices);
-    	chain->SetBranchAddress("runNum", &runNum);
-        chain->SetBranchAddress("lumiBlock", &lumiBlock);
-        chain->SetBranchAddress("evtNum", &evtNum);
-    	chain->SetBranchAddress("nPileUp", &nPileUp);
+       chain->SetBranchAddress("nVertices", &nVertices);
+       chain->SetBranchAddress("runNum", &runNum);
+       chain->SetBranchAddress("lumiBlock", &lumiBlock);
+       chain->SetBranchAddress("evtNum", &evtNum);
+       chain->SetBranchAddress("nPileUp", &nPileUp);
     }
 
     void TurnOnBranches_LHEInfo()
@@ -829,6 +853,32 @@ public:
     	chain->SetBranchAddress("pfMET_Type1_Px", &pfMET_Type1_Px);
     	chain->SetBranchAddress("pfMET_Type1_Py", &pfMET_Type1_Py);
     	chain->SetBranchAddress("pfMET_Type1_SumEt", &pfMET_Type1_SumEt);
+    }
+
+    void TurnOnBranches_HI() {
+       chain->SetBranchAddress("hiBin", &hiBin);
+       chain->SetBranchAddress("hiHF", &hiHF);
+       chain->SetBranchAddress("hiHFplus", &hiHFplus);
+       chain->SetBranchAddress("hiHFminus", &hiHFminus);
+       chain->SetBranchAddress("hiHFplusEta4", &hiHFplusEta4);
+       chain->SetBranchAddress("hiHFminusEta4", &hiHFminusEta4);
+       chain->SetBranchAddress("hiZDC", &hiZDC);
+       chain->SetBranchAddress("hiZDCplus", &hiZDCplus);
+       chain->SetBranchAddress("hiZDCminus", &hiZDCminus);
+       chain->SetBranchAddress("hiHFhit", &hiHFhit);
+       chain->SetBranchAddress("hiHFhitPlus", &hiHFhitPlus);
+       chain->SetBranchAddress("hiHFhitMinus", &hiHFhitMinus);
+       chain->SetBranchAddress("hiET", &hiET);
+       chain->SetBranchAddress("hiEE", &hiEE);
+       chain->SetBranchAddress("hiEB", &hiEB);
+       chain->SetBranchAddress("hiEEplus", &hiEEplus);
+       chain->SetBranchAddress("hiEEminus", &hiEEminus);
+       chain->SetBranchAddress("hiNpix", &hiNpix);
+       chain->SetBranchAddress("hiNpixelTracks", &hiNpixelTracks);
+       chain->SetBranchAddress("hiNtracks", &hiNtracks);
+       chain->SetBranchAddress("hiNtracksPtCut", &hiNtracksPtCut);
+       chain->SetBranchAddress("hiNtracksEtaCut", &hiNtracksEtaCut);
+       chain->SetBranchAddress("hiNtracksEtaPtCut", &hiNtracksEtaPtCut);
     }
 
     void GetEvent(Int_t i)

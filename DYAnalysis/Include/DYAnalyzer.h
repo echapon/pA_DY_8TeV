@@ -6,6 +6,7 @@
 
 #include "Include/Object.h"
 #include "Include/NtupleHandle.h"
+#include "Include/tnp_weight.h"
 
 #include <TSystem.h>
 #include <TH1D.h>
@@ -81,16 +82,9 @@ public:
 	/////////////////////////////////////////
 	// -- Setup Efficiency scale factor -- //
 	/////////////////////////////////////////
-	void SetupEfficiencyScaleFactor();
-	void SetupEfficiencyScaleFactor(TString ROOTFileName);
-	Double_t EfficiencySF_EventWeight_part1(Muon mu1, Muon mu2);
-	Double_t EfficiencySF_EventWeight_part2(Muon mu1, Muon mu2);
+	Double_t EfficiencySF_EventWeight(Muon mu1, Muon mu2, int idx1=0, int idx2=0);
 	Int_t FindPtBin(Double_t Pt);
 	Int_t FindEtaBin(Double_t eta);
-
-	// -- outdated -- //
-	Double_t EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *ntuple);
-	Double_t EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple);
 	
 	////////////////////////////
 	// -- Event Selections -- //
@@ -190,7 +184,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 	{
 		*HLT = "HLT_PAL3Mu12_v*"; // -- Exist only for the data; "HLT_Ele22_eta2p1_WP75_Gsf_v*" should be used for MC
 		*LeadPtCut = 15;
-		*SubPtCut = 10;
+		*SubPtCut = 15;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
@@ -205,7 +199,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
 {
    using namespace DYana;
-   for (int i=0; i<Data1; i++) {
+   for (int i=0; i<DataFirst; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       ntupleDirectory->push_back(NtupleDir(tag));
       Tag->push_back(Name(tag));
@@ -216,7 +210,7 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
       }
    }
    // and add DYMuMu
-   for (int i=DY1050; i<Data1; i++) {
+   for (int i=DYFirst; i<DataFirst; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       ntupleDirectory->push_back(NtupleDir(tag));
       Tag->push_back(Name(tag));
@@ -565,264 +559,15 @@ Double_t DYAnalyzer::PileUpWeightValue(Int_t PileUp_MC)
 	return PileUpWeight[PileUp_MC];
 }
 
-void DYAnalyzer::SetupEfficiencyScaleFactor()
+
+Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, int idx1, int idx2)
 {
-	TString Location_TnP = Path_CommonCodes + "ROOTFile_TagProbeEfficiency_v20160329.root";
-	cout << "[Tag&Probe efficiency is from " << Location_TnP << " (Default, 74X)]" << endl;
-	
-	TFile *f = new TFile( Location_TnP );
-	TH2D *h_RecoID_data = (TH2D*)f->Get("h_2D_Eff_RecoID_Data");
-	TH2D *h_RecoID_MC = (TH2D*)f->Get("h_2D_Eff_RecoID_MC");
+	Double_t weight = 1;
+   // FIXME implement the tnp weight factors
 
-	TH2D *h_Iso_data = (TH2D*)f->Get("h_2D_Eff_Iso_Data");
-	TH2D *h_Iso_MC = (TH2D*)f->Get("h_2D_Eff_Iso_MC");
-
-	TH2D *h_part1_data = (TH2D*)f->Get("h_2D_Eff_part1_Data");
-	TH2D *h_part1_MC = (TH2D*)f->Get("h_2D_Eff_part1_MC");
-
-	TH2D *h_part2_data = (TH2D*)f->Get("h_2D_Eff_part2_Data");
-	TH2D *h_part2_MC = (TH2D*)f->Get("h_2D_Eff_part2_MC");
-
-
-	Int_t nEtaBins = h_RecoID_data->GetNbinsX();
-	Int_t nPtBins = h_RecoID_data->GetNbinsY();
-
-	for(Int_t iter_x = 0; iter_x < nEtaBins; iter_x++)
-	{
-		for(Int_t iter_y = 0; iter_y < nPtBins; iter_y++)
-		{
-			Int_t i_etabin = iter_x + 1;
-			Int_t i_ptbin = iter_y + 1;
-
-			Double_t RecoID_data = h_RecoID_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t RecoID_MC = h_RecoID_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t Iso_data = h_Iso_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t Iso_MC = h_Iso_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t part1_data = h_part1_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t part1_MC = h_part1_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t part2_data = h_part2_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t part2_MC = h_part2_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Eff_RecoID_data[iter_x][iter_y] = RecoID_data;
-			Eff_RecoID_MC[iter_x][iter_y] = RecoID_MC;
-
-			Eff_Iso_data[iter_x][iter_y] = Iso_data;
-			Eff_Iso_MC[iter_x][iter_y] = Iso_MC;
-
-			Eff_part1_data[iter_x][iter_y] = part1_data;
-			Eff_part1_MC[iter_x][iter_y] = part1_MC;
-
-			Eff_part2_data[iter_x][iter_y] = part2_data;
-			Eff_part2_MC[iter_x][iter_y] = part2_MC;
-		}
-	}
-	cout << "Setting for efficiency correction factors is completed" << endl;
-}
-
-void DYAnalyzer::SetupEfficiencyScaleFactor(TString ROOTFileName)
-{
-	TString Location_TnP = this->Path_CommonCodes + ROOTFileName;
-	cout << "[Tag&Probe efficiency is from " << Location_TnP << "]" << endl; 
-
-	TFile *f = new TFile( Location_TnP );
-
-	TH2D *h_RecoID_data = (TH2D*)f->Get("h_2D_Eff_RecoID_Data");
-	TH2D *h_RecoID_MC = (TH2D*)f->Get("h_2D_Eff_RecoID_MC");
-
-	TH2D *h_Iso_data = (TH2D*)f->Get("h_2D_Eff_Iso_Data");
-	TH2D *h_Iso_MC = (TH2D*)f->Get("h_2D_Eff_Iso_MC");
-
-	TH2D *h_part1_data = (TH2D*)f->Get("h_2D_Eff_part1_Data");
-	TH2D *h_part1_MC = (TH2D*)f->Get("h_2D_Eff_part1_MC");
-
-	TH2D *h_part2_data = (TH2D*)f->Get("h_2D_Eff_part2_Data");
-	TH2D *h_part2_MC = (TH2D*)f->Get("h_2D_Eff_part2_MC");
-
-
-	Int_t nEtaBins = h_RecoID_data->GetNbinsX();
-	Int_t nPtBins = h_RecoID_data->GetNbinsY();
-
-	for(Int_t iter_x = 0; iter_x < nEtaBins; iter_x++)
-	{
-		for(Int_t iter_y = 0; iter_y < nPtBins; iter_y++)
-		{
-			Int_t i_etabin = iter_x + 1;
-			Int_t i_ptbin = iter_y + 1;
-
-			Double_t RecoID_data = h_RecoID_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t RecoID_MC = h_RecoID_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t Iso_data = h_Iso_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t Iso_MC = h_Iso_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t part1_data = h_part1_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t part1_MC = h_part1_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Double_t part2_data = h_part2_data->GetBinContent(i_etabin, i_ptbin);
-			Double_t part2_MC = h_part2_MC->GetBinContent(i_etabin, i_ptbin);
-
-			Eff_RecoID_data[iter_x][iter_y] = RecoID_data;
-			Eff_RecoID_MC[iter_x][iter_y] = RecoID_MC;
-
-			Eff_Iso_data[iter_x][iter_y] = Iso_data;
-			Eff_Iso_MC[iter_x][iter_y] = Iso_MC;
-
-			Eff_part1_data[iter_x][iter_y] = part1_data;
-			Eff_part1_MC[iter_x][iter_y] = part1_MC;
-
-			Eff_part2_data[iter_x][iter_y] = part2_data;
-			Eff_part2_MC[iter_x][iter_y] = part2_MC;
-		}
-	}
-	cout << "Setting for efficiency correction factors is completed" << endl;
-}
-
-Double_t DYAnalyzer::EfficiencySF_EventWeight_part1(Muon mu1, Muon mu2)
-{
-	Double_t weight = -999;
-
-	// -- Muon1 -- //
-	Double_t Pt1 = mu1.Pt;
-	Double_t eta1 = mu1.eta;
-
-	Int_t ptbin1 = FindPtBin( Pt1 );
-	Int_t etabin1 = FindEtaBin( eta1 );
-
-	if( ptbin1 == 9999 || etabin1 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin1, etabin1);
-		return -999;
-	}
-
-	Double_t Eff_muon1_data = Eff_RecoID_data[etabin1][ptbin1] * Eff_Iso_data[etabin1][ptbin1];
-	Double_t Eff_muon1_MC = Eff_RecoID_MC[etabin1][ptbin1] * Eff_Iso_MC[etabin1][ptbin1];
-
-	// -- Muon2 -- //
-	Double_t Pt2 = mu2.Pt;
-	Double_t eta2 = mu2.eta;
-
-	Int_t ptbin2 = FindPtBin( Pt2 );
-	Int_t etabin2 = FindEtaBin( eta2 );
-
-	if( ptbin2 == 9999 || etabin2 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin2, etabin2);
-		return -999;
-	}
-	Double_t Eff_muon2_data = Eff_RecoID_data[etabin2][ptbin2] * Eff_Iso_data[etabin2][ptbin2];
-	Double_t Eff_muon2_MC = Eff_RecoID_MC[etabin2][ptbin2] * Eff_Iso_MC[etabin2][ptbin2];
-
-
-	Double_t Eff_EventTrig_data = 0;
-	Double_t Eff_EventTrig_MC = 0;
-
-	Double_t Eff_Trig_muon1_data = Eff_part1_data[etabin1][ptbin1];
-	Double_t Eff_Trig_muon2_data = Eff_part1_data[etabin2][ptbin2];
-	Eff_EventTrig_data = Eff_Trig_muon1_data + Eff_Trig_muon2_data - Eff_Trig_muon1_data * Eff_Trig_muon2_data;
-
-	Double_t Eff_Trig_muon1_MC = Eff_part1_MC[etabin1][ptbin1];
-	Double_t Eff_Trig_muon2_MC = Eff_part1_MC[etabin2][ptbin2];
-	Eff_EventTrig_MC = Eff_Trig_muon1_MC + Eff_Trig_muon2_MC - Eff_Trig_muon1_MC * Eff_Trig_muon2_MC;
-
-	Double_t Eff_data_all = Eff_muon1_data * Eff_muon2_data * Eff_EventTrig_data;
-	Double_t Eff_MC_all = Eff_muon1_MC * Eff_muon2_MC * Eff_EventTrig_MC;
-
-	// cout << "Eff_data_all: " << Eff_data_all << ", Eff_MC_all: " << Eff_MC_all << endl;
-	weight = Eff_data_all / Eff_MC_all;
-
-	if( weight > 2 )
-	{
-		printf("[Data]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin1][ptbin1], Eff_Iso_data[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin2][ptbin2], Eff_Iso_data[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_data, Eff_data_all);
-
-		printf("[MC]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin1][ptbin1], Eff_Iso_MC[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin2][ptbin2], Eff_Iso_MC[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_MC, Eff_MC_all);
-
-		printf("(ptbin1, etabin1, ptbin2, etabin2): (%d, %d, %d, %d)\n", ptbin1, etabin1, ptbin2, etabin2);
-		
-		printf("[SF] Weight = %.3lf\n", weight);
-	}
 	return weight;
 }
 
-Double_t DYAnalyzer::EfficiencySF_EventWeight_part2(Muon mu1, Muon mu2)
-{
-	Double_t weight = -999;
-
-	// -- Muon1 -- //
-	Double_t Pt1 = mu1.Pt;
-	Double_t eta1 = mu1.eta;
-
-	Int_t ptbin1 = FindPtBin( Pt1 );
-	Int_t etabin1 = FindEtaBin( eta1 );
-
-	if( ptbin1 == 9999 || etabin1 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin1, etabin1);
-		return -999;
-	}
-
-	Double_t Eff_muon1_data = Eff_RecoID_data[etabin1][ptbin1] * Eff_Iso_data[etabin1][ptbin1];
-	Double_t Eff_muon1_MC = Eff_RecoID_MC[etabin1][ptbin1] * Eff_Iso_MC[etabin1][ptbin1];
-
-	// -- Muon2 -- //
-	Double_t Pt2 = mu2.Pt;
-	Double_t eta2 = mu2.eta;
-
-	Int_t ptbin2 = FindPtBin( Pt2 );
-	Int_t etabin2 = FindEtaBin( eta2 );
-
-	if( ptbin2 == 9999 || etabin2 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin2, etabin2);
-		return -999;
-	}
-	Double_t Eff_muon2_data = Eff_RecoID_data[etabin2][ptbin2] * Eff_Iso_data[etabin2][ptbin2];
-	Double_t Eff_muon2_MC = Eff_RecoID_MC[etabin2][ptbin2] * Eff_Iso_MC[etabin2][ptbin2];
-
-
-	Double_t Eff_EventTrig_data = 0;
-	Double_t Eff_EventTrig_MC = 0;
-
-	Double_t Eff_Trig_muon1_data = Eff_part2_data[etabin1][ptbin1];
-	Double_t Eff_Trig_muon2_data = Eff_part2_data[etabin2][ptbin2];
-	Eff_EventTrig_data = Eff_Trig_muon1_data + Eff_Trig_muon2_data - Eff_Trig_muon1_data * Eff_Trig_muon2_data;
-
-	Double_t Eff_Trig_muon1_MC = Eff_part2_MC[etabin1][ptbin1];
-	Double_t Eff_Trig_muon2_MC = Eff_part2_MC[etabin2][ptbin2];
-	Eff_EventTrig_MC = Eff_Trig_muon1_MC + Eff_Trig_muon2_MC - Eff_Trig_muon1_MC * Eff_Trig_muon2_MC;
-
-	Double_t Eff_data_all = Eff_muon1_data * Eff_muon2_data * Eff_EventTrig_data;
-	Double_t Eff_MC_all = Eff_muon1_MC * Eff_muon2_MC * Eff_EventTrig_MC;
-
-	// cout << "Eff_data_all: " << Eff_data_all << ", Eff_MC_all: " << Eff_MC_all << endl;
-	weight = Eff_data_all / Eff_MC_all;
-
-	if( weight > 2 )
-	{
-		printf("[Data]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin1][ptbin1], Eff_Iso_data[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin2][ptbin2], Eff_Iso_data[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_data, Eff_data_all);
-
-		printf("[MC]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin1][ptbin1], Eff_Iso_MC[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin2][ptbin2], Eff_Iso_MC[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_MC, Eff_MC_all);
-
-		printf("(ptbin1, etabin1, ptbin2, etabin2): (%d, %d, %d, %d)\n", ptbin1, etabin1, ptbin2, etabin2);
-		
-		printf("[SF] Weight = %.3lf\n", weight);
-	}
-	return weight;
-}
 
 Int_t DYAnalyzer::FindPtBin(Double_t Pt)
 {
@@ -866,136 +611,6 @@ Int_t DYAnalyzer::FindEtaBin(Double_t eta)
 	}
 
 	return etabin;
-}
-
-Double_t DYAnalyzer::EfficiencySF_EventWeight(Muon mu1, Muon mu2, NtupleHandle *ntuple)
-{
-	Double_t weight = -999;
-
-	// -- Muon1 -- //
-	Double_t Pt1 = mu1.Pt;
-	Double_t eta1 = mu1.eta;
-
-	Int_t ptbin1 = FindPtBin( Pt1 );
-	Int_t etabin1 = FindEtaBin( eta1 );
-
-	if( ptbin1 == 9999 || etabin1 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin1, etabin1);
-		return -999;
-	}
-
-	Double_t Eff_muon1_data = Eff_RecoID_data[etabin1][ptbin1] * Eff_Iso_data[etabin1][ptbin1];
-	Double_t Eff_muon1_MC = Eff_RecoID_MC[etabin1][ptbin1] * Eff_Iso_MC[etabin1][ptbin1];
-
-	// -- Muon2 -- //
-	Double_t Pt2 = mu2.Pt;
-	Double_t eta2 = mu2.eta;
-
-	Int_t ptbin2 = FindPtBin( Pt2 );
-	Int_t etabin2 = FindEtaBin( eta2 );
-
-	if( ptbin2 == 9999 || etabin2 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin2, etabin2);
-		return -999;
-	}
-	Double_t Eff_muon2_data = Eff_RecoID_data[etabin2][ptbin2] * Eff_Iso_data[etabin2][ptbin2];
-	Double_t Eff_muon2_MC = Eff_RecoID_MC[etabin2][ptbin2] * Eff_Iso_MC[etabin2][ptbin2];
-
-	Bool_t ispart1 = kFALSE;
-	if( ntuple->runNum < 257932.5 )
-		ispart1 = kTRUE;
-
-	Double_t Eff_EventTrig_data = 0;
-	Double_t Eff_EventTrig_MC = 0;
-	if( ispart1 )
-	{
-		Double_t Eff_Trig_muon1_data = Eff_part1_data[etabin1][ptbin1];
-		Double_t Eff_Trig_muon2_data = Eff_part1_data[etabin2][ptbin2];
-		Eff_EventTrig_data = Eff_Trig_muon1_data + Eff_Trig_muon2_data - Eff_Trig_muon1_data * Eff_Trig_muon2_data;
-
-		Double_t Eff_Trig_muon1_MC = Eff_part1_MC[etabin1][ptbin1];
-		Double_t Eff_Trig_muon2_MC = Eff_part1_MC[etabin2][ptbin2];
-		Eff_EventTrig_MC = Eff_Trig_muon1_MC + Eff_Trig_muon2_MC - Eff_Trig_muon1_MC * Eff_Trig_muon2_MC;
-	}
-	else
-	{
-		Double_t Eff_Trig_muon1_data = Eff_part2_data[etabin1][ptbin1];
-		Double_t Eff_Trig_muon2_data = Eff_part2_data[etabin2][ptbin2];
-		Eff_EventTrig_data = Eff_Trig_muon1_data + Eff_Trig_muon2_data - Eff_Trig_muon1_data * Eff_Trig_muon2_data;
-
-		Double_t Eff_Trig_muon1_MC = Eff_part2_MC[etabin1][ptbin1];
-		Double_t Eff_Trig_muon2_MC = Eff_part2_MC[etabin2][ptbin2];
-		Eff_EventTrig_MC = Eff_Trig_muon1_MC + Eff_Trig_muon2_MC - Eff_Trig_muon1_MC * Eff_Trig_muon2_MC;
-	}
-
-	Double_t Eff_data_all = Eff_muon1_data * Eff_muon2_data * Eff_EventTrig_data;
-	Double_t Eff_MC_all = Eff_muon1_MC * Eff_muon2_MC * Eff_EventTrig_MC;
-
-	// cout << "Eff_data_all: " << Eff_data_all << ", Eff_MC_all: " << Eff_MC_all << endl;
-	weight = Eff_data_all / Eff_MC_all;
-
-	if( weight > 2 )
-	{
-		printf("[Data]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin1][ptbin1], Eff_Iso_data[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_data[etabin2][ptbin2], Eff_Iso_data[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_data, Eff_data_all);
-
-		printf("[MC]\n");
-		printf("\t[Muon1] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin1][ptbin1], Eff_Iso_MC[etabin1][ptbin1]);
-		printf("\t[Muon2] (RecoID, Iso): (%.3lf, %.3lf)\n", Eff_RecoID_MC[etabin2][ptbin2], Eff_Iso_MC[etabin2][ptbin2]);
-		printf("\t[Event] (TrigEvent, Total): (%.3lf, %.3lf)\n", Eff_EventTrig_MC, Eff_MC_all);
-
-		printf("(ptbin1, etabin1, ptbin2, etabin2): (%d, %d, %d, %d)\n", ptbin1, etabin1, ptbin2, etabin2);
-		
-		printf("[SF] Weight = %.3lf\n", weight);
-	}
-	return weight;
-}
-
-Double_t DYAnalyzer::EfficiencySF_EventWeight_RecoIdIso(Muon mu1, Muon mu2, NtupleHandle *ntuple)
-{
-	Double_t weight = -999;
-
-	// -- Muon1 -- //
-	Double_t Pt1 = mu1.Pt;
-	Double_t eta1 = mu1.eta;
-
-	Int_t ptbin1 = FindPtBin( Pt1 );
-	Int_t etabin1 = FindEtaBin( eta1 );
-
-	if( ptbin1 == 9999 || etabin1 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin1, etabin1);
-		return -999;
-	}
-
-	Double_t Eff_muon1_data = Eff_RecoID_data[etabin1][ptbin1] * Eff_Iso_data[etabin1][ptbin1];
-	Double_t Eff_muon1_MC = Eff_RecoID_MC[etabin1][ptbin1] * Eff_Iso_MC[etabin1][ptbin1];
-
-	// -- Muon2 -- //
-	Double_t Pt2 = mu2.Pt;
-	Double_t eta2 = mu2.eta;
-
-	Int_t ptbin2 = FindPtBin( Pt2 );
-	Int_t etabin2 = FindEtaBin( eta2 );
-
-	if( ptbin2 == 9999 || etabin2 == 9999 )
-	{
-		printf("ERROR! Wrong assigned bin number ... (ptbin, etabin) = (%d, %d)\n", ptbin2, etabin2);
-		return -999;
-	}
-	Double_t Eff_muon2_data = Eff_RecoID_data[etabin2][ptbin2] * Eff_Iso_data[etabin2][ptbin2];
-	Double_t Eff_muon2_MC = Eff_RecoID_MC[etabin2][ptbin2] * Eff_Iso_MC[etabin2][ptbin2];
-
-	Double_t Eff_data_all = Eff_muon1_data * Eff_muon2_data;
-	Double_t Eff_MC_all = Eff_muon1_MC * Eff_muon2_MC;
-
-	weight = Eff_data_all / Eff_MC_all;
-
-	return weight;
 }
 
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
