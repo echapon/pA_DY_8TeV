@@ -176,7 +176,10 @@ void fillHistosForFR(SampleTag index)
     delete passingMuons;
 }
 
-void fillAllHistosForFR() {
+void fillHistosForFR() {
    vector<SampleTag> v = allSamples();
-   for (vector<SampleTag>::const_iterator it = v.begin(); it!=v.end(); it++) fillHistosForFR(*it);
+   for (vector<SampleTag>::const_iterator it = v.begin(); it!=v.end(); it++) {
+      cout << Name(*it) << endl;
+      fillHistosForFR(*it);
+   }
 }

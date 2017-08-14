@@ -8,7 +8,7 @@ void produceBkgHistos() {
 
    //Get ROOT Files
    TFile* f[NSamples+2];
-   for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
+   for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistosEmi(static_cast<SampleTag>(i)));
    f[QCD] = new TFile(PathFRHistos2(QCD));
 
 	//Get Histograms
@@ -77,26 +77,53 @@ void produceBkgHistos() {
    } // sample loop
 
    // construct the bkg-sub histos
-   TH1D *hm_SS_2iso_BS = (TH1D*) hm_SS_2iso[DataFirst]->Clone("hm_SS_2iso");
+   TH1D *hm_SS_2iso_BS = (TH1D*) hm_SS_2iso[DataFirst]->Clone("hm_SS_2iso_BS");
    hm_SS_2iso_BS->Add(hm_SS_2iso[DYFirst],-1);
    hm_SS_2iso_BS->Add(hm_SS_2iso[VVFirst],-1);
    hm_SS_2iso_BS->Add(hm_SS_2iso[TT],-1);
-   TH1D *hm_SS_01iso_BS = (TH1D*) hm_SS_0iso[DataFirst]->Clone("hm_SS_2iso");
-   hm_SS_01iso_BS->Add(hm_SS_1iso[DataFirst]);
+   TH1D *hm_SS_01iso_BS = (TH1D*) hm_SS_0iso[DataFirst]->Clone("hm_SS_01iso_BS");
+   // hm_SS_01iso_BS->Add(hm_SS_1iso[DataFirst]);
+   THStack *hs_SS_01iso = new THStack("hs_SS_01iso","");
+   hm_SS_0iso[DYFirst]->SetFillColor(2);
+   hs_SS_01iso->Add(hm_SS_0iso[DYFirst]);
    hm_SS_01iso_BS->Add(hm_SS_0iso[DYFirst],-1);
+   hm_SS_0iso[VVFirst]->SetFillColor(3);
+   hs_SS_01iso->Add(hm_SS_0iso[VVFirst]);
    hm_SS_01iso_BS->Add(hm_SS_0iso[VVFirst],-1);
+   hm_SS_0iso[TT]->SetFillColor(6);
+   hs_SS_01iso->Add(hm_SS_0iso[TT]);
    hm_SS_01iso_BS->Add(hm_SS_0iso[TT],-1);
-   hm_SS_01iso_BS->Add(hm_SS_1iso[DYFirst],-1);
-   hm_SS_01iso_BS->Add(hm_SS_1iso[VVFirst],-1);
-   hm_SS_01iso_BS->Add(hm_SS_1iso[TT],-1);
-   TH1D *hm_OS_01iso_BS = (TH1D*) hm_OS_0iso[DataFirst]->Clone("hm_OS_2iso");
-   hm_OS_01iso_BS->Add(hm_OS_1iso[DataFirst]);
+   // hm_SS_1iso[DYFirst]->SetFillColor(2);
+   // hs_SS_01iso->Add(hm_SS_1iso[DYFirst]);
+   // hm_SS_01iso_BS->Add(hm_SS_1iso[DYFirst],-1);
+   // hm_SS_1iso[VVFirst]->SetFillColor(3);
+   // hs_SS_01iso->Add(hm_SS_1iso[VVFirst]);
+   // hm_SS_01iso_BS->Add(hm_SS_1iso[VVFirst],-1);
+   // hm_SS_1iso[TT]->SetFillColor(6);
+   // hs_SS_01iso->Add(hm_SS_1iso[TT]);
+   // hm_SS_01iso_BS->Add(hm_SS_1iso[TT],-1);
+
+   TH1D *hm_OS_01iso_BS = (TH1D*) hm_OS_0iso[DataFirst]->Clone("hm_OS_01iso_BS");
+   // hm_OS_01iso_BS->Add(hm_OS_1iso[DataFirst]);
+   THStack *hs_OS_01iso = new THStack("hs_OS_01iso","");
+   hm_OS_0iso[DYFirst]->SetFillColor(2);
+   hs_OS_01iso->Add(hm_OS_0iso[DYFirst]);
    hm_OS_01iso_BS->Add(hm_OS_0iso[DYFirst],-1);
+   hm_OS_0iso[VVFirst]->SetFillColor(3);
+   hs_OS_01iso->Add(hm_OS_0iso[VVFirst]);
    hm_OS_01iso_BS->Add(hm_OS_0iso[VVFirst],-1);
+   hm_OS_0iso[TT]->SetFillColor(6);
+   hs_OS_01iso->Add(hm_OS_0iso[TT]);
    hm_OS_01iso_BS->Add(hm_OS_0iso[TT],-1);
-   hm_OS_01iso_BS->Add(hm_OS_1iso[DYFirst],-1);
-   hm_OS_01iso_BS->Add(hm_OS_1iso[VVFirst],-1);
-   hm_OS_01iso_BS->Add(hm_OS_1iso[TT],-1);
+   // hm_OS_1iso[DYFirst]->SetFillColor(2);
+   // hs_OS_01iso->Add(hm_OS_1iso[DYFirst]);
+   // hm_OS_01iso_BS->Add(hm_OS_1iso[DYFirst],-1);
+   // hm_OS_1iso[VVFirst]->SetFillColor(3);
+   // hs_OS_01iso->Add(hm_OS_1iso[VVFirst]);
+   // hm_OS_01iso_BS->Add(hm_OS_1iso[VVFirst],-1);
+   // hm_OS_1iso[TT]->SetFillColor(6);
+   // hs_OS_01iso->Add(hm_OS_1iso[TT]);
+   // hm_OS_01iso_BS->Add(hm_OS_1iso[TT],-1);
 
    TH1D *hfake = (TH1D*) hm_SS_2iso_BS->Clone("hfake");
    hfake->Multiply(hm_OS_01iso_BS);
@@ -104,6 +131,11 @@ void produceBkgHistos() {
 
    TFile *fout = TFile::Open("fakerate.root","RECREATE");
    hfake->Write();
+   hm_SS_2iso_BS->Write();
+   hm_SS_01iso_BS->Write();
+   hs_SS_01iso->Write();
+   hm_OS_01iso_BS->Write();
+   hs_OS_01iso->Write();
    fout->Write();
    fout->Close();
 }
