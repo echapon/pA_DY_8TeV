@@ -184,7 +184,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 	{
 		*HLT = "HLT_PAL3Mu12_v*"; // -- Exist only for the data; "HLT_Ele22_eta2p1_WP75_Gsf_v*" should be used for MC
 		*LeadPtCut = 15;
-		*SubPtCut = 15;
+		*SubPtCut = 10;//15;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}

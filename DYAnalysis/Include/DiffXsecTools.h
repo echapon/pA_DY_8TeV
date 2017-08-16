@@ -3,15 +3,18 @@
 #include "MyCanvas.C"
 #include "UncertantyCalcTool.h"
 #include "DYAnalyzer.h"
-#include <src/RooUnfold.cxx>
-#include <src/RooUnfoldResponse.cxx>
-#include <src/RooUnfoldBayes.cxx>
-#include <src/RooUnfoldInvert.cxx>
+#include "../BkgEst/interface/defs.h"
+// #include <src/RooUnfold.h>
+// #include <src/RooUnfoldResponse.h>
+// #include <src/RooUnfoldBayes.h>
+// #include <src/RooUnfoldInvert.h>
+
+using namespace DYana;
 
 class DiffXsecTools
 {
 public:
-	Double_t MassBinEdges[nMassBin+1];
+   // Double_t bins[binnum+1];
 
 	TString FileLocation;
 	TFile *f_MC;
@@ -32,42 +35,42 @@ public:
 	vector< Double_t > nEvents;
 
 	TH1D *h_totSignalMC;
-	TH1D *h_totSignalMC_HLTv4p2;
-	TH1D *h_totSignalMC_HLTv4p3;
+	TH1D *h_totSignalMC_part1;
+	TH1D *h_totSignalMC_part2;
 
 	TH1D *h_totSignalMC_GenLevel;
-	TH1D *h_totSignalMC_GenLevel_HLTv4p2;
-	TH1D *h_totSignalMC_GenLevel_HLTv4p3;
+	TH1D *h_totSignalMC_GenLevel_part1;
+	TH1D *h_totSignalMC_GenLevel_part2;
 	TH1D *h_totSignalMC_GenLevel_WithinAcc;
-	TH1D *h_totSignalMC_GenLevel_WithinAcc_HLTv4p2;
-	TH1D *h_totSignalMC_GenLevel_WithinAcc_HLTv4p3;
+	TH1D *h_totSignalMC_GenLevel_WithinAcc_part1;
+	TH1D *h_totSignalMC_GenLevel_WithinAcc_part2;
 
 	TH1D *h_yield_Raw;
-	TH1D *h_yield_HLTv4p2;
-	TH1D *h_yield_HLTv4p3;
+	TH1D *h_yield_part1;
+	TH1D *h_yield_part2;
 
 	TH1D *h_NoGen_Reco;
 
 	TH1D *h_yield_Unfolded;
-	TH1D *h_yield_HLTv4p2_Unfolded;
-	TH1D *h_yield_HLTv4p3_Unfolded;
+	TH1D *h_yield_part1_Unfolded;
+	TH1D *h_yield_part2_Unfolded;
 
 	// -- Acc*Eff corrected without unfolding correction -- //
 	TH1D *h_yield_AccEff;
-	TH1D *h_yield_HLTv4p2_AccEff;
-	TH1D *h_yield_HLTv4p3_AccEff;
+	TH1D *h_yield_part1_AccEff;
+	TH1D *h_yield_part2_AccEff;
 	// -- Acc*Eff corrected with unfolding correction -- //
 	TH1D *h_yield_Unfolded_AccEff;
-	TH1D *h_yield_HLTv4p2_Unfolded_AccEff;
-	TH1D *h_yield_HLTv4p3_Unfolded_AccEff;
+	TH1D *h_yield_part1_Unfolded_AccEff;
+	TH1D *h_yield_part2_Unfolded_AccEff;
 
-	TGraphAsymmErrors *g_Eff_Corr_HLTv4p2;
-	TGraphAsymmErrors *g_Eff_Corr_HLTv4p3;
-	TGraphAsymmErrors *g_EffCorr_HLTv4p2;
-	TGraphAsymmErrors *g_EffCorr_HLTv4p3;
+	TGraphAsymmErrors *g_Eff_Corr_part1;
+	TGraphAsymmErrors *g_Eff_Corr_part2;
+	TGraphAsymmErrors *g_EffCorr_part1;
+	TGraphAsymmErrors *g_EffCorr_part2;
 	TH1D *h_yield_EffCorr;
-	TH1D *h_yield_HLTv4p2_EffCorr;
-	TH1D *h_yield_HLTv4p3_EffCorr;
+	TH1D *h_yield_part1_EffCorr;
+	TH1D *h_yield_part2_EffCorr;
 
 	TH1D *h_Truth_preFSR;
 	TH1D *h_yield_FSRCorr;
@@ -93,12 +96,12 @@ public:
 	TH1D *h_FpoF_DiffXsec_aMCNLO;
 
 	TH1D *h_FpoF_yield_Unfolded_Eff;
-	TH1D *h_FpoF_yield_HLTv4p2_Unfolded_Eff;
-	TH1D *h_FpoF_yield_HLTv4p3_Unfolded_Eff;
+	TH1D *h_FpoF_yield_part1_Unfolded_Eff;
+	TH1D *h_FpoF_yield_part2_Unfolded_Eff;
 
 	TH1D *h_FpoF_yield_EffCorr;
-	TH1D *h_FpoF_yield_HLTv4p2_EffCorr;
-	TH1D *h_FpoF_yield_HLTv4p3_EffCorr;
+	TH1D *h_FpoF_yield_part1_EffCorr;
+	TH1D *h_FpoF_yield_part2_EffCorr;
 
 	TH1D *h_FpoF_DiffXsec_Data;
 
@@ -108,8 +111,8 @@ public:
 	virtual void GetYieldHistograms(Bool_t isDataDriven);
 	virtual void SaveCanvas_RecoLevel_Data_vs_recoMC();
 	virtual void BinByBinCorr_NoGenAcc();
-	virtual void UnfoldingCorrection();
-	virtual void SaveCanvas_UnfoldingCorrection();
+   // virtual void UnfoldingCorrection();
+   // virtual void SaveCanvas_UnfoldingCorrection();
 
 	virtual void AccEffCorrection();
 	virtual void SaveCanvas_AccEffCorrection();
@@ -121,7 +124,7 @@ public:
 	virtual void EfficiencyScaleFactor();
 	virtual void SaveCanvas_EfficiencyCorrection();
 
-	virtual void FSRCorrection();
+   // virtual void FSRCorrection();
 	virtual void SaveCanvas_FSRCorrection();
 
 	virtual void CalcXsec();
@@ -144,9 +147,9 @@ protected:
 	void BinByBinCorrection_NoGen_ButReco( TH1D *h_yield );
 	void SaveCanvas_NoGenAcc_vs_TotalMC();
 
-	void SaveCanvas_preUnfold_vs_genMC( TString Type, TH1D* h_yield, TH1D* h_Truth_WithinAcc );
-	void SaveCanvas_Unfold_vs_genMC( TString Type, TH1D* h_yield_Unfolded, TH1D* h_Truth_WithinAcc );
-	void SaveCanvas_preUnfold_vs_Unfold( TString Type, TH1D* h_yield, TH1D* h_yield_Unfolded );
+   // void SaveCanvas_preUnfold_vs_genMC( TString Type, TH1D* h_yield, TH1D* h_Truth_WithinAcc );
+   // void SaveCanvas_Unfold_vs_genMC( TString Type, TH1D* h_yield_Unfolded, TH1D* h_Truth_WithinAcc );
+   // void SaveCanvas_preUnfold_vs_Unfold( TString Type, TH1D* h_yield, TH1D* h_yield_Unfolded );
 	
 	void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 	Double_t CalcError_Yield_AccEff(Double_t Yield_AfterAccEff, Double_t Yield, Double_t sigma_Yield, Double_t AccEff, Double_t sigma_AccEff);
@@ -156,7 +159,7 @@ protected:
 	void MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2);
 	Double_t ReturnLargerValue(Double_t a, Double_t b);
 	Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
-	void SaveCanvas_EffCorr_HLTv4p2_vs_HLTv4p3();
+	void SaveCanvas_EffCorr_part1_vs_part2();
 	void ApplyEffCorr_Yield(TH1D *h_yield_EffCorr, TH1D *h_yield, TGraphAsymmErrors* g_EffCorr);
 	void SaveCanvas_Yield_UnCorr_vs_EffCorr( TString Type, TH1D* h_yield_EffCorr, TH1D* h_yield );
 	void SaveCanvas_Yield_EffCorr_vs_genMC( TString Type, TH1D *h_yield_EffCorr, TH1D *h_totSignalMC_GenLevel  );
@@ -180,20 +183,20 @@ protected:
 // -- default contructor -- //
 DiffXsecTools::DiffXsecTools()
 {
-	// Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
+	// Double_t bins_temp[binnum+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
 	// 									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
 	// 									 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
 	// 									 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
 	// 									 830, 1000, 1200, 1500, 2000, 3000};
 
-	Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-										 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-										 830, 1000, 1500, 3000};
+   // Double_t bins_temp[binnum+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
+   //                             64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
+   //                             110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
+   //                             200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
+   //                             830, 1000, 1500, 3000};
 
-	for(Int_t i=0; i<nMassBin+1; i++)
-		MassBinEdges[i] = MassBinEdges_temp[i];
+   // for(Int_t i=0; i<binnum+1; i++)
+   //    bins[i] = bins_temp[i];
 
 
 	f_MC = NULL;
@@ -205,17 +208,20 @@ DiffXsecTools::DiffXsecTools()
 	f_FSR = NULL;
 	f_theory = NULL;
 
-	g_EffCorr_HLTv4p2 = NULL;
-	g_EffCorr_HLTv4p3 = NULL;
+	g_EffCorr_part1 = NULL;
+	g_EffCorr_part2 = NULL;
 	h_RelUnc_Stat = NULL;
 
 	// -- Setup input files -- //
-	TString Path_CommonCodes = gSystem->Getenv("KP_INCLUDE_PATH");
-	FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
+   // TString Path_CommonCodes = gSystem->Getenv("KP_INCLUDE_PATH");
+   // FileLocation = gSystem->Getenv("KP_ROOTFILE_PATH");
+   TString Path_CommonCodes = gSystem->Getenv("PWD"); Path_CommonCodes += "/Include/";
+   FileLocation = gSystem->Getenv("PWD");
+
 
 	// -- Setup sample information -- //
 	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	analyzer->SetupMCsamples_v20160309_76X_MiniAODv2( "Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents );
+	analyzer->SetupMCsamples_v20170519( "Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents );
 
 	TH1::AddDirectory(kFALSE);
 }
@@ -241,10 +247,10 @@ void DiffXsecTools::MakeSignalMCHistograms()
  		TH1D *h_temp = (TH1D*)f_MC->Get( "h_mass_OS_"+Tag[i_tag] )->Clone();
 
  		// -- Rebin using DY analysis binning -- //
- 		h_temp = (TH1D*)h_temp->Rebin(nMassBin, h_temp->GetName(), MassBinEdges);
+ 		h_temp = (TH1D*)h_temp->Rebin(binnum, h_temp->GetName(), bins);
  		
- 		// -- Normalized to the integrated luminosity of the data -- //
- 		Double_t Norm = (Lumi * Xsec[i_tag]) / nEvents[i_tag];
+ 		// -- Normalized to the integrated lumi_allnosity of the data -- //
+ 		Double_t Norm = (lumi_all * Xsec[i_tag]) / nEvents[i_tag];
  		h_temp->Scale( Norm );
 
  		if( Tag[i_tag].Contains("DYMuMu") ) // -- if this is signal MC -- //
@@ -257,11 +263,11 @@ void DiffXsecTools::MakeSignalMCHistograms()
  		}
  	}
 
- 	h_totSignalMC_HLTv4p2 = (TH1D*)h_totSignalMC->Clone();
- 	h_totSignalMC_HLTv4p2->Scale( Lumi_HLTv4p2 / Lumi );
+ 	h_totSignalMC_part1 = (TH1D*)h_totSignalMC->Clone();
+ 	h_totSignalMC_part1->Scale( lumi_part1 / lumi_all );
 
- 	h_totSignalMC_HLTv4p3 = (TH1D*)h_totSignalMC->Clone();
- 	h_totSignalMC_HLTv4p3->Scale( (Lumi - Lumi_HLTv4p2) / Lumi );
+ 	h_totSignalMC_part2 = (TH1D*)h_totSignalMC->Clone();
+ 	h_totSignalMC_part2->Scale( (lumi_all - lumi_part1) / lumi_all );
 
 
  	////////////////////////////////////////////////////////
@@ -275,10 +281,10 @@ void DiffXsecTools::MakeSignalMCHistograms()
  	// 		TH1D *h_temp = (TH1D*)f_MC->Get( "h_GenMass_"+Tag[i_tag] )->Clone();
 
  	// 		// -- Rebin using DY analysis binning -- //
- 	// 		h_temp = (TH1D*)h_temp->Rebin(nMassBin, h_temp->GetName(), MassBinEdges);
+ 	// 		h_temp = (TH1D*)h_temp->Rebin(binnum, h_temp->GetName(), bins);
  			
- 	// 		// -- Normalized to the integrated luminosity of the data -- //
- 	// 		Double_t Norm = (Lumi * Xsec[i_tag]) / nEvents[i_tag];
+ 	// 		// -- Normalized to the integrated lumi_allnosity of the data -- //
+ 	// 		Double_t Norm = (lumi_all * Xsec[i_tag]) / nEvents[i_tag];
  	// 		h_temp->Scale( Norm );
 
  	// 		// -- Sum of all background MC histogram -- //
@@ -292,11 +298,11 @@ void DiffXsecTools::MakeSignalMCHistograms()
  	f_FSR = TFile::Open(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root"); f_FSR->cd();
  	h_totSignalMC_GenLevel = (TH1D*)f_FSR->Get("h_mass_postFSR")->Clone();
 
- 	h_totSignalMC_GenLevel_HLTv4p2 = (TH1D*)h_totSignalMC_GenLevel->Clone();
- 	h_totSignalMC_GenLevel_HLTv4p2->Scale( Lumi_HLTv4p2 / Lumi );
+ 	h_totSignalMC_GenLevel_part1 = (TH1D*)h_totSignalMC_GenLevel->Clone();
+ 	h_totSignalMC_GenLevel_part1->Scale( lumi_part1 / lumi_all );
 
- 	h_totSignalMC_GenLevel_HLTv4p3 = (TH1D*)h_totSignalMC_GenLevel->Clone();
- 	h_totSignalMC_GenLevel_HLTv4p3->Scale( (Lumi - Lumi_HLTv4p2) / Lumi );
+ 	h_totSignalMC_GenLevel_part2 = (TH1D*)h_totSignalMC_GenLevel->Clone();
+ 	h_totSignalMC_GenLevel_part2->Scale( (lumi_all - lumi_part1) / lumi_all );
 
  	delete f_MC;
  	delete f_FSR;
@@ -316,12 +322,12 @@ void DiffXsecTools::GetYieldHistograms(Bool_t isDataDriven)
 
 	// f_yield = new TFile(FileLocation + "/ROOTFile_YieldHistogram.root"); f_yield->cd();
 	f_yield = TFile::Open(FileLocation + "/ROOTFile_YieldHistogram.root"), f_yield->cd();
-	h_yield_HLTv4p2 = (TH1D*)f_yield->Get("h_yield_OS_HLTv4p2"+Type)->Clone();
-	h_yield_HLTv4p3 = (TH1D*)f_yield->Get("h_yield_OS_HLTv4p3"+Type)->Clone();
+	h_yield_part1 = (TH1D*)f_yield->Get("h_yield_OS_part1"+Type+"1")->Clone();
+	h_yield_part2 = (TH1D*)f_yield->Get("h_yield_OS_part2"+Type+"2")->Clone();
 	delete f_yield;
 
-	h_yield_Raw = (TH1D*)h_yield_HLTv4p2->Clone();
-	h_yield_Raw->Add( h_yield_HLTv4p3 );
+	h_yield_Raw = (TH1D*)h_yield_part1->Clone();
+	h_yield_Raw->Add( h_yield_part2 );
 }
 
 void DiffXsecTools::SaveCanvas_RecoLevel_Data_vs_recoMC()
@@ -341,31 +347,31 @@ void DiffXsecTools::SaveCanvas_RecoLevel_Data_vs_recoMC()
 
 
 	// -- HLT v4.2 -- //
-	MyCanvas *myc_HLTv4p2 = new MyCanvas("c_RecoLevel_Data_vs_recoMC_HLTv4p2", "Dimuon Mass [GeV]", "Events");
-	myc_HLTv4p2->SetLogx(1);
-	myc_HLTv4p2->SetLogy(0);
-	myc_HLTv4p2->SetYRange(2e-2, 5e6);
+	MyCanvas *myc_part1 = new MyCanvas("c_RecoLevel_Data_vs_recoMC_part1", "Dimuon Mass [GeV]", "Events");
+	myc_part1->SetLogx(1);
+	myc_part1->SetLogy(0);
+	myc_part1->SetYRange(2e-2, 5e6);
 
-	myc_HLTv4p2->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_HLTv4p2->Clone(), (TH1D*)h_totSignalMC_HLTv4p2->Clone(),
+	myc_part1->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_part1->Clone(), (TH1D*)h_totSignalMC_part1->Clone(),
 											"Data (HLT v4.2)", "Signal MC(reco-level)", "Data/MC",
 											kBlack, kOrange,
 											kFALSE, kTRUE,
 											"EP", "HISTSAME" );
-	myc_HLTv4p2->PrintCanvas();
+	myc_part1->PrintCanvas();
 
 
 	// -- HLT v4.3 -- //
-	MyCanvas *myc_HLTv4p3 = new MyCanvas("c_RecoLevel_Data_vs_recoMC_HLTv4p3", "Dimuon Mass [GeV]", "Events");
-	myc_HLTv4p3->SetLogx(1);
-	myc_HLTv4p3->SetLogy(0);
-	myc_HLTv4p3->SetYRange(2e-2, 5e6);
+	MyCanvas *myc_part2 = new MyCanvas("c_RecoLevel_Data_vs_recoMC_part2", "Dimuon Mass [GeV]", "Events");
+	myc_part2->SetLogx(1);
+	myc_part2->SetLogy(0);
+	myc_part2->SetYRange(2e-2, 5e6);
 
-	myc_HLTv4p3->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_HLTv4p3->Clone(), (TH1D*)h_totSignalMC_HLTv4p3->Clone(),
+	myc_part2->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_part2->Clone(), (TH1D*)h_totSignalMC_part2->Clone(),
 											"Data (HLT v4.3)", "Signal MC(reco-level)", "Data/MC",
 											kBlack, kOrange,
 											kFALSE, kTRUE,
 											"EP", "HISTSAME" );
-	myc_HLTv4p3->PrintCanvas();
+	myc_part2->PrintCanvas();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,8 +384,8 @@ void DiffXsecTools::BinByBinCorr_NoGenAcc()
 	h_NoGen_Reco = (TH1D*)f_Unfold->Get("h_NoGen_Reco")->Clone();
 	delete f_Unfold;
 
-	this->BinByBinCorrection_NoGen_ButReco( h_yield_HLTv4p2 );
-	this->BinByBinCorrection_NoGen_ButReco( h_yield_HLTv4p3 );
+	this->BinByBinCorrection_NoGen_ButReco( h_yield_part1 );
+	this->BinByBinCorrection_NoGen_ButReco( h_yield_part2 );
 }
 
 // -- Comparison: signal MC vs. "NoGenAcc" Events -- //
@@ -431,8 +437,8 @@ void DiffXsecTools::BinByBinCorrection_NoGen_ButReco( TH1D *h_yield )
 
 	TString Type = "";
 	TString HistName = h_yield->GetName();
-	if( HistName.Contains("HLTv4p2") ) Type = "HLTv4p2";
-	else if( HistName.Contains("HLTv4p3") ) Type = "HLTv4p3";
+	if( HistName.Contains("part1") ) Type = "part1";
+	else if( HistName.Contains("part2") ) Type = "part2";
 
 	MyCanvas *myc = new MyCanvas("c_RecoYield_BinbyBinCorr_Before_vs_After_"+Type, "Dimuon Mass (Reco-level) [GeV]", "Number of events");
 	myc->SetLogx(1);
@@ -471,434 +477,434 @@ void DiffXsecTools::PrintHistogram( TH1D *h )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // -- Unfolding correction for detector resolution: apply on the data before applying Acc*Eff correction -- //
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void DiffXsecTools::UnfoldingCorrection()
-{
-	if( f_Unfold == NULL )
-		// f_Unfold = new TFile(FileLocation + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
-		f_Unfold = TFile::Open(FileLocation + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
-	
-	f_Unfold->cd();
-	h_totSignalMC_GenLevel_WithinAcc = (TH1D*)f_Unfold->Get("h_Truth_RooUnfold")->Clone();
+// void DiffXsecTools::UnfoldingCorrection()
+// {
+//    if( f_Unfold == NULL )
+//       // f_Unfold = new TFile(FileLocation + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
+//       f_Unfold = TFile::Open(FileLocation + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
+//    
+//    f_Unfold->cd();
+//    h_totSignalMC_GenLevel_WithinAcc = (TH1D*)f_Unfold->Get("h_Truth_RooUnfold")->Clone();
 
-	// -- HLTv4.2 -- //
-	RooUnfoldResponse *UnfoldRes_HLTv4p2 = (RooUnfoldResponse*)f_Unfold->Get("h_RecoMass_h_GenMass")->Clone();
-	// RooUnfoldBayes *UnfoldBayes_HLTv4p2 = new RooUnfoldBayes(UnfoldRes_HLTv4p2, h_yield_HLTv4p2, 4);
-	RooUnfoldBayes *UnfoldBayes_HLTv4p2 = new RooUnfoldBayes(UnfoldRes_HLTv4p2, h_yield_HLTv4p2, 17); // -- iteration until convergence -- //
-	h_yield_HLTv4p2_Unfolded = (TH1D*)UnfoldBayes_HLTv4p2->Hreco();
-	h_yield_HLTv4p2_Unfolded->SetName("h_yield_HLTv4p2_Unfolded");
-	
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p2 = (TH1D*)h_totSignalMC_GenLevel_WithinAcc->Clone();
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p2->Scale( Lumi_HLTv4p2 / Lumi );
+//    // -- HLTv4.2 -- //
+//    RooUnfoldResponse *UnfoldRes_part1 = (RooUnfoldResponse*)f_Unfold->Get("h_RecoMass_h_GenMass")->Clone();
+//    // RooUnfoldBayes *UnfoldBayes_part1 = new RooUnfoldBayes(UnfoldRes_part1, h_yield_part1, 4);
+//    RooUnfoldBayes *UnfoldBayes_part1 = new RooUnfoldBayes(UnfoldRes_part1, h_yield_part1, 17); // -- iteration until convergence -- //
+//    h_yield_part1_Unfolded = (TH1D*)UnfoldBayes_part1->Hreco();
+//    h_yield_part1_Unfolded->SetName("h_yield_part1_Unfolded");
+//    
+//    h_totSignalMC_GenLevel_WithinAcc_part1 = (TH1D*)h_totSignalMC_GenLevel_WithinAcc->Clone();
+//    h_totSignalMC_GenLevel_WithinAcc_part1->Scale( lumi_part1 / lumi_all );
 
-	// -- HLTv4.3 -- //
-	RooUnfoldResponse *UnfoldRes_HLTv4p3 = (RooUnfoldResponse*)f_Unfold->Get("h_RecoMass_h_GenMass")->Clone();
-	// RooUnfoldBayes *UnfoldBayes_HLTv4p3 = new RooUnfoldBayes(UnfoldRes_HLTv4p3, h_yield_HLTv4p3, 4);
-	RooUnfoldBayes *UnfoldBayes_HLTv4p3 = new RooUnfoldBayes(UnfoldRes_HLTv4p3, h_yield_HLTv4p3, 17); // -- iteration until convergence -- //
-	h_yield_HLTv4p3_Unfolded = (TH1D*)UnfoldBayes_HLTv4p3->Hreco();
-	h_yield_HLTv4p3_Unfolded->SetName("h_yield_HLTv4p3_Unfolded");
+//    // -- HLTv4.3 -- //
+//    RooUnfoldResponse *UnfoldRes_part2 = (RooUnfoldResponse*)f_Unfold->Get("h_RecoMass_h_GenMass")->Clone();
+//    // RooUnfoldBayes *UnfoldBayes_part2 = new RooUnfoldBayes(UnfoldRes_part2, h_yield_part2, 4);
+//    RooUnfoldBayes *UnfoldBayes_part2 = new RooUnfoldBayes(UnfoldRes_part2, h_yield_part2, 17); // -- iteration until convergence -- //
+//    h_yield_part2_Unfolded = (TH1D*)UnfoldBayes_part2->Hreco();
+//    h_yield_part2_Unfolded->SetName("h_yield_part2_Unfolded");
 
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p3 = (TH1D*)h_totSignalMC_GenLevel_WithinAcc->Clone();
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p3->Scale( (Lumi - Lumi_HLTv4p2) / Lumi );
+//    h_totSignalMC_GenLevel_WithinAcc_part2 = (TH1D*)h_totSignalMC_GenLevel_WithinAcc->Clone();
+//    h_totSignalMC_GenLevel_WithinAcc_part2->Scale( (lumi_all - lumi_part1) / lumi_all );
 
-	delete f_Unfold;
+//    delete f_Unfold;
 
-	// -- Combined -- //
-	h_yield_HLTv4p2_Unfolded->Sumw2(); h_yield_HLTv4p3_Unfolded->Sumw2();
-	h_yield_Unfolded = (TH1D*)h_yield_HLTv4p2_Unfolded->Clone();
-	h_yield_Unfolded->Add( h_yield_HLTv4p3_Unfolded );
-}
+//    // -- Combined -- //
+//    h_yield_part1_Unfolded->Sumw2(); h_yield_part2_Unfolded->Sumw2();
+//    h_yield_Unfolded = (TH1D*)h_yield_part1_Unfolded->Clone();
+//    h_yield_Unfolded->Add( h_yield_part2_Unfolded );
+// }
 
-void DiffXsecTools::SaveCanvas_UnfoldingCorrection()
-{
-	this->SaveCanvas_preUnfold_vs_Unfold( "HLTv4p2", h_yield_HLTv4p2, h_yield_HLTv4p2_Unfolded );
-	this->SaveCanvas_preUnfold_vs_Unfold( "HLTv4p3", h_yield_HLTv4p3, h_yield_HLTv4p3_Unfolded );
+// void DiffXsecTools::SaveCanvas_UnfoldingCorrection()
+// {
+//    this->SaveCanvas_preUnfold_vs_Unfold( "part1", h_yield_part1, h_yield_part1_Unfolded );
+//    this->SaveCanvas_preUnfold_vs_Unfold( "part2", h_yield_part2, h_yield_part2_Unfolded );
 
-	this->SaveCanvas_preUnfold_vs_genMC( "HLTv4p2", h_yield_HLTv4p2, h_totSignalMC_GenLevel_WithinAcc_HLTv4p2 );
-	this->SaveCanvas_preUnfold_vs_genMC( "HLTv4p3", h_yield_HLTv4p3, h_totSignalMC_GenLevel_WithinAcc_HLTv4p3 );
+//    this->SaveCanvas_preUnfold_vs_genMC( "part1", h_yield_part1, h_totSignalMC_GenLevel_WithinAcc_part1 );
+//    this->SaveCanvas_preUnfold_vs_genMC( "part2", h_yield_part2, h_totSignalMC_GenLevel_WithinAcc_part2 );
 
-	this->SaveCanvas_Unfold_vs_genMC( "HLTv4p2", h_yield_HLTv4p2_Unfolded, h_totSignalMC_GenLevel_WithinAcc_HLTv4p2 );
-	this->SaveCanvas_Unfold_vs_genMC( "HLTv4p3", h_yield_HLTv4p3_Unfolded, h_totSignalMC_GenLevel_WithinAcc_HLTv4p3 );
-}
+//    this->SaveCanvas_Unfold_vs_genMC( "part1", h_yield_part1_Unfolded, h_totSignalMC_GenLevel_WithinAcc_part1 );
+//    this->SaveCanvas_Unfold_vs_genMC( "part2", h_yield_part2_Unfolded, h_totSignalMC_GenLevel_WithinAcc_part2 );
+// }
 
-void DiffXsecTools::SaveCanvas_preUnfold_vs_Unfold( TString Type, TH1D* h_yield, TH1D* h_yield_Unfolded )
-{
-	MyCanvas *myc = new MyCanvas("c_preUnfold_vs_Unfold_"+Type, "Dimuon Mass [GeV]", "Number of events");
-	myc->SetLogx(1);
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+// void DiffXsecTools::SaveCanvas_preUnfold_vs_Unfold( TString Type, TH1D* h_yield, TH1D* h_yield_Unfolded )
+// {
+//    MyCanvas *myc = new MyCanvas("c_preUnfold_vs_Unfold_"+Type, "Dimuon Mass [GeV]", "Number of events");
+//    myc->SetLogx(1);
+//    myc->SetLogy(0);
+//    myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield->Clone(), (TH1D*)h_yield_Unfolded->Clone(),
-											"Yield("+Type+", Pre-Unfolded)", "Yield("+Type+", Unfolded)", "PreUnfolded/Unfolded",
-											kBlack, kRed,
-											kFALSE, kFALSE,
-											"HIST", "HISTSAME" );
-	myc->PrintCanvas();
-}
+//    myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield->Clone(), (TH1D*)h_yield_Unfolded->Clone(),
+//                                  "Yield("+Type+", Pre-Unfolded)", "Yield("+Type+", Unfolded)", "PreUnfolded/Unfolded",
+//                                  kBlack, kRed,
+//                                  kFALSE, kFALSE,
+//                                  "HIST", "HISTSAME" );
+//    myc->PrintCanvas();
+// }
 
-void DiffXsecTools::SaveCanvas_preUnfold_vs_genMC( TString Type, TH1D* h_yield, TH1D* h_Truth_WithinAcc )
-{
-	MyCanvas *myc = new MyCanvas("c_preUnfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
-	myc->SetLogx(1);
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+// void DiffXsecTools::SaveCanvas_preUnfold_vs_genMC( TString Type, TH1D* h_yield, TH1D* h_Truth_WithinAcc )
+// {
+//    MyCanvas *myc = new MyCanvas("c_preUnfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
+//    myc->SetLogx(1);
+//    myc->SetLogy(0);
+//    myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield->Clone(), (TH1D*)h_Truth_WithinAcc->Clone(),
-											"Yield(" + Type + ")", "MC(gen-level)", "Data/MC",
-											kBlack, kOrange,
-											kFALSE, kTRUE,
-											"EP", "HISTSAME" );
-	myc->PrintCanvas();
-}
+//    myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield->Clone(), (TH1D*)h_Truth_WithinAcc->Clone(),
+//                                  "Yield(" + Type + ")", "MC(gen-level)", "Data/MC",
+//                                  kBlack, kOrange,
+//                                  kFALSE, kTRUE,
+//                                  "EP", "HISTSAME" );
+//    myc->PrintCanvas();
+// }
 
-void DiffXsecTools::SaveCanvas_Unfold_vs_genMC( TString Type, TH1D* h_yield_Unfolded, TH1D* h_Truth_WithinAcc )
-{
-	MyCanvas *myc = new MyCanvas("c_Unfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
-	myc->SetLogx(1);
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+// void DiffXsecTools::SaveCanvas_Unfold_vs_genMC( TString Type, TH1D* h_yield_Unfolded, TH1D* h_Truth_WithinAcc )
+// {
+//    MyCanvas *myc = new MyCanvas("c_Unfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
+//    myc->SetLogx(1);
+//    myc->SetLogy(0);
+//    myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_Unfolded->Clone(), (TH1D*)h_Truth_WithinAcc->Clone(),
-											"Yield("+Type+",Unfolded)", "MC(gen-level)", "Data/MC",
-											kBlack, kOrange,
-											kFALSE, kTRUE,
-											"EP", "HISTSAME" );
-	myc->PrintCanvas();
-}
+//    myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_Unfolded->Clone(), (TH1D*)h_Truth_WithinAcc->Clone(),
+//                                  "Yield("+Type+",Unfolded)", "MC(gen-level)", "Data/MC",
+//                                  kBlack, kOrange,
+//                                  kFALSE, kTRUE,
+//                                  "EP", "HISTSAME" );
+//    myc->PrintCanvas();
+// }
 
 void DiffXsecTools::AccEffCorrection()
 {
-	//////////////////////////////
-	// -- Acc*Eff Correction -- //
-	//////////////////////////////
-	// f_AccEff = new TFile(FileLocation + "/ROOTFile_AccEff.root"); f_AccEff->cd();
-	f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); f_AccEff->cd();
-	TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)f_AccEff->Get("g_AccEff");
-	// f_AccEff->Close();
+   //////////////////////////////
+   // -- Acc*Eff Correction -- //
+   //////////////////////////////
+   // f_AccEff = new TFile(FileLocation + "/ROOTFile_AccEff.root"); f_AccEff->cd();
+   f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); f_AccEff->cd();
+   TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)f_AccEff->Get("g_AccEff");
+   // f_AccEff->Close();
 
-	// -- HLTv4p2 -- //
-	h_yield_HLTv4p2_Unfolded_AccEff = (TH1D*)h_yield_HLTv4p2_Unfolded->Clone();
-	h_yield_HLTv4p2_Unfolded_AccEff->SetName("h_yield_HLTv4p2_Unfolded_AccEff");
-	this->Correction_AccEff(h_yield_HLTv4p2_Unfolded_AccEff, h_yield_HLTv4p2_Unfolded, g_AccEff);
+   // -- part1 -- //
+   // h_yield_part1_Unfolded_AccEff = (TH1D*)h_yield_part1_Unfolded->Clone();
+   // h_yield_part1_Unfolded_AccEff->SetName("h_yield_part1_Unfolded_AccEff");
+   // this->Correction_AccEff(h_yield_part1_Unfolded_AccEff, h_yield_part1_Unfolded, g_AccEff);
 
-	// -- HLTv4p3 -- //
-	h_yield_HLTv4p3_Unfolded_AccEff = (TH1D*)h_yield_HLTv4p3_Unfolded->Clone();
-	h_yield_HLTv4p3_Unfolded_AccEff->SetName("h_yield_HLTv4p3_Unfolded_AccEff");
-	this->Correction_AccEff(h_yield_HLTv4p3_Unfolded_AccEff, h_yield_HLTv4p3_Unfolded, g_AccEff);
+   // // -- part2 -- //
+   // h_yield_part2_Unfolded_AccEff = (TH1D*)h_yield_part2_Unfolded->Clone();
+   // h_yield_part2_Unfolded_AccEff->SetName("h_yield_part2_Unfolded_AccEff");
+   // this->Correction_AccEff(h_yield_part2_Unfolded_AccEff, h_yield_part2_Unfolded, g_AccEff);
 
-	// -- Combine -- //
-	h_yield_HLTv4p2_Unfolded_AccEff->Sumw2(); h_yield_HLTv4p3_Unfolded_AccEff->Sumw2();
-	h_yield_Unfolded_AccEff = (TH1D*)h_yield_HLTv4p2_Unfolded_AccEff->Clone();
-	h_yield_Unfolded_AccEff->Add( h_yield_HLTv4p3_Unfolded_AccEff );
+   // -- Combine -- //
+   // h_yield_part1_Unfolded_AccEff->Sumw2(); h_yield_part2_Unfolded_AccEff->Sumw2();
+   // h_yield_Unfolded_AccEff = (TH1D*)h_yield_part1_Unfolded_AccEff->Clone();
+   // h_yield_Unfolded_AccEff->Add( h_yield_part2_Unfolded_AccEff );
 
 }
 
 void DiffXsecTools::AccEffCorrection_ToPreUnfolded()
 {
-	if( f_AccEff == NULL )
-		// f_AccEff = new TFile(FileLocation + "/ROOTFile_AccEff.root");
-		f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); 
+   if( f_AccEff == NULL )
+      // f_AccEff = new TFile(FileLocation + "/ROOTFile_AccEff.root");
+      f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); 
 
-	f_AccEff->cd();
-	TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)f_AccEff->Get("g_AccEff");
-	// f_AccEff->Close();
+   f_AccEff->cd();
+   TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)f_AccEff->Get("g_AccEff");
+   // f_AccEff->Close();
 
-	// -- HLT v4.2 -- //
-	h_yield_HLTv4p2_AccEff = (TH1D*)h_yield_HLTv4p2->Clone();
-	h_yield_HLTv4p2_AccEff->SetName("h_yield_HLTv4p2_AccEff");
-	this->Correction_AccEff(h_yield_HLTv4p2_AccEff, h_yield_HLTv4p2, g_AccEff);
+   // -- HLT v4.2 -- //
+   h_yield_part1_AccEff = (TH1D*)h_yield_part1->Clone();
+   h_yield_part1_AccEff->SetName("h_yield_part1_AccEff");
+   this->Correction_AccEff(h_yield_part1_AccEff, h_yield_part1, g_AccEff);
 
-	// -- HLT v4.3 -- //
-	h_yield_HLTv4p3_AccEff = (TH1D*)h_yield_HLTv4p3->Clone();
-	h_yield_HLTv4p3_AccEff->SetName("h_yield_HLTv4p3_AccEff");
-	this->Correction_AccEff(h_yield_HLTv4p3_AccEff, h_yield_HLTv4p3, g_AccEff);
+   // -- HLT v4.3 -- //
+   h_yield_part2_AccEff = (TH1D*)h_yield_part2->Clone();
+   h_yield_part2_AccEff->SetName("h_yield_part2_AccEff");
+   this->Correction_AccEff(h_yield_part2_AccEff, h_yield_part2, g_AccEff);
 
-	// -- Combine -- //
-	h_yield_HLTv4p2_AccEff->Sumw2(); h_yield_HLTv4p3_AccEff->Sumw2();
-	h_yield_AccEff = (TH1D*)h_yield_HLTv4p2_AccEff->Clone();
-	h_yield_AccEff->Add( h_yield_HLTv4p3_AccEff );
+   // -- Combine -- //
+   h_yield_part1_AccEff->Sumw2(); h_yield_part2_AccEff->Sumw2();
+   h_yield_AccEff = (TH1D*)h_yield_part1_AccEff->Clone();
+   h_yield_AccEff->Add( h_yield_part2_AccEff );
 }
 
 void DiffXsecTools::SaveCanvas_AccEffCorrection()
 {
-	this->SaveCanvas_YieldAccEff_Unfold_vs_genMC( "HLTv4p2", h_yield_HLTv4p2_Unfolded_AccEff, h_totSignalMC_GenLevel_HLTv4p2 );
-	this->SaveCanvas_YieldAccEff_Unfold_vs_genMC( "HLTv4p3", h_yield_HLTv4p3_Unfolded_AccEff, h_totSignalMC_GenLevel_HLTv4p3 );
+   this->SaveCanvas_YieldAccEff_Unfold_vs_genMC( "part1", h_yield_part1_Unfolded_AccEff, h_totSignalMC_GenLevel_part1 );
+   this->SaveCanvas_YieldAccEff_Unfold_vs_genMC( "part2", h_yield_part2_Unfolded_AccEff, h_totSignalMC_GenLevel_part2 );
 
 
 }
 
 void DiffXsecTools::SaveCanvas_AccEffCorrection_ToPreUnfolded()
 {
-	this->SaveCanvas_YieldAccEff_preUnfold_vs_genMC( "HLTv4p2", h_yield_HLTv4p2_AccEff, h_totSignalMC_GenLevel_HLTv4p2 );
-	this->SaveCanvas_YieldAccEff_preUnfold_vs_genMC( "HLTv4p3", h_yield_HLTv4p3_AccEff, h_totSignalMC_GenLevel_HLTv4p3 );
+   this->SaveCanvas_YieldAccEff_preUnfold_vs_genMC( "part1", h_yield_part1_AccEff, h_totSignalMC_GenLevel_part1 );
+   this->SaveCanvas_YieldAccEff_preUnfold_vs_genMC( "part2", h_yield_part2_AccEff, h_totSignalMC_GenLevel_part2 );
 }
 
 
 void DiffXsecTools::Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff)
 {
-	Int_t nBins = h_yield->GetNbinsX();
-	for(Int_t i=0; i<nBins; i++)
-	{
-		Int_t i_bin = i+1;
+   Int_t nBins = h_yield->GetNbinsX();
+   for(Int_t i=0; i<nBins; i++)
+   {
+      Int_t i_bin = i+1;
 
-		Double_t x_AccEff, y_AccEff;
-		g_AccEff->GetPoint(i, x_AccEff, y_AccEff);
+      Double_t x_AccEff, y_AccEff;
+      g_AccEff->GetPoint(i, x_AccEff, y_AccEff);
 
-		Double_t Yield = h_yield->GetBinContent(i_bin);
-		Double_t Yield_AfterAccEff = Yield / y_AccEff;
+      Double_t Yield = h_yield->GetBinContent(i_bin);
+      Double_t Yield_AfterAccEff = Yield / y_AccEff;
 
-		// -- Set the central value -- //
-		h_yield_AccEff->SetBinContent( i_bin, Yield_AfterAccEff );
+      // -- Set the central value -- //
+      h_yield_AccEff->SetBinContent( i_bin, Yield_AfterAccEff );
 
-		// -- Calculate the error -- //
-		Double_t Error = CalcError_Yield_AccEff(Yield_AfterAccEff, 
-												Yield, sqrt(Yield), 
-												y_AccEff, g_AccEff->GetErrorYhigh(i) );
-		if( Error != 0 )
-			h_yield_AccEff->SetBinError(i_bin, Error);
-	}
+      // -- Calculate the error -- //
+      Double_t Error = CalcError_Yield_AccEff(Yield_AfterAccEff, 
+                                    Yield, sqrt(Yield), 
+                                    y_AccEff, g_AccEff->GetErrorYhigh(i) );
+      if( Error != 0 )
+         h_yield_AccEff->SetBinError(i_bin, Error);
+   }
 }
 
 Double_t DiffXsecTools::CalcError_Yield_AccEff(Double_t Yield_AfterAccEff, Double_t Yield, Double_t sigma_Yield, Double_t AccEff, Double_t sigma_AccEff)
 {
-	if( Yield <= 0 || AccEff == 0 )
-		return 0;
-	Double_t Partial_Yield = ( sigma_Yield / Yield ) * ( sigma_Yield / Yield );
-	Double_t Partial_AccEff = ( sigma_AccEff / AccEff ) * ( sigma_AccEff / AccEff );
+   if( Yield <= 0 || AccEff == 0 )
+      return 0;
+   Double_t Partial_Yield = ( sigma_Yield / Yield ) * ( sigma_Yield / Yield );
+   Double_t Partial_AccEff = ( sigma_AccEff / AccEff ) * ( sigma_AccEff / AccEff );
 
-	Double_t error = fabs(Yield_AfterAccEff) * sqrt( Partial_Yield + Partial_AccEff );
-	return error;
+   Double_t error = fabs(Yield_AfterAccEff) * sqrt( Partial_Yield + Partial_AccEff );
+   return error;
 }
 
 void DiffXsecTools::SaveCanvas_YieldAccEff_Unfold_vs_genMC( TString Type, TH1D* h_yield_Unfolded_AccEff, TH1D* h_totSignalMC_GenLevel )
 {
-	MyCanvas *myc = new MyCanvas("c_YieldAccEff_Unfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
-	myc->SetLogx(1);
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+   MyCanvas *myc = new MyCanvas("c_YieldAccEff_Unfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
+   myc->SetLogx(1);
+   myc->SetLogy(0);
+   myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_Unfolded_AccEff->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
-											"Yield("+Type+",Unfolded,AccEff)", "MC(gen-level)", "Data/MC",
-											kBlack, kOrange,
-											kFALSE, kTRUE,
-											"EP", "HISTSAME" );
-	myc->PrintCanvas();
+   myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_Unfolded_AccEff->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
+                                 "Yield("+Type+",Unfolded,AccEff)", "MC(gen-level)", "Data/MC",
+                                 kBlack, kOrange,
+                                 kFALSE, kTRUE,
+                                 "EP", "HISTSAME" );
+   myc->PrintCanvas();
 }
 
 void DiffXsecTools::SaveCanvas_YieldAccEff_preUnfold_vs_genMC( TString Type, TH1D* h_yield_AccEff, TH1D* h_totSignalMC_GenLevel)
 {
-	MyCanvas *myc = new MyCanvas("c_YieldAccEff_preUnfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
-	myc->SetLogx(1);
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+   MyCanvas *myc = new MyCanvas("c_YieldAccEff_preUnfold_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Number of events");
+   myc->SetLogx(1);
+   myc->SetLogy(0);
+   myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_AccEff->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
-											"Yield("+Type+",AccEff)", "MC(gen-level)", "Data/MC",
-											kBlack, kOrange,
-											kFALSE, kTRUE,
-											"EP", "HISTSAME" );
-	myc->PrintCanvas();
+   myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_AccEff->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
+                                 "Yield("+Type+",AccEff)", "MC(gen-level)", "Data/MC",
+                                 kBlack, kOrange,
+                                 kFALSE, kTRUE,
+                                 "EP", "HISTSAME" );
+   myc->PrintCanvas();
 }
 
 void DiffXsecTools::Calc_EffSF()
 {
-	///////////////////////////////////////////////////////
-	// -- Calculation of efficiency correction factor -- //
-	///////////////////////////////////////////////////////
-	if( this->f_AccEff == NULL )
-		this->f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); 
+   ///////////////////////////////////////////////////////
+   // -- Calculation of efficiency correction factor -- //
+   ///////////////////////////////////////////////////////
+   if( this->f_AccEff == NULL )
+      this->f_AccEff = TFile::Open(FileLocation + "/ROOTFile_AccEff.root"); 
 
-	TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff")->Clone();
-	this->g_Eff_Corr_HLTv4p2 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_HLTv4p2")->Clone();
-	this->g_Eff_Corr_HLTv4p3 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_HLTv4p3")->Clone();
-	delete f_AccEff;
+   TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff")->Clone();
+   this->g_Eff_Corr_part1 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_part1")->Clone();
+   this->g_Eff_Corr_part2 = (TGraphAsymmErrors*)f_AccEff->Get("g_Eff_Corr_part2")->Clone();
+   delete f_AccEff;
 
-	// -- Calculate efficiency scale factor for each mass bin: SF = Corrected Eff / Un-corrected Eff -- //
-	this->g_EffCorr_HLTv4p2 = (TGraphAsymmErrors*)g_Eff->Clone();
-	this->MakeRatioGraph(g_EffCorr_HLTv4p2, g_Eff_Corr_HLTv4p2, g_Eff);
+   // -- Calculate efficiency scale factor for each mass bin: SF = Corrected Eff / Un-corrected Eff -- //
+   this->g_EffCorr_part1 = (TGraphAsymmErrors*)g_Eff->Clone();
+   this->MakeRatioGraph(g_EffCorr_part1, g_Eff_Corr_part1, g_Eff);
 
-	this->g_EffCorr_HLTv4p3 = (TGraphAsymmErrors*)g_Eff->Clone();
-	this->MakeRatioGraph(g_EffCorr_HLTv4p3, g_Eff_Corr_HLTv4p3, g_Eff);
+   this->g_EffCorr_part2 = (TGraphAsymmErrors*)g_Eff->Clone();
+   this->MakeRatioGraph(g_EffCorr_part2, g_Eff_Corr_part2, g_Eff);
 }
 
 void DiffXsecTools::EfficiencyScaleFactor()
 {
-	if( g_EffCorr_HLTv4p2 == NULL || g_EffCorr_HLTv4p3 == NULL )
-		this->Calc_EffSF();
+   if( g_EffCorr_part1 == NULL || g_EffCorr_part2 == NULL )
+      this->Calc_EffSF();
 
-	/////////////////////////////////////////////////////////////
-	// -- Apply Efficiency correction factors to each Yield -- //
-	/////////////////////////////////////////////////////////////
-	h_yield_HLTv4p2_EffCorr = (TH1D*)h_yield_HLTv4p2_Unfolded_AccEff->Clone();
-	this->ApplyEffCorr_Yield(h_yield_HLTv4p2_EffCorr, h_yield_HLTv4p2_Unfolded_AccEff, g_EffCorr_HLTv4p2);
+   /////////////////////////////////////////////////////////////
+   // -- Apply Efficiency correction factors to each Yield -- //
+   /////////////////////////////////////////////////////////////
+   h_yield_part1_EffCorr = (TH1D*)h_yield_part1_Unfolded_AccEff->Clone();
+   this->ApplyEffCorr_Yield(h_yield_part1_EffCorr, h_yield_part1_Unfolded_AccEff, g_EffCorr_part1);
 
-	h_yield_HLTv4p3_EffCorr = (TH1D*)h_yield_HLTv4p3_Unfolded_AccEff->Clone();
-	this->ApplyEffCorr_Yield(h_yield_HLTv4p3_EffCorr, h_yield_HLTv4p3_Unfolded_AccEff, g_EffCorr_HLTv4p3);
+   h_yield_part2_EffCorr = (TH1D*)h_yield_part2_Unfolded_AccEff->Clone();
+   this->ApplyEffCorr_Yield(h_yield_part2_EffCorr, h_yield_part2_Unfolded_AccEff, g_EffCorr_part2);
 
-	/////////////////////////////
-	// -- Combine the yield -- //
-	/////////////////////////////
-	h_yield_HLTv4p2_EffCorr->Sumw2(); h_yield_HLTv4p3_EffCorr->Sumw2();
-	h_yield_EffCorr = (TH1D*)h_yield_HLTv4p2_EffCorr->Clone();
-	h_yield_EffCorr->Add( h_yield_HLTv4p3_EffCorr );
+   /////////////////////////////
+   // -- Combine the yield -- //
+   /////////////////////////////
+   h_yield_part1_EffCorr->Sumw2(); h_yield_part2_EffCorr->Sumw2();
+   h_yield_EffCorr = (TH1D*)h_yield_part1_EffCorr->Clone();
+   h_yield_EffCorr->Add( h_yield_part2_EffCorr );
 }
 
 void DiffXsecTools::MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2)
 {
-	g_ratio->Set(0); // -- Remove all points (reset) -- //
+   g_ratio->Set(0); // -- Remove all points (reset) -- //
 
-	Int_t NPoints = g1->GetN();
-	for(Int_t i_p=0; i_p<NPoints; i_p++)
-	{
-		// -- Get g1 point -- //
-		Double_t x1, y1;
-		g1->GetPoint(i_p, x1, y1);
-		Double_t error1 = ReturnLargerValue( g1->GetErrorYhigh(i_p), g1->GetErrorYlow(i_p) );
+   Int_t NPoints = g1->GetN();
+   for(Int_t i_p=0; i_p<NPoints; i_p++)
+   {
+      // -- Get g1 point -- //
+      Double_t x1, y1;
+      g1->GetPoint(i_p, x1, y1);
+      Double_t error1 = ReturnLargerValue( g1->GetErrorYhigh(i_p), g1->GetErrorYlow(i_p) );
 
-		// -- Get g2 point -- //
-		Double_t x2, y2;
-		g2->GetPoint(i_p, x2, y2);
-		Double_t error2 = ReturnLargerValue( g2->GetErrorYhigh(i_p), g2->GetErrorYlow(i_p) );
+      // -- Get g2 point -- //
+      Double_t x2, y2;
+      g2->GetPoint(i_p, x2, y2);
+      Double_t error2 = ReturnLargerValue( g2->GetErrorYhigh(i_p), g2->GetErrorYlow(i_p) );
 
-		Double_t ratio;
-		Double_t ratio_error;
-		if(y1 != 0 && error1 != 0 && y2 != 0 && error2 != 0)
-		{
-			// -- calculate ratio & error -- //
-			ratio = y1 / y2;
-			ratio_error = Error_PropagatedAoverB(y1, error1, y2, error2);
-		}
-		else if( y1 != 0 && y2 != 0 && (error1 == 0 || error2 == 0) )
-		{
-			ratio = y1 / y2;
-			ratio_error = 0;
-		}
-		else
-		{
-			ratio = 0;
-			ratio_error = 0;
-		}
+      Double_t ratio;
+      Double_t ratio_error;
+      if(y1 != 0 && error1 != 0 && y2 != 0 && error2 != 0)
+      {
+         // -- calculate ratio & error -- //
+         ratio = y1 / y2;
+         ratio_error = Error_PropagatedAoverB(y1, error1, y2, error2);
+      }
+      else if( y1 != 0 && y2 != 0 && (error1 == 0 || error2 == 0) )
+      {
+         ratio = y1 / y2;
+         ratio_error = 0;
+      }
+      else
+      {
+         ratio = 0;
+         ratio_error = 0;
+      }
 
-		// -- Set Central value -- //
-		g_ratio->SetPoint(i_p, x1, ratio);
+      // -- Set Central value -- //
+      g_ratio->SetPoint(i_p, x1, ratio);
 
-		// -- Set the error -- //
-		Double_t error_XLow = g1->GetErrorXlow(i_p);
-		Double_t error_Xhigh = g1->GetErrorXhigh(i_p);
-		g_ratio->SetPointError(i_p, error_XLow, error_Xhigh, ratio_error, ratio_error);
+      // -- Set the error -- //
+      Double_t error_XLow = g1->GetErrorXlow(i_p);
+      Double_t error_Xhigh = g1->GetErrorXhigh(i_p);
+      g_ratio->SetPointError(i_p, error_XLow, error_Xhigh, ratio_error, ratio_error);
 
-	}
+   }
 }
 
-void DiffXsecTools::SaveCanvas_EffCorr_HLTv4p2_vs_HLTv4p3()
+void DiffXsecTools::SaveCanvas_EffCorr_part1_vs_part2()
 {
-	MyCanvas *myc_EffCorr = new MyCanvas("c_EffCorr_HLTv4p2_vs_HLTv4p3", "Dimuon Mass [GeV]", "Correction");
-	myc_EffCorr->isLogX = kTRUE;
-	myc_EffCorr->LowerEdge_Ratio = 0.95; myc_EffCorr->UpperEdge_Ratio = 1.05;
-	myc_EffCorr->LowerEdge_Y = 0.8; myc_EffCorr->UpperEdge_Y = 1.1;
-	myc_EffCorr->Legend_x1 = 0.55;
+   MyCanvas *myc_EffCorr = new MyCanvas("c_EffCorr_part1_vs_part2", "Dimuon Mass [GeV]", "Correction");
+   myc_EffCorr->isLogX = kTRUE;
+   myc_EffCorr->LowerEdge_Ratio = 0.95; myc_EffCorr->UpperEdge_Ratio = 1.05;
+   myc_EffCorr->LowerEdge_Y = 0.8; myc_EffCorr->UpperEdge_Y = 1.1;
+   myc_EffCorr->Legend_x1 = 0.55;
 
-	myc_EffCorr->CanvasWithGraphRatioPlot(g_EffCorr_HLTv4p2, g_EffCorr_HLTv4p3,
-									"EffCorr (HLTv4.2)", "EffCorr (HLTv4.3)", "HLTv4.2/HLTv4.3",
-									kOrange+1, kGreen+1 );
+   myc_EffCorr->CanvasWithGraphRatioPlot(g_EffCorr_part1, g_EffCorr_part2,
+                           "EffCorr (HLTv4.2)", "EffCorr (HLTv4.3)", "HLTv4.2/HLTv4.3",
+                           kOrange+1, kGreen+1 );
 
-	myc_EffCorr->c->SaveAs("c_EffCorr_HLTv4p2_vs_HLTv4p3.pdf");
+   myc_EffCorr->c->SaveAs("c_EffCorr_part1_vs_part2.pdf");
 }
 
 void DiffXsecTools::ApplyEffCorr_Yield(TH1D *h_yield_EffCorr, TH1D *h_yield, TGraphAsymmErrors* g_EffCorr)
 {
-	Int_t NPoints = g_EffCorr->GetN();
-	Int_t nBins = h_yield->GetNbinsX();
+   Int_t NPoints = g_EffCorr->GetN();
+   Int_t nBins = h_yield->GetNbinsX();
 
-	if( NPoints != nBins )
-	{
-		cout << "# Points in EffCorr != # Bins of yield histogram!" << endl;
-		return;
-	}
+   if( NPoints != nBins )
+   {
+      cout << "# Points in EffCorr != # Bins of yield histogram!" << endl;
+      return;
+   }
 
-	for(Int_t i_p=0; i_p<NPoints; i_p++)
-	{
-		// -- Get g_EffCorr point -- //
-		Double_t mass, EffCorr;
-		g_EffCorr->GetPoint(i_p, mass, EffCorr);
-		Double_t error_EffCorr = ReturnLargerValue( g_EffCorr->GetErrorYhigh(i_p), g_EffCorr->GetErrorYlow(i_p) );
+   for(Int_t i_p=0; i_p<NPoints; i_p++)
+   {
+      // -- Get g_EffCorr point -- //
+      Double_t mass, EffCorr;
+      g_EffCorr->GetPoint(i_p, mass, EffCorr);
+      Double_t error_EffCorr = ReturnLargerValue( g_EffCorr->GetErrorYhigh(i_p), g_EffCorr->GetErrorYlow(i_p) );
 
-		Int_t i_bin = i_p + 1;
-		Double_t yield = h_yield->GetBinContent(i_bin);
-		Double_t error_yield = h_yield->GetBinError(i_bin);
+      Int_t i_bin = i_p + 1;
+      Double_t yield = h_yield->GetBinContent(i_bin);
+      Double_t error_yield = h_yield->GetBinError(i_bin);
 
-		Double_t yield_EffCorr = yield / EffCorr;
-		Double_t error_yield_EffCorr = CalcError_Yield_AccEff(yield_EffCorr, yield, error_yield, EffCorr, error_EffCorr);
+      Double_t yield_EffCorr = yield / EffCorr;
+      Double_t error_yield_EffCorr = CalcError_Yield_AccEff(yield_EffCorr, yield, error_yield, EffCorr, error_EffCorr);
 
-		// printf("[%d bin] (yield, EffCorr, yield_EffCorr) = (%.3lf, %.3lf, %.3lf)\n", i_bin, yield, EffCorr, yield_EffCorr);
+      // printf("[%d bin] (yield, EffCorr, yield_EffCorr) = (%.3lf, %.3lf, %.3lf)\n", i_bin, yield, EffCorr, yield_EffCorr);
 
-		h_yield_EffCorr->SetBinContent(i_bin, yield_EffCorr);
-		h_yield_EffCorr->SetBinError(i_bin, error_yield_EffCorr);
-	}
+      h_yield_EffCorr->SetBinContent(i_bin, yield_EffCorr);
+      h_yield_EffCorr->SetBinError(i_bin, error_yield_EffCorr);
+   }
 
 }
 
 void DiffXsecTools::SaveCanvas_EfficiencyCorrection()
 {
-	this->SaveCanvas_EffCorr_HLTv4p2_vs_HLTv4p3();
+   this->SaveCanvas_EffCorr_part1_vs_part2();
 
-	this->SaveCanvas_Yield_UnCorr_vs_EffCorr("HLTv4p2", h_yield_HLTv4p2_EffCorr, h_yield_HLTv4p2_Unfolded_AccEff);
-	this->SaveCanvas_Yield_UnCorr_vs_EffCorr("HLTv4p3", h_yield_HLTv4p3_EffCorr, h_yield_HLTv4p3_Unfolded_AccEff);
+   this->SaveCanvas_Yield_UnCorr_vs_EffCorr("part1", h_yield_part1_EffCorr, h_yield_part1_Unfolded_AccEff);
+   this->SaveCanvas_Yield_UnCorr_vs_EffCorr("part2", h_yield_part2_EffCorr, h_yield_part2_Unfolded_AccEff);
 
-	this->SaveCanvas_Yield_EffCorr_vs_genMC("HLTv4p2", h_yield_HLTv4p2_EffCorr, h_totSignalMC_GenLevel_HLTv4p2);
-	this->SaveCanvas_Yield_EffCorr_vs_genMC("HLTv4p3", h_yield_HLTv4p3_EffCorr, h_totSignalMC_GenLevel_HLTv4p3);
+   this->SaveCanvas_Yield_EffCorr_vs_genMC("part1", h_yield_part1_EffCorr, h_totSignalMC_GenLevel_part1);
+   this->SaveCanvas_Yield_EffCorr_vs_genMC("part2", h_yield_part2_EffCorr, h_totSignalMC_GenLevel_part2);
 }
 
 void DiffXsecTools::SaveCanvas_Yield_UnCorr_vs_EffCorr( TString Type, TH1D* h_yield_EffCorr, TH1D* h_yield )
 {
-	MyCanvas *myc = new MyCanvas("c_Yield_UnCorr_vs_EffCorr_"+Type, "Dimuon Mass [GeV]", "Events");
-	myc->SetLogx();
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
-	myc->SetRatioRange(0.95, 1.1);
+   MyCanvas *myc = new MyCanvas("c_Yield_UnCorr_vs_EffCorr_"+Type, "Dimuon Mass [GeV]", "Events");
+   myc->SetLogx();
+   myc->SetLogy(0);
+   myc->SetYRange(2e-2, 5e6);
+   myc->SetRatioRange(0.95, 1.1);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_EffCorr->Clone(), (TH1D*)h_yield->Clone(),
-											"Yield("+Type+", EffCorr)", "Yield("+Type+", UnCorr)", "Corr/UnCorr",
-											kRed, kBlack,
-											kFALSE, kFALSE, 
-											"EP", "EPSAME");
-	myc->PrintCanvas();
+   myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_EffCorr->Clone(), (TH1D*)h_yield->Clone(),
+                                 "Yield("+Type+", EffCorr)", "Yield("+Type+", UnCorr)", "Corr/UnCorr",
+                                 kRed, kBlack,
+                                 kFALSE, kFALSE, 
+                                 "EP", "EPSAME");
+   myc->PrintCanvas();
 }
 
 void DiffXsecTools::SaveCanvas_Yield_EffCorr_vs_genMC( TString Type, TH1D *h_yield_EffCorr, TH1D *h_totSignalMC_GenLevel  )
 {
-	MyCanvas *myc = new MyCanvas("c_yield_EffCorr_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Events");
-	myc->SetLogx();
-	myc->SetLogy(0);
-	myc->SetYRange(2e-2, 5e6);
+   MyCanvas *myc = new MyCanvas("c_yield_EffCorr_vs_genMC_"+Type, "Dimuon Mass [GeV]", "Events");
+   myc->SetLogx();
+   myc->SetLogy(0);
+   myc->SetYRange(2e-2, 5e6);
 
-	myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_EffCorr->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
-											"Yield("+Type+", EffCorr)", "Signal MC(gen-level)", "Data/MC",
-											kBlack, kOrange,
-											kFALSE, kTRUE,
-											"EP", "HISTSAME" );
-	myc->PrintCanvas();
+   myc->CanvasWithHistogramsRatioPlot((TH1D*)h_yield_EffCorr->Clone(), (TH1D*)h_totSignalMC_GenLevel->Clone(),
+                                 "Yield("+Type+", EffCorr)", "Signal MC(gen-level)", "Data/MC",
+                                 kBlack, kOrange,
+                                 kFALSE, kTRUE,
+                                 "EP", "HISTSAME" );
+   myc->PrintCanvas();
 }
 
-void DiffXsecTools::FSRCorrection()
-{
-	//////////////////////////
-	// -- FSR Correction -- //
-	//////////////////////////
-	// f_FSR = new TFile(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root"); f_FSR->cd();
-	f_FSR = TFile::Open(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root"); f_FSR->cd();
-	h_Truth_preFSR = (TH1D*)f_FSR->Get("h_mass_preFSR")->Clone();
+// void DiffXsecTools::FSRCorrection()
+// {
+//    //////////////////////////
+//    // -- FSR Correction -- //
+//    //////////////////////////
+//    // f_FSR = new TFile(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root"); f_FSR->cd();
+//    f_FSR = TFile::Open(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root"); f_FSR->cd();
+//    h_Truth_preFSR = (TH1D*)f_FSR->Get("h_mass_preFSR")->Clone();
 
-	RooUnfoldResponse *UnfoldRes_FSR = (RooUnfoldResponse*)f_FSR->Get("UnfoldRes")->Clone();
+//    RooUnfoldResponse *UnfoldRes_FSR = (RooUnfoldResponse*)f_FSR->Get("UnfoldRes")->Clone();
 
-	delete f_FSR;
+//    delete f_FSR;
 
-	// RooUnfoldBayes *UnfoldBayes_FSR = new RooUnfoldBayes(UnfoldRes_FSR, h_yield_EffCorr, 4);
-	// h_yield_FSRCorr = (TH1D*)UnfoldBayes_FSR->Hreco();
+//    // RooUnfoldBayes *UnfoldBayes_FSR = new RooUnfoldBayes(UnfoldRes_FSR, h_yield_EffCorr, 4);
+//    // h_yield_FSRCorr = (TH1D*)UnfoldBayes_FSR->Hreco();
 
-	RooUnfoldInvert *UnfoldInvert_FSR = new RooUnfoldInvert(UnfoldRes_FSR, h_yield_EffCorr); // -- use inverting method after following recommendation by stat.committee -- //
-	h_yield_FSRCorr = (TH1D*)UnfoldInvert_FSR->Hreco();
-	
-}
+//    RooUnfoldInvert *UnfoldInvert_FSR = new RooUnfoldInvert(UnfoldRes_FSR, h_yield_EffCorr); // -- use inverting method after following recommendation by stat.committee -- //
+//    h_yield_FSRCorr = (TH1D*)UnfoldInvert_FSR->Hreco();
+//    
+// }
 
 void DiffXsecTools::SaveCanvas_FSRCorrection()
 {
@@ -961,23 +967,23 @@ void DiffXsecTools::CalcXsec()
 	////////////////////////////////////
 	h_xSec_Raw = (TH1D*)h_yield_Raw->Clone();
 	h_xSec_Raw->Sumw2();
-	h_xSec_Raw->Scale( 1 / Lumi );
+	h_xSec_Raw->Scale( 1 / lumi_all );
 
 	h_xSec_Unfolded = (TH1D*)h_yield_Unfolded->Clone();
 	h_xSec_Unfolded->Sumw2();
-	h_xSec_Unfolded->Scale( 1 / Lumi );
+	h_xSec_Unfolded->Scale( 1 / lumi_all );
 
 	h_xSec_Unfolded_AccEff = (TH1D*)h_yield_Unfolded_AccEff->Clone();
 	h_xSec_Unfolded_AccEff->Sumw2();
-	h_xSec_Unfolded_AccEff->Scale( 1 / Lumi );
+	h_xSec_Unfolded_AccEff->Scale( 1 / lumi_all );
 
 	h_xSec_FSRCorr = (TH1D*)h_yield_FSRCorr->Clone();
 	h_xSec_FSRCorr->Sumw2();
-	h_xSec_FSRCorr->Scale( 1 / Lumi );
+	h_xSec_FSRCorr->Scale( 1 / lumi_all );
 
  	h_xSec_aMCNLO = (TH1D*)h_Truth_preFSR->Clone();
 	h_xSec_aMCNLO->Sumw2();
-	h_xSec_aMCNLO->Scale( 1 / Lumi );
+	h_xSec_aMCNLO->Scale( 1 / lumi_all );
 
 	////////////////////////////////
 	// -- X-sec/dM Calculation -- //
@@ -1224,11 +1230,11 @@ void DiffXsecTools::CalcHistogram_RelStatUnc()
 {
 	f_data = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
 	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
-	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
+	h_data = (TH1D*)h_data->Rebin(binnum, h_data->GetName(), bins);
 
-	h_RelUnc_Stat = new TH1D("h_RelUnc_Stat", "", nMassBin, MassBinEdges);
+	h_RelUnc_Stat = new TH1D("h_RelUnc_Stat", "", binnum, bins);
 
-	for(Int_t i=0; i<nMassBin; i++)
+	for(Int_t i=0; i<binnum; i++)
 	{
 		Int_t i_bin = i+1;
 		Double_t nEvent_Unfold = h_yield_Unfolded->GetBinContent(i_bin);
@@ -1240,7 +1246,7 @@ void DiffXsecTools::CalcHistogram_RelStatUnc()
 		h_RelUnc_Stat->SetBinError(i_bin, 0);
 
 		printf( "[%.2d bin: (%.4lf, %.4lf)] ( nEvent_Unfolded, nEvent_Data, sqrt(nEvent_Data), StatUnc(%%) ) = (%12.1lf, %12.d, %12.1lf, %12.3lf)\n", 
-			i_bin, MassBinEdges[i], MassBinEdges[i+1], nEvent_Unfold, nEvent_Data, sqrt(nEvent_Data), RelUnc*100 );
+			i_bin, bins[i], bins[i+1], nEvent_Unfold, nEvent_Data, sqrt(nEvent_Data), RelUnc*100 );
 	}
 
 	delete f_data;
@@ -1251,7 +1257,7 @@ void DiffXsecTools::SetStatUnc_DiffXsec(TH1D* h_DiffXsec)
 	if( h_RelUnc_Stat == NULL )
 		this->CalcHistogram_RelStatUnc();
 
-	for(Int_t i=0; i<nMassBin; i++)
+	for(Int_t i=0; i<binnum; i++)
 	{
 		Int_t i_bin = i+1;
 
@@ -1304,38 +1310,38 @@ void DiffXsecTools::SaveHistograms()
 	h_totSignalMC->SetName("h_DYMC_Reco");
 	h_totSignalMC->Write();
 
-	h_totSignalMC_HLTv4p2->SetName("h_DYMC_Reco_HLTv4p2");
-	h_totSignalMC_HLTv4p2->Write();
+	h_totSignalMC_part1->SetName("h_DYMC_Reco_part1");
+	h_totSignalMC_part1->Write();
 
-	h_totSignalMC_HLTv4p3->SetName("h_DYMC_Reco_HLTv4p3");
-	h_totSignalMC_HLTv4p3->Write();
+	h_totSignalMC_part2->SetName("h_DYMC_Reco_part2");
+	h_totSignalMC_part2->Write();
 
 	h_totSignalMC_GenLevel->SetName("h_DYMC_Gen_postFSR");
 	h_totSignalMC_GenLevel->Write();
 
-	h_totSignalMC_GenLevel_HLTv4p2->SetName("h_DYMC_Gen_postFSR_HLTv4p2");
-	h_totSignalMC_GenLevel_HLTv4p2->Write();
+	h_totSignalMC_GenLevel_part1->SetName("h_DYMC_Gen_postFSR_part1");
+	h_totSignalMC_GenLevel_part1->Write();
 
-	h_totSignalMC_GenLevel_HLTv4p3->SetName("h_DYMC_Gen_postFSR_HLTv4p3");
-	h_totSignalMC_GenLevel_HLTv4p3->Write();
+	h_totSignalMC_GenLevel_part2->SetName("h_DYMC_Gen_postFSR_part2");
+	h_totSignalMC_GenLevel_part2->Write();
 
 	h_totSignalMC_GenLevel_WithinAcc->SetName("h_DYMC_Gen_postFSR_WithinAcc");
 	h_totSignalMC_GenLevel_WithinAcc->Write();
 
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p2->SetName("h_DYMC_Gen_postFSR_WithinAcc_HLTv4p2");
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p2->Write();
+	h_totSignalMC_GenLevel_WithinAcc_part1->SetName("h_DYMC_Gen_postFSR_WithinAcc_part1");
+	h_totSignalMC_GenLevel_WithinAcc_part1->Write();
 
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p3->SetName("h_DYMC_Gen_postFSR_WithinAcc_HLTv4p3");
-	h_totSignalMC_GenLevel_WithinAcc_HLTv4p3->Write();
+	h_totSignalMC_GenLevel_WithinAcc_part2->SetName("h_DYMC_Gen_postFSR_WithinAcc_part2");
+	h_totSignalMC_GenLevel_WithinAcc_part2->Write();
 
 	h_yield_Raw->SetName("h_yield_Raw");
 	h_yield_Raw->Write();
 
-	h_yield_HLTv4p2->SetName("h_yield_Raw_HLTv4p2");
-	h_yield_HLTv4p2->Write();
+	h_yield_part1->SetName("h_yield_Raw_part1");
+	h_yield_part1->Write();
 
-	h_yield_HLTv4p3->SetName("h_yield_Raw_HLTv4p3");
-	h_yield_HLTv4p3->Write();
+	h_yield_part2->SetName("h_yield_Raw_part2");
+	h_yield_part2->Write();
 
 	// h_NoGen_Reco->SetName("h_NoGen_Reco");
 	// h_NoGen_Reco->Write();
@@ -1343,29 +1349,29 @@ void DiffXsecTools::SaveHistograms()
 	h_yield_Unfolded->SetName("h_yield_Unfolded");
 	h_yield_Unfolded->Write();
 
-	h_yield_HLTv4p2_Unfolded->SetName("h_yield_HLTv4p2_Unfolded");
-	h_yield_HLTv4p2_Unfolded->Write();
+	h_yield_part1_Unfolded->SetName("h_yield_part1_Unfolded");
+	h_yield_part1_Unfolded->Write();
 
-	h_yield_HLTv4p3_Unfolded->SetName("h_yield_HLTv4p3_Unfolded");
-	h_yield_HLTv4p3_Unfolded->Write();
+	h_yield_part2_Unfolded->SetName("h_yield_part2_Unfolded");
+	h_yield_part2_Unfolded->Write();
 
 	h_yield_Unfolded_AccEff->SetName("h_yield_Unfolded_AccEff");
 	h_yield_Unfolded_AccEff->Write();
 
-	h_yield_HLTv4p2_Unfolded_AccEff->SetName("h_yield_HLTv4p2_Unfolded_AccEff");
-	h_yield_HLTv4p2_Unfolded_AccEff->Write();
+	h_yield_part1_Unfolded_AccEff->SetName("h_yield_part1_Unfolded_AccEff");
+	h_yield_part1_Unfolded_AccEff->Write();
 
-	h_yield_HLTv4p3_Unfolded_AccEff->SetName("h_yield_HLTv4p3_Unfolded_AccEff");
-	h_yield_HLTv4p3_Unfolded_AccEff->Write();
+	h_yield_part2_Unfolded_AccEff->SetName("h_yield_part2_Unfolded_AccEff");
+	h_yield_part2_Unfolded_AccEff->Write();
 
 	h_yield_EffCorr->SetName("h_yield_EffCorr");
 	h_yield_EffCorr->Write();
 
-	h_yield_HLTv4p2_EffCorr->SetName("h_yield_HLTv4p2_EffCorr");
-	h_yield_HLTv4p2_EffCorr->Write();
+	h_yield_part1_EffCorr->SetName("h_yield_part1_EffCorr");
+	h_yield_part1_EffCorr->Write();
 
-	h_yield_HLTv4p3_EffCorr->SetName("h_yield_HLTv4p3_EffCorr");
-	h_yield_HLTv4p3_EffCorr->Write();
+	h_yield_part2_EffCorr->SetName("h_yield_part2_EffCorr");
+	h_yield_part2_EffCorr->Write();
 
 	h_Truth_preFSR->SetName("h_DYMC_Gen_preFSR");
 	h_Truth_preFSR->Write();
@@ -1424,7 +1430,7 @@ void DiffXsecTools::SaveHistograms()
 // 	///////////////////////////////////
 // 	f_data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MuonPhys_MomCorr.root"); f_data->cd();
 // 	TH1D *h_data = (TH1D*)f_data->Get("h_mass_OS_Data")->Clone();
-// 	h_data = (TH1D*)h_data->Rebin(nMassBin, h_data->GetName(), MassBinEdges);
+// 	h_data = (TH1D*)h_data->Rebin(binnum, h_data->GetName(), bins);
 // 	UncTool->StatUnc( h_yield_Unfolded, h_data );
 
 // 	/////////////////////////////////////////////////
@@ -1439,16 +1445,16 @@ void DiffXsecTools::SaveHistograms()
 
 // 	f_MC->cd();
 // 	TH1D *h_ZZ = (TH1D*)f_MC->Get("h_mass_OS_ZZ")->Clone();
-// 	h_ZZ = (TH1D*)h_ZZ->Rebin(nMassBin, h_ZZ->GetName(), MassBinEdges);
+// 	h_ZZ = (TH1D*)h_ZZ->Rebin(binnum, h_ZZ->GetName(), bins);
 // 	TH1D *h_WZ = (TH1D*)f_MC->Get("h_mass_OS_WZ")->Clone();
-// 	h_WZ = (TH1D*)h_WZ->Rebin(nMassBin, h_WZ->GetName(), MassBinEdges);
+// 	h_WZ = (TH1D*)h_WZ->Rebin(binnum, h_WZ->GetName(), bins);
 // 	TH1D *h_WW = (TH1D*)f_MC->Get("h_mass_OS_WW")->Clone();
-// 	h_WW = (TH1D*)h_WW->Rebin(nMassBin, h_WW->GetName(), MassBinEdges);
+// 	h_WW = (TH1D*)h_WW->Rebin(binnum, h_WW->GetName(), bins);
 
 // 	Int_t nTag = (Int_t)Tag.size();
 // 	for(Int_t i_tag=0; i_tag<nTag; i_tag++)
 // 	{
-// 		Double_t norm = ( Lumi * Xsec[i_tag] ) / nEvents[i_tag];
+// 		Double_t norm = ( lumi_all * Xsec[i_tag] ) / nEvents[i_tag];
 // 		if( Tag[i_tag] == "ZZ" )
 // 			h_ZZ->Scale( norm );
 // 		else if( Tag[i_tag] == "WZ" )
@@ -1521,42 +1527,42 @@ void DiffXsecTools::FpoF_EffCorrection()
 	f_Eff->cd();
 	TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)f_Eff->Get("g_Eff")->Clone();
 
-	// -- HLTv4p2 -- //
-	this->h_FpoF_yield_HLTv4p2_Unfolded_Eff = (TH1D*)h_yield_HLTv4p2_Unfolded->Clone("h_FpoF_yield_HLTv4p2_Unfolded_Eff");
-	this->Correction_AccEff(h_FpoF_yield_HLTv4p2_Unfolded_Eff, h_yield_HLTv4p2_Unfolded, g_Eff);
+	// -- part1 -- //
+	this->h_FpoF_yield_part1_Unfolded_Eff = (TH1D*)h_yield_part1_Unfolded->Clone("h_FpoF_yield_part1_Unfolded_Eff");
+	this->Correction_AccEff(h_FpoF_yield_part1_Unfolded_Eff, h_yield_part1_Unfolded, g_Eff);
 
-	// -- HLTv4p3 -- //
-	this->h_FpoF_yield_HLTv4p3_Unfolded_Eff = (TH1D*)h_yield_HLTv4p3_Unfolded->Clone("h_FpoF_yield_HLTv4p3_Unfolded_Eff");
-	this->Correction_AccEff(h_FpoF_yield_HLTv4p3_Unfolded_Eff, h_yield_HLTv4p3_Unfolded, g_Eff);
+	// -- part2 -- //
+	this->h_FpoF_yield_part2_Unfolded_Eff = (TH1D*)h_yield_part2_Unfolded->Clone("h_FpoF_yield_part2_Unfolded_Eff");
+	this->Correction_AccEff(h_FpoF_yield_part2_Unfolded_Eff, h_yield_part2_Unfolded, g_Eff);
 
 	// -- Combine -- //
-	h_FpoF_yield_HLTv4p2_Unfolded_Eff->Sumw2(); h_FpoF_yield_HLTv4p3_Unfolded_Eff->Sumw2();
-	this->h_FpoF_yield_Unfolded_Eff = (TH1D*)h_FpoF_yield_HLTv4p2_Unfolded_Eff->Clone( "h_FpoF_yield_Unfolded_Eff" );
-	this->h_FpoF_yield_Unfolded_Eff->Add( h_FpoF_yield_HLTv4p3_Unfolded_Eff );
+	h_FpoF_yield_part1_Unfolded_Eff->Sumw2(); h_FpoF_yield_part2_Unfolded_Eff->Sumw2();
+	this->h_FpoF_yield_Unfolded_Eff = (TH1D*)h_FpoF_yield_part1_Unfolded_Eff->Clone( "h_FpoF_yield_Unfolded_Eff" );
+	this->h_FpoF_yield_Unfolded_Eff->Add( h_FpoF_yield_part2_Unfolded_Eff );
 
 	delete f_Eff;
 }
 
 void DiffXsecTools::FpoF_EfficiencyScaleFactor()
 {
-	if( g_EffCorr_HLTv4p2 == NULL || g_EffCorr_HLTv4p3 == NULL )
+	if( g_EffCorr_part1 == NULL || g_EffCorr_part2 == NULL )
 		this->Calc_EffSF();
 
 	/////////////////////////////////////////////////////////////
 	// -- Apply Efficiency correction factors to each Yield -- //
 	/////////////////////////////////////////////////////////////
-	this->h_FpoF_yield_HLTv4p2_EffCorr = (TH1D*)this->h_FpoF_yield_HLTv4p2_Unfolded_Eff->Clone( "h_FpoF_yield_HLTv4p2_EffCorr" );
-	this->ApplyEffCorr_Yield(this->h_FpoF_yield_HLTv4p2_EffCorr, this->h_FpoF_yield_HLTv4p2_Unfolded_Eff, this->g_EffCorr_HLTv4p2);
+	this->h_FpoF_yield_part1_EffCorr = (TH1D*)this->h_FpoF_yield_part1_Unfolded_Eff->Clone( "h_FpoF_yield_part1_EffCorr" );
+	this->ApplyEffCorr_Yield(this->h_FpoF_yield_part1_EffCorr, this->h_FpoF_yield_part1_Unfolded_Eff, this->g_EffCorr_part1);
 
-	this->h_FpoF_yield_HLTv4p3_EffCorr = (TH1D*)this->h_FpoF_yield_HLTv4p3_Unfolded_Eff->Clone( "h_FpoF_yield_HLTv4p3_EffCorr" );
-	this->ApplyEffCorr_Yield(this->h_FpoF_yield_HLTv4p3_EffCorr, this->h_FpoF_yield_HLTv4p3_Unfolded_Eff, this->g_EffCorr_HLTv4p3);
+	this->h_FpoF_yield_part2_EffCorr = (TH1D*)this->h_FpoF_yield_part2_Unfolded_Eff->Clone( "h_FpoF_yield_part2_EffCorr" );
+	this->ApplyEffCorr_Yield(this->h_FpoF_yield_part2_EffCorr, this->h_FpoF_yield_part2_Unfolded_Eff, this->g_EffCorr_part2);
 
 	/////////////////////////////
 	// -- Combine the yield -- //
 	/////////////////////////////
-	this->h_FpoF_yield_HLTv4p2_EffCorr->Sumw2(); this->h_FpoF_yield_HLTv4p3_EffCorr->Sumw2();
-	this->h_FpoF_yield_EffCorr = (TH1D*)this->h_FpoF_yield_HLTv4p2_EffCorr->Clone( "h_FpoF_yield_EffCorr" );
-	this->h_FpoF_yield_EffCorr->Add( this->h_FpoF_yield_HLTv4p3_EffCorr );
+	this->h_FpoF_yield_part1_EffCorr->Sumw2(); this->h_FpoF_yield_part2_EffCorr->Sumw2();
+	this->h_FpoF_yield_EffCorr = (TH1D*)this->h_FpoF_yield_part1_EffCorr->Clone( "h_FpoF_yield_EffCorr" );
+	this->h_FpoF_yield_EffCorr->Add( this->h_FpoF_yield_part2_EffCorr );
 }
 
 void DiffXsecTools::FpoF_CalcXsec()
@@ -1566,13 +1572,13 @@ void DiffXsecTools::FpoF_CalcXsec()
 	////////////////////////////////////
 	this->h_FpoF_DiffXsec_Data = (TH1D*)this->h_FpoF_yield_EffCorr->Clone("h_FpoF_DiffXsec_Data");
 	this->h_FpoF_DiffXsec_Data->Sumw2();
-	this->h_FpoF_DiffXsec_Data->Scale( 1 / Lumi );
+	this->h_FpoF_DiffXsec_Data->Scale( 1 / lumi_all );
 	this->Obtain_dSigma_dM(this->h_FpoF_DiffXsec_Data);
 	this->SetStatUnc_DiffXsec( this->h_FpoF_DiffXsec_Data );
 
 	this->h_FpoF_DiffXsec_aMCNLO = (TH1D*)this->h_FpoF_yield_aMCNLO->Clone("h_FpoF_DiffXsec_aMCNLO");
 	this->h_FpoF_DiffXsec_aMCNLO->Sumw2();
-	this->h_FpoF_DiffXsec_aMCNLO->Scale( 1 / Lumi );
+	this->h_FpoF_DiffXsec_aMCNLO->Scale( 1 / lumi_all );
 	this->Obtain_dSigma_dM(this->h_FpoF_DiffXsec_aMCNLO);
 }
 
@@ -1596,12 +1602,12 @@ void DiffXsecTools::FpoF_SaveResults()
 
 	h_FpoF_yield_aMCNLO->Write();
 
-	h_FpoF_yield_HLTv4p2_Unfolded_Eff->Write();
-	h_FpoF_yield_HLTv4p3_Unfolded_Eff->Write();
+	h_FpoF_yield_part1_Unfolded_Eff->Write();
+	h_FpoF_yield_part2_Unfolded_Eff->Write();
 	h_FpoF_yield_Unfolded_Eff->Write();
 
-	h_FpoF_yield_HLTv4p2_EffCorr->Write();
-	h_FpoF_yield_HLTv4p3_EffCorr->Write();
+	h_FpoF_yield_part1_EffCorr->Write();
+	h_FpoF_yield_part2_EffCorr->Write();
 	h_FpoF_yield_EffCorr->Write();
 
 	h_FpoF_DiffXsec_Data->Write();

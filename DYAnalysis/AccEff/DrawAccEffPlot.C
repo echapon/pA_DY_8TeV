@@ -1,4 +1,4 @@
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
+#include "Include/MyCanvas.C"
 
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
@@ -11,12 +11,12 @@ void DrawAccEffPlot(TString version = "None")
 	setTDRStyle();
 	gROOT->SetStyle( "tdrStyle" );
 
-	TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
+	TString FileLocation = ".";// + version;
 
 	if( version == "None" )
 		FileLocation = ".";
 
-	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
+	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_Powheg_HLT_PAL3Mu12_v*.root");
 	TString FileName = f_input->GetName();
 
 	TString Sample = "";
@@ -47,6 +47,7 @@ void DrawAccEffPlot(TString version = "None")
 	TCanvas *c_compare = new TCanvas("c_AccEff_"+Sample, "", 800, 600);
 	c_compare->cd();
 	gPad->SetLogx();
+	gPad->SetLogy();
 
 	g_Acc->Draw("AP");
 	g_Eff->Draw("PSAME");
@@ -74,10 +75,11 @@ void DrawAccEffPlot(TString version = "None")
 	g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
 	g_Acc->GetXaxis()->SetNoExponent();
 	g_Acc->GetXaxis()->SetMoreLogLabels();
-	if( Sample == "Powheg" )
-		g_Acc->GetXaxis()->SetRangeUser(50, 3000);
+   // if( Sample == "Powheg" )
+   //    g_Acc->GetXaxis()->SetRangeUser(50, 3000);
 	g_Acc->GetYaxis()->SetTitle( "Value" );
-	g_Acc->GetYaxis()->SetRangeUser(0, 1.1);
+   // g_Acc->GetYaxis()->SetRangeUser(0, 1.1);
+	g_Acc->GetYaxis()->SetRangeUser(1e-4, 1.1);
 
 	TLegend *legend = new TLegend(0.55, 0.2, 0.99, 0.35);
 	legend->SetFillStyle(0);
@@ -107,57 +109,36 @@ void DrawAccEffPlot(TString version = "None")
 	c_compare->SaveAs(CanvasName+".C");
 
 
-	TEfficiency *TEff_Eff_Corr_HLTv4p2 = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_HLTv4p2");
-	TGraphAsymmErrors *g_Eff_Corr_HLTv4p2 = (TGraphAsymmErrors*)TEff_Eff_Corr_HLTv4p2->CreateGraph()->Clone();
+	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_tnp");
+	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*)TEff_Eff_Corr_tnp->CreateGraph()->Clone();
 
-	// TEfficiency *TEff_AccEff_Corr_HLTv4p2 = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_HLTv4p2");
-	// TGraphAsymmErrors *g_AccEff_Corr_HLTv4p2 = (TGraphAsymmErrors*)TEff_AccEff_Corr_HLTv4p2->CreateGraph()->Clone();
+	// TEfficiency *TEff_AccEff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_tnp");
+	// TGraphAsymmErrors *g_AccEff_Corr_tnp = (TGraphAsymmErrors*)TEff_AccEff_Corr_tnp->CreateGraph()->Clone();
 
-	TGraphAsymmErrors *g_AccEff_Corr_HLTv4p2 = (TGraphAsymmErrors*)g_Acc->Clone();
-	MakeAccEffGraph( g_AccEff_Corr_HLTv4p2, g_Acc, g_Eff_Corr_HLTv4p2 );
+	TGraphAsymmErrors *g_AccEff_Corr_tnp = (TGraphAsymmErrors*)g_Acc->Clone();
+	MakeAccEffGraph( g_AccEff_Corr_tnp, g_Acc, g_Eff_Corr_tnp );
 
-	TEfficiency *TEff_Eff_Corr_HLTv4p3 = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_HLTv4p3");
-	TGraphAsymmErrors *g_Eff_Corr_HLTv4p3 = (TGraphAsymmErrors*)TEff_Eff_Corr_HLTv4p3->CreateGraph()->Clone();
 
-	// TEfficiency *TEff_AccEff_Corr_HLTv4p3 = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_HLTv4p3");
-	// TGraphAsymmErrors *g_AccEff_Corr_HLTv4p3 = (TGraphAsymmErrors*)TEff_AccEff_Corr_HLTv4p3->CreateGraph()->Clone();
 
-	TGraphAsymmErrors *g_AccEff_Corr_HLTv4p3 = (TGraphAsymmErrors*)g_Acc->Clone();
-	MakeAccEffGraph( g_AccEff_Corr_HLTv4p3, g_Acc, g_Eff_Corr_HLTv4p3 );
 
-	MyCanvas *myc_HLTv4p2 = new MyCanvas("c_UnCorr_vs_Corr_HLTv4p2", "Gen-Level Dimuon Mass [GeV]", "Values");
-	myc_HLTv4p2->LowerEdge_Y = 0.65;
-	myc_HLTv4p2->UpperEdge_Y = 1.05;
+	MyCanvas *myc_tnp = new MyCanvas("c_UnCorr_vs_Corr_tnp", "Gen-Level Dimuon Mass [GeV]", "Values");
+	myc_tnp->LowerEdge_Y = 0.65;
+	myc_tnp->UpperEdge_Y = 1.05;
 
-	myc_HLTv4p2->LowerEdge_Ratio = 0.9;
-	myc_HLTv4p2->UpperEdge_Ratio = 1.02;
-	myc_HLTv4p2->isLogX = kTRUE;
+	myc_tnp->LowerEdge_Ratio = 0.9;
+	myc_tnp->UpperEdge_Ratio = 1.02;
+	myc_tnp->isLogX = kTRUE;
 
-	myc_HLTv4p2->CanvasWithGraphRatioPlot( (TGraphAsymmErrors*)g_Eff_Corr_HLTv4p2->Clone(), (TGraphAsymmErrors*)g_Eff->Clone(),
-									"Efficiency (SF Corr_HLTv4p2)", "Efficiency", "After/Before",
+	myc_tnp->CanvasWithGraphRatioPlot( (TGraphAsymmErrors*)g_Eff_Corr_tnp->Clone(), (TGraphAsymmErrors*)g_Eff->Clone(),
+									"Efficiency (SF Corr_tnp)", "Efficiency", "After/Before",
 									kBlue+1, kGreen+1,
 									"EP", "EPSAME");
 
-	myc_HLTv4p2->c->SaveAs("Eff_UnCorr_vs_Corr_HLTv4p2.pdf");
+	myc_tnp->c->SaveAs("Eff_UnCorr_vs_Corr_tnp.pdf");
 
 
-	MyCanvas *myc_HLTv4p3 = new MyCanvas("c_UnCorr_vs_Corr_HLTv4p3", "Gen-Level Dimuon Mass [GeV]", "Values");
-	myc_HLTv4p3->LowerEdge_Y = 0.65;
-	myc_HLTv4p3->UpperEdge_Y = 1.05;
 
-	myc_HLTv4p3->LowerEdge_Ratio = 0.9;
-	myc_HLTv4p3->UpperEdge_Ratio = 1.02;
-	myc_HLTv4p3->isLogX = kTRUE;
-
-	myc_HLTv4p3->CanvasWithGraphRatioPlot( (TGraphAsymmErrors*)g_Eff_Corr_HLTv4p3->Clone(), (TGraphAsymmErrors*)g_Eff->Clone(),
-									"Efficiency (SF Corr_HLTv4p3)", "Efficiency", "After/Before",
-									kBlue+1, kGreen+1,
-									"EP", "EPSAME");
-
-	myc_HLTv4p3->c->SaveAs("Eff_UnCorr_vs_Corr_HLTv4p3.pdf");
-
-	DrawAccEffDist("Corr_HLTv4p2", Sample, g_Acc, g_Eff_Corr_HLTv4p2, g_AccEff_Corr_HLTv4p2);
-	DrawAccEffDist("Corr_HLTv4p3", Sample, g_Acc, g_Eff_Corr_HLTv4p3, g_AccEff_Corr_HLTv4p3);
+	DrawAccEffDist("Corr_tnp", Sample, g_Acc, g_Eff_Corr_tnp, g_AccEff_Corr_tnp);
 
 	TFile *f_output = new TFile("ROOTFile_AccEff.root", "RECREATE");
 	f_output->cd();
@@ -168,28 +149,21 @@ void DrawAccEffPlot(TString version = "None")
 	g_Eff->SetName("g_Eff");
 	g_Eff->Write();
 
-	g_Eff_Corr_HLTv4p2->SetName("g_Eff_Corr_HLTv4p2");
-	g_Eff_Corr_HLTv4p2->Write();
+	g_Eff_Corr_tnp->SetName("g_Eff_Corr_tnp");
+	g_Eff_Corr_tnp->Write();
 
-	g_Eff_Corr_HLTv4p3->SetName("g_Eff_Corr_HLTv4p3");
-	g_Eff_Corr_HLTv4p3->Write();
 
-	TGraphAsymmErrors* g_EffCorr_HLTv4p2 = (TGraphAsymmErrors*)myc_HLTv4p2->g_ratio->Clone();
-	g_EffCorr_HLTv4p2->SetName("g_EffCorr_HLTv4p2");
-	g_EffCorr_HLTv4p2->Write();
+	TGraphAsymmErrors* g_EffCorr_tnp = (TGraphAsymmErrors*)myc_tnp->g_ratio->Clone();
+	g_EffCorr_tnp->SetName("g_EffCorr_tnp");
+	g_EffCorr_tnp->Write();
 
-	TGraphAsymmErrors* g_EffCorr_HLTv4p3 = (TGraphAsymmErrors*)myc_HLTv4p3->g_ratio->Clone();
-	g_EffCorr_HLTv4p3->SetName("g_EffCorr_HLTv4p3");
-	g_EffCorr_HLTv4p3->Write();
 	
 	g_AccEff->SetName("g_AccEff");
 	g_AccEff->Write();
 
-	g_AccEff_Corr_HLTv4p2->SetName("g_AccEff_Corr_HLTv4p2");
-	g_AccEff_Corr_HLTv4p2->Write();
+	g_AccEff_Corr_tnp->SetName("g_AccEff_Corr_tnp");
+	g_AccEff_Corr_tnp->Write();
 
-	g_AccEff_Corr_HLTv4p3->SetName("g_AccEff_Corr_HLTv4p3");
-	g_AccEff_Corr_HLTv4p3->Write();
 
 }
 
@@ -226,8 +200,8 @@ void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGra
 	g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
 	g_Acc->GetXaxis()->SetNoExponent();
 	g_Acc->GetXaxis()->SetMoreLogLabels();
-	if( Sample == "Powheg" )
-		g_Acc->GetXaxis()->SetRangeUser(50, 3000);
+   // if( Sample == "Powheg" )
+   //    g_Acc->GetXaxis()->SetRangeUser(50, 3000);
 	g_Acc->GetYaxis()->SetTitle( "Value" );
 	g_Acc->GetYaxis()->SetRangeUser(0, 1.1);
 
