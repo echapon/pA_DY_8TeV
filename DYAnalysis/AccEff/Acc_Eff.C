@@ -24,6 +24,7 @@
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
+#include <Include/tnp_weight.h>
 #include <BkgEst/interface/defs.h>
 #include <HIstuff/HFweight.h>
 
@@ -60,18 +61,23 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
  	TH1D *h_mass_AccTotal = new TH1D("h_mass_AccTotal", "", binnum, bins);
 	TH1D *h_mass_AccPass = new TH1D("h_mass_AccPass", "", binnum, bins);
-	TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", binnum, bins);
-	TH1D *h_mass_EffPass = new TH1D("h_mass_EffPass", "", binnum, bins);	 
+
+   TH1D *h_mass_EffPass = new TH1D("h_mass_EffPass", "", binnum, bins);	 
+   TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", binnum, bins);
 
 	// -- After applying efficiency correction -- //
-	TH1D *h_mass_EffPass_Corr_tnp = new TH1D("h_mass_EffPass_Corr_tnp", "", binnum, bins);
+   const int nweights = 211;
+   TH1D* h_mass_EffPass_Corr_tnp[nweights];
+   for (int i=0; i<nweights; i++) {
+      h_mass_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass_EffPass_Corr_tnp%d",i), "", binnum, bins);
+   }
 
-	TString BaseLocation = "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/";
+	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 
-   analyzer->SetupMCsamples_v20170519(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -191,6 +197,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				{
 					Bool_t Flag_PassEff = kFALSE;
 
+               vector< Muon > SelectedMuonCollection;
 					if( ntuple->isTriggered( analyzer->HLT ) )
 					{
 						// -- Collect Reconstruction level information -- //
@@ -221,7 +228,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 						}
 
 						// -- Event Selection -- //
-						vector< Muon > SelectedMuonCollection;
 						Bool_t isPassEventSelection = kFALSE;
 						isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
 
@@ -240,7 +246,35 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 					{
 						h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
 						h_mass_EffPass->Fill( gen_M, TotWeight * PUWeight );
-						h_mass_EffPass_Corr_tnp->Fill( gen_M, TotWeight  * PUWeight * TnpWeight );
+
+                  // TnP
+                  double pt1 = SelectedMuonCollection[0].Pt;
+                  double pt2 = SelectedMuonCollection[1].Pt;
+                  double eta1 = SelectedMuonCollection[0].eta;
+                  double eta2 = SelectedMuonCollection[1].eta;
+
+                  for (int iwt=0; iwt<nweights; iwt++) {
+                     int imuid=0,itrg=0,iiso=0; // nominal
+                     if (iwt<=100) imuid = iwt; // muID stat
+                     else if (iwt<=200) iiso = iwt-100; // iso stat
+                     else if (iwt<=202) itrg = iwt-200; // trg stat
+                     else if (iwt<=204) itrg = iwt-205; // trg syst
+                     else if (iwt<=206) imuid = iwt-207; // muID syst
+                     else if (iwt<=208) iiso = iwt-209; // iso syst
+                     else if (iwt==209) imuid = -10; // iso syst
+                     else if (iwt==210) iiso = -10; // iso syst
+
+                     // weights for MuID and iso
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid)*tnp_weight_iso_ppb(pt1,iiso)
+                        *tnp_weight_muid_ppb(pt2,eta2,imuid)*tnp_weight_iso_ppb(pt2,iiso);
+                     // add trg... careful!
+                     double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)*tnp_weight_trg_ppb(eta1,itrg)/tnp_weight_trg_ppb(eta1,0)) * (1 - tnp_weight_trg_ppb(eta2,200)*tnp_weight_trg_ppb(eta2,itrg)/tnp_weight_trg_ppb(eta2,0)) );
+                     double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
+                     double sf_trg = eff_data/eff_mc;
+                     TnpWeight = TnpWeight * sf_trg;
+
+                     h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, TotWeight  * PUWeight * TnpWeight );
+                  } // tnp weight loop
 					}
 					else
 						h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
@@ -278,7 +312,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_mass_AccPass->Write();
 	h_mass_EffTotal->Write();
 	h_mass_EffPass->Write();
-	h_mass_EffPass_Corr_tnp->Write();
+	for (int i=0; i<nweights; i++) h_mass_EffPass_Corr_tnp[i]->Write();
 
 	TEfficiency *Acc_Mass = new TEfficiency(*h_mass_AccPass, *h_mass_AccTotal);
 	Acc_Mass->SetName("TEff_Acc_Mass");
@@ -289,13 +323,22 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	// TEfficiency *AccEff_Mass = new TEfficiency(*h_mass_EffPass, *h_mass_AccTotal);
 	// AccEff_Mass->SetName("TEff_AccEff_Mass");
 
-	TEfficiency *Eff_Mass_Corr_tnp = new TEfficiency(*h_mass_EffPass_Corr_tnp, *h_mass_EffTotal);
-	Eff_Mass_Corr_tnp->SetName("TEff_Eff_Mass_Corr_tnp");
+   for (int i=0; i<nweights; i++) {
+      TEfficiency *Eff_Mass_Corr_tnp = new TEfficiency(*h_mass_EffPass_Corr_tnp[i], *h_mass_EffTotal);
+      Eff_Mass_Corr_tnp->SetName(Form("TEff_Eff_Mass_Corr_tnp%d",i));
+      Eff_Mass_Corr_tnp->Write();
+
+      if (i==0) {
+         TCanvas *c_Eff_Mass_Corr_tnp = new TCanvas("c_Eff_Mass_Corr_tnp", "", 800, 600);
+         c_Eff_Mass_Corr_tnp->cd();
+         Eff_Mass_Corr_tnp->Draw("AP");
+         c_Eff_Mass_Corr_tnp->Write();
+      }
+   }
 
 	Acc_Mass->Write();
 	Eff_Mass->Write();
 	// AccEff_Mass->Write();
-	Eff_Mass_Corr_tnp->Write();
 
 	TCanvas *c_Acc_Mass = new TCanvas("c_Acc_Mass", "", 800, 600);
 	c_Acc_Mass->cd();
@@ -312,10 +355,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	// AccEff_Mass->Draw("AP");
 	// c_AccEff_Mass->Write();
 
-	TCanvas *c_Eff_Mass_Corr_tnp = new TCanvas("c_Eff_Mass_Corr_tnp", "", 800, 600);
-	c_Eff_Mass_Corr_tnp->cd();
-	Eff_Mass_Corr_tnp->Draw("AP");
-	c_Eff_Mass_Corr_tnp->Write();
 
 	Double_t TotalRunTime = totaltime.CpuTime();
 	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;
