@@ -518,9 +518,9 @@ public:
 		dzVTX = ntuple->Muon_dzVTX[index];
 		trkiso = ntuple->Muon_trkiso[index] / ntuple->Muon_pT[index];
 
-		Double_t pfChargedIso = ntuple->Muon_PfChargedHadronIsoR04[index];
-		Double_t pfNeutralIso = ntuple->Muon_PfNeutralHadronIsoR04[index];
-		Double_t pfGammaIso = ntuple->Muon_PfGammaIsoR04[index];
+		Double_t pfChargedIso = ntuple->Muon_PfChargedHadronIsoR03[index]; // was 04
+		Double_t pfNeutralIso = ntuple->Muon_PfNeutralHadronIsoR03[index]; // was 04
+		Double_t pfGammaIso = ntuple->Muon_PfGammaIsoR03[index]; // was 04
 		relPFiso = (pfChargedIso + pfNeutralIso + pfGammaIso) / ntuple->Muon_pT[index];
 
 		Double_t px = ntuple->Muon_Px[index];

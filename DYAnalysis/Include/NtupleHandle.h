@@ -180,6 +180,9 @@ public:
     Double_t Muon_PfChargedHadronIsoR04[MaxN];
     Double_t Muon_PfNeutralHadronIsoR04[MaxN];
     Double_t Muon_PfGammaIsoR04[MaxN];
+    Double_t Muon_PfChargedHadronIsoR03[MaxN];
+    Double_t Muon_PfNeutralHadronIsoR03[MaxN];
+    Double_t Muon_PfGammaIsoR03[MaxN];
 
     //Dimuon variables
     std::vector<double> *CosAngle;
@@ -530,6 +533,9 @@ public:
         chain->SetBranchStatus("Muon_PfChargedHadronIsoR04", 1);
         chain->SetBranchStatus("Muon_PfNeutralHadronIsoR04" ,1);
         chain->SetBranchStatus("Muon_PfGammaIsoR04", 1);
+        chain->SetBranchStatus("Muon_PfChargedHadronIsoR03", 1);
+        chain->SetBranchStatus("Muon_PfNeutralHadronIsoR03" ,1);
+        chain->SetBranchStatus("Muon_PfGammaIsoR03", 1);
 
         chain->SetBranchStatus("Muon_Best_pT", 1);
         chain->SetBranchStatus("Muon_Best_pTError", 1);
@@ -598,6 +604,9 @@ public:
     	chain->SetBranchAddress("Muon_PfChargedHadronIsoR04", Muon_PfChargedHadronIsoR04);
     	chain->SetBranchAddress("Muon_PfNeutralHadronIsoR04", Muon_PfNeutralHadronIsoR04);
     	chain->SetBranchAddress("Muon_PfGammaIsoR04", Muon_PfGammaIsoR04);
+    	chain->SetBranchAddress("Muon_PfChargedHadronIsoR03", Muon_PfChargedHadronIsoR03);
+    	chain->SetBranchAddress("Muon_PfNeutralHadronIsoR03", Muon_PfNeutralHadronIsoR03);
+    	chain->SetBranchAddress("Muon_PfGammaIsoR03", Muon_PfGammaIsoR03);
 
     	chain->SetBranchAddress("CosAngle", &CosAngle);
     	chain->SetBranchAddress("vtxTrkChi2", &vtxTrkChi2);

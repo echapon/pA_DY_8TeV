@@ -66,6 +66,7 @@ public:
 	// -- Setup MC samples -- //
 	////////////////////////////
 	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
+	void SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
 
@@ -182,7 +183,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 {
 	if( HLTname.Contains("PAL3Mu12") )
 	{
-		*HLT = "HLT_PAL3Mu12_v*"; // -- Exist only for the data; "HLT_Ele22_eta2p1_WP75_Gsf_v*" should be used for MC
+		*HLT = "HLT_PAL3Mu12_v*"; 
 		*LeadPtCut = 15;
 		*SubPtCut = 10;//15;
 		*LeadEtaCut = 2.4;
@@ -198,7 +199,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 
 void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
 {
-   using namespace DYana;
+   using namespace DYana_v20170519;
    for (int i=0; i<DataFirst; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       ntupleDirectory->push_back(NtupleDir(tag));
@@ -217,6 +218,18 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
       xsec->push_back(Xsec(tag));
       nEvents->push_back(Nevts(tag));
       Tag->back().ReplaceAll("DY","DYMuMu");
+   }
+}
+
+void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
+{
+   using namespace DYana_v20170830;
+   for (int i=0; i<DataFirst; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      ntupleDirectory->push_back(NtupleDir(tag));
+      Tag->push_back(Name(tag));
+      xsec->push_back(Xsec(tag));
+      nEvents->push_back(Nevts(tag));
    }
 }
 
@@ -622,7 +635,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
+	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].relPFiso < 0.15)
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
@@ -757,7 +770,7 @@ Bool_t DYAnalyzer::EventSelection_Mu50(vector< Muon > MuonCollection, NtupleHand
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
+	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].relPFiso < 0.15)
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
@@ -886,7 +899,7 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
+	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].relPFiso < 0.15)
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
@@ -1016,7 +1029,7 @@ Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, Ntu
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].trkiso < 0.10) // -- Iso should be changed with PFIso(dBeta) in order to be same selection with Z-diff x-section measurement
+	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].relPFiso < 0.15) // -- Iso should be changed with PFIso(dBeta) in order to be same selection with Z-diff x-section measurement
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
@@ -1623,9 +1636,9 @@ Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHan
 	vector< Muon > FailingMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() )
+	    if( MuonCollection[j].isTightMuon() )
 	    {
-	    	if( MuonCollection[j].trkiso < 0.10 )
+	    	if( MuonCollection[j].relPFiso < 0.15 )
 	    		PassingMuonCollection.push_back( MuonCollection[j] );
 	    	else
 	    		FailingMuonCollection.push_back( MuonCollection[j] );
@@ -1747,9 +1760,9 @@ Bool_t DYAnalyzer::EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHand
 	vector< Muon > FailingMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() )
+	    if( MuonCollection[j].isTightMuon() )
 	    {
-	    	if( MuonCollection[j].trkiso < 0.10 )
+	    	if( MuonCollection[j].relPFiso < 0.15 )
 	    		PassingMuonCollection.push_back( MuonCollection[j] );
 	    	else
 	    		FailingMuonCollection.push_back( MuonCollection[j] );
@@ -1805,7 +1818,7 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isHighPtMuon_minus_dzVTX() && MuonCollection[j].trkiso < 0.10)
+	    if( MuonCollection[j].isTightMuon() && MuonCollection[j].relPFiso < 0.15)
 	        QMuonCollection.push_back( MuonCollection[j] );
 	}
 
