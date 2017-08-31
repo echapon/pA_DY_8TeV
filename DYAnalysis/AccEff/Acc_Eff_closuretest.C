@@ -65,20 +65,26 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 
 	TH1D *h_pt_EffTotal_0012 = new TH1D("h_mass_EffTotal_0012", "", nbinspt, ptbins);
 	TH1D *h_pt_EffPass_0012 = new TH1D("h_mass_EffPass_0012", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass1_0012 = new TH1D("h_mass_EffPass1_0012", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass2_0012 = new TH1D("h_mass_EffPass2_0012", "", nbinspt,ptbins);	 
 	TH1D *h_pt_EffTotal_1221 = new TH1D("h_mass_EffTotal_1221", "", nbinspt, ptbins);
 	TH1D *h_pt_EffPass_1221 = new TH1D("h_mass_EffPass_1221", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffTotal_2124 = new TH1D("h_mass_EffTotal_2124", "", nbinspt, ptbins);
-	TH1D *h_pt_EffPass_2124 = new TH1D("h_mass_EffPass_2124", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass1_1221 = new TH1D("h_mass_EffPass1_1221", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass2_1221 = new TH1D("h_mass_EffPass2_1221", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffTotal_2124 = new TH1D("h_mass_EffTotal_2124", "", nbinspt2, ptbins2);
+	TH1D *h_pt_EffPass_2124 = new TH1D("h_mass_EffPass_2124", "", nbinspt2,ptbins2);	 
+	TH1D *h_pt_EffPass1_2124 = new TH1D("h_mass_EffPass1_2124", "", nbinspt2,ptbins2);	 
+	TH1D *h_pt_EffPass2_2124 = new TH1D("h_mass_EffPass2_2124", "", nbinspt2,ptbins2);	 
 
 	// -- After applying efficiency correction -- //
 	TH1D *h_mass_EffPass_Corr_tnp = new TH1D("h_mass_EffPass_Corr_tnp", "", binnum, bins);
 
-	TString BaseLocation = "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/";
+	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 
-   analyzer->SetupMCsamples_v20170519(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -97,7 +103,9 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 		TH1D* h_mass = new TH1D("h_mass_"+Tag[i_tup], "", 600, 0, 600);
 
 		TChain *chain = new TChain("recoTree/DYTree");
-		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
+      TString tmp = BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root";
+      cout << tmp.Data() << endl;
+      chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
 		NtupleHandle *ntuple = new NtupleHandle( chain );
 		ntuple->TurnOnBranches_Muon();
@@ -228,27 +236,45 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 
                // -- Event Selection -- //
                vector< Muon > PassMuonCollection;
+               vector< Muon > Pass1MuonCollection;
+               vector< Muon > Pass2MuonCollection;
                vector< Muon > TagMuonCollection;
                vector< int > PassIdx;
+               vector< int > Pass1Idx;
+               vector< int > Pass2Idx;
                vector< int > TagIdx;
 
                for(Int_t j=0; j<(int)MuonCollection.size(); j++)
                {
                   Muon mu = MuonCollection[j];
-                  if( mu.isHighPtMuon_minus_dzVTX() && mu.relPFiso < 0.15 && mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") && fabs(mu.eta)<2.4) {
+                  bool passeta = (fabs(mu.eta)<2.4);
+                  bool passID = mu.isTightMuon();
+                  bool passiso = (mu.relPFiso < 0.15);
+                  bool passtrg = mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*");
+                  if(passeta) {
                      // matching 
                      int imatch = -1;
                      if (fabs(genlep1.eta-mu.eta)<0.02 && fabs(genlep1.phi-mu.phi)<0.02) imatch=0;
                      else if (fabs(genlep2.eta-mu.eta)<0.02 && fabs(genlep2.phi-mu.phi)<0.02) imatch=1;
 
                      if (imatch<0) continue;
-                     if (mu.Pt > 15) {
+                     if (mu.Pt > 15 && passID && passiso && passtrg) {
                         TagMuonCollection.push_back( mu );
                         TagIdx.push_back(imatch);
                      }
                      if (mu.Pt > 10) {
-                        PassMuonCollection.push_back( mu );
-                        PassIdx.push_back(imatch);
+                        if (passID) {
+                           Pass1MuonCollection.push_back( mu );
+                           Pass1Idx.push_back(imatch);
+                           if (passtrg) {
+                              Pass2MuonCollection.push_back( mu );
+                              Pass2Idx.push_back(imatch);
+                              if (passiso) {
+                                 PassMuonCollection.push_back( mu );
+                                 PassIdx.push_back(imatch);
+                              }
+                           }
+                        }
                      }
                   }
                }
@@ -264,6 +290,14 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
                   for (unsigned int k=0; k<PassMuonCollection.size(); k++) {
                      if (PassIdx[k] == probeidx) passprobe=true;
                   }
+                  bool pass1probe=false;
+                  for (unsigned int k=0; k<Pass1MuonCollection.size(); k++) {
+                     if (Pass1Idx[k] == probeidx) pass1probe=true;
+                  }
+                  bool pass2probe=false;
+                  for (unsigned int k=0; k<Pass2MuonCollection.size(); k++) {
+                     if (Pass2Idx[k] == probeidx) pass2probe=true;
+                  }
 
                   double probeeta = GenLeptonCollection[probeidx].eta;
                   double probept = GenLeptonCollection[probeidx].Pt;
@@ -271,12 +305,18 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
                   if (fabs(probeeta)<1.2) {
                      h_pt_EffTotal_0012->Fill(probept,TotWeight);
                      if (passprobe) h_pt_EffPass_0012->Fill(probept,TotWeight);
+                     if (pass1probe) h_pt_EffPass1_0012->Fill(probept,TotWeight);
+                     if (pass2probe) h_pt_EffPass2_0012->Fill(probept,TotWeight);
                   } else if (fabs(probeeta)<2.1) {
                      h_pt_EffTotal_1221->Fill(probept,TotWeight);
                      if (passprobe) h_pt_EffPass_1221->Fill(probept,TotWeight);
+                     if (pass1probe) h_pt_EffPass1_1221->Fill(probept,TotWeight);
+                     if (pass2probe) h_pt_EffPass2_1221->Fill(probept,TotWeight);
                   } else if (fabs(probeeta)<2.4) {
                      h_pt_EffTotal_2124->Fill(probept,TotWeight);
                      if (passprobe) h_pt_EffPass_2124->Fill(probept,TotWeight);
+                     if (pass1probe) h_pt_EffPass1_2124->Fill(probept,TotWeight);
+                     if (pass2probe) h_pt_EffPass2_2124->Fill(probept,TotWeight);
                   }
                }
 
@@ -310,11 +350,18 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 	h_mass_tot->Write();
    h_pt_EffTotal_0012->Write();
    h_pt_EffPass_0012->Write();
+   h_pt_EffPass1_0012->Write();
+   h_pt_EffPass2_0012->Write();
    h_pt_EffTotal_1221->Write();
    h_pt_EffPass_1221->Write();
+   h_pt_EffPass1_1221->Write();
+   h_pt_EffPass2_1221->Write();
    h_pt_EffTotal_2124->Write();
    h_pt_EffPass_2124->Write();
+   h_pt_EffPass1_2124->Write();
+   h_pt_EffPass2_2124->Write();
 
+   // total eff
    TEfficiency *teff0012 = new TEfficiency(*h_pt_EffPass_0012,*h_pt_EffTotal_0012);
    teff0012->SetName("eff0012");
    teff0012->Write();
@@ -324,6 +371,40 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
    TEfficiency *teff2124 = new TEfficiency(*h_pt_EffPass_2124,*h_pt_EffTotal_2124);
    teff2124->SetName("eff2124");
    teff2124->Write();
+
+   // muon ID
+   TEfficiency *teff10012 = new TEfficiency(*h_pt_EffPass1_0012,*h_pt_EffTotal_0012);
+   teff10012->SetName("eff10012");
+   teff10012->Write();
+   TEfficiency *teff11221 = new TEfficiency(*h_pt_EffPass1_1221,*h_pt_EffTotal_1221);
+   teff11221->SetName("eff11221");
+   teff11221->Write();
+   TEfficiency *teff12124 = new TEfficiency(*h_pt_EffPass1_2124,*h_pt_EffTotal_2124);
+   teff12124->SetName("eff12124");
+   teff12124->Write();
+
+   // trigger
+   TEfficiency *teff20012 = new TEfficiency(*h_pt_EffPass2_0012,*h_pt_EffPass1_0012);
+   teff20012->SetName("eff20012");
+   teff20012->Write();
+   TEfficiency *teff21221 = new TEfficiency(*h_pt_EffPass2_1221,*h_pt_EffPass1_1221);
+   teff21221->SetName("eff21221");
+   teff21221->Write();
+   TEfficiency *teff22124 = new TEfficiency(*h_pt_EffPass2_2124,*h_pt_EffPass1_2124);
+   teff22124->SetName("eff22124");
+   teff22124->Write();
+
+   // iso
+   TEfficiency *teff30012 = new TEfficiency(*h_pt_EffPass_0012,*h_pt_EffPass2_0012);
+   teff30012->SetName("eff30012");
+   teff30012->Write();
+   TEfficiency *teff31221 = new TEfficiency(*h_pt_EffPass_1221,*h_pt_EffPass2_1221);
+   teff31221->SetName("eff31221");
+   teff31221->Write();
+   TEfficiency *teff32124 = new TEfficiency(*h_pt_EffPass_2124,*h_pt_EffPass2_2124);
+   teff32124->SetName("eff32124");
+   teff32124->Write();
+
    f->Close();
 
 
