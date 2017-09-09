@@ -63,21 +63,29 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
    int nbinspt2 = 5;
    double ptbins2[6] = {10,15,25,40,80,200};
 
-	TH1D *h_pt_EffTotal_0012 = new TH1D("h_mass_EffTotal_0012", "", nbinspt, ptbins);
-	TH1D *h_pt_EffPass_0012 = new TH1D("h_mass_EffPass_0012", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffPass1_0012 = new TH1D("h_mass_EffPass1_0012", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffPass2_0012 = new TH1D("h_mass_EffPass2_0012", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffTotal_1221 = new TH1D("h_mass_EffTotal_1221", "", nbinspt, ptbins);
-	TH1D *h_pt_EffPass_1221 = new TH1D("h_mass_EffPass_1221", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffPass1_1221 = new TH1D("h_mass_EffPass1_1221", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffPass2_1221 = new TH1D("h_mass_EffPass2_1221", "", nbinspt,ptbins);	 
-	TH1D *h_pt_EffTotal_2124 = new TH1D("h_mass_EffTotal_2124", "", nbinspt2, ptbins2);
-	TH1D *h_pt_EffPass_2124 = new TH1D("h_mass_EffPass_2124", "", nbinspt2,ptbins2);	 
-	TH1D *h_pt_EffPass1_2124 = new TH1D("h_mass_EffPass1_2124", "", nbinspt2,ptbins2);	 
-	TH1D *h_pt_EffPass2_2124 = new TH1D("h_mass_EffPass2_2124", "", nbinspt2,ptbins2);	 
+	TH1D *h_pt_EffTotal_0012 = new TH1D("h_pt_EffTotal_0012", "", nbinspt, ptbins);
+	TH1D *h_pt_EffPass_0012 = new TH1D("h_pt_EffPass_0012", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass1_0012 = new TH1D("h_pt_EffPass1_0012", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass2_0012 = new TH1D("h_pt_EffPass2_0012", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffTotal_1221 = new TH1D("h_pt_EffTotal_1221", "", nbinspt, ptbins);
+	TH1D *h_pt_EffPass_1221 = new TH1D("h_pt_EffPass_1221", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass1_1221 = new TH1D("h_pt_EffPass1_1221", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffPass2_1221 = new TH1D("h_pt_EffPass2_1221", "", nbinspt,ptbins);	 
+	TH1D *h_pt_EffTotal_2124 = new TH1D("h_pt_EffTotal_2124", "", nbinspt2, ptbins2);
+	TH1D *h_pt_EffPass_2124 = new TH1D("h_pt_EffPass_2124", "", nbinspt2,ptbins2);	 
+	TH1D *h_pt_EffPass1_2124 = new TH1D("h_pt_EffPass1_2124", "", nbinspt2,ptbins2);	 
+	TH1D *h_pt_EffPass2_2124 = new TH1D("h_pt_EffPass2_2124", "", nbinspt2,ptbins2);	 
 
 	// -- After applying efficiency correction -- //
-	TH1D *h_mass_EffPass_Corr_tnp = new TH1D("h_mass_EffPass_Corr_tnp", "", binnum, bins);
+   const int nweights = 211;
+   TH1D* h_pt_EffPass_0012_Corr_tnp[nweights];
+   TH1D* h_pt_EffPass_1221_Corr_tnp[nweights];
+   TH1D* h_pt_EffPass_2124_Corr_tnp[nweights];
+   for (int i=0; i<nweights; i++) {
+      h_pt_EffPass_0012_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_0012_Corr_tnp%d",i), "", nbinspt,ptbins);
+      h_pt_EffPass_1221_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_1221_Corr_tnp%d",i), "", nbinspt,ptbins);
+      h_pt_EffPass_2124_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_2124_Corr_tnp%d",i), "", nbinspt2,ptbins2);
+   }
 
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
@@ -318,6 +326,30 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
                      if (pass1probe) h_pt_EffPass1_2124->Fill(probept,TotWeight);
                      if (pass2probe) h_pt_EffPass2_2124->Fill(probept,TotWeight);
                   }
+
+                  // TnP
+                  for (int iwt=0; iwt<nweights; iwt++) {
+                     int imuid=0,itrg=0,iiso=0; // nominal
+                     if (iwt<=100) imuid = iwt; // muID stat
+                     else if (iwt<=200) iiso = iwt-100; // iso stat
+                     else if (iwt<=202) itrg = iwt-200; // trg stat
+                     else if (iwt<=204) itrg = iwt-205; // trg syst
+                     else if (iwt<=206) imuid = iwt-207; // muID syst
+                     else if (iwt<=208) iiso = iwt-209; // iso syst
+                     else if (iwt==209) imuid = -10; // iso syst
+                     else if (iwt==210) iiso = -10; // iso syst
+
+                     // weights for MuID and iso
+                     TnpWeight = tnp_weight_muid_ppb(probept,probeeta,imuid)*tnp_weight_iso_ppb(probept,probeeta,iiso)*tnp_weight_trg_ppb(probeeta,itrg);
+
+                     if (fabs(probeeta)<1.2) {
+                        if (pass2probe) h_pt_EffPass_0012_Corr_tnp[iwt]->Fill(probept,TotWeight*TnpWeight);
+                     } else if (fabs(probeeta)<2.1) {
+                        if (pass2probe) h_pt_EffPass_1221_Corr_tnp[iwt]->Fill(probept,TotWeight*TnpWeight);
+                     } else if (fabs(probeeta)<2.4) {
+                        if (pass2probe) h_pt_EffPass_2124_Corr_tnp[iwt]->Fill(probept,TotWeight*TnpWeight);
+                     }
+                  } // tnp weight loop
                }
 
 				} // -- End of if( Flag_PassAcc )
@@ -404,6 +436,203 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
    TEfficiency *teff32124 = new TEfficiency(*h_pt_EffPass_2124,*h_pt_EffPass2_2124);
    teff32124->SetName("eff32124");
    teff32124->Write();
+
+	// TEfficiency *AccEff_Mass = new TEfficiency(*h_mass_EffPass, *h_mass_AccTotal);
+	// AccEff_Mass->SetName("TEff_AccEff_Mass");
+
+   TGraphAsymmErrors *g_Eff_0012_Corr_tnp_stat = NULL;
+   TGraphAsymmErrors *g_Eff_1221_Corr_tnp_stat = NULL;
+   TGraphAsymmErrors *g_Eff_2124_Corr_tnp_stat = NULL;
+   TEfficiency* Eff_0012_Corr_tnp[nweights];
+   TEfficiency* Eff_1221_Corr_tnp[nweights];
+   TEfficiency* Eff_2124_Corr_tnp[nweights];
+   for (int i=0; i<nweights; i++) {
+      Eff_0012_Corr_tnp[i] = new TEfficiency(*h_pt_EffPass_0012_Corr_tnp[i], *h_pt_EffTotal_0012);
+      Eff_1221_Corr_tnp[i] = new TEfficiency(*h_pt_EffPass_1221_Corr_tnp[i], *h_pt_EffTotal_1221);
+      Eff_2124_Corr_tnp[i] = new TEfficiency(*h_pt_EffPass_2124_Corr_tnp[i], *h_pt_EffTotal_2124);
+      Eff_0012_Corr_tnp[i]->SetName(Form("TEff_Eff_0012_Corr_tnp%d",i));
+      Eff_1221_Corr_tnp[i]->SetName(Form("TEff_Eff_1221_Corr_tnp%d",i));
+      Eff_2124_Corr_tnp[i]->SetName(Form("TEff_Eff_2124_Corr_tnp%d",i));
+      Eff_0012_Corr_tnp[i]->Write();
+      Eff_1221_Corr_tnp[i]->Write();
+      Eff_2124_Corr_tnp[i]->Write();
+
+      if (i==0) {
+         TCanvas *c_Eff_0012_Corr_tnp = new TCanvas("c_Eff_0012_Corr_tnp", "", 800, 600);
+         c_Eff_0012_Corr_tnp->cd();
+         Eff_0012_Corr_tnp[i]->Draw("AP");
+         gPad->Update();
+         c_Eff_0012_Corr_tnp->Write();
+         g_Eff_0012_Corr_tnp_stat = Eff_0012_Corr_tnp[i]->GetPaintedGraph();
+         TCanvas *c_Eff_1221_Corr_tnp = new TCanvas("c_Eff_1221_Corr_tnp", "", 800, 600);
+         c_Eff_1221_Corr_tnp->cd();
+         Eff_1221_Corr_tnp[i]->Draw("AP");
+         gPad->Update();
+         c_Eff_1221_Corr_tnp->Write();
+         g_Eff_1221_Corr_tnp_stat = Eff_1221_Corr_tnp[i]->GetPaintedGraph();
+         TCanvas *c_Eff_2124_Corr_tnp = new TCanvas("c_Eff_2124_Corr_tnp", "", 800, 600);
+         c_Eff_2124_Corr_tnp->cd();
+         Eff_2124_Corr_tnp[i]->Draw("AP");
+         gPad->Update();
+         c_Eff_2124_Corr_tnp->Write();
+         g_Eff_2124_Corr_tnp_stat = Eff_2124_Corr_tnp[i]->GetPaintedGraph();
+      }
+   }
+
+   // now let's also write 2 TGRaphAsymmErrors for the efficiency including tnp corrections:
+   // one with tnp uncertainties, and the other with total (stat MC + tnp syst) uncertainties
+   // ************************
+   // *       0 -- 1.2       *
+   // ************************
+   TGraphAsymmErrors *g_Eff_0012_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_0012_Corr_tnp_stat->Clone("g_Eff_0012_Corr_tnp_syst");
+   TGraphAsymmErrors *g_Eff_0012_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_0012_Corr_tnp_stat->Clone("g_Eff_0012_Corr_tnp_tot");
+   for (int ibin=0; ibin<nbinspt; ibin++) {
+      // compute the tnp syst uncertainty
+      double tnptot = 0;
+      double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
+      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
+      double e0 = Eff_0012_Corr_tnp[0]->GetEfficiency(ibin);
+      TEfficiency** ee = Eff_0012_Corr_tnp; // shortcut
+
+      // stat uncertainties
+      // trigger
+      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin)-e0),fabs(ee[202]->GetEfficiency(ibin)-e0));
+      // muID
+      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat2 = sqrt(tnpstat2/100.);
+      // iso
+      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat3 = sqrt(tnpstat3/100.);
+
+      // syst uncertainties
+      // trigger
+      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin)-e0),fabs(ee[204]->GetEfficiency(ibin)-e0));
+      // muID
+      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin)-e0),fabs(ee[206]->GetEfficiency(ibin)-e0));
+      // iso
+      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin)-e0),fabs(ee[208]->GetEfficiency(ibin)-e0));
+      // muID binned
+      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin)-e0);
+      // iso binned
+      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin)-e0);
+
+      // total
+      tnptot = sqrt(pow(tnpstat1,2)+pow(tnpstat2,2)+pow(tnpstat3,2)
+            +pow(tnpsyst1,2)+pow(tnpsyst2,2)+pow(tnpsyst3,2)+pow(tnpsyst4,2)+pow(tnpsyst5,2)+pow(tnpsyst6,2)+pow(tnpsyst7,2));
+      cout << tnptot << "<-" << tnpstat1 << "," << tnpstat2 << "," << tnpstat3 << ";"
+         << tnpsyst1 << "," << tnpsyst2 << "," << tnpsyst3 << ","  << tnpsyst4 << "," << tnpsyst5 << "," << tnpsyst6 << "," << tnpsyst7 << endl;
+
+      // assign it to the graphs
+      g_Eff_0012_Corr_tnp_syst->SetPointEYlow(ibin,tnptot);
+      g_Eff_0012_Corr_tnp_syst->SetPointEYhigh(ibin,tnptot);
+      g_Eff_0012_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnptot,2)+pow(Eff_0012_Corr_tnp[0]->GetEfficiencyErrorLow(ibin),2)));
+      g_Eff_0012_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnptot,2)+pow(Eff_0012_Corr_tnp[0]->GetEfficiencyErrorUp(ibin),2)));
+   } // ibin loop for tnp uncertainty
+   g_Eff_0012_Corr_tnp_stat->Write();
+   g_Eff_0012_Corr_tnp_syst->Write();
+   g_Eff_0012_Corr_tnp_tot->Write();
+
+   // ************************
+   // *     1.2 -- 2.1       *
+   // ************************
+   TGraphAsymmErrors *g_Eff_1221_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_1221_Corr_tnp_stat->Clone("g_Eff_1221_Corr_tnp_syst");
+   TGraphAsymmErrors *g_Eff_1221_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_1221_Corr_tnp_stat->Clone("g_Eff_1221_Corr_tnp_tot");
+   for (int ibin=0; ibin<nbinspt; ibin++) {
+      // compute the tnp syst uncertainty
+      double tnptot = 0;
+      double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
+      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
+      double e0 = Eff_1221_Corr_tnp[0]->GetEfficiency(ibin);
+      TEfficiency** ee = Eff_1221_Corr_tnp; // shortcut
+
+      // stat uncertainties
+      // trigger
+      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin)-e0),fabs(ee[202]->GetEfficiency(ibin)-e0));
+      // muID
+      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat2 = sqrt(tnpstat2/100.);
+      // iso
+      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat3 = sqrt(tnpstat3/100.);
+
+      // syst uncertainties
+      // trigger
+      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin)-e0),fabs(ee[204]->GetEfficiency(ibin)-e0));
+      // muID
+      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin)-e0),fabs(ee[206]->GetEfficiency(ibin)-e0));
+      // iso
+      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin)-e0),fabs(ee[208]->GetEfficiency(ibin)-e0));
+      // muID binned
+      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin)-e0);
+      // iso binned
+      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin)-e0);
+
+      // total
+      tnptot = sqrt(pow(tnpstat1,2)+pow(tnpstat2,2)+pow(tnpstat3,2)
+            +pow(tnpsyst1,2)+pow(tnpsyst2,2)+pow(tnpsyst3,2)+pow(tnpsyst4,2)+pow(tnpsyst5,2)+pow(tnpsyst6,2)+pow(tnpsyst7,2));
+      cout << tnptot << "<-" << tnpstat1 << "," << tnpstat2 << "," << tnpstat3 << ";"
+         << tnpsyst1 << "," << tnpsyst2 << "," << tnpsyst3 << ","  << tnpsyst4 << "," << tnpsyst5 << "," << tnpsyst6 << "," << tnpsyst7 << endl;
+
+      // assign it to the graphs
+      g_Eff_1221_Corr_tnp_syst->SetPointEYlow(ibin,tnptot);
+      g_Eff_1221_Corr_tnp_syst->SetPointEYhigh(ibin,tnptot);
+      g_Eff_1221_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnptot,2)+pow(Eff_1221_Corr_tnp[0]->GetEfficiencyErrorLow(ibin),2)));
+      g_Eff_1221_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnptot,2)+pow(Eff_1221_Corr_tnp[0]->GetEfficiencyErrorUp(ibin),2)));
+   } // ibin loop for tnp uncertainty
+   g_Eff_1221_Corr_tnp_stat->Write();
+   g_Eff_1221_Corr_tnp_syst->Write();
+   g_Eff_1221_Corr_tnp_tot->Write();
+
+   // ************************
+   // *     2.1 -- 2.4       *
+   // ************************
+   TGraphAsymmErrors *g_Eff_2124_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_2124_Corr_tnp_stat->Clone("g_Eff_2124_Corr_tnp_syst");
+   TGraphAsymmErrors *g_Eff_2124_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_2124_Corr_tnp_stat->Clone("g_Eff_2124_Corr_tnp_tot");
+   for (int ibin=0; ibin<nbinspt2; ibin++) {
+      // compute the tnp syst uncertainty
+      double tnptot = 0;
+      double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
+      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
+      double e0 = Eff_2124_Corr_tnp[0]->GetEfficiency(ibin);
+      TEfficiency** ee = Eff_2124_Corr_tnp; // shortcut
+
+      // stat uncertainties
+      // trigger
+      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin)-e0),fabs(ee[202]->GetEfficiency(ibin)-e0));
+      // muID
+      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat2 = sqrt(tnpstat2/100.);
+      // iso
+      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      tnpstat3 = sqrt(tnpstat3/100.);
+
+      // syst uncertainties
+      // trigger
+      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin)-e0),fabs(ee[204]->GetEfficiency(ibin)-e0));
+      // muID
+      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin)-e0),fabs(ee[206]->GetEfficiency(ibin)-e0));
+      // iso
+      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin)-e0),fabs(ee[208]->GetEfficiency(ibin)-e0));
+      // muID binned
+      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin)-e0);
+      // iso binned
+      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin)-e0);
+
+      // total
+      tnptot = sqrt(pow(tnpstat1,2)+pow(tnpstat2,2)+pow(tnpstat3,2)
+            +pow(tnpsyst1,2)+pow(tnpsyst2,2)+pow(tnpsyst3,2)+pow(tnpsyst4,2)+pow(tnpsyst5,2)+pow(tnpsyst6,2)+pow(tnpsyst7,2));
+      cout << tnptot << "<-" << tnpstat1 << "," << tnpstat2 << "," << tnpstat3 << ";"
+         << tnpsyst1 << "," << tnpsyst2 << "," << tnpsyst3 << ","  << tnpsyst4 << "," << tnpsyst5 << "," << tnpsyst6 << "," << tnpsyst7 << endl;
+
+      // assign it to the graphs
+      g_Eff_2124_Corr_tnp_syst->SetPointEYlow(ibin,tnptot);
+      g_Eff_2124_Corr_tnp_syst->SetPointEYhigh(ibin,tnptot);
+      g_Eff_2124_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnptot,2)+pow(Eff_2124_Corr_tnp[0]->GetEfficiencyErrorLow(ibin),2)));
+      g_Eff_2124_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnptot,2)+pow(Eff_2124_Corr_tnp[0]->GetEfficiencyErrorUp(ibin),2)));
+   } // ibin loop for tnp uncertainty
+   g_Eff_2124_Corr_tnp_stat->Write();
+   g_Eff_2124_Corr_tnp_syst->Write();
+   g_Eff_2124_Corr_tnp_tot->Write();
 
    f->Close();
 
