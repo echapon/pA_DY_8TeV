@@ -1,4 +1,6 @@
 #include "Include/MyCanvas.C"
+#include "Include/tdrstyle.C"
+#include "Include/CMS_lumi.C"
 
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
@@ -98,18 +100,28 @@ void DrawAccEffPlot(TString version = "None")
 		x_201513TeV = 1150;
 	latex.DrawLatex(x_201513TeV, 1.11, "#font[42]{2015, 13TeV}");
 
-	Double_t x1 = 17; // -- CMS, preliminary x-axis value -- //
-	if( Sample == "Powheg" )
-		x1 = 60;
-	latex.DrawLatex(x1, 1.01, "#font[62]{CMS}");
-	latex.DrawLatex(x1, 0.95, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+   // Double_t x1 = 17; // -- CMS, preliminary x-axis value -- //
+   // if( Sample == "Powheg" )
+   //    x1 = 60;
+   // latex.DrawLatex(x1, 1.01, "#font[62]{CMS}");
+   // latex.DrawLatex(x1, 0.95, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+
+   extraText = "Simulation";
+   writeExtraText = true;
+   CMS_lumi( c_compare, 111, 0 );
+
+   c_compare->Update();
+   c_compare->RedrawAxis();
+   c_compare->GetFrame()->Draw();
+   c_compare->Modified();
+
 
 	TString CanvasName = c_compare->GetName();
 	c_compare->SaveAs(CanvasName+".pdf");
 	c_compare->SaveAs(CanvasName+".C");
 
 
-	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_tnp");
+	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_tnp0");
 	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*)TEff_Eff_Corr_tnp->CreateGraph()->Clone();
 
 	// TEfficiency *TEff_AccEff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_tnp");
@@ -122,7 +134,7 @@ void DrawAccEffPlot(TString version = "None")
 
 
 	MyCanvas *myc_tnp = new MyCanvas("c_UnCorr_vs_Corr_tnp", "Gen-Level Dimuon Mass [GeV]", "Values");
-	myc_tnp->LowerEdge_Y = 0.65;
+	myc_tnp->LowerEdge_Y = 0.5;
 	myc_tnp->UpperEdge_Y = 1.05;
 
 	myc_tnp->LowerEdge_Ratio = 0.9;
@@ -173,6 +185,7 @@ void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGra
 	TCanvas *c_compare_corr = new TCanvas(CanvasName, "", 800, 600);
 	c_compare_corr->cd();
 	gPad->SetLogx();
+	gPad->SetLogy();
 
 	g_Acc->Draw("AP");
 	g_Eff_Corr->Draw("PSAME");
@@ -222,11 +235,20 @@ void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGra
 		x_201513TeV = 1150;
 	latex.DrawLatex(x_201513TeV, 1.11, "#font[42]{2015, 13TeV}");
 
-	Double_t x1 = 17; // -- CMS, preliminary x-axis value -- //
-	if( Sample == "Powheg" )
-		x1 = 60;
-	latex.DrawLatex(x1, 1.01, "#font[62]{CMS}");
-	latex.DrawLatex(x1, 0.95, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+   // Double_t x1 = 17; // -- CMS, preliminary x-axis value -- //
+   // if( Sample == "Powheg" )
+   //    x1 = 60;
+   // latex.DrawLatex(x1, 1.01, "#font[62]{CMS}");
+   // latex.DrawLatex(x1, 0.95, "#font[42]{#it{#scale[0.8]{Simulation}}}");
+
+   extraText = "Simulation";
+   writeExtraText = true;
+   CMS_lumi( c_compare_corr, 111, 0 );
+
+   c_compare_corr->Update();
+   c_compare_corr->RedrawAxis();
+   c_compare_corr->GetFrame()->Draw();
+   c_compare_corr->Modified();
 
 	c_compare_corr->SaveAs(CanvasName+".pdf");
 }
