@@ -349,30 +349,30 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       double tnptot = 0;
       double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
       double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
-      double e0 = Eff_Mass_Corr_tnp[0]->GetEfficiency(ibin);
+      double e0 = Eff_Mass_Corr_tnp[0]->GetEfficiency(ibin+1);
       TEfficiency** ee = Eff_Mass_Corr_tnp; // shortcut
 
       // stat uncertainties
       // trigger
-      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin)-e0),fabs(ee[202]->GetEfficiency(ibin)-e0));
+      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin+1)-e0),fabs(ee[202]->GetEfficiency(ibin+1)-e0));
       // muID
-      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
       tnpstat2 = sqrt(tnpstat2/100.);
       // iso
-      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin)-e0,2);
+      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
       tnpstat3 = sqrt(tnpstat3/100.);
 
       // syst uncertainties
       // trigger
-      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin)-e0),fabs(ee[204]->GetEfficiency(ibin)-e0));
+      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin+1)-e0),fabs(ee[204]->GetEfficiency(ibin+1)-e0));
       // muID
-      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin)-e0),fabs(ee[206]->GetEfficiency(ibin)-e0));
+      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin+1)-e0),fabs(ee[206]->GetEfficiency(ibin+1)-e0));
       // iso
-      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin)-e0),fabs(ee[208]->GetEfficiency(ibin)-e0));
+      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin+1)-e0),fabs(ee[208]->GetEfficiency(ibin+1)-e0));
       // muID binned
-      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin)-e0);
+      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin+1)-e0);
       // iso binned
-      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin)-e0);
+      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin+1)-e0);
 
       // total
       tnptot = sqrt(pow(tnpstat1,2)+pow(tnpstat2,2)+pow(tnpstat3,2)
@@ -383,8 +383,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       // assign it to the graphs
       g_Eff_Mass_Corr_tnp_syst->SetPointEYlow(ibin,tnptot);
       g_Eff_Mass_Corr_tnp_syst->SetPointEYhigh(ibin,tnptot);
-      g_Eff_Mass_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnptot,2)+pow(Eff_Mass_Corr_tnp[0]->GetEfficiencyErrorLow(ibin),2)));
-      g_Eff_Mass_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnptot,2)+pow(Eff_Mass_Corr_tnp[0]->GetEfficiencyErrorUp(ibin),2)));
+      g_Eff_Mass_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnptot,2)+pow(Eff_Mass_Corr_tnp[0]->GetEfficiencyErrorLow(ibin+1),2)));
+      g_Eff_Mass_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnptot,2)+pow(Eff_Mass_Corr_tnp[0]->GetEfficiencyErrorUp(ibin+1),2)));
    } // ibin loop for tnp uncertainty
    g_Eff_Mass_Corr_tnp_stat->Write();
    g_Eff_Mass_Corr_tnp_syst->Write();
