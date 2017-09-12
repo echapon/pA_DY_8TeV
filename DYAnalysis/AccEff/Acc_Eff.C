@@ -337,6 +337,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
          gPad->Update();
          c_Eff_Mass_Corr_tnp->Write();
          g_Eff_Mass_Corr_tnp_stat = Eff_Mass_Corr_tnp[i]->GetPaintedGraph();
+         g_Eff_Mass_Corr_tnp_stat->SetName("g_Eff_Mass_Corr_tnp_stat");
       }
    }
 

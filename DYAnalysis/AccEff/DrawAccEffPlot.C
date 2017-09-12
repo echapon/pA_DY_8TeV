@@ -122,7 +122,8 @@ void DrawAccEffPlot(TString version = "None")
 
 
 	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_tnp0");
-	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*)TEff_Eff_Corr_tnp->CreateGraph()->Clone();
+   // TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*)TEff_Eff_Corr_tnp->CreateGraph()->Clone();
+	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*) f_input->Get("g_Eff_Mass_Corr_tnp_tot");
 
 	// TEfficiency *TEff_AccEff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_tnp");
 	// TGraphAsymmErrors *g_AccEff_Corr_tnp = (TGraphAsymmErrors*)TEff_AccEff_Corr_tnp->CreateGraph()->Clone();
