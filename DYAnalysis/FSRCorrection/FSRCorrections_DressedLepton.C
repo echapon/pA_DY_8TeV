@@ -20,15 +20,16 @@
 #include <vector>
 
 //Customized header files
-#include </home/kplee/CommonCodes/DrellYanAnalysis/DYAnalyzer.h>
+#include <Include/DYAnalyzer.h>
 
-// -- RooUnfold Package -- //
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldBayes.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+//TUnfold
+#include "TUnfoldDensity.h"
+// #define VERBOSE_LCURVE_SCAN
+
+using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = "IsoMu20_OR_IsoTkMu20" )
+void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*" )
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -38,35 +39,31 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-	// const Int_t nMassBin = 43;
-	Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-										 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-										 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-										 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-										 830, 1000, 1500, 3000};
+   // const int binnum = 13;
+   // double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
+   // let's define a finer binning for gen
+   const int rebin = 2;
+   const int binnum_rebin = rebin*binnum;
+   double *bins_rebin = new double[binnum_rebin+1];
+   for (int i=0; i<binnum_rebin+1; i++) {
+      int i_orig = i/rebin;
+      double dm = (bins[i_orig+1]-bins[i_orig])/((double) rebin);
+      bins_rebin[i] = bins[i_orig]+(i%rebin)*dm;
+   }
 
-	TString BaseLocation = "/data4/Users/kplee/DYntuple";
+	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 
 	// -- Each ntuple directory & corresponding Tags -- //
 	// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
 
-	if( Sample == "aMCNLO" )
-	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("aMCNLO_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents);
-	}
-	if( Sample == "Powheg" )
-	{
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents);
-	}
+   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
 
 	TFile *f = new TFile("ROOTFile_FSRCorrections_DressedLepton_" + Sample + ".root", "RECREATE");
-	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", nMassBin, MassBinEdges);
-	TH1D *h_mass_postFSR_tot = new TH1D("h_mass_postFSR", "", nMassBin, MassBinEdges);
+	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", binnum, bins);
+	TH1D *h_mass_postFSR_tot = new TH1D("h_mass_postFSR", "", binnum, bins);
 	TH1D *h_mass_ratio_tot = new TH1D("h_mass_ratio", "", 100, -1, 1);
-
-	RooUnfoldResponse *UnfoldRes = new RooUnfoldResponse(h_mass_postFSR_tot, h_mass_preFSR_tot);
-	UnfoldRes->SetName("UnfoldRes");
+   TH2D *h_mass_postpreFSR_tot = new TH2D("h_mass_postpreFSR_tot", ";mass(post-FSR);mass(pre-FSR)", binnum, bins, binnum, bins);
 
 	// const Int_t ndRCuts = 10;
 	// Double_t dRCuts[ndRCuts] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
@@ -114,13 +111,16 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 	const Int_t Ntup = ntupleDirectory.size();
 	for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 	{
+      // loop only on DYMuMu!
+      if (!Tag[i_tup].Contains("DYMuMu")) continue;
+
 		TStopwatch looptime;
 		looptime.Start();
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
-		TH1D *h_mass_preFSR = new TH1D("h_mass_preFSR_"+Tag[i_tup], "", nMassBin, MassBinEdges);
-		TH1D *h_mass_postFSR = new TH1D("h_mass_postFSR_"+Tag[i_tup], "", nMassBin, MassBinEdges);
+		TH1D *h_mass_preFSR = new TH1D("h_mass_preFSR_"+Tag[i_tup], "", binnum, bins);
+		TH1D *h_mass_postFSR = new TH1D("h_mass_postFSR_"+Tag[i_tup], "", binnum, bins);
 		TH1D *h_mass_ratio = new TH1D("h_mass_ratio_"+Tag[i_tup], "", 100, -1, 1);
 
 		// -- ntuple Setting -- //
@@ -149,10 +149,11 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 		if( Sample == "Powheg" )
 			nEvents.push_back( NEvents );
 
-		Double_t norm = ( Xsec[i_tup] * Lumi ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 		// -- Event loop starts -- //
+      // NEvents = 100000;
 		for(Int_t i=0; i<NEvents; i++)
 		{
 			// printf("[%dth Event]\n", i);
@@ -263,7 +264,7 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 				h_mass_postFSR_tot->Fill( M_postFSR, TotWeight );
 				h_mass_ratio_tot->Fill( ratio, TotWeight );
 
-				UnfoldRes->Fill( M_postFSR, M_preFSR, TotWeight );
+				h_mass_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
 
 			} // -- End of if( GenFlag == kTRUE ) -- //
 
@@ -285,7 +286,79 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 	f->cd();
 	h_mass_preFSR_tot->Write();
 	h_mass_postFSR_tot->Write();
-	h_mass_ratio_tot->Write();
+   h_mass_ratio_tot->Write();
+   h_mass_postpreFSR_tot->Write();
+
+   // f->Close();
+   // return;
+
+   TUnfoldDensity unfold(h_mass_postpreFSR_tot,TUnfold::kHistMapOutputVert);
+
+   // unfold.SetName("unfold");
+
+   // define input and bias scame
+   // do not use the bias, because MC peak may be at the wrong place
+   // watch out for error codes returned by the SetInput method
+   // errors larger or equal 10000 are fatal:
+   // the data points specified as input are not sufficient to constrain the
+   // unfolding process
+   TFile *fdata = TFile::Open("ROOTFile_YieldHistogram.root");
+   if (!fdata || !fdata->IsOpen()) {
+      cout << "Error, file ROOTFile_YieldHistogram.root not found" << endl;
+      return;
+   }
+   TH1F *histMdetData = (TH1F*) fdata->Get("h_yield_OS_MCBasedBkg1");
+   if (!histMdetData) {
+      cout << "Error, histo h_yield_OS_MCBasedBkg1 not found" << endl;
+      return;
+   }
+   f->cd();
+
+   if(unfold.SetInput(histMdetData)>=10000) {
+      std::cout<<"Unfolding result may be wrong\n";
+   }
+
+   //========================================================================
+   // the unfolding is done here
+   //
+   // scan L curve and find best point
+   Int_t nScan=30;
+   // use automatic L-curve scan: start with taumin=taumax=0.0
+   Double_t tauMin=0.;
+   Double_t tauMax=0.;
+   Int_t iBest;
+   TSpline *logTauX,*logTauY;
+   TGraph *lCurve;
+
+   // if required, report Info messages (for debugging the L-curve scan)
+#ifdef VERBOSE_LCURVE_SCAN
+   Int_t oldinfo=gErrorIgnoreLevel;
+   gErrorIgnoreLevel=kInfo;
+#endif
+   // this method scans the parameter tau and finds the kink in the L curve
+   // finally, the unfolding is done for the best choice of tau
+   iBest=unfold.ScanLcurve(nScan,tauMin,tauMax,&lCurve,&logTauX,&logTauY);
+
+   // if required, switch to previous log-level
+#ifdef VERBOSE_LCURVE_SCAN
+   gErrorIgnoreLevel=oldinfo;
+#endif
+
+   //==========================================================================
+   // create graphs with one point to visualize the best choice of tau
+   //
+   Double_t t[1],x[1],y[1];
+   logTauX->GetKnot(iBest,t[0],x[0]);
+   logTauY->GetKnot(iBest,t[0],y[0]);
+   TGraph *bestLcurve=new TGraph(1,x,y);
+   TGraph *bestLogTauLogChi2=new TGraph(1,t,x);
+
+   // save the tau vs chi2
+   logTauX->Write("logTauX");
+   bestLogTauLogChi2->Write("bestLogTauLogChi2");
+   // save the L curve
+   lCurve->Write("lCurve");
+   bestLcurve->Write("bestLcurve");
 
 	// for(Int_t i_dr=0; i_dr < ndRCuts; i_dr++)
 	// {
@@ -298,32 +371,72 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 	for(Int_t i=0; i<nHisto; i++)
 		GammaHisto[i]->Write();
 
-	UnfoldRes->Write();
+	unfold.Write();
 
 	// -- Response Matrix -- //
-	TH2* h_RespM = UnfoldRes->Hresponse();
-	h_RespM->SetName("h_RespM_RooUnfold");
-	h_RespM->Write();
 	TCanvas *c_RespM = new TCanvas("c_RespM", "", 800, 800);
 	c_RespM->cd();
-	h_RespM->SetStats(kFALSE);
-	h_RespM->Draw("COLZ");
-	h_RespM->SetMinimum(1e-3);
-	h_RespM->SetMaximum(1);
-	h_RespM->GetXaxis()->SetTitle("Invariant Mass (post-FSR)");
-	h_RespM->GetYaxis()->SetTitle("Invariant Mass (pre-FSR)");
+	h_mass_postpreFSR_tot->SetStats(kFALSE);
+	h_mass_postpreFSR_tot->Draw("COLZ");
+	h_mass_postpreFSR_tot->SetMinimum(1e-3);
+	h_mass_postpreFSR_tot->SetMaximum(1);
+	h_mass_postpreFSR_tot->GetXaxis()->SetTitle("Invariant Mass (post-FSR)");
+	h_mass_postpreFSR_tot->GetYaxis()->SetTitle("Invariant Mass (pre-FSR)");
 	gPad->SetLogx();
 	gPad->SetLogy();
 	gPad->SetLogz();
 	c_RespM->Write();
 
-	TH1* h_Measured_RooUnfold = UnfoldRes->Hmeasured();
-	h_Measured_RooUnfold->SetName("h_Measured_RooUnfold");
-	h_Measured_RooUnfold->Write();
+   // TH1* h_Measured_TUnfold = unfold.Hmeasured();
+   // h_Measured_TUnfold->SetName("h_Measured_TUnfold");
+   // h_Measured_TUnfold->Write();
 
-	TH1* h_Truth_RooUnfold = UnfoldRes->Htruth();
-	h_Truth_RooUnfold->SetName("h_Truth_RooUnfold");
-	h_Truth_RooUnfold->Write();
+   // TH1* h_Truth_TUnfold = unfold.Htruth();
+   // h_Truth_TUnfold->SetName("h_Truth_TUnfold");
+   // h_Truth_TUnfold->Write();
+
+   //==========================================================================
+   // retreive results into histograms
+
+   // get unfolded distribution
+   TH1 *histMunfold=unfold.GetOutput("Unfolded");
+   histMunfold->Write();
+
+   // get unfolding result, folded back
+   TH1 *histMdetFold=unfold.GetFoldedOutput("FoldedBack");
+   histMdetFold->Write();
+
+   // get error matrix (input distribution [stat] errors only)
+   // TH2D *histEmatData=unfold.GetEmatrix("EmatData");
+
+   // get total error matrix:
+   //   migration matrix uncorrelated and correlated systematic errors
+   //   added in quadrature to the data statistical errors
+   TH2 *histEmatTotal=unfold.GetEmatrixTotal("EmatTotal");
+
+   // create data histogram with the total errors
+   TH1D *histTotalError=
+      new TH1D("TotalError",";mass(gen)",binnum, bins);
+   for(Int_t bin=1;bin<=binnum;bin++) {
+      histTotalError->SetBinContent(bin,histMunfold->GetBinContent(bin));
+      histTotalError->SetBinError
+         (bin,TMath::Sqrt(histEmatTotal->GetBinContent(bin,bin)));
+   }
+
+   // get global correlation coefficients
+   // for this calculation one has to specify whether the
+   // underflow/overflow bins are included or not
+   // default: include all bins
+   // here: exclude underflow and overflow bins
+   TH2 *gHistInvEMatrix;
+   TH1 *histRhoi=unfold.GetRhoItotal("rho_I",
+         0, // use default title
+         0, // all distributions
+         "*[UO]", // discard underflow and overflow bins on all axes
+         kTRUE, // use original binning
+         &gHistInvEMatrix // store inverse of error matrix
+         );
+   histRhoi->Write();
 
 	// h_dR_E->Write();
 
@@ -351,6 +464,9 @@ void FSRCorrections_DressedLepton( TString Sample = "aMCNLO", TString HLTname = 
 
 	TTimeStamp ts_end;
 	cout << "[End Time(local time): " << ts_end.AsString("l") << "]" << endl;
+
+   fdata->Close();
+   f->Close();
 }
 
 static inline void loadBar(int x, int n, int r, int w)
