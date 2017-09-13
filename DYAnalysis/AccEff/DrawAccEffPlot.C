@@ -6,6 +6,7 @@ void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGra
 void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
 void PrintOutGraph(TGraphAsymmErrors* g);
 Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
+Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
 void DrawAccEffPlot(TString version = "None")
@@ -81,7 +82,7 @@ void DrawAccEffPlot(TString version = "None")
    //    g_Acc->GetXaxis()->SetRangeUser(50, 3000);
 	g_Acc->GetYaxis()->SetTitle( "Value" );
    // g_Acc->GetYaxis()->SetRangeUser(0, 1.1);
-	g_Acc->GetYaxis()->SetRangeUser(1e-4, 1.1);
+	g_Acc->GetYaxis()->SetRangeUser(1e-3, 1.1);
 
 	TLegend *legend = new TLegend(0.55, 0.2, 0.99, 0.35);
 	legend->SetFillStyle(0);
@@ -152,6 +153,9 @@ void DrawAccEffPlot(TString version = "None")
 
 
 	DrawAccEffDist("Corr_tnp", Sample, g_Acc, g_Eff_Corr_tnp, g_AccEff_Corr_tnp);
+   // PrintOutGraph( g_Acc );
+   // PrintOutGraph( g_Eff_Corr_tnp );
+   // PrintOutGraph( g_AccEff_Corr_tnp );
 
 	TFile *f_output = new TFile("ROOTFile_AccEff.root", "RECREATE");
 	f_output->cd();
@@ -217,7 +221,7 @@ void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGra
    // if( Sample == "Powheg" )
    //    g_Acc->GetXaxis()->SetRangeUser(50, 3000);
 	g_Acc->GetYaxis()->SetTitle( "Value" );
-	g_Acc->GetYaxis()->SetRangeUser(0, 1.1);
+	g_Acc->GetYaxis()->SetRangeUser(1e-3, 1.1);
 
 	TLegend *legend = new TLegend(0.55, 0.2, 0.99, 0.35);
 	legend->SetFillStyle(0);
@@ -278,7 +282,7 @@ void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGra
 
 		x_AccEff = x_Acc;
 		y_AccEff = y_Acc * y_Eff;
-		error_AccEff = Error_PropagatedAoverB(y_Acc, error_Acc, y_Eff, error_Eff);
+		error_AccEff = Error_PropagatedAtimesB(y_Acc, error_Acc, y_Eff, error_Eff);
 
 		g_AccEff->SetPoint(i, x_AccEff, y_AccEff);
 		g_AccEff->SetPointError(i, g_Acc->GetErrorXlow(i), g_Acc->GetErrorXhigh(i), error_AccEff, error_AccEff);
@@ -294,6 +298,16 @@ Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double
 	Double_t errorSquare = ratio_A * ratio_A + ratio_B * ratio_B;
 
 	return (A/B) * sqrt(errorSquare);
+}
+
+Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B)
+{
+	Double_t ratio_A = (sigma_A) / A;
+	Double_t ratio_B = (sigma_B) / B;
+
+	Double_t errorSquare = ratio_A * ratio_A + ratio_B * ratio_B;
+
+	return (A*B) * sqrt(errorSquare);
 }
 
 
