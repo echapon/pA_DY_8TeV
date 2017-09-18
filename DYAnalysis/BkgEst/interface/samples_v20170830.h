@@ -18,6 +18,8 @@ namespace DYana_v20170830 {
       WmTau,
       DYMuMu1030,
       DYMuMu30,
+      DYMuMu1030_PbP,
+      DYMuMu30_PbP,
       DYTauTau1030,
       DYTauTau30,
       Data1,
@@ -47,6 +49,8 @@ namespace DYana_v20170830 {
       v.push_back(WmTau);
       v.push_back(DYMuMu1030);
       v.push_back(DYMuMu30);
+      v.push_back(DYMuMu1030_PbP);
+      v.push_back(DYMuMu30_PbP);
       v.push_back(DYTauTau1030);
       v.push_back(DYTauTau30);
       v.push_back(Data1);
@@ -61,6 +65,8 @@ namespace DYana_v20170830 {
          // MCFM NLO CT14 pPb
          case DYMuMu1030:return 3.*208.*0.476661E+04; break; // MCFM only generates p(p/n) and 1 flavour
          case DYMuMu30:  return 3.*208.*0.614412E+04; break; // MCFM only generates p(p/n) and 1 flavour
+         case DYMuMu1030_PbP:return 3.*208.*0.476661E+04; break; // MCFM only generates p(p/n) and 1 flavour
+         case DYMuMu30_PbP:  return 3.*208.*0.614412E+04; break; // MCFM only generates p(p/n) and 1 flavour
          case DYTauTau1030:return 3.*208.*0.476661E+04; break; // MCFM only generates p(p/n) and 1 flavour
          case DYTauTau30:  return 3.*208.*0.614412E+04; break; // MCFM only generates p(p/n) and 1 flavour
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
@@ -84,15 +90,17 @@ namespace DYana_v20170830 {
    // Nevts for each process
    int Nevts(SampleTag s) {
       switch (s) {
-         case DYMuMu1030:  return 1e6; break;
+         case DYMuMu1030:  return 997120; break;
          case DYMuMu30:    return 1e6; break;
+         case DYMuMu1030_PbP:  return 1e6; break;
+         case DYMuMu30_PbP:    return 1e6; break;
          case DYTauTau1030:return 1; break; //FIXME
          case DYTauTau30:  return 1; break; //FIXME
          case WW:          return 100e3; break;
          case WZ:          return 97e3; break;
          case ZZ:          return 100e3; break;
          case TT:          return 100e3; break;
-         case WpMu:        return 1; break; //FIXME
+         case WpMu:        return 981874; break;
          case WmMu:        return 998908; break;
          case WpTau:       return 498212; break;
          case WmTau:       return 430894; break;
@@ -101,11 +109,35 @@ namespace DYana_v20170830 {
       }
    };
 
+   // Is it pPb or PbP? (aka do we need to switch the eta sign?)
+   int switcheta(SampleTag s) {
+      switch (s) {
+         case DYMuMu1030:  return 1; break;
+         case DYMuMu30:    return 1; break;
+         case DYMuMu1030_PbP:  return -1; break;
+         case DYMuMu30_PbP:    return -1; break;
+         case DYTauTau1030:return -1; break;
+         case DYTauTau30:  return -1; break;
+         case WW:          return 1; break;
+         case WZ:          return 1; break;
+         case ZZ:          return 1; break;
+         case TT:          return -1; break;
+         case WpMu:        return -1; break;
+         case WmMu:        return -1; break;
+         case WpTau:       return -1; break;
+         case WmTau:       return -1; break;
+         case QCD:         return 1; break;
+         default:          return 1;
+      }
+   };
+
    // path to the ntuple
    const char* PathTuple(SampleTag s) {
       switch (s) {
-         case DYMuMu1030:return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-10to30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_PbP_Powheg_20170817/170817_151934/0000/ntuple_skim*root"; break;
-         case DYMuMu30:  return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_PbP_Powheg_20170817/170817_152017/0000/ntuple_skim*root"; break;
+         case DYMuMu1030:return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-10to30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_pPb_Powheg_20170905/170905_103354/0000/ntuple_skim*root"; break;
+         case DYMuMu30:  return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_pPb_Powheg_20170831/170831_093521/0000/ntuple_skim*root"; break;
+         case DYMuMu1030_PbP:return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-10to30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_PbP_Powheg_20170817/170817_151934/0000/ntuple_skim*root"; break;
+         case DYMuMu30_PbP:  return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_PbP_Powheg_20170817/170817_152017/0000/ntuple_skim*root"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/public/DY_pA_2016/trees_20170518/tree_WW.root"; break;
@@ -128,6 +160,8 @@ namespace DYana_v20170830 {
       switch (s) {
          case DYMuMu1030:return "FIXME"; break;
          case DYMuMu30:  return "FIXME"; break;
+         case DYMuMu1030_PbP:return "FIXME"; break;
+         case DYMuMu30_PbP:  return "FIXME"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWW.root"; break;
@@ -150,6 +184,8 @@ namespace DYana_v20170830 {
       switch (s) {
          case DYMuMu1030:return "FIXME"; break;
          case DYMuMu30:  return "FIXME"; break;
+         case DYMuMu1030_PbP:return "FIXME"; break;
+         case DYMuMu30_PbP:  return "FIXME"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWW.root"; break;
@@ -170,6 +206,8 @@ namespace DYana_v20170830 {
       switch (s) {
          case DYMuMu1030:return "FIXME"; break;
          case DYMuMu30:  return "FIXME"; break;
+         case DYMuMu1030_PbP:return "FIXME"; break;
+         case DYMuMu30_PbP:  return "FIXME"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWW.root"; break;
@@ -190,6 +228,8 @@ namespace DYana_v20170830 {
       switch (s) {
          case DYMuMu1030:return "FIXME"; break;
          case DYMuMu30:  return "FIXME"; break;
+         case DYMuMu1030_PbP:return "FIXME"; break;
+         case DYMuMu30_PbP:  return "FIXME"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiWW.root"; break;
@@ -210,8 +250,10 @@ namespace DYana_v20170830 {
    // path to ntuple in EOS
    const char* NtupleDir(SampleTag s) {
       switch(s) {
-         case DYMuMu1030:return "DYtoMuMu_M-10to30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_PbP_Powheg_20170817/170817_151934/0000/"; break;
-         case DYMuMu30:  return "DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_PbP_Powheg_20170817/170817_152017/0000/"; break;
+         case DYMuMu1030:return "DYtoMuMu_M-10to30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_pPb_Powheg_20170905/170905_103354/0000/"; break;
+         case DYMuMu30:  return "DYtoMuMu_M-30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_pPb_Powheg_20170831/170831_093521/0000/"; break;
+         case DYMuMu1030_PbP:return "DYtoMuMu_M-10to30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_PbP_Powheg_20170817/170817_151934/0000/"; break;
+         case DYMuMu30_PbP:  return "DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_PbP_Powheg_20170817/170817_152017/0000/"; break;
          case DYTauTau1030:return "FIXME"; break;
          case DYTauTau30:return "FIXME"; break;
          case WW:        return "Pythia6_WW_embd_pPb/crab_WW_DYntuple_20170518/170517_222918/0000/";
@@ -232,6 +274,8 @@ namespace DYana_v20170830 {
       switch (s) {
          case DYMuMu1030:return "DYMuMu1030"; break;
          case DYMuMu30:  return "DYMuMu30"; break;
+         case DYMuMu1030_PbP:return "DYMuMu1030_PbP"; break;
+         case DYMuMu30_PbP:  return "DYMuMu30_PbP"; break;
          case DYTauTau1030:return "DYTauTau1030"; break;
          case DYTauTau30:return "DYTauTau30"; break;
          case WW:        return "WW";   
@@ -255,12 +299,15 @@ namespace DYana_v20170830 {
    };
 
    bool IsDY(SampleTag s) {
-      if (s==DYMuMu1030 || s==DYMuMu30 || s==DYTauTau1030 || s==DYTauTau30) return true;
+      if (s==DYMuMu1030 || s==DYMuMu30
+            || s==DYMuMu1030_PbP || s==DYMuMu30_PbP
+            || s==DYTauTau1030 || s==DYTauTau30) 
+         return true;
       else return false;
    };
 
    bool IsDYMuMu(SampleTag s) {
-      if (s==DYMuMu1030 || s==DYMuMu30) return true;
+      if (s==DYMuMu1030 || s==DYMuMu30 || s==DYMuMu1030_PbP || s==DYMuMu30_PbP) return true;
       else return false;
    };
 
