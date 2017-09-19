@@ -1,20 +1,24 @@
+#ifndef tdrstyle_C
+#define tdrstyle_C
 #include "TStyle.h"
 
 // tdrGrid: Turns the grid lines on (true) or off (false)
 
-void tdrGrid(bool gridOn, TStyle *tdrStyle) {
+TStyle *tdrStyle;
+
+void tdrGrid(bool gridOn) {
   tdrStyle->SetPadGridX(gridOn);
   tdrStyle->SetPadGridY(gridOn);
 }
 
 // fixOverlay: Redraws the axis
 
-// void fixOverlay() {
-//  gPad->RedrawAxis();
-// }
+void fixOverlay() {
+  gPad->RedrawAxis();
+}
 
 void setTDRStyle() {
-  TStyle *tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
+  tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
 
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
@@ -28,8 +32,8 @@ void setTDRStyle() {
   tdrStyle->SetPadBorderMode(0);
   // tdrStyle->SetPadBorderSize(Width_t size = 1);
   tdrStyle->SetPadColor(kWhite);
-  tdrStyle->SetPadGridX(true);
-  tdrStyle->SetPadGridY(true);
+  tdrStyle->SetPadGridX(false);
+  tdrStyle->SetPadGridY(false);
   tdrStyle->SetGridColor(0);
   tdrStyle->SetGridStyle(3);
   tdrStyle->SetGridWidth(1);
@@ -42,7 +46,7 @@ void setTDRStyle() {
   tdrStyle->SetFrameLineColor(1);
   tdrStyle->SetFrameLineStyle(1);
   tdrStyle->SetFrameLineWidth(1);
-
+  
 // For the histo:
   // tdrStyle->SetHistFillColor(1);
   // tdrStyle->SetHistFillStyle(0);
@@ -53,11 +57,11 @@ void setTDRStyle() {
   // tdrStyle->SetNumberContours(Int_t number = 20);
 
   tdrStyle->SetEndErrorSize(2);
-//  tdrStyle->SetErrorMarker(20);
-  tdrStyle->SetErrorX(0.5);
+  // tdrStyle->SetErrorMarker(20);
+  //tdrStyle->SetErrorX(0.);
   
   tdrStyle->SetMarkerStyle(20);
-
+  
 //For the fit/function:
   tdrStyle->SetOptFit(1);
   tdrStyle->SetFitFormat("5.4g");
@@ -152,8 +156,10 @@ void setTDRStyle() {
   // tdrStyle->SetTimeOffset(Double_t toffset);
   // tdrStyle->SetHistMinimumZero(kTRUE);
 
-  tdrStyle->SetPalette(1);
+  tdrStyle->SetHatchesLineWidth(5);
+  tdrStyle->SetHatchesSpacing(0.05);
 
   tdrStyle->cd();
 
 }
+#endif // #ifndef tdrstyle_C
