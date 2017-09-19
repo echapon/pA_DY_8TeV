@@ -31,7 +31,8 @@
 using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*" )
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both )
+// run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -55,7 +56,13 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + Sample + "_" + HLTname + ".root", "RECREATE");
+   TString srew("norew");
+   if (doHFrew) {
+      if (rewmode==HFweight::HFside::both) srew="rewboth";
+      else if (rewmode==HFweight::HFside::plus) srew="rewplus";
+      else if (rewmode==HFweight::HFside::minus) srew="rewminus";
+   }
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
@@ -75,9 +82,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
-	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
+	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -106,9 +113,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
       // rochcor2015 *rmcor = new rochcor2015();
 
-		Bool_t isMC;
-		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
-
 		Bool_t isNLO = 0;
 		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" )
 		{
@@ -116,13 +120,24 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
 		}
 
+      Bool_t doflip = (switcheta(STags[i_tup])<0);
+      Int_t  flipsign = doflip ? -1 : 1;
+      if (run==1 && doflip) continue;
+      if (run==2 && !doflip) continue;
+
 		Double_t SumWeights = 0;
 		Double_t SumWeights_Separated = 0;
 
 		Int_t NEvents = chain->GetEntries();
 		cout << "\t[Total Events: " << NEvents << "]" << endl; 
 
-		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+      // // default norm
+      // Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+      // fancy norm with pPb / PbP mix
+		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+      if (doflip)
+         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
       // NEvents = 1000;
@@ -144,7 +159,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
 			Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
-         Double_t PUWeight = hftool.weight(ntuple->hiHF,HFweight::HFside::both); 
+         Double_t PUWeight = 1.;
+         if (doHFrew) hftool.weight(ntuple->hiHF,rewmode); 
 
 			Double_t TotWeight = norm * GenWeight;
 
@@ -162,6 +178,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				{
 					GenLepton genlep;
 					genlep.FillFromNtuple(ntuple, i_gen);
+               if (doflip) genlep.flip(); // all in pPb convention
 					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
 						GenLeptonCollection.push_back( genlep );
 				}
@@ -224,6 +241,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                         // mu.phi = mu.Momentum.Phi();
 							}
 							
+                     if (doflip) mu.flip(); // all in pPb convention
 							MuonCollection.push_back( mu );
 						}
 
@@ -233,7 +251,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
 						if( isPassEventSelection == kTRUE )
 						{
-                     // FIXME tnp weight here
 
 							Flag_PassEff = kTRUE;
 							Flag_PassAccEff = kTRUE;
@@ -250,8 +267,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                   // TnP
                   double pt1 = SelectedMuonCollection[0].Pt;
                   double pt2 = SelectedMuonCollection[1].Pt;
-                  double eta1 = SelectedMuonCollection[0].eta;
-                  double eta2 = SelectedMuonCollection[1].eta;
+                  double eta1 = flipsign * SelectedMuonCollection[0].eta; // I put flipsign here to put back eta to the lab frame
+                  double eta2 = flipsign * SelectedMuonCollection[1].eta; // I put flipsign here to put back eta to the lab frame
 
                   for (int iwt=0; iwt<nweights; iwt++) {
                      int imuid=0,itrg=0,iiso=0; // nominal

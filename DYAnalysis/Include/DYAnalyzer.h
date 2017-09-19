@@ -66,7 +66,7 @@ public:
 	// -- Setup MC samples -- //
 	////////////////////////////
 	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
-	void SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
+   void SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
 
@@ -221,7 +221,7 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
    }
 }
 
-void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents )
+void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags )
 {
    using namespace DYana_v20170830;
    for (int i=0; i<DataFirst; i++) {
@@ -230,6 +230,7 @@ void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntuple
       Tag->push_back(Name(tag));
       xsec->push_back(Xsec(tag));
       nEvents->push_back(Nevts(tag));
+      STags->push_back(tag);
    }
 }
 
@@ -286,6 +287,20 @@ Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *n
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 400 && reco_M <= 1000 )
+					GenFlag = kTRUE;
+			} else if ( Tag == "DYMuMu1030" ) // -- Select only evetns withtin 50 < M < 100 -- //
+			{
+				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+				Double_t reco_M = (v1 + v2).M();
+				if( reco_M >= 10 && reco_M <= 30 )
+					GenFlag = kTRUE;
+			} else if ( Tag == "DYMuMu30" ) // -- Select only evetns withtin 50 < M < 100 -- //
+			{
+				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+				Double_t reco_M = (v1 + v2).M();
+				if( reco_M >= 30 )
 					GenFlag = kTRUE;
 			} else GenFlag = kTRUE;
 		}

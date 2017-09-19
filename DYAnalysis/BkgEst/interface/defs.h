@@ -7,8 +7,10 @@
 #include "samples_v20170830.h"
 
 // UPDATED IN 2017
+// 1st part, pPb
 // brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
 const double lumi_part1 = 64413.589e-6; // mub-1 -> pb-1
+// 2nd part, PbP
 // brilcalc lumi -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
 const double lumi_part2 = 115274.084e-6; // mub-1 -> pb-1
 const double lumi_all = lumi_part1 + lumi_part2;
@@ -16,7 +18,7 @@ const double lumi_all = lumi_part1 + lumi_part2;
 
 namespace DYana {
    // put the default samples here
-   using namespace DYana_v20170519;
+   using namespace DYana_v20170830;
 
    // kinematic bins
    // mass
@@ -39,7 +41,9 @@ namespace DYana {
    };
 
    // sgn switch pA vs Ap
-   int runsgn(int run) {
+   int runsgn(int run) { 
+      // 285480-285832: PbP
+      // 285956-286496: pPb
       return (run>285470 && run<285900) ? -1 : 1;
    };
 };
