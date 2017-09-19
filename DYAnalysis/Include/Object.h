@@ -26,6 +26,11 @@ public:
 	Double_t eta;
 	Double_t phi;
 	TLorentzVector Momentum;
+
+   void flip() {
+      eta = -eta;
+      Momentum.SetPz(-Momentum.Pz());
+   };
 };
 
 class LHELepton : public Object
