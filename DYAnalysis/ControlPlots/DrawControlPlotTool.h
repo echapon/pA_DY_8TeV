@@ -41,7 +41,7 @@ public:
 
 	vector< TString > HistNames; vector< TString> Variables; vector< TString > XTitles;
 
-	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< Int_t > color;
+	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< Int_t > color; vector< DYana::SampleTag > STags;
 
 	double Nfactor_overall;
 	
@@ -93,7 +93,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	// -- Get root file containing the histograms -- //
 	// FileLocation = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/Results_ROOTFiles/" + version; // -- 74X -- //
-	FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
+   // FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
+	FileLocation = "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/"; 
 
 	if( version == "None" ) FileLocation = ".";
 
@@ -104,7 +105,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	analyzer->SetupMCsamples_v20170519("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //
+	analyzer->SetupMCsamples_v20170830("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )
@@ -296,6 +297,14 @@ void DrawControlPlotTool::NormalizationToLumi( vector< TH1D* > h_MC, TString Var
 	for(Int_t i=0; i<nMC; i++)
 	{
 		Double_t Norm = (Luminosity * Xsec[i]) / nEvents[i];
+      if (IsDYMuMu(STags[i])) {
+         // combine pPb and PbP for DYMuMu
+         Bool_t doflip = (switcheta(STags[i])<0);
+         if (doflip)
+            Norm = ( Xsec[i] * lumi_part2 ) / (Double_t)nEvents[i];
+         else 
+            Norm = ( Xsec[i] * lumi_part1 ) / (Double_t)nEvents[i];
+      }
       // cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Luminosity << "/pb: " <<
          // Norm <<  " = (" << Luminosity << " * " << Xsec[i] << ") / " << nEvents[i] <<  endl;
 		h_MC[i]->Scale( Norm );

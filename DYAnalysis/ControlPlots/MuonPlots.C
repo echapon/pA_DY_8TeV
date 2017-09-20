@@ -55,14 +55,14 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 
    // TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
    // TString BaseLocation = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/";
-	TString BaseLocation = "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/";
+	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 
 	//Each ntuple directory & corresponding Tags
-	vector<TString> ntupleDirectory; vector<TString> Tag; vector<Double_t> Xsec; vector<Double_t> nEvents;
+	vector<TString> ntupleDirectory; vector<TString> Tag; vector<Double_t> Xsec; vector<Double_t> nEvents; vector< DYana::SampleTag > STags;
 
 	if( !doData )
 	{
-		analyzer->SetupMCsamples_v20170519("", &ntupleDirectory, &Tag, &Xsec, &nEvents);
+		analyzer->SetupMCsamples_v20170830("", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 	}
 	else
 	{
@@ -77,6 +77,8 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		TStopwatch looptime;
 		looptime.Start();
 
+      Bool_t doflip = (switcheta(STags[i_tup])<0);
+
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 
 		TChain *chain = new TChain("recoTree/DYTree");
@@ -86,10 +88,11 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
       //    // -- Run2015D -- // 
       //    chain->Add(BaseLocation+"/80X/v20170519/*.root");
       // }
-		NtupleHandle *ntuple = new NtupleHandle( chain );
+		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
+		ntuple->TurnOnBranches_HI();
 		
 		rochcor2015 *rmcor = new rochcor2015();
 
@@ -102,6 +105,13 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		TH1D *h_PU = new TH1D("h_PU_"+Tag[i_tup], "", 50, 0, 50);
 		TH1D *h_nVertices_before = new TH1D("h_nVertices_before_"+Tag[i_tup], "", 50, 0, 50);
 		TH1D *h_nVertices_after = new TH1D("h_nVertices_after_"+Tag[i_tup], "", 50, 0, 50);
+
+      // HI stuff
+		TH1D *h_hiHF = new TH1D("h_hiHF_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFplus = new TH1D("h_hiHFplus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFminus = new TH1D("h_hiHFminus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiNtracks = new TH1D("h_hiNtracks_"+Tag[i_tup], "", 90, 0, 450);
+
 
 		Bool_t isNLO = 0;
       // NO NLO in pA
@@ -209,6 +219,11 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 					Int_t nVertices = ntuple->nVertices;
 					h_nVertices_before->Fill(nVertices, GenWeight);
 					h_nVertices_after->Fill(nVertices, GenWeight*PUWeight);
+
+               h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight);
+               h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight);
+               h_hiHFminus->Fill(ntuple->hiHFminus,GenWeight*PUWeight);
+               h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight);
 				}
 				
 			} //End of if( isTriggered )
@@ -219,6 +234,10 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		h_PU->Write();
 		h_nVertices_before->Write();
 		h_nVertices_after->Write();
+      h_hiHF->Write();
+      h_hiHFplus->Write();
+      h_hiHFminus->Write();
+      h_hiNtracks->Write();
 
 		if(isNLO == 1)
 		{

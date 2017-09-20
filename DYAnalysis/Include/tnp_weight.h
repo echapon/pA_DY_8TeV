@@ -118,7 +118,7 @@ double tnp_weight_trg_ppb(double eta, int idx)
 ///////////////////////////////////////////////////
 //                 I S O    P P b                //
 ///////////////////////////////////////////////////
-double tnp_weight_iso_ppb(double pt, double eta, int idx=0) {
+double tnp_weight_iso_ppb(double pt, double eta, int idx) {
    double x = pt;
 
    if (idx == -10) {
@@ -492,7 +492,7 @@ double tnp_weight_iso_ppb(double pt, double eta, int idx=0) {
 ///////////////////////////////////////////////////
 //               M U I D      P P b              //
 ///////////////////////////////////////////////////
-double tnp_weight_muid_ppb(double pt, double eta, int idx=0) {
+double tnp_weight_muid_ppb(double pt, double eta, int idx) {
    double x = pt;
 
    if (idx == -10) {

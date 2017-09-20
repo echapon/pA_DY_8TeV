@@ -276,6 +276,14 @@ void AssignAccThreshold(TString HLTname, TString *HLT, Double_t *LeadPtCut, Doub
 		*LeadEtaCut = 2.1;
 		*SubEtaCut = 2.4;
 	}
+	else if( HLTname == "PAL3Mu12" )
+	{
+		*HLT = "HLT_PAL3Mu12_v*";
+		*LeadPtCut = 15;
+		*SubPtCut = 10;
+		*LeadEtaCut = 2.4;
+		*SubEtaCut = 2.4;
+	}
 	else
 	{ 
 		cout << "Wrong HLT name!: " << HLTname << endl;

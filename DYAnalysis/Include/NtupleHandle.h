@@ -1012,6 +1012,24 @@ public:
        }
     }
 
+    //for pA
+    Bool_t isHLT_PAL3Mu12()
+    {
+        Bool_t isTrigger = false;
+        for( Int_t k = 0; k < HLT_ntrig; k++ )
+        {
+            if( (HLT_trigName->at((unsigned int)k)) == "HLT_PAL3Mu12_v*" )
+            {
+                if( HLT_trigFired[k] == 1 )
+                {
+                    isTrigger = true;
+                    break;
+                }
+            }
+        }
+        return isTrigger;
+    }
+
     Bool_t isTriggered(TString HLT)
     {
         Bool_t isTrigger = false;

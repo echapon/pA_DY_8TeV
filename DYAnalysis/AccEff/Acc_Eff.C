@@ -96,6 +96,11 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       // loop only on DYMuMu!
       if (!Tag[i_tup].Contains("DYMuMu")) continue;
 
+      Bool_t doflip = (switcheta(STags[i_tup])<0);
+      Int_t  flipsign = doflip ? -1 : 1;
+      if (run==1 && doflip) continue;
+      if (run==2 && !doflip) continue;
+
 		TStopwatch looptime;
 		looptime.Start();
 
@@ -105,7 +110,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
-		NtupleHandle *ntuple = new NtupleHandle( chain );
+		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
@@ -119,11 +124,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
 		}
-
-      Bool_t doflip = (switcheta(STags[i_tup])<0);
-      Int_t  flipsign = doflip ? -1 : 1;
-      if (run==1 && doflip) continue;
-      if (run==2 && !doflip) continue;
 
 		Double_t SumWeights = 0;
 		Double_t SumWeights_Separated = 0;
@@ -178,7 +178,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				{
 					GenLepton genlep;
 					genlep.FillFromNtuple(ntuple, i_gen);
-               if (doflip) genlep.flip(); // all in pPb convention
 					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
 						GenLeptonCollection.push_back( genlep );
 				}
@@ -241,7 +240,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                         // mu.phi = mu.Momentum.Phi();
 							}
 							
-                     if (doflip) mu.flip(); // all in pPb convention
 							MuonCollection.push_back( mu );
 						}
 
@@ -267,8 +265,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                   // TnP
                   double pt1 = SelectedMuonCollection[0].Pt;
                   double pt2 = SelectedMuonCollection[1].Pt;
-                  double eta1 = flipsign * SelectedMuonCollection[0].eta; // I put flipsign here to put back eta to the lab frame
-                  double eta2 = flipsign * SelectedMuonCollection[1].eta; // I put flipsign here to put back eta to the lab frame
+                  double eta1 = SelectedMuonCollection[0].eta;
+                  double eta2 = SelectedMuonCollection[1].eta;
 
                   for (int iwt=0; iwt<nweights; iwt++) {
                      int imuid=0,itrg=0,iiso=0; // nominal

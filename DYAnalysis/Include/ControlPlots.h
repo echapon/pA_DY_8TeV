@@ -136,6 +136,7 @@ public:
 	TH1D *h_pixelHits;
 	TH1D *h_trackerLayers;
 	TH1D *h_RelTrkIso;
+	TH1D *h_RelPFIso;
 
 
 	ControlPlots(TString Type, DYAnalyzer *dyanalyzer)
@@ -260,6 +261,7 @@ public:
 		h_pixelHits = new TH1D("h_pixelHits_"+Type, "", 15, 0, 15); Histo.push_back( h_pixelHits );
 		h_trackerLayers = new TH1D("h_trackerLayers_"+Type, "", 20, 0, 20); Histo.push_back( h_trackerLayers );
 		h_RelTrkIso = new TH1D("h_RelTrkIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelTrkIso ); 
+		h_RelPFIso = new TH1D("h_RelPFIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelPFIso ); 
 	}
 
 	void FillHistograms_GenDoubleMu(NtupleHandle *ntuple, GenLepton genlep1, GenLepton genlep2, Double_t weight)
@@ -381,6 +383,7 @@ public:
 		h_pixelHits->Fill( recolep.pixelHits, weight );
 		h_trackerLayers->Fill( recolep.trackerLayers, weight );
 		h_RelTrkIso->Fill( recolep.trkiso, weight );
+		h_RelPFIso->Fill( recolep.relPFiso, weight );
 	}
 
 	void FillHistograms_DoubleMu(NtupleHandle *ntuple, Muon recolep1, Muon recolep2, Double_t weight)
