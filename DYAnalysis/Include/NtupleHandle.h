@@ -16,6 +16,21 @@ class NtupleHandle
 public:
 	TChain *chain;
 
+   // if this sample is PbP, we need to switch all eta
+   Bool_t isPbP;
+
+   // flags for the status of branch categories
+   Bool_t isOn_LHEInfo;
+   Bool_t isOn_HLT;
+   Bool_t isOn_GenLepton;
+   Bool_t isOn_GenOthers;
+   Bool_t isOn_Muon;
+   Bool_t isOn_Electron;
+   Bool_t isOn_Jet;
+   Bool_t isOn_Photon;
+   Bool_t isOn_MET;
+   Bool_t isOn_HI;
+
     //Event Informations
     Int_t nVertices;
     Int_t runNum;
@@ -317,8 +332,9 @@ public:
 
 
     // -- Constructor -- //
-    NtupleHandle(TChain *chainptr)
+    NtupleHandle(TChain *chainptr, Bool_t isPbP_in = false)
     {
+       isPbP = isPbP_in;
        chain = chainptr;
        chain->SetBranchStatus("*", 0);
 
@@ -334,6 +350,18 @@ public:
        chain->SetBranchAddress("lumiBlock", &lumiBlock);
        chain->SetBranchAddress("evtNum", &evtNum);
        chain->SetBranchAddress("nPileUp", &nPileUp);
+
+       // default all branches off
+       isOn_LHEInfo = false;
+       isOn_HLT = false;
+       isOn_GenLepton = false;
+       isOn_GenOthers = false;
+       isOn_Muon = false;
+       isOn_Electron = false;
+       isOn_Jet = false;
+       isOn_Photon = false;
+       isOn_MET = false;
+       isOn_HI = false;
     }
 
     void TurnOnBranches_LHEInfo()
@@ -354,6 +382,8 @@ public:
         chain->SetBranchAddress("LHELepton_E", &LHELepton_E);
         chain->SetBranchAddress("LHELepton_ID", &LHELepton_ID);
         chain->SetBranchAddress("LHELepton_status", &LHELepton_status);
+
+        isOn_LHEInfo = true;
     }
 
     void TurnOnBranches_HLT()
@@ -372,6 +402,8 @@ public:
         chain->SetBranchAddress("HLT_trigPt", HLT_trigPt);
         chain->SetBranchAddress("HLT_trigEta", &HLT_trigEta);
         chain->SetBranchAddress("HLT_trigPhi", &HLT_trigPhi);
+
+        isOn_HLT = true;
     }
 
     void TurnOnBranches_GenLepton()
@@ -428,6 +460,8 @@ public:
     	chain->SetBranchAddress("GENLepton_fromHardProcessBeforeFSR", &GenLepton_fromHardProcessBeforeFSR);
     	chain->SetBranchAddress("GENLepton_fromHardProcessDecayed", &GenLepton_fromHardProcessDecayed);
     	chain->SetBranchAddress("GENLepton_fromHardProcessFinalState", &GenLepton_fromHardProcessFinalState);
+
+      isOn_GenLepton = true;
     }
 
     void TurnOnBranches_GenOthers()
@@ -481,6 +515,8 @@ public:
         chain->SetBranchAddress("GenOthers_fromHardProcessBeforeFSR", &GenOthers_fromHardProcessBeforeFSR);
         chain->SetBranchAddress("GenOthers_fromHardProcessDecayed", &GenOthers_fromHardProcessDecayed);
         chain->SetBranchAddress("GenOthers_fromHardProcessFinalState", &GenOthers_fromHardProcessFinalState);
+
+        isOn_GenOthers = true;
     }
 
     void TurnOnBranches_Muon()
@@ -664,6 +700,8 @@ public:
     	chain->SetBranchAddress("Muon_TuneP_Pz", &Muon_TuneP_Pz);
     	chain->SetBranchAddress("Muon_TuneP_eta", &Muon_TuneP_eta);
     	chain->SetBranchAddress("Muon_TuneP_phi", &Muon_TuneP_phi);
+
+      isOn_Muon = true;
     }
 
     void TurnOnBranches_Electron()
@@ -763,9 +801,10 @@ public:
     	chain->SetBranchAddress("Electron_RelPFIso_dBeta", &Electron_RelPFIso_dBeta);
     	chain->SetBranchAddress("Electron_RelPFIso_Rho", &Electron_RelPFIso_Rho);
     	chain->SetBranchAddress("Electron_r9", &Electron_r9);
-    	chain->SetBranchAddress("Electron_ecalDriven", &Electron_ecalDriven);
-        chain->SetBranchAddress("Electron_passConvVeto", &Electron_passConvVeto);
+      chain->SetBranchAddress("Electron_ecalDriven", &Electron_ecalDriven);
+      chain->SetBranchAddress("Electron_passConvVeto", &Electron_passConvVeto);
 
+      isOn_Electron = true;
     }
 
     void TurnOnBranches_Jet()
@@ -800,6 +839,8 @@ public:
     	chain->SetBranchAddress("Jet_CHEMfrac", &Jet_CHEMfrac);
     	chain->SetBranchAddress("Jet_CHmulti", &Jet_CHmulti);
     	chain->SetBranchAddress("Jet_NHmulti", &Jet_NHmulti);
+
+      isOn_Jet = true;
     }
 
     void TurnOnBranches_Photon()
@@ -835,6 +876,8 @@ public:
     	chain->SetBranchAddress("Photon_ChIsoWithEA",&Photon_ChIsoWithEA);
     	chain->SetBranchAddress("Photon_NhIsoWithEA",&Photon_NhIsoWithEA);
     	chain->SetBranchAddress("Photon_PhIsoWithEA",&Photon_PhIsoWithEA);
+
+      isOn_Photon = true;
     }
 
     void TurnOnBranches_MET()
@@ -862,6 +905,8 @@ public:
     	chain->SetBranchAddress("pfMET_Type1_Px", &pfMET_Type1_Px);
     	chain->SetBranchAddress("pfMET_Type1_Py", &pfMET_Type1_Py);
     	chain->SetBranchAddress("pfMET_Type1_SumEt", &pfMET_Type1_SumEt);
+
+      isOn_MET = true;
     }
 
     void TurnOnBranches_HI() {
@@ -888,13 +933,83 @@ public:
        chain->SetBranchAddress("hiNtracksPtCut", &hiNtracksPtCut);
        chain->SetBranchAddress("hiNtracksEtaCut", &hiNtracksEtaCut);
        chain->SetBranchAddress("hiNtracksEtaPtCut", &hiNtracksEtaPtCut);
+
+       isOn_HI = true;
     }
 
     void GetEvent(Int_t i)
     {
-        if(!chain) return;
-        
-        chain->GetEntry(i);
+       if(!chain) return;
+
+       chain->GetEntry(i);
+
+       // if this is a PbP sample, we need to revert all eta
+       if (isPbP) {
+          // LHEInfo branches
+          if (isOn_LHEInfo) {
+             for (int i=0; i<nLHEParticle; i++) {
+                LHELepton_Pz[i] = -LHELepton_Pz[i];
+             }
+          }
+          if (isOn_HLT) {
+             for (int i=0; i<HLT_ntrig; i++) {
+                HLT_trigEta[i] = -HLT_trigEta[i];
+             }
+          }
+          if (isOn_GenLepton) {
+             for (int i=0; i<gnpair; i++) {
+                GenLepton_pz[i] = -GenLepton_pz[i];
+                GenLepton_eta[i] = -GenLepton_eta[i];
+             }
+          }
+          if (isOn_GenOthers) {
+             for (int i=0; i<nGenOthers; i++) {
+                GenOthers_pz[i] = -GenOthers_pz[i];
+                GenOthers_eta[i] = -GenOthers_eta[i];
+             }
+          }
+          if (isOn_Muon) {
+             for (int i=0; i<nMuon; i++) {
+                Muon_eta[i] = -Muon_eta[i];
+                Muon_Pz[i] = -Muon_Pz[i];
+                Muon_Best_Pz[i] = -Muon_Best_Pz[i];
+                Muon_Best_eta[i] = -Muon_Best_eta[i];
+                Muon_Inner_eta[i] = -Muon_Inner_eta[i];
+                Muon_Inner_Pz[i] = -Muon_Inner_Pz[i];
+                Muon_Outer_Pz[i] = -Muon_Outer_Pz[i];
+                Muon_Outer_eta[i] = -Muon_Outer_eta[i];
+                Muon_GLB_Pz[i] = -Muon_GLB_Pz[i];
+                Muon_GLB_eta[i] = -Muon_GLB_eta[i];
+                Muon_TuneP_Pz[i] = -Muon_TuneP_Pz[i];
+                Muon_TuneP_eta[i] = -Muon_TuneP_eta[i];
+             }
+          }
+          if (isOn_Electron) {
+             for (int i=0; i<Nelectrons; i++) {
+                Electron_eta[i] = -Electron_eta[i];
+                Electron_gsfPz[i] = -Electron_gsfPz[i];
+                Electron_etaSC[i] = -Electron_etaSC[i];
+             }
+          }
+          if (isOn_Jet) {
+             for (int i=0; i<Njets; i++) {
+                Jet_eta[i] = -Jet_eta[i];
+             }
+          }
+          if (isOn_Photon) {
+             for (int i=0; i<nPhotons; i++) {
+                Photon_eta[i] = -Photon_eta[i];
+                Photon_etaSC[i] = -Photon_etaSC[i];
+             }
+          }
+          if (isOn_HI) {
+             swap(hiHFplus,hiHFminus);
+             swap(hiHFplusEta4,hiHFminusEta4);
+             swap(hiZDCplus,hiZDCminus);
+             swap(hiHFhitPlus,hiHFhitMinus);
+             swap(hiEEplus,hiEEminus);
+          }
+       }
     }
 
     Bool_t isTriggered(TString HLT)
