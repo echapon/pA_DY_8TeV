@@ -288,14 +288,14 @@ Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *n
 				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 400 && reco_M <= 1000 )
 					GenFlag = kTRUE;
-			} else if ( Tag == "DYMuMu1030" ) // -- Select only evetns withtin 50 < M < 100 -- //
+			} else if ( Tag.Contains("DYMuMu1030") ) // -- Select only evetns withtin 10 < M < 30 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
 				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 10 && reco_M <= 30 )
 					GenFlag = kTRUE;
-			} else if ( Tag == "DYMuMu30" ) // -- Select only evetns withtin 50 < M < 100 -- //
+			} else if ( Tag.Contains("DYMuMu30") ) // -- Select only evetns withtin M > 30 -- //
 			{
 				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
 				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
