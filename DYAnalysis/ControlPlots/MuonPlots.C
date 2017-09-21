@@ -66,8 +66,9 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 	}
 	else
 	{
-		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" );
-      ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" );
+      using DYana::SampleTag;
+		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
+      ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
 	}
 
 	//Loop for all samples

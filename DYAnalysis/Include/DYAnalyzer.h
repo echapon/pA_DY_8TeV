@@ -226,6 +226,7 @@ void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntuple
    using namespace DYana_v20170830;
    for (int i=0; i<DataFirst; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
+      // if (!IsDYMuMu(tag)) continue;
       ntupleDirectory->push_back(NtupleDir(tag));
       Tag->push_back(Name(tag));
       xsec->push_back(Xsec(tag));

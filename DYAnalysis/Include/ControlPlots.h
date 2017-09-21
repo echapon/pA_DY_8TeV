@@ -92,6 +92,7 @@ public:
 	TH1D *h_phi_OtherLeg;
 
 	TH1D *h_GenMass;
+   // TH1D *h_GenMass2;
 	TH1D *h_GenPt;
 	TH1D *h_GenEta;
 	TH1D *h_GenPhi;
@@ -106,6 +107,8 @@ public:
 
 	TH1D *h_GenDiPt;
 	TH1D *h_GenDiRap;
+   // TH1D *h_GenDiRap1;
+   // TH1D *h_GenDiRap2;
 
 	TH1D *h_VtxProb;
 	TH1D *h_VtxNormChi2;
@@ -214,7 +217,9 @@ public:
 		h_eta_OtherLeg = new TH1D("h_eta_OtherLeg_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_OtherLeg );
 		h_phi_OtherLeg = new TH1D("h_phi_OtherLeg_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_OtherLeg );
 
-		h_GenMass = new  TH1D("h_GenMass_"+Type, "", 500, 0, 500); Histo.push_back( h_GenMass );
+      h_GenMass = new  TH1D("h_GenMass_"+Type, "", 500, 0, 500); Histo.push_back( h_GenMass );
+      // h_GenMass = new  TH1D("h_GenMass_"+Type, "", 60, 0, 600); Histo.push_back( h_GenMass );
+      // h_GenMass2 = new  TH1D("h_GenMass2_"+Type, "", 60, 60, 120); Histo.push_back( h_GenMass2 );
 		h_GenPt = new  TH1D("h_GenPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt );
 		h_GenEta = new  TH1D("h_GenEta_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta );
 		h_GenPhi = new  TH1D("h_GenPhi_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi );
@@ -227,8 +232,12 @@ public:
 		h_GenEta_Sub = new  TH1D("h_GenEta_Sub_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta_Sub );
 		h_GenPhi_Sub = new  TH1D("h_GenPhi_Sub_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi_Sub );
 
-		h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenDiPt );
-		h_GenDiRap = new TH1D("h_GenDiRap_"+Type, "", 200, -10, 10); Histo.push_back( h_GenDiRap );
+      h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenDiPt );
+      h_GenDiRap = new TH1D("h_GenDiRap_"+Type, "", 200, -10, 10); Histo.push_back( h_GenDiRap );
+      // h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 25, 0, 50); Histo.push_back( h_GenDiPt );
+      // h_GenDiRap = new TH1D("h_GenDiRap_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap );
+      // h_GenDiRap1 = new TH1D("h_GenDiRap1_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap1 );
+      // h_GenDiRap2 = new TH1D("h_GenDiRap2_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap2 );
 
 		h_VtxProb = new TH1D("h_VtxProb_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb );
 		h_VtxProb_belowM600 = new TH1D("h_VtxProb_belowM600_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb_belowM600 );
@@ -276,8 +285,11 @@ public:
 		Double_t gen_DiRap = (gen_v1 + gen_v2).Rapidity();
 
 		h_GenMass->Fill( gen_M, weight );
+      // h_GenMass2->Fill( gen_M, weight );
 		h_GenDiPt->Fill( gen_DiPt, weight );
 		h_GenDiRap->Fill( gen_DiRap, weight );
+      // h_GenDiRap1->Fill( gen_DiRap+0.465, weight );
+      // h_GenDiRap2->Fill( gen_DiRap-0.465, weight );
 
 		if( genlep1.Pt > genlep2.Pt )
 		{
