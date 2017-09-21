@@ -63,12 +63,12 @@ namespace DYana_v20170830 {
    double Xsec(SampleTag s) {
       switch (s) {
          // MCFM NLO CT14 pPb
-         case DYMuMu1030:return 208.*0.476661E+04; break; // MCFM only generates p(p/n)
-         case DYMuMu30:  return 208.*0.614412E+04; break; // MCFM only generates p(p/n)
-         case DYMuMu1030_PbP:return 208.*0.476661E+04; break; // MCFM only generates p(p/n)
-         case DYMuMu30_PbP:  return 208.*0.614412E+04; break; // MCFM only generates p(p/n)
-         case DYTauTau1030:return 208.*0.476661E+04; break; // MCFM only generates p(p/n)
-         case DYTauTau30:  return 208.*0.614412E+04; break; // MCFM only generates p(p/n)
+         case DYMuMu1030:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
+         case DYMuMu30:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
+         case DYMuMu1030_PbP:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
+         case DYMuMu30_PbP:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
+         case DYTauTau1030:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
+         case DYTauTau30:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
          case WZ:        return 3.*(1./10.63e-2)*208.*45.9629e-3; break; // MCFM: p(p/n), W(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
          case ZZ:        return 3.*3.*208.*18.0587e-3; break; // MCFM only generates p(p/n) and 1 flavour
@@ -90,9 +90,9 @@ namespace DYana_v20170830 {
    // Nevts for each process
    int Nevts(SampleTag s) {
       switch (s) {
-         case DYMuMu1030:  return 997120; break;
+         case DYMuMu1030:  return 997120; break; // was 997120 but seems to contain 10-600 // 789275
          case DYMuMu30:    return 1e6; break;
-         case DYMuMu1030_PbP:  return 1e6; break;
+         case DYMuMu1030_PbP:  return 1e6; break; // was 1e6 but contains 10-600 // 795824
          case DYMuMu30_PbP:    return 1e6; break;
          case DYTauTau1030:return 94500; break;
          case DYTauTau30:  return 97500; break;
@@ -112,6 +112,8 @@ namespace DYana_v20170830 {
    // Is it pPb or PbP? (aka do we need to switch the eta sign?)
    int switcheta(SampleTag s) {
       switch (s) {
+         case Data1:       return 1; break;
+         case Data2:       return -1; break;
          case DYMuMu1030:  return 1; break;
          case DYMuMu30:    return 1; break;
          case DYMuMu1030_PbP:  return -1; break;
@@ -143,7 +145,7 @@ namespace DYana_v20170830 {
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/public/DY_pA_2016/trees_20170518/tree_WW.root"; break;
          case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/public/DY_pA_2016/trees_20170518/tree_WZ.root"; break;
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/public/DY_pA_2016/trees_20170518/tree_ZZ.root"; break;
-         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/public/DY_pA_2016/trees_20170518/tree_TT.root"; break;
+         case TT:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/ntuple_skim*root"; break;
          case WpMu:      return "eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/ntuple_skim*root"; break;
          case WmMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/ntuple_skim*root"; break;
          case WpTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/ntuple_skim.root"; break;
@@ -167,7 +169,7 @@ namespace DYana_v20170830 {
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWW.root"; break;
          case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWZ.root"; break;
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histZZ.root"; break;
-         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histTT.root"; break;
+         case TT:        return "FIXME"; break;
          case WpMu:      return "FIXME";
          case WmMu:      return "FIXME";
          case WpTau:     return "FIXME";
@@ -191,7 +193,7 @@ namespace DYana_v20170830 {
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWW.root"; break;
          case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRWZ.root"; break;
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRZZ.root"; break;
-         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRTT.root"; break;
+         case TT:        return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRQCD.root"; break;
          case WpMu:      return "FIXME";
          case WmMu:      return "FIXME";
@@ -213,7 +215,7 @@ namespace DYana_v20170830 {
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWW.root"; break;
          case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWZ.root"; break;
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeZZ.root"; break;
-         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeTT.root"; break;
+         case TT:        return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeQCD.root"; break;
          case WpMu:      return "FIXME";
          case WmMu:      return "FIXME";
@@ -235,7 +237,7 @@ namespace DYana_v20170830 {
          case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiWW.root"; break;
          case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiWZ.root"; break;
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiZZ.root"; break;
-         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiTT.root"; break;
+         case TT:        return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiQCD.root"; break;
          case WpMu:      return "FIXME";
          case WmMu:      return "FIXME";
@@ -259,7 +261,7 @@ namespace DYana_v20170830 {
          case WW:        return "Pythia6_WW_embd_pPb/crab_WW_DYntuple_20170518/170517_222918/0000/";
          case WZ:        return "Pythia6_WZ_embd_pPb/crab_WZ_DYntuple_20170518/170517_223145/0000/";
          case ZZ:        return "Pythia6_ZZ_embd_pPb/crab_ZZ_DYntuple_20170518/170517_223512/0000/";
-         case TT:        return "Pythia6_TTall_embd_pPb/crab_TTall_DYntuple_20170518/170517_224711/0000/";
+         case TT:        return "Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/";
          case WpMu:      return "WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/";
          case WmMu:      return "WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/";
          case WpTau:     return "WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/";
