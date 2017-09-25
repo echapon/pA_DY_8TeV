@@ -63,12 +63,12 @@ namespace DYana_v20170830 {
    double Xsec(SampleTag s) {
       switch (s) {
          // MCFM NLO CT14 pPb
-         case DYMuMu1030:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
-         case DYMuMu30:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
-         case DYMuMu1030_PbP:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
-         case DYMuMu30_PbP:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
-         case DYTauTau1030:return 208.*0.472147E+04; break; // MCFM only generates p(p/n) // NB: this is the 10-8000 xsec
-         case DYTauTau30:  return 208.*0.128351E+04; break; // MCFM only generates p(p/n)
+         case DYMuMu1030:return 1180.94; break; // Powheg
+         case DYMuMu30:  return 266.271; break; // Powheg
+         case DYMuMu1030_PbP:return 1180.94; break; // Powheg
+         case DYMuMu30_PbP:  return 266.271; break; // Powheg
+         case DYTauTau1030:return 1171.91; break; // Powheg
+         case DYTauTau30:  return 265.810; break; // Powheg
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
          case WZ:        return 3.*(1./10.63e-2)*208.*45.9629e-3; break; // MCFM: p(p/n), W(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
          case ZZ:        return 3.*3.*208.*18.0587e-3; break; // MCFM only generates p(p/n) and 1 flavour
@@ -78,10 +78,10 @@ namespace DYana_v20170830 {
          // case WZ:        return 208.*1.339; break;
          // case ZZ:        return 208.*0.5422; break;
          // case TT:        return 208.*14.42; break;
-         case WpMu:      return 208.*0.636587E+04; break;
-         case WpTau:     return 208.*0.636587E+04; break;
-         case WmMu:      return 208.*0.556176E+04; break;
-         case WmTau:     return 208.*0.556176E+04; break;
+         case WpMu:      return 1213.72; break; // Powheg, from AN-17-058
+         case WpTau:     return 1146.47; break;
+         case WmMu:      return 1082.81; break;
+         case WmTau:     return 1022.86; break;
          case QCD:       return 208.*3.68e11*0.00039; break;
          default:        return -1;
       }
