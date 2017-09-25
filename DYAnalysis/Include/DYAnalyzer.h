@@ -223,15 +223,31 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
 
 void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags )
 {
-   using namespace DYana_v20170830;
-   for (int i=0; i<DataFirst; i++) {
-      SampleTag tag = static_cast<SampleTag>(i);
-      // if (!IsDYMuMu(tag)) continue;
-      ntupleDirectory->push_back(NtupleDir(tag));
-      Tag->push_back(Name(tag));
-      xsec->push_back(Xsec(tag));
-      nEvents->push_back(Nevts(tag));
-      STags->push_back(tag);
+   if (Type=="Powheg") {
+      using namespace DYana_v20170830;
+      cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         STags->push_back(tag);
+      }
+   } else { // Pyquen
+      using namespace DYana_v20170830_Pyquen;
+      cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         DYana_v20170830::SampleTag tag_Powheg = static_cast<DYana_v20170830::SampleTag>(i);
+         STags->push_back(tag_Powheg);
+      }
    }
 }
 
@@ -656,11 +672,12 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	}
 
 	// -- Check the existence of at least one muon matched with HLT-object -- //
+	// -- It has to be above 15GeV -- //
 	Bool_t isExistHLTMatchedMuon = kFALSE;
 	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
 	{
 		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
+		if( mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") && mu.Pt > LeadPtCut )
 		{
 			isExistHLTMatchedMuon = kTRUE;
 			break;
@@ -695,7 +712,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
 
 			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-			if( reco_M > 10 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
+			if( reco_M > 15 && reco_M < 600 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 			{
 				isPassEventSelection = kTRUE;
 				SelectedMuonCollection->push_back( recolep1 );
@@ -714,7 +731,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				Muon Mu = QMuonCollection[i_mu];
 
 				// -- at least 1 muon should be matched with HLT objects in best pair -- //
-				if( Mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") )
+				if( Mu.isTrigMatched(ntuple, "HLT_PAL3Mu12_v*") && Mu.Pt > LeadPtCut )
 				{
 					// -- Mu in this loop: QMuon Matched with HLT object -- //
 
@@ -761,7 +778,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 				Bool_t isOS = kFALSE;
 				if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
 
-				if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
+				if( reco_M > 15 && reco_M < 600 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 				{
 					isPassEventSelection = kTRUE;
 					SelectedMuonCollection->push_back( mu1_BestPair );

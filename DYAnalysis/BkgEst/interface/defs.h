@@ -5,6 +5,7 @@
 #include "analysis.h"
 #include "samples_v20170519.h"
 #include "samples_v20170830.h"
+#include "samples_v20170830_Pyquen.h"
 
 // UPDATED IN 2017
 // 1st part, pPb

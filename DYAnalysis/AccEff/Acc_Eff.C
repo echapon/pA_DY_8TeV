@@ -119,7 +119,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       // rochcor2015 *rmcor = new rochcor2015();
 
 		Bool_t isNLO = 0;
-		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" )
+		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu") )
 		{
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
@@ -160,7 +160,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 			Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
          Double_t PUWeight = 1.;
-         if (doHFrew) hftool.weight(ntuple->hiHF,rewmode); 
+         if (doHFrew) PUWeight = hftool.weight(ntuple->hiHF,rewmode); 
 
 			Double_t TotWeight = norm * GenWeight;
 
@@ -283,9 +283,16 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid)*tnp_weight_iso_ppb(pt1,eta1,iiso)
                         *tnp_weight_muid_ppb(pt2,eta2,imuid)*tnp_weight_iso_ppb(pt2,eta1,iiso);
                      // add trg... careful!
-                     double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)*tnp_weight_trg_ppb(eta1,itrg)/tnp_weight_trg_ppb(eta1,0)) * (1 - tnp_weight_trg_ppb(eta2,200)*tnp_weight_trg_ppb(eta2,itrg)/tnp_weight_trg_ppb(eta2,0)) );
-                     double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
-                     double sf_trg = eff_data/eff_mc;
+                     double sf_trg;
+                     if (pt2>=15. && pt1>=15.) { // both muons could trigger
+                        double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)*tnp_weight_trg_ppb(eta1,itrg)/tnp_weight_trg_ppb(eta1,0)) * (1 - tnp_weight_trg_ppb(eta2,200)*tnp_weight_trg_ppb(eta2,itrg)/tnp_weight_trg_ppb(eta2,0)) );
+                        double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
+                        sf_trg = eff_data/eff_mc;
+                     } else if (pt1<15) {
+                        sf_trg = tnp_weight_trg_ppb(eta2,itrg);
+                     } else if (pt2<15) {
+                        sf_trg = tnp_weight_trg_ppb(eta1,itrg);
+                     }
                      TnpWeight = TnpWeight * sf_trg;
 
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, TotWeight  * PUWeight * TnpWeight );
