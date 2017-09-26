@@ -105,6 +105,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		looptime.Start();
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
+		cout << "\t" << ntupleDirectory[i_tup] << endl;
 		TH1D* h_mass = new TH1D("h_mass_"+Tag[i_tup], "", 600, 0, 600);
 
 		TChain *chain = new TChain("recoTree/DYTree");

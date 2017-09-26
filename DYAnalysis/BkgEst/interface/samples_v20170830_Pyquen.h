@@ -253,9 +253,9 @@ namespace DYana_v20170830_Pyquen {
    const char* NtupleDir(SampleTag s) {
       switch(s) {
          case DYMuMu1030:return "DYtoMuMu_M-10to30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_pPb_Powheg_20170905/170905_103354/0000/"; break;
-         case DYMuMu30:  return "DYtoMuMu_M-30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_pPb_Powheg_20170831/170831_093521/0000/"; break;
+         case DYMuMu30:  return "DYtoMuMu_M-30_pPb-Bst_8p16TeV-Pyquen/crab_DYtoMuMu_M-30_pPb_Pyquen_20170919/170919_163037/0000/"; break;
          case DYMuMu1030_PbP:return "DYtoMuMu_M-10to30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-10to30_PbP_Powheg_20170817/170817_151934/0000/"; break;
-         case DYMuMu30_PbP:  return "DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_PbP_Powheg_20170817/170817_152017/0000/"; break;
+         case DYMuMu30_PbP:  return "DYtoMuMu_M-30_PbP-EmbEPOS_8p16_Pyquen/crab_DYtoMuMu_M-30_PbP_Pyquen_20170817/170817_152152/0000/"; break;
          case DYTauTau1030:return "Powheg_DY_M_10_30_tautau_embd_PbP/crab_DYtoTauTau_M-10_30_PbP_Powheg_20170919/170919_113527/0000/"; break;
          case DYTauTau30:return "Powheg_DY_M_30_tautau_embd_PbP/crab_DYtoTauTau_M-30_PbP_Powheg_20170919/170919_113435/0000/"; break;
          case WW:        return "Pythia6_WW_embd_pPb/crab_WW_DYntuple_20170518/170517_222918/0000/";

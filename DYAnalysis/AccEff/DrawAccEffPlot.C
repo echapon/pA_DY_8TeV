@@ -19,7 +19,7 @@ void DrawAccEffPlot(TString version = "None")
 	if( version == "None" )
 		FileLocation = ".";
 
-	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_Powheg_HLT_PAL3Mu12_v*.root");
+	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_Powheg_HLT_PAL3Mu12_v*_0_rewboth.root");
 	TString FileName = f_input->GetName();
 
 	TString Sample = "";
