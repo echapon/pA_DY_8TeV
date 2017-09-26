@@ -70,8 +70,8 @@ namespace DYana_v20170830 {
          case DYTauTau1030:return 1171.91; break; // Powheg
          case DYTauTau30:  return 265.810; break; // Powheg
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
-         case WZ:        return 3.*(1./10.63e-2)*208.*45.9629e-3; break; // MCFM: p(p/n), W(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
-         case ZZ:        return 3.*3.*208.*18.0587e-3; break; // MCFM only generates p(p/n) and 1 flavour
+         case WZ:        return 3.*(1./10.63e-2)*208.*(0.0459629+0.036782); break; // MCFM: p(p/n), W+-(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
+         case ZZ:        return (((3*3.3658+20)/3.3658)^2)*208.*18.0587e-3; break; // MCFM: p(p/n), ZZ->eemumu / PYTHIA: ZZ->lll'l' (where l=e,mu,tau,nu)
          case TT:        return 56.6e3; break; // according to DDE: NNLO (MCFM + Top++, NNPDF3.0+EPS09)
          // // PYTHIA
          // case WW:        return 208.*3.728; break;
