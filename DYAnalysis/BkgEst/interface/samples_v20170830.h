@@ -63,12 +63,12 @@ namespace DYana_v20170830 {
    double Xsec(SampleTag s) {
       switch (s) {
          // MCFM NLO CT14 pPb
-         case DYMuMu1030:return 1180.94; break; // Powheg
-         case DYMuMu30:  return 266.271; break; // Powheg
-         case DYMuMu1030_PbP:return 1180.94; break; // Powheg
-         case DYMuMu30_PbP:  return 266.271; break; // Powheg
-         case DYTauTau1030:return 1171.91; break; // Powheg
-         case DYTauTau30:  return 265.810; break; // Powheg
+         case DYMuMu1030:return 1180.94e3; break; // Powheg
+         case DYMuMu30:  return 266.271e3; break; // Powheg
+         case DYMuMu1030_PbP:return 1180.94e3; break; // Powheg
+         case DYMuMu30_PbP:  return 266.271e3; break; // Powheg
+         case DYTauTau1030:return 1171.91e3; break; // Powheg
+         case DYTauTau30:  return 265.810e3; break; // Powheg
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
          case WZ:        return 3.*(1./10.63e-2)*208.*45.9629e-3; break; // MCFM: p(p/n), W(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
          case ZZ:        return 3.*3.*208.*18.0587e-3; break; // MCFM only generates p(p/n) and 1 flavour
@@ -78,10 +78,10 @@ namespace DYana_v20170830 {
          // case WZ:        return 208.*1.339; break;
          // case ZZ:        return 208.*0.5422; break;
          // case TT:        return 208.*14.42; break;
-         case WpMu:      return 1213.72; break; // Powheg, from AN-17-058
-         case WpTau:     return 1146.47; break;
-         case WmMu:      return 1082.81; break;
-         case WmTau:     return 1022.86; break;
+         case WpMu:      return 1213.72e3; break; // Powheg, from AN-17-058
+         case WpTau:     return 1146.47e3; break;
+         case WmMu:      return 1082.81e3; break;
+         case WmTau:     return 1022.86e3; break;
          case QCD:       return 208.*3.68e11*0.00039; break;
          default:        return -1;
       }
