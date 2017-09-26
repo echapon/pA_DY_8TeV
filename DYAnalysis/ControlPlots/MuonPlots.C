@@ -62,7 +62,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 
 	if( !doData )
 	{
-		analyzer->SetupMCsamples_v20170830("", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+		analyzer->SetupMCsamples_v20170830(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 	}
 	else
 	{
