@@ -13,7 +13,6 @@
 
 #include <Include/DYAnalyzer.h>
 
-const int runcut = 285900;
 
 class ControlPlots
 {
@@ -29,12 +28,9 @@ public:
 	TH1D *h_diPt;
 	TH1D *h_diRap;
 
-	TH1D *h_absdiRap_M20to30;
-	TH1D *h_absdiRap_M30to45;
-	TH1D *h_absdiRap_M45to60;
-	TH1D *h_absdiRap_M60to120;
-	TH1D *h_absdiRap_M120to200;
-	TH1D *h_absdiRap_M200to1500;
+	TH1D *h_diRap_M15to60;
+	TH1D *h_diRap_M60to120;
+	TH1D *h_diRap_M120to600;
 
 	TH1D *h_lead_Pt;
 	TH1D *h_sub_Pt;
@@ -63,23 +59,9 @@ public:
 	TH1D *h_eta_plusCharge;
 	TH1D *h_phi_plusCharge;
 
-	TH1D *h_Pt_M70;
-	TH1D *h_Pt_M70to90;
-	TH1D *h_Pt_M90to110;
-	TH1D *h_Pt_M110toInf;
-	TH1D *h_Pt_M70to111;
-
-	// -- Coarse binning -- // 
 	TH1D *h_Pt_M15to60;
 	TH1D *h_Pt_M60to120;
-	TH1D *h_Pt_M120to3000;
-
-	// -- Fine binning -- //
-	TH1D *h_Pt_M15to30;
-	TH1D *h_Pt_M30to45;
-	TH1D *h_Pt_M45to60;
-	TH1D *h_Pt_M120to200;
-	TH1D *h_Pt_M200to3000;
+	TH1D *h_Pt_M120to600;
 
 	TH1D *h_Angle;
 
@@ -92,7 +74,7 @@ public:
 	TH1D *h_phi_OtherLeg;
 
 	TH1D *h_GenMass;
-   // TH1D *h_GenMass2;
+   TH1D *h_GenMass_preFSR;
 	TH1D *h_GenPt;
 	TH1D *h_GenEta;
 	TH1D *h_GenPhi;
@@ -114,8 +96,6 @@ public:
 	TH1D *h_VtxNormChi2;
 	TH1D *h_VtxProb_belowM600;
 	TH1D *h_VtxNormChi2_belowM600;
-	TH1D *h_VtxProb_overM600;
-	TH1D *h_VtxNormChi2_overM600;
 
 	TH1D* h_mass_OS_BB;
 	TH1D* h_mass_OS_BE;
@@ -157,12 +137,9 @@ public:
 		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
-		h_absdiRap_M20to30 = new TH1D("h_absdiRap_M20to30_"+Type, "", 24, 0, 2.4); Histo.push_back( h_absdiRap_M20to30 );
-		h_absdiRap_M30to45 = new TH1D("h_absdiRap_M30to45_"+Type, "", 24, 0, 2.4); Histo.push_back( h_absdiRap_M30to45 );
-		h_absdiRap_M45to60 = new TH1D("h_absdiRap_M45to60_"+Type, "", 24, 0, 2.4); Histo.push_back( h_absdiRap_M45to60 );
-		h_absdiRap_M60to120 = new TH1D("h_absdiRap_M60to120_"+Type, "", 24, 0, 2.4); Histo.push_back( h_absdiRap_M60to120 );
-		h_absdiRap_M120to200 = new TH1D("h_absdiRap_M120to200_"+Type, "", 24, 0, 2.4); Histo.push_back( h_absdiRap_M120to200 );
-		h_absdiRap_M200to1500 = new TH1D("h_absdiRap_M200to1500_"+Type, "", 12, 0, 2.4); Histo.push_back( h_absdiRap_M200to1500 );
+		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
+		h_diRap_M60to120 = new TH1D("h_diRap_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M60to120 );
+		h_diRap_M120to600 = new TH1D("h_diRap_M120to600_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M120to600 );
 
 		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_lead_Pt );
 		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_sub_Pt );
@@ -191,21 +168,9 @@ public:
 		h_eta_plusCharge = new TH1D("h_eta_plusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_plusCharge );
 		h_phi_plusCharge = new TH1D("h_phi_plusCharge_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_plusCharge );
 
-		h_Pt_M70 = new TH1D("h_Pt_M70_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M70 );
-		h_Pt_M70to90 = new TH1D("h_Pt_M70to90_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M70to90 );
-		h_Pt_M90to110 = new TH1D("h_Pt_M90to110_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M90to110 );
-		h_Pt_M110toInf = new TH1D("h_Pt_M110toInf_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M110toInf );
-		h_Pt_M70to111 = new TH1D("h_Pt_M70to111_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M70to111 );
-
 		h_Pt_M15to60 = new TH1D("h_Pt_M15to60_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M15to60 );
 		h_Pt_M60to120 = new TH1D("h_Pt_M60to120_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M60to120 );
-		h_Pt_M120to3000 = new TH1D("h_Pt_M120to3000_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M120to3000 );
-
-		h_Pt_M15to30 = new TH1D("h_Pt_M15to30_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M15to30 );
-		h_Pt_M30to45 = new TH1D("h_Pt_M30to45_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M30to45 );
-		h_Pt_M45to60 = new TH1D("h_Pt_M45to60_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M45to60 );
-		h_Pt_M120to200 = new TH1D("h_Pt_M120to200_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M120to200 );
-		h_Pt_M200to3000 = new TH1D("h_Pt_M200to3000_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M200to3000 );
+		h_Pt_M120to600 = new TH1D("h_Pt_M120to600_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_M120to600 );
 
 		h_Angle = new TH1D("h_Angle_"+Type, "", 80, -4, 4); Histo.push_back( h_Angle );
 
@@ -217,9 +182,10 @@ public:
 		h_eta_OtherLeg = new TH1D("h_eta_OtherLeg_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_OtherLeg );
 		h_phi_OtherLeg = new TH1D("h_phi_OtherLeg_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_OtherLeg );
 
-      h_GenMass = new  TH1D("h_GenMass_"+Type, "", 500, 0, 500); Histo.push_back( h_GenMass );
+      h_GenMass = new  TH1D("h_GenMass_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass );
       // h_GenMass = new  TH1D("h_GenMass_"+Type, "", 60, 0, 600); Histo.push_back( h_GenMass );
       // h_GenMass2 = new  TH1D("h_GenMass2_"+Type, "", 60, 60, 120); Histo.push_back( h_GenMass2 );
+      h_GenMass_preFSR = new  TH1D("h_GenMass_preFSR_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass_preFSR );
 		h_GenPt = new  TH1D("h_GenPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt );
 		h_GenEta = new  TH1D("h_GenEta_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta );
 		h_GenPhi = new  TH1D("h_GenPhi_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi );
@@ -241,11 +207,9 @@ public:
 
 		h_VtxProb = new TH1D("h_VtxProb_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb );
 		h_VtxProb_belowM600 = new TH1D("h_VtxProb_belowM600_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb_belowM600 );
-		h_VtxProb_overM600 = new TH1D("h_VtxProb_overM600_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb_overM600 );
 		
 		h_VtxNormChi2 = new TH1D("h_VtxNormChi2_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2 );
 		h_VtxNormChi2_belowM600 = new TH1D("h_VtxNormChi2_belowM600_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2_belowM600 );
-		h_VtxNormChi2_overM600 = new TH1D("h_VtxNormChi2_overM600_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2_overM600 );
 
 		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_BB );
 		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_BE );
@@ -286,6 +250,18 @@ public:
 
 		h_GenMass->Fill( gen_M, weight );
       // h_GenMass2->Fill( gen_M, weight );
+
+      // build pre-FSR mass
+      Double_t dRCut = 0.1;
+      GenLepton genlep_preFSR1 = genlep1; // -- Copy the values of member variables -- // 
+      vector< GenOthers > GenPhotonCollection1;
+      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+      GenLepton genlep_preFSR2 = genlep2; // -- Copy the values of member variables -- // 
+      vector< GenOthers > GenPhotonCollection2;
+      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+      Double_t M_preFSR = ( genlep_preFSR1.Momentum + genlep_preFSR2.Momentum ).M();
+		h_GenMass_preFSR->Fill( M_preFSR, weight );
+
 		h_GenDiPt->Fill( gen_DiPt, weight );
 		h_GenDiRap->Fill( gen_DiRap, weight );
       // h_GenDiRap1->Fill( gen_DiRap+0.465, weight );
@@ -415,18 +391,12 @@ public:
 		h_diRap->Fill( reco_Rap, weight );
 
 		// -- |y(ll)| distributions -- //
-		if( reco_M >= 20 && reco_M < 30 )
-			h_absdiRap_M20to30->Fill( fabs(reco_Rap), weight);
-		else if( reco_M >= 30 && reco_M < 45 )
-			h_absdiRap_M30to45->Fill( fabs(reco_Rap), weight);
-		else if( reco_M >= 45 && reco_M < 60 )
-			h_absdiRap_M45to60->Fill( fabs(reco_Rap), weight);
+		if( reco_M >= 15 && reco_M < 60 )
+			h_diRap_M15to60->Fill( reco_Rap, weight);
 		else if( reco_M >= 60 && reco_M < 120 )
-			h_absdiRap_M60to120->Fill( fabs(reco_Rap), weight);
-		else if( reco_M >= 120 && reco_M < 200 )
-			h_absdiRap_M120to200->Fill( fabs(reco_Rap), weight);
-		else if( reco_M >= 200 && reco_M < 1500 )
-			h_absdiRap_M200to1500->Fill( fabs(reco_Rap), weight);
+			h_diRap_M60to120->Fill( reco_Rap, weight);
+		else if( reco_M >= 120 && reco_M < 600 )
+			h_diRap_M120to600->Fill( reco_Rap, weight);
 
 		//leading, sub-leading muon pt,eta,phi distribution
 		if( recolep1.Pt > recolep2.Pt )
@@ -474,7 +444,7 @@ public:
 
 			if( isMC == kFALSE ) // -- Data -- //
 			{
-				if( ntuple->runNum < runcut ) // -- HLT v4.2 -- //
+				if( ntuple->runNum < runcut ) // pPb
 				{
 					h_mass_OS_part1->Fill( reco_M, weight );
 
@@ -485,7 +455,7 @@ public:
 					else if( isEE == kTRUE )
 						h_mass_OS_part1_EE->Fill( reco_M, weight );
 				}
-				else // -- HLT v4.3 -- //
+				else // Pbp
 				{
 					h_mass_OS_part2->Fill( reco_M, weight );
 
@@ -525,35 +495,7 @@ public:
 		else
 			h_mass_SS->Fill( reco_M, weight );
 
-		//Pt plots with respect to their pair mass
-		if( reco_M < 70 )
-		{
-			h_Pt_M70->Fill( recolep1.Pt, weight );
-			h_Pt_M70->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 70 && reco_M < 90 )
-		{
-			h_Pt_M70to90->Fill( recolep1.Pt, weight );
-			h_Pt_M70to90->Fill( recolep2.Pt, weight );
-
-		}
-		else if( reco_M > 90 && reco_M < 110 )
-		{
-			h_Pt_M90to110->Fill( recolep1.Pt, weight );
-			h_Pt_M90to110->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 110 )
-		{
-			h_Pt_M110toInf->Fill( recolep1.Pt, weight );
-			h_Pt_M110toInf->Fill( recolep2.Pt, weight );
-		}
-
-		if( reco_M > 70 && reco_M < 111 )
-		{
-			h_Pt_M70to111->Fill( recolep1.Pt, weight );
-			h_Pt_M70to111->Fill( recolep2.Pt, weight );
-		}
-
+		// -- Fine binning -- //
 		if( reco_M > 15 && reco_M < 60 )
 		{
 			h_Pt_M15to60->Fill( recolep1.Pt, weight );
@@ -564,37 +506,10 @@ public:
 			h_Pt_M60to120->Fill( recolep1.Pt, weight );
 			h_Pt_M60to120->Fill( recolep2.Pt, weight );
 		}
-		else if( reco_M > 120 && reco_M < 3000 )
+		else if( reco_M > 120 && reco_M < 600 )
 		{
-			h_Pt_M120to3000->Fill( recolep1.Pt, weight );
-			h_Pt_M120to3000->Fill( recolep2.Pt, weight );
-		}
-
-		// -- Fine binning -- //
-		if( reco_M > 15 && reco_M < 30 )
-		{
-			h_Pt_M15to30->Fill( recolep1.Pt, weight );
-			h_Pt_M15to30->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 30 && reco_M < 45 )
-		{
-			h_Pt_M30to45->Fill( recolep1.Pt, weight );
-			h_Pt_M30to45->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 45 && reco_M < 60 )
-		{
-			h_Pt_M45to60->Fill( recolep1.Pt, weight );
-			h_Pt_M45to60->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 120 && reco_M < 200 )
-		{
-			h_Pt_M120to200->Fill( recolep1.Pt, weight );
-			h_Pt_M120to200->Fill( recolep2.Pt, weight );
-		}
-		else if( reco_M > 200 && reco_M < 3000 )
-		{
-			h_Pt_M200to3000->Fill( recolep1.Pt, weight );
-			h_Pt_M200to3000->Fill( recolep2.Pt, weight );
+			h_Pt_M120to600->Fill( recolep1.Pt, weight );
+			h_Pt_M120to600->Fill( recolep2.Pt, weight );
 		}
 
 		//Angle between two muons
@@ -606,16 +521,6 @@ public:
 
 		h_VtxProb->Fill( VtxProb, weight );
 		h_VtxNormChi2->Fill( VtxNormChi2, weight );
-		if( reco_M < 600 )
-		{
-			h_VtxProb_belowM600->Fill( VtxProb, weight );
-			h_VtxNormChi2_belowM600->Fill( VtxNormChi2, weight );
-		}
-		else if( reco_M > 600 )
-		{
-			h_VtxProb_overM600->Fill( VtxProb, weight );
-			h_VtxNormChi2_overM600->Fill( VtxNormChi2, weight );
-		}
 		
 	}
 

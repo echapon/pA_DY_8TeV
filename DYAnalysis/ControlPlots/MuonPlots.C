@@ -26,9 +26,10 @@
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
 #include <Include/ControlPlots.h>
+#include <HIstuff/HFweight.h>
 
 static inline void loadBar(int x, int n, int r, int w);
-void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname = "PAL3Mu12")
+void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname = "PAL3Mu12", bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -51,7 +52,16 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + ".root", "RECREATE");
+   TString srew("norew");
+   // if data, do not HF reweight
+   if (doData) doHFrew = false;
+   if (doHFrew) {
+      if (rewmode==HFweight::HFside::both) srew="rewboth";
+      else if (rewmode==HFweight::HFside::plus) srew="rewplus";
+      else if (rewmode==HFweight::HFside::minus) srew="rewminus";
+   }
+
+	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + ".root", "RECREATE");
 
    // TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
    // TString BaseLocation = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/";
@@ -70,6 +80,9 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
       ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
 	}
+
+   // initialise the HF reweighting tool
+   HFweight hftool;
 
 	//Loop for all samples
 	const Int_t Ntup = ntupleDirectory.size();
@@ -111,7 +124,19 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		TH1D *h_hiHF = new TH1D("h_hiHF_"+Tag[i_tup], "", 110, 0, 550);
 		TH1D *h_hiHFplus = new TH1D("h_hiHFplus_"+Tag[i_tup], "", 110, 0, 550);
 		TH1D *h_hiHFminus = new TH1D("h_hiHFminus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFplusEta4 = new TH1D("h_hiHFplusEta4_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFminusEta4 = new TH1D("h_hiHFminusEta4_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFhit = new TH1D("h_hiHFhit_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFhitPlus = new TH1D("h_hiHFhitPlus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFhitMinus = new TH1D("h_hiHFhitMinus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiET = new TH1D("h_hiET_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiEE = new TH1D("h_hiEE_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiEB = new TH1D("h_hiEB_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiEEplus = new TH1D("h_hiEEplus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiEEminus = new TH1D("h_hiEEminus_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiNpix = new TH1D("h_hiNpix_"+Tag[i_tup], "", 110, 0, 550);
 		TH1D *h_hiNtracks = new TH1D("h_hiNtracks_"+Tag[i_tup], "", 90, 0, 450);
+		TH1D *h_hiNtracksPtCut = new TH1D("h_hiNtracksPtCut_"+Tag[i_tup], "", 110, 0, 550);
 
 
 		Bool_t isNLO = 0;
@@ -148,6 +173,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 
 				// -- Pileup-Reweighting -- //
 			Double_t PUWeight = analyzer->PileUpWeightValue( ntuple->nPileUp );
+         if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
 			Bool_t GenFlag = kFALSE;
 			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
@@ -224,7 +250,19 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight);
                h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight);
                h_hiHFminus->Fill(ntuple->hiHFminus,GenWeight*PUWeight);
+               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,GenWeight*PUWeight);
+               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,GenWeight*PUWeight);
+               h_hiHFhit->Fill(ntuple->hiHFhit,GenWeight*PUWeight);
+               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,GenWeight*PUWeight);
+               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,GenWeight*PUWeight);
+               h_hiET->Fill(ntuple->hiET,GenWeight*PUWeight);
+               h_hiEE->Fill(ntuple->hiEE,GenWeight*PUWeight);
+               h_hiEB->Fill(ntuple->hiEB,GenWeight*PUWeight);
+               h_hiEEplus->Fill(ntuple->hiEEplus,GenWeight*PUWeight);
+               h_hiEEminus->Fill(ntuple->hiEEminus,GenWeight*PUWeight);
+               h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight);
                h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight);
+               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight);
 				}
 				
 			} //End of if( isTriggered )
@@ -238,7 +276,19 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
       h_hiHF->Write();
       h_hiHFplus->Write();
       h_hiHFminus->Write();
+      h_hiHFplusEta4->Write();
+      h_hiHFminusEta4->Write();
+      h_hiHFhit->Write();
+      h_hiHFhitPlus->Write();
+      h_hiHFhitMinus->Write();
+      h_hiET->Write();
+      h_hiEE->Write();
+      h_hiEB->Write();
+      h_hiEEplus->Write();
+      h_hiEEminus->Write();
+      h_hiNpix->Write();
       h_hiNtracks->Write();
+      h_hiNtracksPtCut->Write();
 
 		if(isNLO == 1)
 		{

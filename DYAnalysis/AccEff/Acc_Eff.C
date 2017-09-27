@@ -161,7 +161,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 			Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
          Double_t PUWeight = 1.;
-         if (doHFrew) PUWeight = hftool.weight(ntuple->hiHF,rewmode); 
+         if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
 			Double_t TotWeight = norm * GenWeight;
 

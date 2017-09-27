@@ -16,6 +16,7 @@ const double lumi_part1 = 62587.059e-6; // mub-1 -> pb-1
 const double lumi_part2 = 111912.220e-6; // mub-1 -> pb-1
 const double lumi_all = lumi_part1 + lumi_part2;
 
+const int runcut = 285900;
 
 namespace DYana {
    // put the default samples here
@@ -45,7 +46,7 @@ namespace DYana {
    int runsgn(int run) { 
       // 285480-285832: PbP
       // 285956-286496: pPb
-      return (run>285470 && run<285900) ? -1 : 1;
+      return (run>285470 && run<runcut) ? -1 : 1;
    };
 };
 
