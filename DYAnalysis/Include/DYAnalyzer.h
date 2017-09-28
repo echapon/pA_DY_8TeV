@@ -1154,7 +1154,7 @@ Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, Ntu
 
 Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 {
-   using DYana;
+   using namespace DYana;
 	Bool_t isPassAcc = kFALSE;
 	Muon leadMu, subMu;
    double diRap = sign*(Mu1.Momentum+Mu2.Momentum).Rapidity()-rapshift;
@@ -1169,7 +1169,7 @@ Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 
 Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2)
 {
-   using DYana;
+   using namespace DYana;
 
 	Bool_t isPassAcc = kFALSE;
 
@@ -1593,7 +1593,7 @@ void DYAnalyzer::GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon
 	//Give Acceptance Cuts
 	if( GenLeptonCollection.size() >= 2 )
 	{
-      if (!isPassAccCondition_GenLepton(GenLeptonCollection[0], GenLeptonCollection[1], sign))
+      if (!isPassAccCondition_GenLepton(GenLeptonCollection[0], GenLeptonCollection[1]))
 			GenLeptonCollection.clear();
 	}
 

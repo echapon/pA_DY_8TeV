@@ -20,8 +20,7 @@
 #include <TMath.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include <Include/RochesterMomCorr_76X/RoccoR.cc>
-#include <Include/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/RochesterMomCorr_76X/roccor.2016.v3/RoccoR.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
@@ -216,15 +215,20 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 					{
 						float qter = 1.0;
 						
-						if( doData )
-							rmcor->momcor_data(mu.Momentum, mu.charge, 0, qter);
-						else
-							rmcor->momcor_mc(mu.Momentum, mu.charge, mu.trackerLayers, qter);
+                  if( Tag[i_tup] == "Data" )
+                     qter = rc.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
+                  else{
+                     double u1 = gRandom->Rndm();
+                     double u2 = gRandom->Rndm();
+                     int nl = ntuple->Muon_trackerLayers[i_reco];
+                     qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                  }
 
-						// -- Change Muon pT, eta and phi with updated(corrected) one -- //
-						mu.Pt = mu.Momentum.Pt();
-						mu.eta = mu.Momentum.Eta();
-						mu.phi = mu.Momentum.Phi();
+                  // -- Change Muon pT, eta and phi with updated(corrected) one -- //
+                  mu.Momentum.SetPerp(qter*mu.Pt);
+                  mu.Pt = mu.Momentum.Pt();
+                  // mu.eta = mu.Momentum.Eta();
+                  // mu.phi = mu.Momentum.Phi();
 					}
 					
 					MuonCollection.push_back( mu );
