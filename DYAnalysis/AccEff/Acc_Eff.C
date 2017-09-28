@@ -31,8 +31,7 @@
 using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both )
-// run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
