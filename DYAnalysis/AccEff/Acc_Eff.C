@@ -15,6 +15,7 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TEfficiency.h>
+#include <TGraphAsymmErrors.h>
 
 #include <vector>
 

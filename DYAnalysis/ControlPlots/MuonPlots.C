@@ -20,7 +20,7 @@
 #include <TMath.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include <Include/RochesterMomCorr_76X/roccor.2016.v3/RoccoR.cc>
+#include <Include/roccor.2016.v3/RoccoR.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
@@ -108,7 +108,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_HI();
 		
-		rochcor2015 *rmcor = new rochcor2015();
+      RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
 
 		Bool_t isMC;
 		Tag[i_tup].Contains("Data") ? isMC = kFALSE : isMC = kTRUE;
@@ -216,7 +216,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 						float qter = 1.0;
 						
                   if( Tag[i_tup] == "Data" )
-                     qter = rc.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
+                     qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
                   else{
                      double u1 = gRandom->Rndm();
                      double u2 = gRandom->Rndm();

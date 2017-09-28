@@ -12,10 +12,13 @@
 #include <vector>
 
 #include <Include/DYAnalyzer.h>
+#include <BkgEst/interface/defs.h>
 
+using namespace DYana;
 
 class ControlPlots
 {
+
 public:
 	DYAnalyzer *analyzer;
 	Bool_t isMC;
@@ -144,8 +147,8 @@ public:
 		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
 		h_diRap_M60to120 = new TH1D("h_diRap_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M60to120 );
 		h_diRap_M120to600 = new TH1D("h_diRap_M120to600_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M120to600 );
-		h_diRap2_M15to60 = new TH1D("h_diRap2_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap2_M15to60 );
-		h_diRap2_M60to120 = new TH1D("h_diRap2_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap2_M60to120 );
+		h_diRap2_M15to60 = new TH1D("h_diRap2_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_M15to60 );
+		h_diRap2_M60to120 = new TH1D("h_diRap2_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_M60to120 );
 
 		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_lead_Pt );
 		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_sub_Pt );

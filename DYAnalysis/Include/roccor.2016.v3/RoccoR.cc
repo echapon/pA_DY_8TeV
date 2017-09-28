@@ -339,7 +339,7 @@ RoccoR::RoccoR(std::string dirname){
 void 
 RoccoR::init(std::string dirname){
 
-    std::string filename=Form("%s/config.txt", dirname.c_str());
+    std::string filename(Form("%s/config.txt", dirname.c_str()));
 
     std::ifstream in(filename.c_str());
     std::string s;
