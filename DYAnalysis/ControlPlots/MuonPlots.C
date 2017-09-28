@@ -92,6 +92,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		looptime.Start();
 
       Bool_t doflip = (switcheta(STags[i_tup])<0);
+      analyzer->sign = (doflip) ? -1 : 1;
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 

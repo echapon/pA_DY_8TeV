@@ -18,6 +18,11 @@ const double lumi_all = lumi_part1 + lumi_part2;
 
 const int runcut = 285900;
 
+// eta_lab <-> eta_CM
+// for pPb (1st part): eta_CM = eta_lab - 0.465
+// for Pbp (2nd part): eta_CM = eta_lab + 0.465
+const double rapshift = 0.465;
+
 namespace DYana {
    // put the default samples here
    using namespace DYana_v20170830;
@@ -33,6 +38,14 @@ namespace DYana {
    double ptbin[ptbinnum+1] = {15,17,20,22,25,30,35,40,45,50,70,100,200,500};
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
+   // pt for measurement 60-120
+   const ptbinnum_meas = 22;
+   double ptbin_meas[ptbinnum_meas+1] = {0,2,4,6,8,10,12,14,16,18,20,25,30,40,45,50,60,70,85,100,125,150,200};
+   // rapidity binning
+   const rapbinnum_1560 = 12;
+   double rapbin_1560[rapbinnum_1560+1] = {-2.87,-2.4,-1.93,-1.6,-1.2,-0.8,-0.4,0,0.4,0.8,1.2,1.6,1.93};
+   const rapbinnum_60120 = 24;
+   double rapbin_60120[rapbinnum_1560+1] = {-2.87,-2.6,-2.4,-2.2,-1.93,-1.8,-1.6,-1.4,-1.2,-1.,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.,1.2,1.4,1.6,1.8,1.93};
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {

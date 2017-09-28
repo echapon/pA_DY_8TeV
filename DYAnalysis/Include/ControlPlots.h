@@ -26,11 +26,14 @@ public:
 	TH1D *h_phi;
 	TH1D *h_mass;
 	TH1D *h_diPt;
+	TH1D *h_diPt2;
 	TH1D *h_diRap;
 
 	TH1D *h_diRap_M15to60;
 	TH1D *h_diRap_M60to120;
 	TH1D *h_diRap_M120to600;
+	TH1D *h_diRap2_M15to60;
+	TH1D *h_diRap2_M60to120;
 
 	TH1D *h_lead_Pt;
 	TH1D *h_sub_Pt;
@@ -135,11 +138,14 @@ public:
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
 		h_mass = new TH1D("h_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_mass );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
+		h_diPt2 = new TH1D("h_diPt2_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2 );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
 		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
 		h_diRap_M60to120 = new TH1D("h_diRap_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M60to120 );
 		h_diRap_M120to600 = new TH1D("h_diRap_M120to600_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M120to600 );
+		h_diRap2_M15to60 = new TH1D("h_diRap2_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap2_M15to60 );
+		h_diRap2_M60to120 = new TH1D("h_diRap2_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap2_M60to120 );
 
 		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_lead_Pt );
 		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_sub_Pt );
@@ -388,14 +394,17 @@ public:
 		Double_t reco_Pt = (reco_v1 + reco_v2).Pt();
 		h_mass->Fill( reco_M, weight );
 		h_diPt->Fill( reco_Pt, weight );
+		h_diPt2->Fill( reco_Pt, weight );
 		h_diRap->Fill( reco_Rap, weight );
 
 		// -- |y(ll)| distributions -- //
-		if( reco_M >= 15 && reco_M < 60 )
+		if( reco_M >= 15 && reco_M < 60 ) {
 			h_diRap_M15to60->Fill( reco_Rap, weight);
-		else if( reco_M >= 60 && reco_M < 120 )
+			h_diRap2_M15to60->Fill( reco_Rap, weight);
+      } else if( reco_M >= 60 && reco_M < 120 ) {
 			h_diRap_M60to120->Fill( reco_Rap, weight);
-		else if( reco_M >= 120 && reco_M < 600 )
+			h_diRap2_M60to120->Fill( reco_Rap, weight);
+      } else if( reco_M >= 120 && reco_M < 600 )
 			h_diRap_M120to600->Fill( reco_Rap, weight);
 
 		//leading, sub-leading muon pt,eta,phi distribution

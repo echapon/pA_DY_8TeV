@@ -100,6 +100,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       Int_t  flipsign = doflip ? -1 : 1;
       if (run==1 && doflip) continue;
       if (run==2 && !doflip) continue;
+      analyzer->sign = flipsign;
 
 		TStopwatch looptime;
 		looptime.Start();

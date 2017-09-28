@@ -42,6 +42,8 @@ public:
 	Double_t LeadEtaCut;
 	Double_t SubEtaCut;
 
+   Int_t sign; // 1 for pPb, -1 for Pbp
+
 	Double_t PileUpWeight[52];
 
 	Double_t Eff_RecoID_data[5][4];
@@ -127,7 +129,7 @@ public:
 	void MakeTChain_fromTextFile(TChain *chain, TString FileName);
 };
 
-DYAnalyzer::DYAnalyzer(TString HLTname)
+DYAnalyzer::DYAnalyzer(TString HLTname) : sign(1)
 {
 	if( HLTname == "None" )
 	{
@@ -1152,11 +1154,14 @@ Bool_t DYAnalyzer::EventSelection_Zdiff_13TeV(vector< Muon > MuonCollection, Ntu
 
 Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 {
+   using DYana;
 	Bool_t isPassAcc = kFALSE;
 	Muon leadMu, subMu;
+   double diRap = sign*(Mu1.Momentum+Mu2.Momentum).Rapidity()-rapshift;
 	CompareMuon(&Mu1, &Mu2, &leadMu, &subMu);
 	if( leadMu.Pt > LeadPtCut && fabs(leadMu.eta) < LeadEtaCut && 
-		subMu.Pt  > SubPtCut  && fabs(subMu.eta)  < SubEtaCut )
+		subMu.Pt  > SubPtCut  && fabs(subMu.eta)  < SubEtaCut &&
+      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] )
 		isPassAcc = kTRUE;
 
 	return isPassAcc;
@@ -1164,13 +1169,17 @@ Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 
 Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2)
 {
+   using DYana;
+
 	Bool_t isPassAcc = kFALSE;
 
 	GenLepton leadGenLep, subGenLep;
+   double diRap = sign*(genlep1.Momentum+genlep2.Momentum).Rapidity()-rapshift;
 	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
 	
 	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut &&
-		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut )
+		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut  &&
+      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] )
 		isPassAcc = 1;
 
 	return isPassAcc;
@@ -1584,9 +1593,7 @@ void DYAnalyzer::GenMatching(TString MuonType, NtupleHandle* ntuple, vector<Muon
 	//Give Acceptance Cuts
 	if( GenLeptonCollection.size() >= 2 )
 	{
-		GenLepton leadGenLep, subGenLep;
-		CompareGenLepton(&GenLeptonCollection[0], &GenLeptonCollection[1], &leadGenLep, &subGenLep);
-		if( !(leadGenLep.Pt > LeadPtCut && subGenLep.Pt > SubPtCut && abs(leadGenLep.eta) < LeadEtaCut && abs(subGenLep.eta) < SubEtaCut) )
+      if (!isPassAccCondition_GenLepton(GenLeptonCollection[0], GenLeptonCollection[1], sign))
 			GenLeptonCollection.clear();
 	}
 
