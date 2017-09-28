@@ -3,18 +3,20 @@
 #include "Include/CMS_lumi.C"
 
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
-void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
+void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
 void PrintOutGraph(TGraphAsymmErrors* g);
 Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
-void DrawAccEffPlot(TString version = "None")
+void DrawAccEffPlot(TString version = "None", TString variable = "Mass") // variable = Mass | Pt | Rap1560 | Rap60120
 {
 	setTDRStyle();
 	gROOT->SetStyle( "tdrStyle" );
 
 	TString FileLocation = ".";// + version;
+
+   const char* cvariable = variable.Data();
 
 	if( version == "None" )
 		FileLocation = ".";
@@ -28,10 +30,10 @@ void DrawAccEffPlot(TString version = "None")
 	else if( FileName.Contains("Powheg") )
 		Sample = "Powheg";
 
-	TEfficiency *TEff_Acc = (TEfficiency*)f_input->Get("TEff_Acc_Mass");
+	TEfficiency *TEff_Acc = (TEfficiency*)f_input->Get(Form("TEff_Acc_%s",cvariable));
 	TGraphAsymmErrors *g_Acc = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
 
-	TEfficiency *TEff_Eff = (TEfficiency*)f_input->Get("TEff_Eff_Mass");
+	TEfficiency *TEff_Eff = (TEfficiency*)f_input->Get(Form("TEff_Eff_%s",cvariable));
 	TGraphAsymmErrors *g_Eff = (TGraphAsymmErrors*)TEff_Eff->CreateGraph()->Clone();
 
 	TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)g_Acc->Clone();
@@ -47,10 +49,12 @@ void DrawAccEffPlot(TString version = "None")
 	// TEfficiency *TEff_AccEff = (TEfficiency*)f_input->Get("TEff_AccEff_Mass");
 	// TGraphAsymmErrors *g_AccEff = (TGraphAsymmErrors*)TEff_AccEff->CreateGraph()->Clone();
 
-	TCanvas *c_compare = new TCanvas("c_AccEff_"+Sample, "", 800, 600);
+	TCanvas *c_compare = new TCanvas("c_AccEff_"+variable+"_"+Sample, "", 800, 600);
 	c_compare->cd();
 	gPad->SetLogx();
-	gPad->SetLogy();
+   if (variable=="Mass") {
+      gPad->SetLogy();
+   }
 
 	g_Acc->Draw("AP");
 	g_Eff->Draw("PSAME");
@@ -75,7 +79,15 @@ void DrawAccEffPlot(TString version = "None")
 	g_Eff->SetFillColorAlpha(kWhite, 0);
 	g_AccEff->SetFillColorAlpha(kWhite, 0);
 
-	g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
+   if (variable=="Mass") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
+   } else if (variable=="Pt") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
+   } else if (variable=="Rap1560") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y (post-FSR)");
+   } else if (variable=="Rap60120") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y (post-FSR)");
+   }
 	g_Acc->GetXaxis()->SetNoExponent();
 	g_Acc->GetXaxis()->SetMoreLogLabels();
    // if( Sample == "Powheg" )
@@ -122,9 +134,9 @@ void DrawAccEffPlot(TString version = "None")
 	c_compare->SaveAs(CanvasName+".C");
 
 
-	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_Eff_Mass_Corr_tnp0");
+	TEfficiency *TEff_Eff_Corr_tnp = (TEfficiency*)f_input->Get(Form("TEff_Eff_%s_Corr_tnp0",cvariable));
    // TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*)TEff_Eff_Corr_tnp->CreateGraph()->Clone();
-	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*) f_input->Get("g_Eff_Mass_Corr_tnp_tot");
+	TGraphAsymmErrors *g_Eff_Corr_tnp = (TGraphAsymmErrors*) f_input->Get(Form("g_Eff_%s_Corr_tnp_tot",cvariable));
 
 	// TEfficiency *TEff_AccEff_Corr_tnp = (TEfficiency*)f_input->Get("TEff_AccEff_Mass_Corr_tnp");
 	// TGraphAsymmErrors *g_AccEff_Corr_tnp = (TGraphAsymmErrors*)TEff_AccEff_Corr_tnp->CreateGraph()->Clone();
@@ -135,7 +147,7 @@ void DrawAccEffPlot(TString version = "None")
 
 
 
-	MyCanvas *myc_tnp = new MyCanvas("c_UnCorr_vs_Corr_tnp", "Gen-Level Dimuon Mass [GeV]", "Values");
+	MyCanvas *myc_tnp = new MyCanvas("c_UnCorr_vs_Corr_tnp", g_Acc->GetXaxis()->GetTitle(), "Values");
 	myc_tnp->LowerEdge_Y = 0.5;
 	myc_tnp->UpperEdge_Y = 1.05;
 
@@ -148,11 +160,11 @@ void DrawAccEffPlot(TString version = "None")
 									kBlue+1, kGreen+1,
 									"EP", "EPSAME");
 
-	myc_tnp->c->SaveAs("Eff_UnCorr_vs_Corr_tnp.pdf");
+	myc_tnp->c->SaveAs(Form("Eff_UnCorr_vs_Corr_tnp_%s.pdf",cvariable));
 
 
 
-	DrawAccEffDist("Corr_tnp", Sample, g_Acc, g_Eff_Corr_tnp, g_AccEff_Corr_tnp);
+	DrawAccEffDist("Corr_tnp", Sample, variable, g_Acc, g_Eff_Corr_tnp, g_AccEff_Corr_tnp);
    // PrintOutGraph( g_Acc );
    // PrintOutGraph( g_Eff_Corr_tnp );
    // PrintOutGraph( g_AccEff_Corr_tnp );
@@ -184,13 +196,13 @@ void DrawAccEffPlot(TString version = "None")
 
 }
 
-void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr)
+void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr)
 {
-	TString CanvasName = "c_AccEff_" + Type + "_" + Sample;
+	TString CanvasName = "c_AccEff_" + variable + "_" + Type + "_" + Sample;
 	TCanvas *c_compare_corr = new TCanvas(CanvasName, "", 800, 600);
 	c_compare_corr->cd();
 	gPad->SetLogx();
-	gPad->SetLogy();
+   if (variable=="Mass") gPad->SetLogy();
 
 	g_Acc->Draw("AP");
 	g_Eff_Corr->Draw("PSAME");
@@ -215,7 +227,15 @@ void DrawAccEffDist(TString Type, TString Sample, TGraphAsymmErrors* g_Acc, TGra
 	g_Eff_Corr->SetFillColorAlpha(kWhite, 0);
 	g_AccEff_Corr->SetFillColorAlpha(kWhite, 0);
 
-	g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
+   if (variable=="Mass") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
+   } else if (variable=="Pt") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
+   } else if (variable=="Rap1560") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y (post-FSR)");
+   } else if (variable=="Rap60120") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y (post-FSR)");
+   }
 	g_Acc->GetXaxis()->SetNoExponent();
 	g_Acc->GetXaxis()->SetMoreLogLabels();
    // if( Sample == "Powheg" )
