@@ -1220,19 +1220,8 @@ public:
 		h_pfMET_Type1_SumEt = new TH1D("h_pfMET_Type1_SumEt_"+Type, "", 500, 0, 500); Histo.push_back( h_pfMET_Type1_SumEt );
 	}
 
-	void FillHistograms_MET()
+	void FillHistograms_MET(double AllWeight)
 	{
-		Double_t AllWeight = 1;
-
-		Double_t GenWeight;
-		ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
-
-		Double_t PUWeight = 1;
-		if( isMC == kTRUE )
-			PUWeight = analyzer->PileUpWeightValue( ntuple->nPileUp );
-
-		AllWeight = GenWeight * PUWeight;
-
 		h_pfMET_pT->Fill( ntuple->pfMET_pT, AllWeight );
 		h_pfMET_phi->Fill( ntuple->pfMET_phi, AllWeight );
 		h_pfMET_Px->Fill( ntuple->pfMET_Px, AllWeight );
