@@ -31,7 +31,7 @@
 using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both ) // run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -252,26 +252,43 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 						{
 							Muon mu;
 							mu.FillFromNtuple(ntuple, i_reco);
-							// -- Apply Rochester momentum scale correction -- //
-							if( isCorrected == kTRUE )
-							{
+                     // -- Apply Rochester momentum scale correction -- //
+                     if( isCorrected == kTRUE )
+                     {
                         float qter = 1.0;
-                        
+
                         if( Tag[i_tup] == "Data" )
                            qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
-                        else {
+                        else{
                            double u1 = gRandom->Rndm();
-                           double u2 = gRandom->Rndm();
                            int nl = ntuple->Muon_trackerLayers[i_reco];
-                           qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
-                        }
+                           if (!GenFlag || GenLeptonCollection.size()<2) {
+                              double u2 = gRandom->Rndm();
+                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                           } else {
+                              // gen-reco matching
+                              double drmin=999; double pt_drmin=0;
+                              for (unsigned int igen=0; igen<GenLeptonCollection.size(); igen++) {
+                                 double dr = mu.Momentum.DeltaR(GenLeptonCollection[igen].Momentum);
+                                 if (dr<drmin) {
+                                    drmin = dr;
+                                    pt_drmin = GenLeptonCollection[igen].Pt;
+                                 }
+                              } // for igen in GenLeptonCollection (gen-reco matching)
+                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                              else  {
+                                 double u2 = gRandom->Rndm();
+                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                              } // if drmin<0.03
+                           } // if (!GenFlag || GenLeptonCollection.size()<2)
+                        } // if Tag[i_tup] == "Data"
 
                         // -- Change Muon pT, eta and phi with updated(corrected) one -- //
-                        mu.Momentum.SetPerp(qter*mu.Pt);
+                        mu.Momentum.SetPtEtaPhiM(qter*mu.Pt,mu.eta,mu.phi,mu.Momentum.M());
                         mu.Pt = mu.Momentum.Pt();
                         // mu.eta = mu.Momentum.Eta();
                         // mu.phi = mu.Momentum.Phi();
-							}
+                     }
 							
 							MuonCollection.push_back( mu );
 						}
