@@ -95,7 +95,7 @@ void MakeHFweight::Loop(HistPack& thepack)
       TLorentzVector mu2; mu2.SetPtEtaPhiM(Muon_pT[1],DYana::runsgn(runNum)*Muon_eta[1],Muon_phi[1],muon_mass);
       TLorentzVector mumu = mu1+mu2;
 
-      if (mumu.M()<70 || mumu.M()>110) continue;
+      if (mumu.M()<60 || mumu.M()>120) continue;
 
       // eta flip !
       double myHFplus = hiHFplus;
