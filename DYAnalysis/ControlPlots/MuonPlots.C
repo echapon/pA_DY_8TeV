@@ -104,6 +104,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
       // }
 		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_GenLepton();
+		ntuple->TurnOnBranches_GenOthers();
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_HI();
@@ -123,20 +124,20 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
       // HI stuff
 		TH1D *h_hiHF = new TH1D("h_hiHF_"+Tag[i_tup], "", 110, 0, 550);
 		TH1D *h_hiHFplus = new TH1D("h_hiHFplus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFminus = new TH1D("h_hiHFminus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFplusEta4 = new TH1D("h_hiHFplusEta4_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFminusEta4 = new TH1D("h_hiHFminusEta4_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFhit = new TH1D("h_hiHFhit_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFhitPlus = new TH1D("h_hiHFhitPlus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiHFhitMinus = new TH1D("h_hiHFhitMinus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiET = new TH1D("h_hiET_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiEE = new TH1D("h_hiEE_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiEB = new TH1D("h_hiEB_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiEEplus = new TH1D("h_hiEEplus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiEEminus = new TH1D("h_hiEEminus_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiNpix = new TH1D("h_hiNpix_"+Tag[i_tup], "", 110, 0, 550);
-		TH1D *h_hiNtracks = new TH1D("h_hiNtracks_"+Tag[i_tup], "", 90, 0, 450);
-		TH1D *h_hiNtracksPtCut = new TH1D("h_hiNtracksPtCut_"+Tag[i_tup], "", 110, 0, 550);
+		TH1D *h_hiHFminus = new TH1D("h_hiHFminus_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiHFplusEta4 = new TH1D("h_hiHFplusEta4_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiHFminusEta4 = new TH1D("h_hiHFminusEta4_"+Tag[i_tup], "", 100, 0, 100);
+		TH1D *h_hiHFhit = new TH1D("h_hiHFhit_"+Tag[i_tup], "", 180, 0, 9000);
+		TH1D *h_hiHFhitPlus = new TH1D("h_hiHFhitPlus_"+Tag[i_tup], "", 120, 0, 6000);
+		TH1D *h_hiHFhitMinus = new TH1D("h_hiHFhitMinus_"+Tag[i_tup], "", 120, 0, 6000);
+		TH1D *h_hiET = new TH1D("h_hiET_"+Tag[i_tup], "", 150, 0, 300);
+		TH1D *h_hiEE = new TH1D("h_hiEE_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiEB = new TH1D("h_hiEB_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiEEplus = new TH1D("h_hiEEplus_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiEEminus = new TH1D("h_hiEEminus_"+Tag[i_tup], "", 100, 0, 200);
+		TH1D *h_hiNpix = new TH1D("h_hiNpix_"+Tag[i_tup], "", 200, 0, 2000);
+		TH1D *h_hiNtracks = new TH1D("h_hiNtracks_"+Tag[i_tup], "", 150, 0, 300);
+		TH1D *h_hiNtracksPtCut = new TH1D("h_hiNtracksPtCut_"+Tag[i_tup], "", 150, 0, 300);
 
 
 		Bool_t isNLO = 0;

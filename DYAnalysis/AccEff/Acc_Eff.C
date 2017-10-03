@@ -61,7 +61,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       else if (rewmode==HFweight::HFside::plus) srew="rewplus";
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
    }
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 

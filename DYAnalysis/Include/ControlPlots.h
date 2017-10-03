@@ -28,6 +28,8 @@ public:
 	TH1D *h_eta;
 	TH1D *h_phi;
 	TH1D *h_mass;
+	TH1D *h_mass2;
+	TH1D *h_mass3;
 	TH1D *h_diPt;
 	TH1D *h_diPt2;
 	TH1D *h_diRap;
@@ -139,7 +141,9 @@ public:
 		h_Pt = new TH1D("h_Pt_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt );
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
-		h_mass = new TH1D("h_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_mass );
+		h_mass = new TH1D("h_mass_"+Type, "", 600, 0, 600); Histo.push_back( h_mass );
+		h_mass2 = new TH1D("h_mass2_"+Type, "", 60, 60, 120); Histo.push_back( h_mass2 );
+		h_mass3 = new TH1D("h_mass3_"+Type, "", binnum, bins); Histo.push_back( h_mass3 );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2 = new TH1D("h_diPt2_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2 );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
@@ -167,8 +171,8 @@ public:
 		h_endcap_eta = new TH1D("h_endcap_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_endcap_eta );
 		h_endcap_phi = new TH1D("h_endcap_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_endcap_phi );
 
-		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS );
-		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_SS );
+		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS );
+		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_SS );
 
 		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_minusCharge );
 		h_eta_minusCharge = new TH1D("h_eta_minusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_minusCharge );
@@ -220,19 +224,19 @@ public:
 		h_VtxNormChi2 = new TH1D("h_VtxNormChi2_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2 );
 		h_VtxNormChi2_belowM600 = new TH1D("h_VtxNormChi2_belowM600_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2_belowM600 );
 
-		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_BB );
-		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_BE );
-		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_EE );
+		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BB );
+		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BE );
+		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_EE );
 
-		h_mass_OS_part1 = new TH1D("h_mass_OS_part1_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part1 );
-		h_mass_OS_part1_BB = new TH1D("h_mass_OS_part1_BB_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part1_BB );
-		h_mass_OS_part1_BE = new TH1D("h_mass_OS_part1_BE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part1_BE );
-		h_mass_OS_part1_EE = new TH1D("h_mass_OS_part1_EE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part1_EE );
+		h_mass_OS_part1 = new TH1D("h_mass_OS_part1_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1 );
+		h_mass_OS_part1_BB = new TH1D("h_mass_OS_part1_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_BB );
+		h_mass_OS_part1_BE = new TH1D("h_mass_OS_part1_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_BE );
+		h_mass_OS_part1_EE = new TH1D("h_mass_OS_part1_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_EE );
 
-		h_mass_OS_part2 = new TH1D("h_mass_OS_part2_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part2 );
-		h_mass_OS_part2_BB = new TH1D("h_mass_OS_part2_BB_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part2_BB );
-		h_mass_OS_part2_BE = new TH1D("h_mass_OS_part2_BE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part2_BE );
-		h_mass_OS_part2_EE = new TH1D("h_mass_OS_part2_EE_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS_part2_EE );
+		h_mass_OS_part2 = new TH1D("h_mass_OS_part2_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2 );
+		h_mass_OS_part2_BB = new TH1D("h_mass_OS_part2_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_BB );
+		h_mass_OS_part2_BE = new TH1D("h_mass_OS_part2_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_BE );
+		h_mass_OS_part2_EE = new TH1D("h_mass_OS_part2_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_EE );
 
 
 		h_muonHits = new TH1D("h_muonHits_"+Type, "", 50, 0, 50); Histo.push_back( h_muonHits );
@@ -396,6 +400,8 @@ public:
 		Double_t reco_Rap = (reco_v1 + reco_v2).Rapidity();
 		Double_t reco_Pt = (reco_v1 + reco_v2).Pt();
 		h_mass->Fill( reco_M, weight );
+		h_mass2->Fill( reco_M, weight );
+		h_mass3->Fill( reco_M, weight );
 		h_diPt->Fill( reco_Pt, weight );
 		h_diPt2->Fill( reco_Pt, weight );
 		h_diRap->Fill( reco_Rap, weight );
@@ -403,10 +409,10 @@ public:
 		// -- |y(ll)| distributions -- //
 		if( reco_M >= 15 && reco_M < 60 ) {
 			h_diRap_M15to60->Fill( reco_Rap, weight);
-			h_diRap2_M15to60->Fill( reco_Rap, weight);
+			h_diRap2_M15to60->Fill( reco_Rap-rapshift, weight);
       } else if( reco_M >= 60 && reco_M < 120 ) {
 			h_diRap_M60to120->Fill( reco_Rap, weight);
-			h_diRap2_M60to120->Fill( reco_Rap, weight);
+			h_diRap2_M60to120->Fill( reco_Rap-rapshift, weight);
       } else if( reco_M >= 120 && reco_M < 600 )
 			h_diRap_M120to600->Fill( reco_Rap, weight);
 
