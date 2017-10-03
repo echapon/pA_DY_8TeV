@@ -8,10 +8,10 @@
 #include "samples_v20170830_Pyquen.h"
 
 // UPDATED IN 2017
-// 1st part, pPb
+// 1st part, PbP
 // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
 const double lumi_part1 = 62587.059e-6; // mub-1 -> pb-1
-// 2nd part, PbP
+// 2nd part, pPb
 // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
 const double lumi_part2 = 111912.220e-6; // mub-1 -> pb-1
 const double lumi_all = lumi_part1 + lumi_part2;
@@ -19,8 +19,8 @@ const double lumi_all = lumi_part1 + lumi_part2;
 const int runcut = 285900;
 
 // eta_lab <-> eta_CM
-// for pPb (1st part): eta_CM = eta_lab - 0.465
-// for Pbp (2nd part): eta_CM = eta_lab + 0.465
+// for Pbp (1st part): eta_CM = eta_lab + 0.465
+// for pPb (2nd part): eta_CM = eta_lab - 0.465
 const double rapshift = 0.465;
 
 namespace DYana {
