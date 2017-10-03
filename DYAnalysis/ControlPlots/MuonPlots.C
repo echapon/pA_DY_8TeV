@@ -179,13 +179,13 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 			Bool_t GenFlag = kFALSE;
 			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
-			if( GenFlag == 1 )
+			if( GenFlag )
 				SumWeight_Separated += GenWeight;
 
-			// -- Fill the histogram for gen-level information (signal sample) -- //
-			if( GenFlag == 1 && Tag[i_tup].Contains("DYMuMu") )
+         // -- Fill the histogram for gen-level information (signal sample) -- //
+         vector<GenLepton> GenLeptonCollection;
+			if( GenFlag && Tag[i_tup].Contains("DYMuMu") )
 			{
-				vector<GenLepton> GenLeptonCollection;
 				Int_t NGenLeptons = ntuple->gnpair;
 				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
 				{
@@ -220,13 +220,26 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                      qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
                   else{
                      double u1 = gRandom->Rndm();
-                     double u2 = gRandom->Rndm();
                      int nl = ntuple->Muon_trackerLayers[i_reco];
-                     qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
-                  }
+                     if (!GenFlag || GenLeptonCollection.size()<2) {
+                        double u2 = gRandom->Rndm();
+                        qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                     } else {
+                        // gen-reco matching
+                        double drmin=999; double pt_drmin=0;
+                        for (int igen=0; igen<GenLeptonCollection.size(); igen++) {
+                           double dr = mu.Momentum.DeltaR(GenLeptonCollection[igen].Momentum);
+                           if (dr<drmin) {
+                              drmin = dr;
+                              pt_drmin = GenLeptonCollection[igen].Pt;
+                           }
+                        } // for igen in GenLeptonCollection (gen-reco matching)
+                        qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                     }
+                  } // if Tag[i_tup] == "Data"
 
                   // -- Change Muon pT, eta and phi with updated(corrected) one -- //
-                  mu.Momentum.SetPerp(qter*mu.Pt);
+                  mu.Momentum.SetPtEtaPhiM(qter*mu.Pt,mu.Eta(),mu.Phi(),mu.Momentum.M());
                   mu.Pt = mu.Momentum.Pt();
                   // mu.eta = mu.Momentum.Eta();
                   // mu.phi = mu.Momentum.Phi();
