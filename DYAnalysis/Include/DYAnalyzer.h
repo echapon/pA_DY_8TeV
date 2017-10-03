@@ -225,19 +225,7 @@ void DYAnalyzer::SetupMCsamples_v20170519( TString Type, vector<TString> *ntuple
 
 void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags )
 {
-   if (Type=="Powheg") {
-      using namespace DYana_v20170830;
-      cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
-      for (int i=0; i<DataFirst; i++) {
-         SampleTag tag = static_cast<SampleTag>(i);
-         // if (!IsDYMuMu(tag)) continue;
-         ntupleDirectory->push_back(NtupleDir(tag));
-         Tag->push_back(Name(tag));
-         xsec->push_back(Xsec(tag));
-         nEvents->push_back(Nevts(tag));
-         STags->push_back(tag);
-      }
-   } else { // Pyquen
+   if (Type=="Pyquen") { // Pyquen
       using namespace DYana_v20170830_Pyquen;
       cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
       for (int i=0; i<DataFirst; i++) {
@@ -249,6 +237,18 @@ void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntuple
          nEvents->push_back(Nevts(tag));
          DYana_v20170830::SampleTag tag_Powheg = static_cast<DYana_v20170830::SampleTag>(i);
          STags->push_back(tag_Powheg);
+      }
+   } else { // Powheg
+      using namespace DYana_v20170830;
+      cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         STags->push_back(tag);
       }
    }
 }
