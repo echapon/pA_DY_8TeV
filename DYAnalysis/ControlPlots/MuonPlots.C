@@ -175,7 +175,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 			SumWeight += GenWeight;
 
 				// -- Pileup-Reweighting -- //
-			Double_t PUWeight = analyzer->PileUpWeightValue( ntuple->nPileUp );
+			Double_t PUWeight = 1.; //analyzer->PileUpWeightValue( ntuple->nPileUp );
          if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
 			Bool_t GenFlag = kFALSE;
@@ -229,19 +229,23 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                      } else {
                         // gen-reco matching
                         double drmin=999; double pt_drmin=0;
-                        for (int igen=0; igen<GenLeptonCollection.size(); igen++) {
+                        for (unsigned int igen=0; igen<GenLeptonCollection.size(); igen++) {
                            double dr = mu.Momentum.DeltaR(GenLeptonCollection[igen].Momentum);
                            if (dr<drmin) {
                               drmin = dr;
                               pt_drmin = GenLeptonCollection[igen].Pt;
                            }
                         } // for igen in GenLeptonCollection (gen-reco matching)
-                        qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
-                     }
+                        if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                        else  {
+                           double u2 = gRandom->Rndm();
+                           qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                        } // if drmin<0.03
+                     } // if (!GenFlag || GenLeptonCollection.size()<2)
                   } // if Tag[i_tup] == "Data"
 
                   // -- Change Muon pT, eta and phi with updated(corrected) one -- //
-                  mu.Momentum.SetPtEtaPhiM(qter*mu.Pt,mu.Eta(),mu.Phi(),mu.Momentum.M());
+                  mu.Momentum.SetPtEtaPhiM(qter*mu.Pt,mu.eta,mu.phi,mu.Momentum.M());
                   mu.Pt = mu.Momentum.Pt();
                   // mu.eta = mu.Momentum.Eta();
                   // mu.phi = mu.Momentum.Phi();
@@ -260,7 +264,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 					Muon mu1 = SelectedMuonCollection[0];
 					Muon mu2 = SelectedMuonCollection[1];
 					Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight);
-					Plots_MET->FillHistograms_MET();
+					Plots_MET->FillHistograms_MET(GenWeight*PUWeight);
 
 					Int_t PU = ntuple->nPileUp;
 					h_PU->Fill( PU, PUWeight );

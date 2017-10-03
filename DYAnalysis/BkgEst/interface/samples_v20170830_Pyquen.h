@@ -112,8 +112,8 @@ namespace DYana_v20170830_Pyquen {
    // Is it pPb or PbP? (aka do we need to switch the eta sign?)
    int switcheta(SampleTag s) {
       switch (s) {
-         case Data1:       return 1; break;
-         case Data2:       return -1; break;
+         case Data1:       return -1; break;
+         case Data2:       return 1; break;
          case DYMuMu1030:  return 1; break;
          case DYMuMu30:    return 1; break;
          case DYMuMu1030_PbP:  return -1; break;
