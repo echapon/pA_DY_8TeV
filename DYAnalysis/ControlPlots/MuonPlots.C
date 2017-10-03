@@ -108,6 +108,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_HI();
+		ntuple->TurnOnBranches_MET();
 		
       RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
 
@@ -116,6 +117,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		analyzer->SetupPileUpReWeighting( isMC );
 
 		ControlPlots *Plots = new ControlPlots( Tag[i_tup], analyzer );
+		ControlPlots_MET *Plots_MET = new ControlPlots_MET( Tag[i_tup], analyzer, ntuple );
 
 		TH1D *h_PU = new TH1D("h_PU_"+Tag[i_tup], "", 50, 0, 50);
 		TH1D *h_nVertices_before = new TH1D("h_nVertices_before_"+Tag[i_tup], "", 50, 0, 50);
@@ -258,6 +260,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 					Muon mu1 = SelectedMuonCollection[0];
 					Muon mu2 = SelectedMuonCollection[1];
 					Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight);
+					Plots_MET->FillHistograms_MET();
 
 					Int_t PU = ntuple->nPileUp;
 					h_PU->Fill( PU, PUWeight );
@@ -289,6 +292,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		} //End of event iteration
 
 		Plots->WriteHistograms( f );
+		Plots_MET->WriteHistograms( f );
 		h_PU->Write();
 		h_nVertices_before->Write();
 		h_nVertices_after->Write();
