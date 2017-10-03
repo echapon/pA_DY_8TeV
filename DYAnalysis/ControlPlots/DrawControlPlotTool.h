@@ -98,21 +98,21 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	if( version == "None" ) FileLocation = ".";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_MC_MomUnCorr.root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomUnCorr.root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_MomUnCorr_rewboth.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_HLT_PAL3Mu12_v*_Data_MomUnCorr_norew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	analyzer->SetupMCsamples_v20170830("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+	analyzer->SetupMCsamples_v20170830("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )
 	{
 		if( Tag[i] == "ZZ" || Tag[i] == "WZ" || Tag[i] == "WW" )
 			color.push_back( kGreen );
-		else if( Tag[i] == "WMu" || Tag[i] == "WE" || Tag[i] == "WTau" )
+		else if( Tag[i].Contains("Wp") || Tag[i].Contains("Wm") )
 			color.push_back( kBlue );
 		else if( Tag[i].Contains("DYTauTau") )
 			color.push_back( kBlue-9 );
@@ -156,9 +156,9 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta");
 
 	
-	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_M60to120" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
-	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
-	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
+   HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_M60to120" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
+   // HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
+   // HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
 
 	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_DYBin_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_DYBin_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
@@ -305,8 +305,8 @@ void DrawControlPlotTool::NormalizationToLumi( vector< TH1D* > h_MC, TString Var
          else 
             Norm = ( Xsec[i] * lumi_part1 ) / (Double_t)nEvents[i];
       }
-      // cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Luminosity << "/pb: " <<
-         // Norm <<  " = (" << Luminosity << " * " << Xsec[i] << ") / " << nEvents[i] <<  endl;
+      cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Luminosity << "/pb: " <<
+         Norm <<  " = (" << Luminosity << " * " << Xsec[i] << ") / " << nEvents[i] <<  endl;
 		h_MC[i]->Scale( Norm );
 	}
 }
@@ -432,15 +432,15 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
          cout << Tag[i_MC] << endl;
-			if( Tag[i_MC] == "TT" )
+			if( STag[i_MC] == TT )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
-			else if( Tag[i_MC] == "ZZ" )
+			else if( STag[i_MC] == VVFirst )
 				legend->AddEntry(h_MC[i_MC], "Diboson" );
-			else if( Tag[i_MC] == "WMu" )
+			else if( STag[i_MC] == WFirst )
 				legend->AddEntry(h_MC[i_MC], "WJets" );
-			else if( Tag[i_MC] =="DYMuMu1050" )
+			else if( STag[i_MC] == DYFirst )
 				legend->AddEntry(h_MC[i_MC], "DYMuMu" );
-			else if( Tag[i_MC] == "DYTauTau1050") 
+			else if( STag[i_MC] == DYLast) 
 				legend->AddEntry(h_MC[i_MC], "DYTauTau" );
 		}
 
@@ -516,7 +516,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "QCD" || Names[i_bkg] == "WE" || Names[i_bkg] == "WMu" || Names[i_bkg] == "WTau" )
+		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -543,8 +543,13 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 		}
 
 		// -- DYtautau -- //
-		else if( Names[i_bkg] == "DYTauTau" )
-			h_DYTauTau = (TH1D*)h_temp->Clone();
+		else if( Names[i_bkg].Contains("DYTauTau") )
+      {
+			if( h_DYTauTau == NULL )
+				h_DYTauTau = (TH1D*)h_temp->Clone();
+			else
+				h_DYTauTau->Add( h_temp );
+      }
 
 	}
 	h_totBkg->Sumw2();

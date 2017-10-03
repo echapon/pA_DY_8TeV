@@ -4,7 +4,8 @@ void makeHFweight_main() {
    TFile *f = new TFile("HFweight.root","RECREATE");
    // data
    TChain *chdata = new TChain("recoTree/DYTree");
-   chdata->Add("/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/ntuple_skim_*.root");
+   chdata->Add("/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/ntuple_skim_*.root");
+   chdata->Add("/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/ntuple_skim_*.root");
    MakeHFweight data(chdata);
    HistPack hists_data;
    hists_data.label = "data";
@@ -12,7 +13,7 @@ void makeHFweight_main() {
 
    // MC
    TChain *chMC = new TChain("recoTree/DYTree");
-   chMC->Add("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/tree_DY50100.root");
+   chMC->Add("/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DYtoMuMu_M-30_pPb-EmbEPOS_8p16_Powheg/crab_DYtoMuMu_M-30_pPb_Powheg_20170831/170831_093521/0000/ntuple_skim*root");
    MakeHFweight MC(chMC);
    HistPack hists_MC;
    hists_MC.label = "MC";
