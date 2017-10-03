@@ -156,7 +156,7 @@ void ratioplots_2files(const char* file1, const char* file2, const char* legend1
       t3.SetTextSize(0.05);
       TString opt = "WW";
       if (TString(tags1).Contains("Data")) opt="UU NORM";
-      else if (TString(tags2).Contains("Data")) opt="UW NORM";
+      // else if (TString(tags2).Contains("Data")) opt="WW";
       t3.AddText(Form("#chi^{2}/ndf=%.2f (%.1f%s)",
                hist2->Chi2Test(hist1,opt + " CHI2/NDF"),
                100.*hist2->Chi2Test(hist1,opt),
