@@ -3,6 +3,6 @@ arguments             = $(ProcId)
 output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
-+JobFlavour           = "longlunch"
++JobFlavour           = "workday"
 # RequestCpus           = 8
 queue 8
