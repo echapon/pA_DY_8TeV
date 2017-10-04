@@ -99,7 +99,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	if( version == "None" ) FileLocation = ".";
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_MomUnCorr_rewboth.root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_HLT_PAL3Mu12_v*_Data_MomUnCorr_norew.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomUnCorr_norew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
@@ -432,15 +432,15 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
          cout << Tag[i_MC] << endl;
-			if( STag[i_MC] == TT )
+			if( STags[i_MC] == DYana::TT )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
-			else if( STag[i_MC] == VVFirst )
+			else if( STags[i_MC] == DYana::VVFirst )
 				legend->AddEntry(h_MC[i_MC], "Diboson" );
-			else if( STag[i_MC] == WFirst )
+			else if( STags[i_MC] == DYana::WFirst )
 				legend->AddEntry(h_MC[i_MC], "WJets" );
-			else if( STag[i_MC] == DYFirst )
+			else if( STags[i_MC] == DYana::DYFirst )
 				legend->AddEntry(h_MC[i_MC], "DYMuMu" );
-			else if( STag[i_MC] == DYLast) 
+			else if( STags[i_MC] == DYana::DYLast) 
 				legend->AddEntry(h_MC[i_MC], "DYTauTau" );
 		}
 
@@ -994,6 +994,26 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
     h_data->Draw("EPsame");
     h_format->Draw("axissame");
     legend->Draw();
+
+    TPaveText t3(0.5,0.95,0.7,1,"NDC"); 
+    t3.SetFillColor(0); 
+    t3.SetBorderSize(0); 
+    t3.SetTextSize(0.05);
+    TString opt = "UW";
+    t3.AddText(Form("#chi^{2}/ndf=%.2f (%.1f%s)",
+             h_data->Chi2Test(h_pred,opt + " CHI2/NDF"),
+             100.*h_data->Chi2Test(h_pred,opt),
+             "%"
+             )); 
+    t3.Draw();
+
+    TPaveText t4(0.75,0.95,0.95,1,"NDC"); 
+    t4.SetFillColor(0); 
+    t4.SetBorderSize(0); 
+    t4.SetTextSize(0.05);
+    t4.AddText(Form("KS %.1f%s", 100.*h_data->KolmogorovTest(h_pred),"%")); 
+    t4.Draw();
+
 
     //////////////////////
     // -- Bottom Pad -- //

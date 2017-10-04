@@ -218,7 +218,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 					{
 						float qter = 1.0;
 						
-                  if( Tag[i_tup] == "Data" )
+                  if( Tag[i_tup].Contains("Data") )
                      qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
                   else{
                      double u1 = gRandom->Rndm();
@@ -228,7 +228,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                         qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
                      } else {
                         // gen-reco matching
-                        double drmin=999; double pt_drmin=0;
+                        double drmin=0.2; double pt_drmin=0;
                         for (unsigned int igen=0; igen<GenLeptonCollection.size(); igen++) {
                            double dr = mu.Momentum.DeltaR(GenLeptonCollection[igen].Momentum);
                            if (dr<drmin) {
@@ -236,11 +236,12 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                               pt_drmin = GenLeptonCollection[igen].Pt;
                            }
                         } // for igen in GenLeptonCollection (gen-reco matching)
-                        if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                        if (drmin<0.1) 
+                           qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
                         else  {
                            double u2 = gRandom->Rndm();
                            qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
-                        } // if drmin<0.03
+                        } // if drmin<0.1
                      } // if (!GenFlag || GenLeptonCollection.size()<2)
                   } // if Tag[i_tup] == "Data"
 
