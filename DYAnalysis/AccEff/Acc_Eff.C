@@ -258,13 +258,14 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                         float qter = 1.0;
 
                         if( Tag[i_tup] == "Data" )
-                           qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
+                           // careful, need to switch back eta to the lab frame
+                           qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, 0, 0);
                         else{
                            double u1 = gRandom->Rndm();
                            int nl = ntuple->Muon_trackerLayers[i_reco];
                            if (!GenFlag || GenLeptonCollection.size()<2) {
                               double u2 = gRandom->Rndm();
-                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
                            } else {
                               // gen-reco matching
                               double drmin=999; double pt_drmin=0;
@@ -275,10 +276,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                                     pt_drmin = GenLeptonCollection[igen].Pt;
                                  }
                               } // for igen in GenLeptonCollection (gen-reco matching)
-                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
                               else  {
                                  double u2 = gRandom->Rndm();
-                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
                               } // if drmin<0.03
                            } // if (!GenFlag || GenLeptonCollection.size()<2)
                         } // if Tag[i_tup] == "Data"
@@ -297,7 +298,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 						Bool_t isPassEventSelection = kFALSE;
 						isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
 
-						if( isPassEventSelection == kTRUE )
+						if( isPassEventSelection == kTRUE && 
+                        SelectedMuonCollection.size()>=2 && SelectedMuonCollection[0].charge != SelectedMuonCollection[1].charge )
 						{
 
 							Flag_PassEff = kTRUE;

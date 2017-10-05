@@ -45,7 +45,7 @@ public:
 
 	double Nfactor_overall;
 	
-	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg);
+	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor, TString Rew);
 	virtual void SetupHistogramNames();
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
@@ -66,7 +66,7 @@ public:
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
-DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg)
+DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor, TString Rew)
 {
 	if( !(NormType_arg == "Lumi" || NormType_arg == "Zpeak") )
 	{
@@ -98,8 +98,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	if( version == "None" ) FileLocation = ".";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_MomUnCorr_rewboth.root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomUnCorr_norew.root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_" + MomCor + "_" + Rew + ".root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_" + MomCor + "_norew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
@@ -131,42 +131,65 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 void DrawControlPlotTool::SetupHistogramNames()
 {
-	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
-	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
-	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
-	
+	HistNames.push_back( "h_Pt" );				Variables.push_back( "Pt" );				XTitles.push_back( "Muon P_{T} [GeV]");
+	HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta");
+	HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
+	HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+	HistNames.push_back( "h_mass2" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+	HistNames.push_back( "h_mass3" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+	HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
+	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) [GeV]");
+	HistNames.push_back( "h_diRap" );			Variables.push_back( "diRapidity" );		XTitles.push_back( "dimuon Rapidity");
+
+	HistNames.push_back( "h_diRap_M15to60" );			Variables.push_back( "diRapidityM1560" );		XTitles.push_back( "dimuon Rapidity (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap_M60to120" );			Variables.push_back( "diRapidityM60120" );		XTitles.push_back( "dimuon Rapidity (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRap_M120to600" );			Variables.push_back( "diRapidityM120600" );		XTitles.push_back( "dimuon Rapidity (120<M_{#mu#mu}<600 GeV)");
+	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (60<M_{#mu#mu}<120 GeV)");
+
 	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
+	HistNames.push_back( "h_sub_Pt" );			Variables.push_back( "SubPt" );				XTitles.push_back( "sub-leading Muon P_{T} [GeV]");
+	HistNames.push_back( "h_lead_eta" );		Variables.push_back( "LeadEta" );			XTitles.push_back( "Leading Muon #eta");
+	HistNames.push_back( "h_sub_eta" );			Variables.push_back( "SubEta" );			XTitles.push_back( "sub-leading Muon #eta");
+	HistNames.push_back( "h_lead_phi" );		Variables.push_back( "LeadPhi" );			XTitles.push_back( "Leading Muon #phi");
+	HistNames.push_back( "h_sub_phi" );			Variables.push_back( "SubPhi" );			XTitles.push_back( "sub-leading Muon #phi");
 
 	HistNames.push_back( "h_barrel_Pt" );		Variables.push_back( "BarrelPt" );			XTitles.push_back( "Muon(|#eta|<0.9) P_{T} [GeV]");
 	HistNames.push_back( "h_barrel_eta" );		Variables.push_back( "BarrelEta" );			XTitles.push_back( "Muon(|#eta|<0.9) #eta");
 	HistNames.push_back( "h_barrel_phi" );		Variables.push_back( "BarrelPhi" );			XTitles.push_back( "Muon(|#eta|<0.9) #phi");
-
 	HistNames.push_back( "h_endcap_Pt" );		Variables.push_back( "EndcapPt" );			XTitles.push_back( "Muon(|#eta|>0.9) P_{T} [GeV]");
 	HistNames.push_back( "h_endcap_eta" );		Variables.push_back( "EndcapEta" );			XTitles.push_back( "Muon(|#eta|>0.9) #eta");
 	HistNames.push_back( "h_endcap_phi" );		Variables.push_back( "EndcapPhi" );			XTitles.push_back( "Muon(|#eta|>0.9) #phi");
 
+	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
+	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
+
+	HistNames.push_back( "h_Pt_minusCharge" );	Variables.push_back( "MinusChargePt" );		XTitles.push_back( "Muon(mu^{-}) P_{T} [GeV]");
+	HistNames.push_back( "h_Pt_plusCharge" );	Variables.push_back( "PlusChargePt" );		XTitles.push_back( "Muon(mu^{+}) P_{T} [GeV]");
+
+	HistNames.push_back( "h_Pt_M15to60" );				Variables.push_back( "Pt1560" );				XTitles.push_back( "Muon P_{T} [GeV] (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_Pt_M15to600" );				Variables.push_back( "Pt15600" );				XTitles.push_back( "Muon P_{T} [GeV] (15<M_{#mu#mu}<600 GeV)");
+	HistNames.push_back( "h_Pt_M120to600" );				Variables.push_back( "Pt120600" );				XTitles.push_back( "Muon P_{T} [GeV] (120<M_{#mu#mu}<600 GeV)");
+
 	HistNames.push_back( "h_Angle" );			Variables.push_back( "Angle" );				XTitles.push_back( "Angle between two muons");
-	HistNames.push_back( "h_nVertices_before" );			Variables.push_back( "nVertice_beforePUweight" );			XTitles.push_back( "Number of Vertices (AfterSel, NoPUReWeight) [GeV]");
-	HistNames.push_back( "h_nVertices_after" );			Variables.push_back( "nVertice_afterPUweight" );			XTitles.push_back( "Number of Vertices (AfterSel, PUReWeight) [GeV]");
-	HistNames.push_back( "h_pixelHits" );			Variables.push_back( "PixelHits" );			XTitles.push_back( "# Pixel Hits");
-	HistNames.push_back( "h_trackerLayers" );		Variables.push_back( "TrackerLayers" );		XTitles.push_back( "# Tracker Layers");
-	HistNames.push_back( "h_muonHits" );			Variables.push_back( "MuonHits" );			XTitles.push_back( "# Muon Hits");
-	HistNames.push_back( "h_nMatches" );			Variables.push_back( "nMatches" );			XTitles.push_back( "# Matched Stations");
 
-	HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta");
+	HistNames.push_back( "h_Pt_TrigLeg" );		Variables.push_back( "TrigMatchedPt" );		XTitles.push_back( "Muon(Matched with Trigger) P_{T} [GeV]");
+	HistNames.push_back( "h_eta_TrigLeg" );		Variables.push_back( "TrigMatchedEta" );	XTitles.push_back( "Muon(Matched with Trigger) #eta");
+	HistNames.push_back( "h_phi_TrigLeg" );		Variables.push_back( "TrigMatchedPhi" );	XTitles.push_back( "Muon(Matched with Trigger) #phi");
 
-	
-   HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_M60to120" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
-   // HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
-   // HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
+	HistNames.push_back( "h_Pt_OtherLeg" );		Variables.push_back( "TrigNOTMatchedPt" );	XTitles.push_back( "Muon(NOT Matched with Trigger) P_{T} [GeV]");
+	HistNames.push_back( "h_eta_OtherLeg" );	Variables.push_back( "TrigNOTMatchedEta" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #eta");
+	HistNames.push_back( "h_phi_OtherLeg" );	Variables.push_back( "TrigNOTMatchedPhi" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #phi");
+
+	HistNames.push_back( "h_VtxProb" );						Variables.push_back( "VtxProb" );					XTitles.push_back( "Vertex Probability");
+	HistNames.push_back( "h_VtxNormChi2" );						Variables.push_back( "VtxNormChi2" );					XTitles.push_back( "Vertex Normalized #chi^{2}");
 
 	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_DYBin_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_DYBin_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
 	HistNames.push_back( "h_mass_OS_EE" );				Variables.push_back( "OSMass_DYBin_EE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, EE) [GeV]");
 
-	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_M60to120_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
-	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_M60to120_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
-	HistNames.push_back( "h_mass_OS_EE" );				Variables.push_back( "OSMass_M60to120_EE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, EE) [GeV]");
+	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
+	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
 
 	HistNames.push_back( "h_mass_OS_part1_BB" );			Variables.push_back( "OSMass_DYBin_part1_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (part1)");
 	HistNames.push_back( "h_mass_OS_part1_BE" );			Variables.push_back( "OSMass_DYBin_part1_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (part1)");
@@ -176,69 +199,46 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_mass_OS_part2_BE" );			Variables.push_back( "OSMass_DYBin_part2_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (part2)");
 	HistNames.push_back( "h_mass_OS_part2_EE" );			Variables.push_back( "OSMass_DYBin_part2_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (part2)");
 
-
-
-	HistNames.push_back( "h_Pt" );				Variables.push_back( "Pt" );				XTitles.push_back( "Muon P_{T} [GeV]");
-	
-	HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
-
-	HistNames.push_back( "h_RelTrkIso" );			Variables.push_back( "RelTrkIso" );			XTitles.push_back( "TrkIso / P_{T}");
-	
-	
+	HistNames.push_back( "h_muonHits" );			Variables.push_back( "MuonHits" );			XTitles.push_back( "# Muon Hits");
+	HistNames.push_back( "h_nMatches" );			Variables.push_back( "nMatches" );			XTitles.push_back( "# Matched Stations");
 	HistNames.push_back( "h_RelPtError" );			Variables.push_back( "RelPtError" );		XTitles.push_back( "P_{T} Error / P_{T}");
 	HistNames.push_back( "h_dxyVTX" );				Variables.push_back( "dxyVTX" );			XTitles.push_back( "dxy(PV) [cm]");
 	HistNames.push_back( "h_dzVTX" );				Variables.push_back( "dzVTX" );				XTitles.push_back( "dz(PV) [cm]");
-	HistNames.push_back( "h_VtxNormChi2" );						Variables.push_back( "VtxNormChi2" );					XTitles.push_back( "Vertex Normalized #chi^{2}");
+	HistNames.push_back( "h_pixelHits" );			Variables.push_back( "PixelHits" );			XTitles.push_back( "# muon Pixel Hits");
+	HistNames.push_back( "h_trackerLayers" );		Variables.push_back( "TrackerLayers" );		XTitles.push_back( "# Tracker Layers");
+	HistNames.push_back( "h_RelTrkIso" );			Variables.push_back( "RelTrkIso" );			XTitles.push_back( "TrkIso / P_{T}");
+	HistNames.push_back( "h_RelPFIso" );			Variables.push_back( "RelPFIso" );			XTitles.push_back( "PFIso / P_{T}");
+
+	HistNames.push_back( "h_pfMET_pT" );			Variables.push_back( "pfMETpt" );			XTitles.push_back( "PF MET [GeV]");
+	HistNames.push_back( "h_pfMET_phi" );			Variables.push_back( "pfMETphi" );			XTitles.push_back( "PF MET #phi");
+	HistNames.push_back( "h_pfMET_px" );			Variables.push_back( "pfMETpx" );			XTitles.push_back( "PF METx [GeV]");
+	HistNames.push_back( "h_pfMET_py" );			Variables.push_back( "pfMETpy" );			XTitles.push_back( "PF METy [GeV]");
+	HistNames.push_back( "h_pfMET_SumEt" );			Variables.push_back( "pfMETsumet" );			XTitles.push_back( "PF MET SumET [GeV]");
+
+   HistNames.push_back( "h_pfMET_Type1_pT" );			Variables.push_back( "pfMETType1pt" );			XTitles.push_back( "PF Type1 MET [GeV]");
+   HistNames.push_back( "h_pfMET_Type1_phi" );			Variables.push_back( "pfMETType1phi" );			XTitles.push_back( "PF Type1 MET #phi");
+   HistNames.push_back( "h_pfMET_Type1_px" );			Variables.push_back( "pfMETType1px" );			XTitles.push_back( "PF Type1 METx [GeV]");
+   HistNames.push_back( "h_pfMET_Type1_py" );			Variables.push_back( "pfMETType1py" );			XTitles.push_back( "PF Type1 METy [GeV]");
+   HistNames.push_back( "h_pfMET_Type1_SumEt" );			Variables.push_back( "pfMETType1sumet" );			XTitles.push_back( "PF Type1 MET SumET [GeV]");
 	
-	
-
-
-
-	HistNames.push_back( "h_absdiRap_M20to30" );	Variables.push_back( "absdiRap_M20to30" );		XTitles.push_back( "Dimuon Rapidity (20 < M < 30 [GeV])");
-	HistNames.push_back( "h_absdiRap_M30to45" );	Variables.push_back( "absdiRap_M30to45" );		XTitles.push_back( "Dimuon Rapidity (30 < M < 45 [GeV])");
-	HistNames.push_back( "h_absdiRap_M45to60" );	Variables.push_back( "absdiRap_M45to60" );		XTitles.push_back( "Dimuon Rapidity (45 < M < 60 [GeV])");
-	HistNames.push_back( "h_absdiRap_M60to120" );	Variables.push_back( "absdiRap_M60to120" );		XTitles.push_back( "Dimuon Rapidity (60 < M < 120 [GeV])");
-	HistNames.push_back( "h_absdiRap_M120to200" );	Variables.push_back( "absdiRap_M120to200" );		XTitles.push_back( "Dimuon Rapidity (120 < M < 200 [GeV])");
-	HistNames.push_back( "h_absdiRap_M200to1500" );	Variables.push_back( "absdiRap_M200to1500" );		XTitles.push_back( "Dimuon Rapidity (200 < M < 1500 [GeV])"); // -- nHist = 8 -- //
-
-	HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
-	HistNames.push_back( "h_diRap" );			Variables.push_back( "diRapidity" );		XTitles.push_back( "dimuon Rapidity");
-
-	HistNames.push_back( "h_VtxProb" );						Variables.push_back( "VtxProb" );					XTitles.push_back( "Vertex Probability");
-	HistNames.push_back( "h_VtxProb_belowM600" );			Variables.push_back( "VtxProb_belowM600" );			XTitles.push_back( "Vertex Probability (M < 600 GeV)");
-	HistNames.push_back( "h_VtxProb_overM600" );			Variables.push_back( "VtxProb_overM600" );			XTitles.push_back( "Vertex Probability (M > 600 GeV)");
-
-	HistNames.push_back( "h_VtxNormChi2" );						Variables.push_back( "VtxNormChi2" );					XTitles.push_back( "Vertex Normalized #chi^{2}");
-	HistNames.push_back( "h_VtxNormChi2_belowM600" );			Variables.push_back( "VtxNormChi2_belowM600" );			XTitles.push_back( "Vertex Normalized #chi^{2} (M < 600 GeV)");
-	HistNames.push_back( "h_VtxNormChi2_overM600" );			Variables.push_back( "VtxNormChi2_overM600" );			XTitles.push_back( "Vertex Normalized #chi^{2} (M > 600 GeV)");
-
-	HistNames.push_back( "h_Pt_M70to90" );		Variables.push_back( "M70to90Pt" );			XTitles.push_back( "Muon P_{T} (70 < M < 90) [GeV]");
-	HistNames.push_back( "h_Pt_M90to110" );		Variables.push_back( "M90to110Pt" );		XTitles.push_back( "Muon P_{T} (90 < M < 110) [GeV]");
-	HistNames.push_back( "h_Pt_M110toInf" );	Variables.push_back( "M110toInfPt" );		XTitles.push_back( "Muon P_{T} (M > 110) [GeV]");
-
-	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
-	HistNames.push_back( "h_lead_eta" );		Variables.push_back( "LeadEta" );			XTitles.push_back( "Leading Muon #eta");
-	HistNames.push_back( "h_lead_phi" );		Variables.push_back( "LeadPhi" );			XTitles.push_back( "Leading Muon #phi");
-	HistNames.push_back( "h_sub_Pt" );			Variables.push_back( "SubPt" );				XTitles.push_back( "sub-leading Muon P_{T} [GeV]");
-	HistNames.push_back( "h_sub_eta" );			Variables.push_back( "SubEta" );			XTitles.push_back( "sub-leading Muon #eta");
-	HistNames.push_back( "h_sub_phi" );			Variables.push_back( "SubPhi" );			XTitles.push_back( "sub-leading Muon #phi");
-	HistNames.push_back( "h_Pt_minusCharge" );	Variables.push_back( "MinusChargePt" );		XTitles.push_back( "Muon(mu^{-}) P_{T} [GeV]");
-	HistNames.push_back( "h_Pt_plusCharge" );	Variables.push_back( "PlusChargePt" );		XTitles.push_back( "Muon(mu^{+}) P_{T} [GeV]");
-	HistNames.push_back( "h_Pt_TrigLeg" );		Variables.push_back( "TrigMatchedPt" );		XTitles.push_back( "Muon(Matched with Trigger) P_{T} [GeV]");
-	HistNames.push_back( "h_eta_TrigLeg" );		Variables.push_back( "TrigMatchedEta" );	XTitles.push_back( "Muon(Matched with Trigger) #eta");
-	HistNames.push_back( "h_phi_TrigLeg" );		Variables.push_back( "TrigMatchedPhi" );	XTitles.push_back( "Muon(Matched with Trigger) #phi");
-	HistNames.push_back( "h_Pt_OtherLeg" );		Variables.push_back( "TrigNOTMatchedPt" );	XTitles.push_back( "Muon(NOT Matched with Trigger) P_{T} [GeV]");
-	HistNames.push_back( "h_eta_OtherLeg" );	Variables.push_back( "TrigNOTMatchedEta" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #eta");
-	HistNames.push_back( "h_phi_OtherLeg" );	Variables.push_back( "TrigNOTMatchedPhi" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #phi");
-
-	HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
-	HistNames.push_back( "h_mass_barrel" );		Variables.push_back( "BarrelMass" );		XTitles.push_back( "Invariant Mass(|muon #eta|<0.9) [GeV]");
-	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
-
-
-	HistNames.push_back( "h_Pt_M70" );			Variables.push_back( "M70Pt" );				XTitles.push_back( "Muon P_{T} (M < 70) [GeV]");
-
-	
+	HistNames.push_back( "h_nVertices_before" );			Variables.push_back( "nVertices" );			XTitles.push_back( "# vertices");
+	HistNames.push_back( "h_nVertices_before" );			Variables.push_back( "nVertices" );			XTitles.push_back( "# vertices");
+	HistNames.push_back( "h_hiHF" );			Variables.push_back( "hiHF" );			XTitles.push_back( "HF energy [GeV]");
+	HistNames.push_back( "h_hiHFplus" );			Variables.push_back( "hiHFplus" );			XTitles.push_back( "HF (p-going) energy [GeV]");
+	HistNames.push_back( "h_hiHFminus" );			Variables.push_back( "hiHFminus" );			XTitles.push_back( "HF (Pb-going) energy [GeV]");
+	HistNames.push_back( "h_hiHFplusEta4" );			Variables.push_back( "hiHFplusEta4" );			XTitles.push_back( "HF (p-going, |#eta|>4) energy [GeV]");
+	HistNames.push_back( "h_hiHFminusEta4" );			Variables.push_back( "hiHFminusEta4" );			XTitles.push_back( "HF (Pb-going, |#eta|>4) energy [GeV]");
+	HistNames.push_back( "h_hiHFhit" );			Variables.push_back( "hiHFhit" );			XTitles.push_back( "HF hits");
+	HistNames.push_back( "h_hiHFhitplus" );			Variables.push_back( "hiHFhitplus" );			XTitles.push_back( "HF (p-going) hits");
+	HistNames.push_back( "h_hiHFhitminus" );			Variables.push_back( "hiHFhitminus" );			XTitles.push_back( "HF (Pb-going) hits");
+	HistNames.push_back( "h_hiET" );			Variables.push_back( "hiET" );			XTitles.push_back( "E_{T} [GeV]");
+	HistNames.push_back( "h_hiEE" );			Variables.push_back( "hiEE" );			XTitles.push_back( "E endcap [GeV]");
+	HistNames.push_back( "h_hiEB" );			Variables.push_back( "hiEB" );			XTitles.push_back( "E barrel [GeV]");
+	HistNames.push_back( "h_hiEEplus" );			Variables.push_back( "hiEEplus" );			XTitles.push_back( "E endcap (p-going) [GeV]");
+	HistNames.push_back( "h_hiEEminus" );			Variables.push_back( "hiEEminus" );			XTitles.push_back( "E endcap (Pb-going) [GeV]");
+	HistNames.push_back( "h_hiNpix" );			Variables.push_back( "hiNpix" );			XTitles.push_back( "# pixel hits");
+	HistNames.push_back( "h_hiNtracks" );			Variables.push_back( "hiNtracks" );			XTitles.push_back( "# tracks");
+	HistNames.push_back( "h_hiNtracksPtCut" );			Variables.push_back( "hiNtracksPtCut" );			XTitles.push_back( "# tracks with p_{T} cut");
 }
 
 Double_t DrawControlPlotTool::Calc_NormFactor()
@@ -301,9 +301,9 @@ void DrawControlPlotTool::NormalizationToLumi( vector< TH1D* > h_MC, TString Var
          // combine pPb and PbP for DYMuMu
          Bool_t doflip = (switcheta(STags[i])<0);
          if (doflip)
-            Norm = ( Xsec[i] * lumi_part2 ) / (Double_t)nEvents[i];
+            Norm = (Variable.Contains("part2")) ? 0 : ( Xsec[i] * lumi_part1 ) / (Double_t)nEvents[i];
          else 
-            Norm = ( Xsec[i] * lumi_part1 ) / (Double_t)nEvents[i];
+            Norm = (Variable.Contains("part1")) ? 0 : ( Xsec[i] * lumi_part2 ) / (Double_t)nEvents[i];
       }
       cout << "[Sample: " << Tag[i] << "] Normalization factor to Integrated Luminosity " << Luminosity << "/pb: " <<
          Norm <<  " = (" << Luminosity << " * " << Xsec[i] << ") / " << nEvents[i] <<  endl;
@@ -1149,7 +1149,7 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 	for(Int_t i_tag=0; i_tag<nTag; i_tag++)
 	{
 		
-		if( Tag[i_tag].Contains("DYMuMu") ) // -- signal sample -- //
+		if( Tag[i_tag].Contains("DYMuMu") && !Tag[i_tag].Contains("_PbP") ) // -- signal sample, remove PbP -- //
 		{
 			TH1D *h_temp = NULL;
 			h_temp = (TH1D*)f_input->Get( "h_GenMass_"+Tag[i_tag] )->Clone();
@@ -1160,7 +1160,7 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 				return;
 			}
 
-			h_temp->Rebin(5);
+			h_temp->Rebin(2);
 			Double_t Norm = (lumi_all * Xsec[i_tag]) / nEvents[i_tag];
 			h_temp->Scale( Norm );
 
@@ -1181,7 +1181,7 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 	}
 
 	THStack *hs = new THStack("hs", "");
-	TLegend *legend = new TLegend(0.55, 0.63, 0.95, 0.95);
+	TLegend *legend = new TLegend(0.55, 0.8, 0.95, 0.95);
 	legend->SetBorderSize(0);
 	legend->SetFillStyle(0);
 
@@ -1205,8 +1205,8 @@ void DrawControlPlotTool::GenLevelMassSpectrum()
 
 	TH1D* h_format = (TH1D*)h_MC[0]->Clone();
 	h_format->Reset("ICES");
-	h_format->GetXaxis()->SetRangeUser(10, 4000);
-	h_format->GetYaxis()->SetRangeUser(1e-4, 1e8);
+	h_format->GetXaxis()->SetRangeUser(10, 600);
+	h_format->GetYaxis()->SetRangeUser(1e-2, 1e7);
 	h_format->GetXaxis()->SetNoExponent();
 	h_format->GetXaxis()->SetMoreLogLabels();
 	h_format->GetXaxis()->SetTitle("Gen-Level Dimuon Mass (isHardProcess) [GeV]");

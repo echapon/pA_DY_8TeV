@@ -120,8 +120,8 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 		ControlPlots_MET *Plots_MET = new ControlPlots_MET( Tag[i_tup], analyzer, ntuple );
 
 		TH1D *h_PU = new TH1D("h_PU_"+Tag[i_tup], "", 50, 0, 50);
-		TH1D *h_nVertices_before = new TH1D("h_nVertices_before_"+Tag[i_tup], "", 50, 0, 50);
-		TH1D *h_nVertices_after = new TH1D("h_nVertices_after_"+Tag[i_tup], "", 50, 0, 50);
+		TH1D *h_nVertices_before = new TH1D("h_nVertices_before_"+Tag[i_tup], "", 10, 0, 10);
+		TH1D *h_nVertices_after = new TH1D("h_nVertices_after_"+Tag[i_tup], "", 10, 0, 10);
 
       // HI stuff
 		TH1D *h_hiHF = new TH1D("h_hiHF_"+Tag[i_tup], "", 110, 0, 550);
@@ -219,13 +219,14 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 						float qter = 1.0;
 						
                   if( Tag[i_tup].Contains("Data") )
-                     qter = rmcor.kScaleDT(mu.charge, mu.Pt, mu.eta, mu.phi, 0, 0);
+                     // careful, need to switch back eta to the lab frame
+                     qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, 0, 0);
                   else{
                      double u1 = gRandom->Rndm();
                      int nl = ntuple->Muon_trackerLayers[i_reco];
                      if (!GenFlag || GenLeptonCollection.size()<2) {
                         double u2 = gRandom->Rndm();
-                        qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                        qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
                      } else {
                         // gen-reco matching
                         double drmin=0.2; double pt_drmin=0;
@@ -237,10 +238,10 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
                            }
                         } // for igen in GenLeptonCollection (gen-reco matching)
                         if (drmin<0.1) 
-                           qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                           qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
                         else  {
                            double u2 = gRandom->Rndm();
-                           qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                           qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
                         } // if drmin<0.1
                      } // if (!GenFlag || GenLeptonCollection.size()<2)
                   } // if Tag[i_tup] == "Data"
