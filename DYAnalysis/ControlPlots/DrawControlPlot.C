@@ -8,8 +8,8 @@ void DrawControlPlot(TString version="None",
 {
 	DrawControlPlotTool *tool = new DrawControlPlotTool(version, DrawDataDriven, NormType, MomCor, Rew);
    tool->GenLevelMassSpectrum();
-   // tool->SetupHistogramNames();
-   // tool->LoopForHistograms(-1);
+   tool->SetupHistogramNames();
+   tool->LoopForHistograms(-1);
    // tool->LoopForHistograms(1);
 }
 
