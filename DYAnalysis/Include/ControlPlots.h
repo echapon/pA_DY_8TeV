@@ -1217,7 +1217,7 @@ public:
 		h_pfMET_Type1_phi = new TH1D("h_pfMET_Type1_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_pfMET_Type1_phi );
 		h_pfMET_Type1_Px = new TH1D("h_pfMET_Type1_Px_"+Type, "", 100, -100, 100); Histo.push_back( h_pfMET_Type1_Px );
 		h_pfMET_Type1_Py = new TH1D("h_pfMET_Type1_Py_"+Type, "", 100, -100, 100); Histo.push_back( h_pfMET_Type1_Py );
-		h_pfMET_Type1_SumEt = new TH1D("h_pfMET_Type1_SumEt_"+Type, "", 200, 0, 200); Histo.push_back( h_pfMET_Type1_SumEt );
+		h_pfMET_Type1_SumEt = new TH1D("h_pfMET_Type1_SumEt_"+Type, "", 200, 0, 2000); Histo.push_back( h_pfMET_Type1_SumEt );
 	}
 
 	void FillHistograms_MET(double AllWeight)

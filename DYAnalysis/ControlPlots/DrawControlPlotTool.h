@@ -131,35 +131,35 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 void DrawControlPlotTool::SetupHistogramNames()
 {
-	HistNames.push_back( "h_Pt" );				Variables.push_back( "Pt" );				XTitles.push_back( "Muon P_{T} [GeV]");
-	HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta");
-	HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
-	HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
-	HistNames.push_back( "h_mass2" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
-	HistNames.push_back( "h_mass3" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
-	HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
+   HistNames.push_back( "h_Pt" );				Variables.push_back( "Pt" );				XTitles.push_back( "Muon P_{T} [GeV]");
+   HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta_{lab}");
+   HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
+   HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass2" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass3" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) [GeV]");
-	HistNames.push_back( "h_diRap" );			Variables.push_back( "diRapidity" );		XTitles.push_back( "dimuon Rapidity");
+	HistNames.push_back( "h_diRap" );			Variables.push_back( "diRapidity" );		XTitles.push_back( "dimuon Rapidity (lab)");
 
-	HistNames.push_back( "h_diRap_M15to60" );			Variables.push_back( "diRapidityM1560" );		XTitles.push_back( "dimuon Rapidity (15<M_{#mu#mu}<60 GeV)");
-	HistNames.push_back( "h_diRap_M60to120" );			Variables.push_back( "diRapidityM60120" );		XTitles.push_back( "dimuon Rapidity (60<M_{#mu#mu}<120 GeV)");
-	HistNames.push_back( "h_diRap_M120to600" );			Variables.push_back( "diRapidityM120600" );		XTitles.push_back( "dimuon Rapidity (120<M_{#mu#mu}<600 GeV)");
-	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (15<M_{#mu#mu}<60 GeV)");
-	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRap_M15to60" );			Variables.push_back( "diRapidityM1560" );		XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap_M60to120" );			Variables.push_back( "diRapidityM60120" );		XTitles.push_back( "dimuon Rapidity (lab) (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRap_M120to600" );			Variables.push_back( "diRapidityM120600" );		XTitles.push_back( "dimuon Rapidity (lab) (120<M_{#mu#mu}<600 GeV)");
+	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV)");
 
 	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
 	HistNames.push_back( "h_sub_Pt" );			Variables.push_back( "SubPt" );				XTitles.push_back( "sub-leading Muon P_{T} [GeV]");
-	HistNames.push_back( "h_lead_eta" );		Variables.push_back( "LeadEta" );			XTitles.push_back( "Leading Muon #eta");
-	HistNames.push_back( "h_sub_eta" );			Variables.push_back( "SubEta" );			XTitles.push_back( "sub-leading Muon #eta");
+	HistNames.push_back( "h_lead_eta" );		Variables.push_back( "LeadEta" );			XTitles.push_back( "Leading Muon #eta_{lab}");
+	HistNames.push_back( "h_sub_eta" );			Variables.push_back( "SubEta" );			XTitles.push_back( "sub-leading Muon #eta_{lab}");
 	HistNames.push_back( "h_lead_phi" );		Variables.push_back( "LeadPhi" );			XTitles.push_back( "Leading Muon #phi");
 	HistNames.push_back( "h_sub_phi" );			Variables.push_back( "SubPhi" );			XTitles.push_back( "sub-leading Muon #phi");
 
-	HistNames.push_back( "h_barrel_Pt" );		Variables.push_back( "BarrelPt" );			XTitles.push_back( "Muon(|#eta|<0.9) P_{T} [GeV]");
-	HistNames.push_back( "h_barrel_eta" );		Variables.push_back( "BarrelEta" );			XTitles.push_back( "Muon(|#eta|<0.9) #eta");
-	HistNames.push_back( "h_barrel_phi" );		Variables.push_back( "BarrelPhi" );			XTitles.push_back( "Muon(|#eta|<0.9) #phi");
-	HistNames.push_back( "h_endcap_Pt" );		Variables.push_back( "EndcapPt" );			XTitles.push_back( "Muon(|#eta|>0.9) P_{T} [GeV]");
-	HistNames.push_back( "h_endcap_eta" );		Variables.push_back( "EndcapEta" );			XTitles.push_back( "Muon(|#eta|>0.9) #eta");
-	HistNames.push_back( "h_endcap_phi" );		Variables.push_back( "EndcapPhi" );			XTitles.push_back( "Muon(|#eta|>0.9) #phi");
+	HistNames.push_back( "h_barrel_Pt" );		Variables.push_back( "BarrelPt" );			XTitles.push_back( "Muon(|#eta_{lab}|<0.9) P_{T} [GeV]");
+	HistNames.push_back( "h_barrel_eta" );		Variables.push_back( "BarrelEta" );			XTitles.push_back( "Muon(|#eta_{lab}|<0.9) #eta");
+	HistNames.push_back( "h_barrel_phi" );		Variables.push_back( "BarrelPhi" );			XTitles.push_back( "Muon(|#eta_{lab}|<0.9) #phi");
+	HistNames.push_back( "h_endcap_Pt" );		Variables.push_back( "EndcapPt" );			XTitles.push_back( "Muon(|#eta_{lab}|>0.9) P_{T} [GeV]");
+	HistNames.push_back( "h_endcap_eta" );		Variables.push_back( "EndcapEta" );			XTitles.push_back( "Muon(|#eta_{lab}|>0.9) #eta");
+	HistNames.push_back( "h_endcap_phi" );		Variables.push_back( "EndcapPhi" );			XTitles.push_back( "Muon(|#eta_{lab}|>0.9) #phi");
 
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
 	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
@@ -174,11 +174,11 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_Angle" );			Variables.push_back( "Angle" );				XTitles.push_back( "Angle between two muons");
 
 	HistNames.push_back( "h_Pt_TrigLeg" );		Variables.push_back( "TrigMatchedPt" );		XTitles.push_back( "Muon(Matched with Trigger) P_{T} [GeV]");
-	HistNames.push_back( "h_eta_TrigLeg" );		Variables.push_back( "TrigMatchedEta" );	XTitles.push_back( "Muon(Matched with Trigger) #eta");
+	HistNames.push_back( "h_eta_TrigLeg" );		Variables.push_back( "TrigMatchedEta" );	XTitles.push_back( "Muon(Matched with Trigger) #eta_{lab}");
 	HistNames.push_back( "h_phi_TrigLeg" );		Variables.push_back( "TrigMatchedPhi" );	XTitles.push_back( "Muon(Matched with Trigger) #phi");
 
 	HistNames.push_back( "h_Pt_OtherLeg" );		Variables.push_back( "TrigNOTMatchedPt" );	XTitles.push_back( "Muon(NOT Matched with Trigger) P_{T} [GeV]");
-	HistNames.push_back( "h_eta_OtherLeg" );	Variables.push_back( "TrigNOTMatchedEta" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #eta");
+	HistNames.push_back( "h_eta_OtherLeg" );	Variables.push_back( "TrigNOTMatchedEta" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #eta_{lab}");
 	HistNames.push_back( "h_phi_OtherLeg" );	Variables.push_back( "TrigNOTMatchedPhi" );	XTitles.push_back( "Muon(NOT Matched with Trigger) #phi");
 
 	HistNames.push_back( "h_VtxProb" );						Variables.push_back( "VtxProb" );					XTitles.push_back( "Vertex Probability");
@@ -226,8 +226,8 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_hiHF" );			Variables.push_back( "hiHF" );			XTitles.push_back( "HF energy [GeV]");
 	HistNames.push_back( "h_hiHFplus" );			Variables.push_back( "hiHFplus" );			XTitles.push_back( "HF (p-going) energy [GeV]");
 	HistNames.push_back( "h_hiHFminus" );			Variables.push_back( "hiHFminus" );			XTitles.push_back( "HF (Pb-going) energy [GeV]");
-	HistNames.push_back( "h_hiHFplusEta4" );			Variables.push_back( "hiHFplusEta4" );			XTitles.push_back( "HF (p-going, |#eta|>4) energy [GeV]");
-	HistNames.push_back( "h_hiHFminusEta4" );			Variables.push_back( "hiHFminusEta4" );			XTitles.push_back( "HF (Pb-going, |#eta|>4) energy [GeV]");
+	HistNames.push_back( "h_hiHFplusEta4" );			Variables.push_back( "hiHFplusEta4" );			XTitles.push_back( "HF (p-going, |#eta_{lab}|>4) energy [GeV]");
+	HistNames.push_back( "h_hiHFminusEta4" );			Variables.push_back( "hiHFminusEta4" );			XTitles.push_back( "HF (Pb-going, |#eta_{lab}|>4) energy [GeV]");
 	HistNames.push_back( "h_hiHFhit" );			Variables.push_back( "hiHFhit" );			XTitles.push_back( "HF hits");
 	HistNames.push_back( "h_hiHFhitplus" );			Variables.push_back( "hiHFhitplus" );			XTitles.push_back( "HF (p-going) hits");
 	HistNames.push_back( "h_hiHFhitminus" );			Variables.push_back( "hiHFhitminus" );			XTitles.push_back( "HF (Pb-going) hits");
@@ -479,7 +479,7 @@ void DrawControlPlotTool::RebinHistograms( TH1D& h_data, vector< TH1D* > &h_MC, 
 		for(Int_t i=0; i<nMC; i++)
 			h_MC[i] = (TH1D*)h_MC[i]->Rebin(nMassBin, h_MC[i]->GetName(), MassBinEdges);
 	}
-	else if( Variable.Contains("Pt") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
+	else if( Variable.Contains("Pt") && !Variable.Contains("M60120") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
 	{
 		h_data.Rebin(2);
 		for(Int_t i=0; i<nMC; i++)
@@ -995,10 +995,28 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
     h_format->Draw("axissame");
     legend->Draw();
 
-    TPaveText t3(0.5,0.95,0.7,1,"NDC"); 
+    // UF / OF
+    TPaveText t1(0.15,0.975,0.3,1,"NDC"); 
+    t1.SetFillColor(0); 
+    t1.SetBorderSize(0); 
+    t1.SetTextSize(0.02);
+    t1.SetTextAlign(12);
+    t1.AddText(Form("Data: UF=%.0f,OF=%.0f",h_data->GetBinContent(0),h_data->GetBinContent(h_data->GetNbinsX()+1)));
+    t1.Draw();
+    TPaveText t2(0.15,0.95,0.3,0.975,"NDC"); 
+    t2.SetFillColor(0); 
+    t2.SetBorderSize(0); 
+    t2.SetTextSize(0.02);
+    t2.SetTextAlign(12);
+    t2.AddText(Form("MC: UF=%.1f,OF=%.1f",h_pred->GetBinContent(0),h_pred->GetBinContent(h_pred->GetNbinsX()+1)));
+    t2.Draw();
+
+    // Run some goodness-of-fit tests
+    TPaveText t3(0.3,0.95,0.78,1,"NDC"); 
     t3.SetFillColor(0); 
     t3.SetBorderSize(0); 
     t3.SetTextSize(0.05);
+    t3.SetTextAlign(32);
     TString opt = "UW";
     t3.AddText(Form("#chi^{2}/ndf=%.2f (%.1f%s)",
              h_data->Chi2Test(h_pred,opt + " CHI2/NDF"),
@@ -1007,10 +1025,11 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
              )); 
     t3.Draw();
 
-    TPaveText t4(0.75,0.95,0.95,1,"NDC"); 
+    TPaveText t4(0.8,0.95,0.95,1,"NDC"); 
     t4.SetFillColor(0); 
     t4.SetBorderSize(0); 
     t4.SetTextSize(0.05);
+    t4.SetTextAlign(32);
     t4.AddText(Form("KS %.1f%s", 100.*h_data->KolmogorovTest(h_pred),"%")); 
     t4.Draw();
 
@@ -1085,7 +1104,7 @@ void DrawControlPlotTool::SetAxisRange( TString Variable, TH1D* h_data)
 {
 	if( Variable.Contains("OSMass_M60to120") ) { h_data->GetXaxis()->SetRangeUser(60, 120); }
 	if( Variable == "Angle" ) { h_data->GetXaxis()->SetRangeUser(0, 4); }
-	if( Variable.Contains("Pt") ) { h_data->GetXaxis()->SetRangeUser(0, 1000); }
+   // if( Variable.Contains("Pt") ) { h_data->GetXaxis()->SetRangeUser(0, 1000); }
 	// if( Variable.Contains("VtxProb") ||  Variable.Contains("VtxNormChi2") ) { h_data->GetYaxis()->SetRangeUser(5e-3, 1e7); }
 	// if( Variable.Contains("Pt")  ) { h_data->GetXaxis()->SetRangeUser(0, 250); h_data->GetYaxis()->SetRangeUser(0.5, 1000000);}
 	// if( Variable.Contains("Eta")  ) { h_data->GetYaxis()->SetRangeUser(0.5, 5000000); }

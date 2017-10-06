@@ -256,16 +256,18 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      if( isCorrected == kTRUE )
                      {
                         float qter = 1.0;
+                        int s=0, m=0; // nominal
+                        // int s=7, m=6; // Run2016H only
 
                         if( Tag[i_tup] == "Data" )
                            // careful, need to switch back eta to the lab frame
-                           qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, 0, 0);
+                           qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, s, m);
                         else{
                            double u1 = gRandom->Rndm();
                            int nl = ntuple->Muon_trackerLayers[i_reco];
                            if (!GenFlag || GenLeptonCollection.size()<2) {
                               double u2 = gRandom->Rndm();
-                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, s, m);
                            } else {
                               // gen-reco matching
                               double drmin=999; double pt_drmin=0;
@@ -276,10 +278,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                                     pt_drmin = GenLeptonCollection[igen].Pt;
                                  }
                               } // for igen in GenLeptonCollection (gen-reco matching)
-                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, pt_drmin, u1, 0, 0);
+                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, pt_drmin, u1, s, m);
                               else  {
                                  double u2 = gRandom->Rndm();
-                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, 0, 0);
+                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, s, m);
                               } // if drmin<0.03
                            } // if (!GenFlag || GenLeptonCollection.size()<2)
                         } // if Tag[i_tup] == "Data"
