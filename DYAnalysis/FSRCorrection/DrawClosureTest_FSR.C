@@ -21,11 +21,11 @@
 #include <TROOT.h>
 #include <TLatex.h>
 
-#include </home/kplee/Unfolding/src/RooUnfold.h>
-#include </home/kplee/Unfolding/src/RooUnfoldResponse.h>
-#include </home/kplee/Unfolding/src/RooUnfoldInvert.h>
+//TUnfold
+#include "TUnfoldDensity.h"
+// #define VERBOSE_LCURVE_SCAN
 
-#include "/home/kplee/CommonCodes/DrellYanAnalysis/MyCanvas.C"
+#include "Include/MyCanvas.C"
 
 void CalculateFractionPerBin(TH2D *h_nEvents, TH1* h_Truth, TH2D *h_Response);
 TH2D* Transpose( TH2D* h_2D );
@@ -34,40 +34,47 @@ void MakeCanvas_RespM( TH2D *h_RespM );
 void DrawClosureTest_FSR(TString version = "None")
 {
 	gROOT->SetBatch( kTRUE );
-	// gSystem->Load("/home/kplee/Unfolding/libRooUnfold.so");
+	// gSystem->Load("/home/kplee/Unfolding/libTUnfold.so");
 
-	TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
+	TString FileLocation;
 	if (version == "None" )
 		FileLocation = "./";
-	TFile *f_input = new TFile(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_aMCNLO.root");
+	TFile *f_input = new TFile(FileLocation + "/ROOTFile_FSRCorrections_DressedLepton_Powheg.root");
 
 	///////////////////////////
 	// -- Response Matrix -- //
 	///////////////////////////
-	TH1D *h_Truth_RooUnfold = (TH1D*)f_input->Get("h_Truth_RooUnfold");
-	TH2D* h_nEvents = (TH2D*)f_input->Get("h_RespM_RooUnfold");
+	TH1D *h_Truth_TUnfold = (TH1D*)f_input->Get("h_Truth_TUnfold");
+	TH2D* h_nEvents = (TH2D*)f_input->Get("h_mass_postpreFSR_tot");
 	h_nEvents->SetName("h_nEvents");
 	TH2D* h_RespM = (TH2D*)h_nEvents->Clone("h_RespM");
-	CalculateFractionPerBin(h_nEvents, h_Truth_RooUnfold, h_RespM);
+	CalculateFractionPerBin(h_nEvents, h_Truth_TUnfold, h_RespM);
 	MakeCanvas_RespM( h_RespM );
 
 	////////////////////////
 	// -- Closure Test -- //
 	////////////////////////
-	RooUnfoldResponse *UnfoldRes = (RooUnfoldResponse*)f_input->Get("UnfoldRes");
-	TH1D *h_Measured_RooUnfold = (TH1D*)f_input->Get("h_Measured_RooUnfold");
+   // TUnfoldDensity *unfold = (TUnfoldDensity*)f_input->Get("TUnfoldDensity");
+	TH1D *h_Measured_TUnfold = (TH1D*)f_input->Get("h_Measured_TUnfold");
+   // // DIRTY FIX
+   // for (int i=h_Measured_TUnfold->GetNbinsX(); i>0; i--) {
+   //    h_Measured_TUnfold->SetBinContent(i,h_Measured_TUnfold->GetBinContent(i-1));
+   //    h_Measured_TUnfold->SetBinError(i,h_Measured_TUnfold->GetBinError(i-1));
+   // }
 
-	// RooUnfoldBayes *UnfoldBayes = new RooUnfoldBayes(UnfoldRes, h_Measured_RooUnfold);
+	// TUnfoldBayes *UnfoldBayes = new TUnfoldBayes(unfold, h_Measured_TUnfold);
 	// TH1D *h_UnfoldedMC = (TH1D*)UnfoldBayes->Hreco();
 
-	RooUnfoldInvert *UnfoldInvert = new RooUnfoldInvert(UnfoldRes, h_Measured_RooUnfold);
-	TH1D *h_UnfoldedMC = (TH1D*)UnfoldInvert->Hreco();
+   // TUnfoldInvert *UnfoldInvert = new TUnfoldInvert(unfold, h_Measured_TUnfold);
+   // unfold->SetInput(h_Measured_TUnfold);
+   // TH1D *h_UnfoldedMC = (TH1D*)unfold->GetOutput("h_UnfoldedMC");
+   TH1D *h_UnfoldedMC = (TH1D*)f_input->Get("Unfolded");
 
 	MyCanvas *myc = new MyCanvas("c_ClosureTest", "Gen-Level Dimuon Mass [GeV]", "Number of events");
 	myc->SetLogx();
 	myc->SetLogy(0);
 	myc->SetRatioRange(0.7, 1.3);
-	myc->CanvasWithThreeHistogramsRatioPlot( h_Measured_RooUnfold, h_UnfoldedMC, h_Truth_RooUnfold, 
+	myc->CanvasWithThreeHistogramsRatioPlot( h_Measured_TUnfold, h_UnfoldedMC, h_Truth_TUnfold, 
 											 "post-FSR", "Unfolded", "pre-FSR", "Ratio to pre-FSR",
 											 kBlue, kGreen+1, kRed);
 	myc->PrintCanvas();
@@ -151,7 +158,7 @@ void MakeCanvas_RespM( TH2D *h_RespM )
 
 	TLatex latex;
 	latex.SetTextSize(0.03);
-	latex.DrawLatexNDC(0.79, 0.96, "13 TeV");
+	latex.DrawLatexNDC(0.79, 0.96, "pPb 8.16 TeV");
 	latex.SetTextSize(0.035);
 	latex.DrawLatexNDC(0.17, 0.895, "CMS Simulation");
 

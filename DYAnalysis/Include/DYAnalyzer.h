@@ -1160,10 +1160,12 @@ Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 	Bool_t isPassAcc = kFALSE;
 	Muon leadMu, subMu;
    double diRap = sign*(Mu1.Momentum+Mu2.Momentum).Rapidity()-rapshift;
+   double diMass = (Mu1.Momentum+Mu2.Momentum).M();
 	CompareMuon(&Mu1, &Mu2, &leadMu, &subMu);
 	if( leadMu.Pt > LeadPtCut && fabs(leadMu.eta) < LeadEtaCut && 
 		subMu.Pt  > SubPtCut  && fabs(subMu.eta)  < SubEtaCut &&
-      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] )
+      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] &&
+      diMass>bins[0] && diMass<bins[binnum] )
 		isPassAcc = kTRUE;
 
 	return isPassAcc;
@@ -1177,11 +1179,13 @@ Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton gen
 
 	GenLepton leadGenLep, subGenLep;
    double diRap = sign*(genlep1.Momentum+genlep2.Momentum).Rapidity()-rapshift;
+   double diMass = (genlep1.Momentum+genlep2.Momentum).M();
 	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
 	
 	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut &&
 		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut  &&
-      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] )
+      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] &&
+      diMass>bins[0] && diMass<bins[binnum] )
 		isPassAcc = 1;
 
 	return isPassAcc;

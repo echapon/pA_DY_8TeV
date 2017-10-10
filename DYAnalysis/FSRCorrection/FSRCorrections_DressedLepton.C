@@ -29,7 +29,9 @@
 using namespace DYana;
 
 static inline void loadBar(int x, int n, int r, int w);
-void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*" )
+// TH1F* unfold_MLE(TH1F *hin, TH2F *hresponse, TH2F *hcov);
+// TH1F* fold_MLE(TH1F *hin, TH1F *hresponse);
+void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "PAL3Mu12" )
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -55,15 +57,43 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 
 	// -- Each ntuple directory & corresponding Tags -- //
 	// -- GenWeights are already taken into account in nEvents -- //
-	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
+	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	TFile *f = new TFile("ROOTFile_FSRCorrections_DressedLepton_" + Sample + ".root", "RECREATE");
+
 	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", binnum, bins);
+	TH1D *h_mass_preFSR_tot_fine = new TH1D("h_mass_preFSR_fine", "", 585,15,600);
 	TH1D *h_mass_postFSR_tot = new TH1D("h_mass_postFSR", "", binnum, bins);
+	TH1D *h_mass_postFSR_tot_fine = new TH1D("h_mass_postFSR_fine", "", 585,15,600);
 	TH1D *h_mass_ratio_tot = new TH1D("h_mass_ratio", "", 100, -1, 1);
    TH2D *h_mass_postpreFSR_tot = new TH2D("h_mass_postpreFSR_tot", ";mass(post-FSR);mass(pre-FSR)", binnum, bins, binnum, bins);
+   TH2D *h_mass_postpreFSR_tot_fine = new TH2D("h_mass_postpreFSR_tot_fine", ";mass(post-FSR);mass(pre-FSR)", 585,15,600,585,15,600);
+
+	TH1D *h_pt_preFSR_tot = new TH1D("h_pt_preFSR", "", ptbinnum_meas, ptbin_meas);
+	TH1D *h_pt_preFSR_tot_fine = new TH1D("h_pt_preFSR_fine", "", 200,0,200);
+	TH1D *h_pt_postFSR_tot = new TH1D("h_pt_postFSR", "", ptbinnum_meas, ptbin_meas);
+	TH1D *h_pt_postFSR_tot_fine = new TH1D("h_pt_postFSR_fine", "", 200,0,200);
+	TH1D *h_pt_ratio_tot = new TH1D("h_pt_ratio", "", 100, -1, 1);
+   TH2D *h_pt_postpreFSR_tot = new TH2D("h_pt_postpreFSR_tot", ";pt(post-FSR);pt(pre-FSR)", ptbinnum_meas, ptbin_meas, ptbinnum_meas, ptbin_meas);
+   TH2D *h_pt_postpreFSR_tot_fine = new TH2D("h_pt_postpreFSR_tot_fine", ";pt(post-FSR);pt(pre-FSR)", 200,0,200,200,0,200);
+
+	TH1D *h_rap1560_preFSR_tot = new TH1D("h_rap1560_preFSR", "", rapbinnum_1560, rapbin_1560);
+	TH1D *h_rap1560_preFSR_tot_fine = new TH1D("h_rap1560_preFSR_fine", "", 500,-3,2);
+	TH1D *h_rap1560_postFSR_tot = new TH1D("h_rap1560_postFSR", "", rapbinnum_1560, rapbin_1560);
+	TH1D *h_rap1560_postFSR_tot_fine = new TH1D("h_rap1560_postFSR_fine", "", 500,-3,2);
+	TH1D *h_rap1560_ratio_tot = new TH1D("h_rap1560_ratio", "", 100, -1, 1);
+   TH2D *h_rap1560_postpreFSR_tot = new TH2D("h_rap1560_postpreFSR_tot", ";rap1560(post-FSR);rap1560(pre-FSR)", rapbinnum_1560, rapbin_1560, rapbinnum_1560, rapbin_1560);
+   TH2D *h_rap1560_postpreFSR_tot_fine = new TH2D("h_rap1560_postpreFSR_tot_fine", ";rap1560(post-FSR);rap1560(pre-FSR)", 500,-3,2,500,-3,2);
+
+	TH1D *h_rap60120_preFSR_tot = new TH1D("h_rap60120_preFSR", "", rapbinnum_60120, rapbin_60120);
+	TH1D *h_rap60120_preFSR_tot_fine = new TH1D("h_rap60120_preFSR_fine", "", 500,-3,2);
+	TH1D *h_rap60120_postFSR_tot = new TH1D("h_rap60120_postFSR", "", rapbinnum_60120, rapbin_60120);
+	TH1D *h_rap60120_postFSR_tot_fine = new TH1D("h_rap60120_postFSR_fine", "", 500,-3,2);
+	TH1D *h_rap60120_ratio_tot = new TH1D("h_rap60120_ratio", "", 100, -1, 1);
+   TH2D *h_rap60120_postpreFSR_tot = new TH2D("h_rap60120_postpreFSR_tot", ";rap60120(post-FSR);rap60120(pre-FSR)", rapbinnum_60120, rapbin_60120, rapbinnum_60120, rapbin_60120);
+   TH2D *h_rap60120_postpreFSR_tot_fine = new TH2D("h_rap60120_postpreFSR_tot_fine", ";rap60120(post-FSR);rap60120(pre-FSR)", 500,-3,2,500,-3,2);
 
 	// const Int_t ndRCuts = 10;
 	// Double_t dRCuts[ndRCuts] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
@@ -212,6 +242,14 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				vector< GenOthers > GenPhotonCollection2;
 				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
 
+            // acceptance flags
+				bool Flag_PassAcc_postFSR = analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
+				bool Flag_PassAcc_preFSR = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+
+            // if neither of the pre- and post-FSR leptons pass acceptance cuts... why bother?
+            // if (!Flag_PassAcc_preFSR && !Flag_PassAcc_postFSR) continue;
+            if (!Flag_PassAcc_preFSR) continue;
+
 				// -- Fill the histograms for the photons near post-FSR muon1 -- //
 				Int_t nPhotons1 = (Int_t)GenPhotonCollection1.size();
 				GammaHisto[4]->Fill( nPhotons1, TotWeight );
@@ -250,22 +288,63 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				}
 				h_GammaSumE->Fill( SumPhotonMom2.E(), TotWeight );
 
-				// -- Mass Calculation -- //
-				Double_t M_preFSR = ( genlep_preFSR1.Momentum + genlep_preFSR2.Momentum ).M();
-				Double_t M_postFSR = ( genlep_postFSR1.Momentum + genlep_postFSR2.Momentum ).M();
+				// -- Mass, Pt, Rapidity Calculation -- //
+            TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
+            TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
+				Double_t M_preFSR = Flag_PassAcc_preFSR ? tlv_preFSR.M() : -99;
+				Double_t M_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.M() : -99;
+				Double_t pt_preFSR = Flag_PassAcc_preFSR ? tlv_preFSR.Pt() : -99;
+				Double_t pt_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.Pt() : -99;
+				Double_t rap_preFSR = Flag_PassAcc_preFSR ? tlv_preFSR.Rapidity() - rapshift : -99;
+				Double_t rap_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.Rapidity() - rapshift : -99;
 
 				h_mass_preFSR->Fill( M_preFSR, TotWeight );
 				h_mass_postFSR->Fill( M_postFSR, TotWeight );
 
-				Double_t ratio = (M_preFSR - M_postFSR ) / M_preFSR;
-				h_mass_ratio->Fill( ratio, TotWeight );
+				Double_t mass_ratio = (M_preFSR - M_postFSR ) / M_preFSR;
+				Double_t pt_ratio = (pt_preFSR - pt_postFSR ) / pt_preFSR;
+				Double_t rap_ratio = (rap_preFSR - rap_postFSR ) / rap_preFSR;
+				h_mass_ratio->Fill( mass_ratio, TotWeight );
 
+            // mass histos
 				h_mass_preFSR_tot->Fill( M_preFSR, TotWeight );
 				h_mass_postFSR_tot->Fill( M_postFSR, TotWeight );
-				h_mass_ratio_tot->Fill( ratio, TotWeight );
-
+				h_mass_ratio_tot->Fill( mass_ratio, TotWeight );
 				h_mass_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
 
+				h_mass_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
+				h_mass_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
+				h_mass_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
+
+            // pt histos
+				if (M_preFSR>60 && M_preFSR<120) h_pt_preFSR_tot->Fill( pt_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_pt_postFSR_tot->Fill( pt_postFSR, TotWeight );
+				if (M_preFSR>60 && M_preFSR<120) h_pt_ratio_tot->Fill( pt_ratio, TotWeight );
+				h_pt_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? pt_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? pt_preFSR : -99, TotWeight );
+
+				if (M_preFSR>60 && M_preFSR<120) h_pt_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_pt_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
+				h_pt_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? pt_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? pt_preFSR : -99, TotWeight );
+
+            // rap 15-60 histos
+				if (M_preFSR>15 && M_preFSR<60) h_rap1560_preFSR_tot->Fill( rap_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_rap1560_postFSR_tot->Fill( rap_postFSR, TotWeight );
+				if (M_preFSR>15 && M_preFSR<60) h_rap1560_ratio_tot->Fill( rap_ratio, TotWeight );
+				h_rap1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? rap_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? rap_preFSR : -99, TotWeight );
+
+				if (M_preFSR>15 && M_preFSR<60) h_rap1560_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_rap1560_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
+				h_rap1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? rap_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? rap_preFSR : -99, TotWeight );
+
+            // rap 60-9920 histos
+				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot->Fill( rap_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot->Fill( rap_postFSR, TotWeight );
+				if (M_preFSR>60 && M_preFSR<120) h_rap60120_ratio_tot->Fill( rap_ratio, TotWeight );
+				h_rap60120_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? rap_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? rap_preFSR : -99, TotWeight );
+
+				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
+				h_rap60120_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? rap_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? rap_preFSR : -99, TotWeight );
 			} // -- End of if( GenFlag == kTRUE ) -- //
 
 		} //End of event iteration
@@ -288,6 +367,74 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	h_mass_postFSR_tot->Write();
    h_mass_ratio_tot->Write();
    h_mass_postpreFSR_tot->Write();
+	h_mass_preFSR_tot_fine->Write();
+	h_mass_postFSR_tot_fine->Write();
+   h_mass_postpreFSR_tot_fine->Write();
+
+	h_pt_preFSR_tot->Write();
+	h_pt_postFSR_tot->Write();
+   h_pt_ratio_tot->Write();
+   h_pt_postpreFSR_tot->Write();
+	h_pt_preFSR_tot_fine->Write();
+	h_pt_postFSR_tot_fine->Write();
+   h_pt_postpreFSR_tot_fine->Write();
+
+	h_rap1560_preFSR_tot->Write();
+	h_rap1560_postFSR_tot->Write();
+   h_rap1560_ratio_tot->Write();
+   h_rap1560_postpreFSR_tot->Write();
+	h_rap1560_preFSR_tot_fine->Write();
+	h_rap1560_postFSR_tot_fine->Write();
+   h_rap1560_postpreFSR_tot_fine->Write();
+
+	h_rap60120_preFSR_tot->Write();
+	h_rap60120_postFSR_tot->Write();
+   h_rap60120_ratio_tot->Write();
+   h_rap60120_postpreFSR_tot->Write();
+	h_rap60120_preFSR_tot_fine->Write();
+	h_rap60120_postFSR_tot_fine->Write();
+   h_rap60120_postpreFSR_tot_fine->Write();
+
+   // compute the condition numbers
+   TMatrixD m_mass(binnum,binnum);
+   for (int i=0; i<binnum; i++)
+      for (int j=0; j<binnum; j++)
+         m_mass[i][j] = h_mass_postpreFSR_tot->GetBinContent(i+1,j+1);
+   TDecompSVD tsvd_mass(m_mass);
+   tsvd_mass.Decompose();
+   TVectorD sv_mass = tsvd_mass.GetSig();
+   double condnum_mass = sv_mass[0]/max(0.,sv_mass[binnum-1]);
+   cout << "Condition number for mass: " << condnum_mass << endl;
+
+   TMatrixD m_pt(ptbinnum_meas,ptbinnum_meas);
+   for (int i=0; i<ptbinnum_meas; i++)
+      for (int j=0; j<ptbinnum_meas; j++)
+         m_pt[i][j] = h_pt_postpreFSR_tot->GetBinContent(i+1,j+1);
+   TDecompSVD tsvd_pt(m_pt);
+   tsvd_pt.Decompose();
+   TVectorD sv_pt = tsvd_pt.GetSig();
+   double condnum_pt = sv_pt[0]/max(0.,sv_pt[ptbinnum_meas-1]);
+   cout << "Condition number for pt: " << condnum_pt << endl;
+
+   TMatrixD m_rap1560(rapbinnum_1560,rapbinnum_1560);
+   for (int i=0; i<rapbinnum_1560; i++)
+      for (int j=0; j<rapbinnum_1560; j++)
+         m_rap1560[i][j] = h_rap1560_postpreFSR_tot->GetBinContent(i+1,j+1);
+   TDecompSVD tsvd_rap1560(m_rap1560);
+   tsvd_rap1560.Decompose();
+   TVectorD sv_rap1560 = tsvd_rap1560.GetSig();
+   double condnum_rap1560 = sv_rap1560[0]/max(0.,sv_rap1560[rapbinnum_1560-1]);
+   cout << "Condition number for rap1560: " << condnum_rap1560 << endl;
+
+   TMatrixD m_rap60120(rapbinnum_60120,rapbinnum_60120);
+   for (int i=0; i<rapbinnum_60120; i++)
+      for (int j=0; j<rapbinnum_60120; j++)
+         m_rap60120[i][j] = h_rap60120_postpreFSR_tot->GetBinContent(i+1,j+1);
+   TDecompSVD tsvd_rap60120(m_rap60120);
+   tsvd_rap60120.Decompose();
+   TVectorD sv_rap60120 = tsvd_rap60120.GetSig();
+   double condnum_rap60120 = sv_rap60120[0]/max(0.,sv_rap60120[rapbinnum_60120-1]);
+   cout << "Condition number for rap60120: " << condnum_rap60120 << endl;
 
    // f->Close();
    // return;
@@ -360,18 +507,18 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    lCurve->Write("lCurve");
    bestLcurve->Write("bestLcurve");
 
-	// for(Int_t i_dr=0; i_dr < ndRCuts; i_dr++)
-	// {
-	// 	h_nPhotons[i_dr]->Write();
-	// 	h_RatioE[i_dr]->Write();
-	// 	h_SumE[i_dr]->Write();
-	// }
+   // for(Int_t i_dr=0; i_dr < ndRCuts; i_dr++)
+   // {
+   // 	h_nPhotons[i_dr]->Write();
+   // 	h_RatioE[i_dr]->Write();
+   // 	h_SumE[i_dr]->Write();
+   // }
 
-	Int_t nHisto = (Int_t)GammaHisto.size();
-	for(Int_t i=0; i<nHisto; i++)
-		GammaHisto[i]->Write();
+   Int_t nHisto = (Int_t)GammaHisto.size();
+   for(Int_t i=0; i<nHisto; i++)
+      GammaHisto[i]->Write();
 
-	unfold.Write();
+   unfold.Write();
 
 	// -- Response Matrix -- //
 	TCanvas *c_RespM = new TCanvas("c_RespM", "", 800, 800);
@@ -387,13 +534,18 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	gPad->SetLogz();
 	c_RespM->Write();
 
-   // TH1* h_Measured_TUnfold = unfold.Hmeasured();
-   // h_Measured_TUnfold->SetName("h_Measured_TUnfold");
-   // h_Measured_TUnfold->Write();
+   TH1* h_Measured_TUnfold = unfold.GetInput("h_Measured_TUnfold");
+   h_Measured_TUnfold->SetName("h_Measured_TUnfold");
+   // DIRTY FIX
+   for (int i=h_Measured_TUnfold->GetNbinsX(); i>0; i--) {
+      h_Measured_TUnfold->SetBinContent(i,h_Measured_TUnfold->GetBinContent(i-1));
+      h_Measured_TUnfold->SetBinError(i,h_Measured_TUnfold->GetBinError(i-1));
+   }
+   h_Measured_TUnfold->Write();
 
-   // TH1* h_Truth_TUnfold = unfold.Htruth();
-   // h_Truth_TUnfold->SetName("h_Truth_TUnfold");
-   // h_Truth_TUnfold->Write();
+   TH1* h_Truth_TUnfold = unfold.GetOutput("h_Truth_TUnfold");
+   h_Truth_TUnfold->SetName("h_Truth_TUnfold");
+   h_Truth_TUnfold->Write();
 
    //==========================================================================
    // retreive results into histograms
@@ -496,4 +648,13 @@ static inline void loadBar(int x, int n, int r, int w)
 
 }
 
+// TH1F* unfold_MLE(TH1F *hin, TH2F *hresponse, TH2F *hcov) {
+//    TVectorD vin(hin->GetNbinsX());
+//    TVectorD vout(hin->GetNbinsX());
+//    TMatrixD mr(hresponse->GetNbinsX(),hreponse->GetNbinsY());
+//    TMatrixD mrinv = mr.Invert();
 
+// }
+
+// TH1F* fold_MLE(TH1F *hin, TH1F *hresponse) {
+// }
