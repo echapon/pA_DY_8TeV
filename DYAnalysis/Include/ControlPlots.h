@@ -83,6 +83,7 @@ public:
 
 	TH1D *h_GenMass;
    TH1D *h_GenMass_preFSR;
+   TH1D *h_GenMass_postFSR;
 	TH1D *h_GenPt;
 	TH1D *h_GenEta;
 	TH1D *h_GenPhi;
@@ -199,6 +200,7 @@ public:
       // h_GenMass = new  TH1D("h_GenMass_"+Type, "", 60, 0, 600); Histo.push_back( h_GenMass );
       // h_GenMass2 = new  TH1D("h_GenMass2_"+Type, "", 60, 60, 120); Histo.push_back( h_GenMass2 );
       h_GenMass_preFSR = new  TH1D("h_GenMass_preFSR_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass_preFSR );
+      h_GenMass_postFSR = new  TH1D("h_GenMass_postFSR_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass_postFSR );
 		h_GenPt = new  TH1D("h_GenPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt );
 		h_GenEta = new  TH1D("h_GenEta_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta );
 		h_GenPhi = new  TH1D("h_GenPhi_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi );
@@ -265,15 +267,34 @@ public:
       // h_GenMass2->Fill( gen_M, weight );
 
       // build pre-FSR mass
+      vector<GenLepton> GenLeptonCollection_FinalState;
+      Int_t NGenLeptons = ntuple->gnpair;
+      for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+      {
+         GenLepton genlep;
+         genlep.FillFromNtuple(ntuple, i_gen);
+         if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+         {
+            GenLeptonCollection_FinalState.push_back( genlep );
+
+            if( (Int_t)GenLeptonCollection_FinalState.size() == 2 )
+               break;
+         }
+      }
       Double_t dRCut = 0.1;
-      GenLepton genlep_preFSR1 = genlep1; // -- Copy the values of member variables -- // 
+      GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
+      GenLepton genlep_preFSR1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
       vector< GenOthers > GenPhotonCollection1;
-      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
-      GenLepton genlep_preFSR2 = genlep2; // -- Copy the values of member variables -- // 
+      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+
+      GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
+      GenLepton genlep_preFSR2 = genlep_postFSR2; // -- Copy the values of member variables -- // 
       vector< GenOthers > GenPhotonCollection2;
-      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+      analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
       Double_t M_preFSR = ( genlep_preFSR1.Momentum + genlep_preFSR2.Momentum ).M();
 		h_GenMass_preFSR->Fill( M_preFSR, weight );
+      Double_t M_postFSR = ( genlep_postFSR1.Momentum + genlep_postFSR2.Momentum ).M();
+		h_GenMass_postFSR->Fill( M_postFSR, weight );
 
 		h_GenDiPt->Fill( gen_DiPt, weight );
 		h_GenDiRap->Fill( gen_DiRap, weight );
