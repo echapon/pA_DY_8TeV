@@ -21,17 +21,15 @@
 
 //Customized header files
 #include <Include/DYAnalyzer.h>
-
-//TUnfold
-#include "TUnfoldDensity.h"
-// #define VERBOSE_LCURVE_SCAN
+#include <Include/UnfoldUtils.h>
 
 using namespace DYana;
+using unfold::gUnfold;
 
 static inline void loadBar(int x, int n, int r, int w);
 // TH1F* unfold_MLE(TH1F *hin, TH2F *hresponse, TH2F *hcov);
 // TH1F* fold_MLE(TH1F *hin, TH1F *hresponse);
-void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "PAL3Mu12" )
+void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0 ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -61,12 +59,13 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 
    analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
-	TFile *f = new TFile("ROOTFile_FSRCorrections_DressedLepton_" + Sample + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root", "RECREATE");
 
 	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", binnum, bins);
 	TH1D *h_mass_preFSR_tot_fine = new TH1D("h_mass_preFSR_fine", "", 585,15,600);
 	TH1D *h_mass_postFSR_tot = new TH1D("h_mass_postFSR", "", binnum, bins);
 	TH1D *h_mass_postFSR_tot_fine = new TH1D("h_mass_postFSR_fine", "", 585,15,600);
+	TH1D *h_mass_bare_tot_fine = new TH1D("h_mass_bare_fine", "", 585,15,600);
 	TH1D *h_mass_ratio_tot = new TH1D("h_mass_ratio", "", 100, -1, 1);
    TH2D *h_mass_postpreFSR_tot = new TH2D("h_mass_postpreFSR_tot", ";mass(post-FSR);mass(pre-FSR)", binnum, bins, binnum, bins);
    TH2D *h_mass_postpreFSR_tot_fine = new TH2D("h_mass_postpreFSR_tot_fine", ";mass(post-FSR);mass(pre-FSR)", 585,15,600,585,15,600);
@@ -143,6 +142,10 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	{
       // loop only on DYMuMu!
       if (!Tag[i_tup].Contains("DYMuMu")) continue;
+
+      Bool_t doflip = (switcheta(STags[i_tup])<0);
+      if (run==1 && doflip) continue;
+      if (run==2 && !doflip) continue;
 
 		TStopwatch looptime;
 		looptime.Start();
@@ -230,6 +233,22 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 					}
 				}
 
+				// -- Collect ``bare'' gen-level information -- //
+				vector<GenLepton> GenLeptonCollection;
+				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+				{
+					GenLepton genlep;
+					genlep.FillFromNtuple(ntuple, i_gen);
+					if( genlep.isMuon() && genlep.isHardProcess )
+						GenLeptonCollection.push_back( genlep );
+
+						if( GenLeptonCollection.size() ==  2 )
+							break;
+				}
+				GenLepton genlep1 = GenLeptonCollection[0];
+				GenLepton genlep2 = GenLeptonCollection[1];
+				Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
+
 				Double_t dRCut = 0.1;
 
 				GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
@@ -314,6 +333,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 
 				h_mass_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
 				h_mass_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
+				h_mass_bare_tot_fine->Fill( gen_M, TotWeight );
 				h_mass_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
 
             // pt histos
@@ -369,6 +389,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    h_mass_postpreFSR_tot->Write();
 	h_mass_preFSR_tot_fine->Write();
 	h_mass_postFSR_tot_fine->Write();
+	h_mass_bare_tot_fine->Write();
    h_mass_postpreFSR_tot_fine->Write();
 
 	h_pt_preFSR_tot->Write();
@@ -439,9 +460,9 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    // f->Close();
    // return;
 
-   TUnfoldDensity unfold(h_mass_postpreFSR_tot,TUnfold::kHistMapOutputVert);
+   unfold::initTUnfold(h_mass_postpreFSR_tot,TUnfold::kHistMapOutputVert);
 
-   // unfold.SetName("unfold");
+   // gUnfold->SetName("unfold");
 
    // define input and bias scame
    // do not use the bias, because MC peak may be at the wrong place
@@ -461,7 +482,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    }
    f->cd();
 
-   if(unfold.SetInput(histMdetData)>=10000) {
+   if(gUnfold->SetInput(histMdetData)>=10000) {
       std::cout<<"Unfolding result may be wrong\n";
    }
 
@@ -469,36 +490,11 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    // the unfolding is done here
    //
    // scan L curve and find best point
-   Int_t nScan=30;
-   // use automatic L-curve scan: start with taumin=taumax=0.0
-   Double_t tauMin=0.;
-   Double_t tauMax=0.;
-   Int_t iBest;
-   TSpline *logTauX,*logTauY;
-   TGraph *lCurve;
-
-   // if required, report Info messages (for debugging the L-curve scan)
-#ifdef VERBOSE_LCURVE_SCAN
-   Int_t oldinfo=gErrorIgnoreLevel;
-   gErrorIgnoreLevel=kInfo;
-#endif
-   // this method scans the parameter tau and finds the kink in the L curve
-   // finally, the unfolding is done for the best choice of tau
-   iBest=unfold.ScanLcurve(nScan,tauMin,tauMax,&lCurve,&logTauX,&logTauY);
-
-   // if required, switch to previous log-level
-#ifdef VERBOSE_LCURVE_SCAN
-   gErrorIgnoreLevel=oldinfo;
-#endif
-
-   //==========================================================================
-   // create graphs with one point to visualize the best choice of tau
-   //
-   Double_t t[1],x[1],y[1];
-   logTauX->GetKnot(iBest,t[0],x[0]);
-   logTauY->GetKnot(iBest,t[0],y[0]);
-   TGraph *bestLcurve=new TGraph(1,x,y);
-   TGraph *bestLogTauLogChi2=new TGraph(1,t,x);
+   TSpline *logTauX=NULL;
+   TGraph *bestLogTauLogChi2=NULL;
+   TGraph *bestLcurve=NULL;
+   TGraph *lCurve=NULL;
+   unfold::doUnfold(logTauX, bestLogTauLogChi2, bestLcurve, lCurve);
 
    // save the tau vs chi2
    logTauX->Write("logTauX");
@@ -518,7 +514,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    for(Int_t i=0; i<nHisto; i++)
       GammaHisto[i]->Write();
 
-   unfold.Write();
+   gUnfold->Write();
 
 	// -- Response Matrix -- //
 	TCanvas *c_RespM = new TCanvas("c_RespM", "", 800, 800);
@@ -534,7 +530,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	gPad->SetLogz();
 	c_RespM->Write();
 
-   TH1* h_Measured_TUnfold = unfold.GetInput("h_Measured_TUnfold");
+   TH1* h_Measured_TUnfold = gUnfold->GetInput("h_Measured_TUnfold");
    h_Measured_TUnfold->SetName("h_Measured_TUnfold");
    // DIRTY FIX
    for (int i=h_Measured_TUnfold->GetNbinsX(); i>0; i--) {
@@ -543,7 +539,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    }
    h_Measured_TUnfold->Write();
 
-   TH1* h_Truth_TUnfold = unfold.GetOutput("h_Truth_TUnfold");
+   TH1* h_Truth_TUnfold = gUnfold->GetOutput("h_Truth_TUnfold");
    h_Truth_TUnfold->SetName("h_Truth_TUnfold");
    h_Truth_TUnfold->Write();
 
@@ -551,20 +547,20 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    // retreive results into histograms
 
    // get unfolded distribution
-   TH1 *histMunfold=unfold.GetOutput("Unfolded");
+   TH1 *histMunfold=gUnfold->GetOutput("Unfolded");
    histMunfold->Write();
 
    // get unfolding result, folded back
-   TH1 *histMdetFold=unfold.GetFoldedOutput("FoldedBack");
+   TH1 *histMdetFold=gUnfold->GetFoldedOutput("FoldedBack");
    histMdetFold->Write();
 
    // get error matrix (input distribution [stat] errors only)
-   // TH2D *histEmatData=unfold.GetEmatrix("EmatData");
+   // TH2D *histEmatData=gUnfold->GetEmatrix("EmatData");
 
    // get total error matrix:
    //   migration matrix uncorrelated and correlated systematic errors
    //   added in quadrature to the data statistical errors
-   TH2 *histEmatTotal=unfold.GetEmatrixTotal("EmatTotal");
+   TH2 *histEmatTotal=gUnfold->GetEmatrixTotal("EmatTotal");
 
    // create data histogram with the total errors
    TH1D *histTotalError=
@@ -581,7 +577,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    // default: include all bins
    // here: exclude underflow and overflow bins
    TH2 *gHistInvEMatrix;
-   TH1 *histRhoi=unfold.GetRhoItotal("rho_I",
+   TH1 *histRhoi=gUnfold->GetRhoItotal("rho_I",
          0, // use default title
          0, // all distributions
          "*[UO]", // discard underflow and overflow bins on all axes

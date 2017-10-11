@@ -21,11 +21,8 @@
 #include <TROOT.h>
 #include <TLatex.h>
 
-//TUnfold
-#include "TUnfoldDensity.h"
-// #define VERBOSE_LCURVE_SCAN
-
 #include "Include/MyCanvas.C"
+#include "Include/UnfoldUtils.h"
 
 void CalculateFractionPerBin(TH2D *h_nEvents, TH1* h_Truth, TH2D *h_Response);
 TH2D* Transpose( TH2D* h_2D );
