@@ -8,9 +8,11 @@
 namespace unfold {
    // global TUnfold object
    TUnfoldDensity *gUnfold=NULL;
+   TUnfold::ERegMode gRegMode;
 
-   TUnfoldDensity* initTUnfold(TH2D *resp_matrix, TUnfold::EHistMap themap=TUnfold::kHistMapOutputVert) {
-      gUnfold = new TUnfoldDensity(resp_matrix,themap);
+   TUnfoldDensity* initTUnfold(TH2D *resp_matrix, TUnfold::EHistMap themap=TUnfold::kHistMapOutputVert, TUnfold::ERegMode regmode=TUnfold::kRegModeCurvature) {
+      gRegMode = regmode;
+      gUnfold = new TUnfoldDensity(resp_matrix,themap,regmode);
       return gUnfold;
    }
 
@@ -51,11 +53,14 @@ namespace unfold {
    }
 
    void doUnfold() {
-      TSpline *logTauX=NULL;
-      TGraph *bestLogTauLogChi2=NULL;
-      TGraph *bestLcurve=NULL;
-      TGraph *lCurve=NULL;
-      doUnfold(logTauX, bestLcurve, bestLogTauLogChi2, lCurve);
+      if (gRegMode==TUnfold::kRegModeNone) gUnfold->DoUnfold(0);
+      else {
+         TSpline *logTauX=NULL;
+         TGraph *bestLogTauLogChi2=NULL;
+         TGraph *bestLcurve=NULL;
+         TGraph *lCurve=NULL;
+         doUnfold(logTauX, bestLcurve, bestLogTauLogChi2, lCurve);
+      }
    }
 }
 

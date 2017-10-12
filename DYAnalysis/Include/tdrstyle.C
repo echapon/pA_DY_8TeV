@@ -20,6 +20,9 @@ void fixOverlay() {
 void setTDRStyle() {
   tdrStyle = new TStyle("tdrStyle","Style for P-TDR");
 
+  // colors
+  tdrStyle->SetPalette(kBlueRedYellow);
+
 // For the canvas:
   tdrStyle->SetCanvasBorderMode(0);
   tdrStyle->SetCanvasColor(kWhite);

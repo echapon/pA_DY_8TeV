@@ -167,7 +167,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 		// analyzer->SetupPileUpReWeighting( Tag[i_tup] );
 
 		Bool_t isNLO = 0;
-		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets" )
+		if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets") )
 		{
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
@@ -606,6 +606,76 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	// // gPad->SetLogy();
 	// gPad->SetLogz();
 	// c_dR_E->Write();
+
+   // let's make some canvas with unfolding plots as in the ROOT tuto
+
+   TCanvas output;
+   output.Divide(3,2);
+
+   // Show the matrix which connects input and output
+   // There are overflow bins at the bottom, not shown in the plot
+   // These contain the background shape.
+   // The overflow bins to the left and right contain
+   // events which are not reconstructed. These are necessary for proper MC
+   // normalisation
+   output.cd(1);
+   h_mass_postpreFSR_tot->Draw("BOX");
+
+   // draw generator-level distribution:
+   //   data (red) [for real data this is not available]
+   //   MC input (black) [with completely wrong peak position and shape]
+   //   unfolded data (blue)
+   output.cd(2);
+   // divide by bin withd to get density distributions
+   TH1D *histDensityGenData=new TH1D("DensityGenData",";mass(gen)",
+         binnum,bins);
+   TH1D *histDensityGenMC=new TH1D("DensityGenMC",";mass(gen)",
+         binnum,bins);
+   for(Int_t i=1;i<=binnum;i++) {
+      histDensityGenData->SetBinContent(i,h_mass_postFSR_tot->GetBinContent(i)/
+            h_mass_postFSR_tot->GetBinWidth(i));
+      histDensityGenMC->SetBinContent(i,h_mass_preFSR_tot->GetBinContent(i)/
+            h_mass_preFSR_tot->GetBinWidth(i));
+   }
+   histTotalError->SetLineColor(kBlue);
+   histTotalError->Draw("E");
+   histMunfold->SetLineColor(kGreen);
+   histMunfold->Draw("SAME E1");
+   histDensityGenData->SetLineColor(kRed);
+   histDensityGenData->Draw("SAME");
+   histDensityGenMC->Draw("SAME HIST");
+
+   // show detector level distributions
+   //    data (red)
+   //    MC (black) [with completely wrong peak position and shape]
+   //    unfolded data (blue)
+   output.cd(3);
+   histMdetFold->SetLineColor(kBlue);
+   histMdetFold->Draw();
+   h_mass_postFSR_tot->Draw("SAME HIST");
+
+   TH1 *histInput=gUnfold->GetInput("Minput",";mass(det)");
+
+   histInput->SetLineColor(kRed);
+   histInput->Draw("SAME");
+
+   // show correlation coefficients
+   output.cd(4);
+   histRhoi->Draw();
+
+   // show tau as a function of chi**2
+   output.cd(5);
+   logTauX->Draw();
+   bestLogTauLogChi2->SetMarkerColor(kRed);
+   bestLogTauLogChi2->Draw("*");
+
+   // show the L curve
+   output.cd(6);
+   lCurve->Draw("AL");
+   bestLcurve->SetMarkerColor(kRed);
+   bestLcurve->Draw("*");
+
+   output.Write();
 
 	Double_t TotalRunTime = totaltime.CpuTime();
 	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;

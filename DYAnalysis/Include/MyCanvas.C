@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "tdrstyle.C"
+#include "CMS_lumi.C"
 
 using namespace std;
 
