@@ -55,7 +55,11 @@ void estimateBkg() {
 
     for(int i=0;i<Data1;i++) {
         SampleTag tag = static_cast<SampleTag>(i);
-        norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
+        double lumi = lumi_all;
+        if (IsDYMuMu(tag)) { // special case of DYMuMu which has both beam directions
+           lumi = switcheta(tag) ? lumi_part1 : lumi_part2;
+        }
+        norm[i] = (Xsec(tag)*lumi)/Nevts(tag);
 
         emu[i] = (TH1D*)file[i]->Get("emu_mass")->Clone("emu"+TString(Name(tag)));
         emuSS[i] = (TH1D*)file[i]->Get("emuSS_mass")->Clone("emuSS"+TString(Name(tag)));
@@ -65,9 +69,14 @@ void estimateBkg() {
         emuSS[i]->Scale(norm[i]);
         dimu[i]->Scale(norm[i]);
 
-        emu[i]->SetFillColor(i+2);
-        emuSS[i]->SetFillColor(i+2);
-        dimu[i]->SetFillColor(i+2);
+        // determine the color
+        EColor icolor;
+        if (tag==TT) icolor=kRed;
+        else if (IsDiboson(tag)) icolor=kGreen;
+        else if (IsDY(tag)) icolor=kBlue;
+        emu[i]->SetFillColor(icolor);
+        emuSS[i]->SetFillColor(icolor);
+        dimu[i]->SetFillColor(icolor);
 
         emu[i]->SetStats(kFALSE);
         emuSS[i]->SetStats(kFALSE);
@@ -93,10 +102,10 @@ void estimateBkg() {
     // emuSS_data->SetStats(kFALSE);
 
     // DY M50 + M10to50
-    TH1D* emu_DYtautau = emu[DY1050];
-    TH1D* emuSS_DYtautau = emuSS[DY1050];
-    TH1D* dimu_DYtautau = dimu[DY1050];
-    for (int i=DY50100; i<=DY4001000; i++) {
+    TH1D* emu_DYtautau = emu[DYFirst];
+    TH1D* emuSS_DYtautau = emuSS[DYFirst];
+    TH1D* dimu_DYtautau = dimu[DYFirst];
+    for (int i=DYFirst+1; i<=DYLast; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
        emu_DYtautau->Add(emu[tag]);
        emuSS_DYtautau->Add(emuSS[tag]);
@@ -268,25 +277,25 @@ void estimateBkg() {
     dimu[WW]->SetName("WW_MC");
 
 
-    // data_driven_ttbar->Write();
-    // data_driven_DYtautau->Write();
-    // // data_driven_tW->Write();
-    // data_driven_WW->Write();
+    data_driven_ttbar->Write();
+    data_driven_DYtautau->Write();
+    // data_driven_tW->Write();
+    data_driven_WW->Write();
 
-    // dimu[TT]->Write();
-    // dimu_DYtautau->Write();
-    // // dimu_tW->Write();
-    // dimu[WW]->Write();
+    dimu[TT]->Write();
+    dimu_DYtautau->Write();
+    // dimu_tW->Write();
+    dimu[WW]->Write();
 
-    // ttbar_systematic->Write();
-    // DYtautau_systematic->Write();
-    // // tW_systematic->Write();
-    // WW_systematic->Write();
+    ttbar_systematic->Write();
+    DYtautau_systematic->Write();
+    // tW_systematic->Write();
+    WW_systematic->Write();
 
-    // ttbar_stat->Write();
-    // DYtautau_stat->Write();
-    // // tW_stat->Write();
-    // WW_stat->Write();
+    ttbar_stat->Write();
+    DYtautau_stat->Write();
+    // tW_stat->Write();
+    WW_stat->Write();
 
     g->Write();
     g->Close();

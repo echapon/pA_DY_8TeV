@@ -272,53 +272,35 @@ Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *n
 
 		if( GenLeptonCollection.size() == 2 ) // -- Select the events containing 2 muons from hard-process -- //
 		{
+         TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+         TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+         Double_t reco_M = (v1 + v2).M();
 			if( Tag == "DYMuMu1050" ) // -- Select only evetns withtin 10 < M < 50 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 10 && reco_M <= 50 )
 					GenFlag = kTRUE;
 			} else if ( Tag == "DYMuMu50100" ) // -- Select only evetns withtin 50 < M < 100 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 50 && reco_M <= 100 )
 					GenFlag = kTRUE;
 			} else if( Tag == "DYMuMu100200" ) // -- Select only evetns withtin 100 < M < 200 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 100 && reco_M <= 200 )
 					GenFlag = kTRUE;
 			} else if( Tag == "DYMuMu200400" ) // -- Select only evetns withtin 200 < M < 400 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 200 && reco_M <= 400 )
 					GenFlag = kTRUE;
 			} else if( Tag == "DYMuMu4001000" ) // -- Select only evetns withtin 400 < M < 1000 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 400 && reco_M <= 1000 )
 					GenFlag = kTRUE;
 			} else if ( Tag.Contains("DYMuMu1030") ) // -- Select only evetns withtin 10 < M < 30 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 10 && reco_M <= 30 )
 					GenFlag = kTRUE;
 			} else if ( Tag.Contains("DYMuMu30") ) // -- Select only evetns withtin M > 30 -- //
 			{
-				TLorentzVector v1 = GenLeptonCollection[0].Momentum;
-				TLorentzVector v2 = GenLeptonCollection[1].Momentum;
-				Double_t reco_M = (v1 + v2).M();
 				if( reco_M >= 30 )
 					GenFlag = kTRUE;
 			} else GenFlag = kTRUE;
@@ -373,7 +355,18 @@ Bool_t DYAnalyzer::SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *n
 
 		if( GenLeptonCollection.size() == 2 ) // -- Select the events containing 2 taus from hard-process -- //
 		{
-			GenFlag = kTRUE;
+         TLorentzVector v1 = GenLeptonCollection[0].Momentum;
+         TLorentzVector v2 = GenLeptonCollection[1].Momentum;
+         Double_t reco_M = (v1 + v2).M();
+			if ( Tag.Contains("DYTauTau1030") ) // -- Select only evetns withtin 10 < M < 30 -- //
+         {
+            if( reco_M >= 10 && reco_M <= 30 )
+               GenFlag = kTRUE;
+         } else if ( Tag.Contains("DYTauTau30") ) // -- Select only evetns withtin M > 30 -- //
+         {
+            if( reco_M >= 30 )
+               GenFlag = kTRUE;
+         } else GenFlag = kTRUE;
 		}
 	}
 	// -- Madgraph sample -- //

@@ -135,7 +135,7 @@ bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<Ntupl
 				mu1 = muons->at(i);
 				mu2 = muons->at(j);
 
-				if( mu1.first.pt<=cuts::ptmin1 && mu2.first.pt<=cuts::ptmin1 ) continue;
+				if( mu1.first.pt<=cuts::ptmin1 && mu2.first.pt<=cuts::ptmin2 ) continue;
 
 				if(triggerMatch(triggerobjects, mu1.first,cuts::trig)) {
 					if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
@@ -163,7 +163,7 @@ bool emuDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleEm
 			mu = muons->at(i);
 			el = electrons->at(j);
 
-			if( mu.first.pt<=cuts::ptmin1 && el.first.etSC<=cuts::ptmin1 ) continue;
+			if( mu.first.pt<=cuts::ptmin1 && el.first.etSC<=cuts::ptmin2 ) continue;
 
 			if(!triggerMatch(triggerobjects, mu.first,cuts::trig)) continue;
 
@@ -194,7 +194,7 @@ bool dijetDY(std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* m
 				mu1 = muons->at(i);
 				mu2 = muons->at(j);
 
-				if( mu1.first.pt<=cuts::ptmin1 && mu2.first.pt<=cuts::ptmin1 ) continue;
+				if( mu1.first.pt<=cuts::ptmin1 && mu2.first.pt<=cuts::ptmin2 ) continue;
 
 				if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
 					if(vertexFitChi2(dimuons,mu1,mu2)<min) {
@@ -216,7 +216,7 @@ bool wjetsDY(std::vector<NtupleDimuon> dimuons, pair<PhysicsMuon,int> mu1, pair<
 	const double min = 20;
 
 
-	if( mu1.first.pt>cuts::ptmin1 || mu2.first.pt>cuts::ptmin1 ) {
+	if( mu1.first.pt>cuts::ptmin1 || mu2.first.pt>cuts::ptmin2 ) {
 		if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
 			if(vertexFitChi2(dimuons,mu1,mu2)<min) {
 				flag = true;

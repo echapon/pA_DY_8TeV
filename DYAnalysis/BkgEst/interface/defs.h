@@ -49,7 +49,7 @@ namespace DYana {
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
-      return mu->acceptance(10,2.4) && mu->tightMuonID() && mu->isolation(0.15);
+      return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {
       return el->acceptance(20,2.4) && el->WPMedium();

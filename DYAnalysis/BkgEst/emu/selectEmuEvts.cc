@@ -28,6 +28,8 @@
 #include <vector>
 #include "../interface/analysis.h"
 #include "../interface/defs.h"
+#include "Include/DYAnalyzer.h"
+#include "Include/NtupleHandle.h"
 
 using namespace std;
 using namespace DYana;
@@ -40,6 +42,17 @@ void selectEmuEvts(SampleTag index)
     bool isData = IsData(index);;
     chain->Add(PathTuple(index));
     chain->SetBranchAddress("event",&event);  
+    TChain *chain2 = new TChain("recoTree/DYTree");
+    chain2->Add(PathTuple(index));
+    NtupleHandle *ntuple = new NtupleHandle( chain2, switcheta(index) );
+    ntuple->TurnOnBranches_GenLepton();
+
+    DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
+    TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
+    // -- Each ntuple directory & corresponding Tags -- //
+    // -- GenWeights are already taken into account in nEvents -- //
+    vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
+    analyzer->SetupMCsamples_v20170830("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
     vector<pair<PhysicsMuon,int>>*     passingMuons     = new vector<pair<PhysicsMuon,int>>;
     vector<pair<PhysicsElectron,int>>* passingElectrons = new vector<pair<PhysicsElectron,int>>;
@@ -48,7 +61,8 @@ void selectEmuEvts(SampleTag index)
     double chi2min = 999.;
 
     //Histogram 
-    TFile* f = new TFile("histograms/hist"+TString(Name(index))+".root","RECREATE");
+    TString tagname = Name(index);
+    TFile* f = new TFile("histograms/hist"+tagname+".root","RECREATE");
     const int binsize = binnum;
 
     TH1D* el_etSC     = new TH1D("el_etSC","",97,30,1000); 
@@ -92,9 +106,14 @@ void selectEmuEvts(SampleTag index)
     //Iteration
     //int entries = 100000;
     int entries = chain->GetEntries();
+    cout << entries << " " << chain2->GetEntries() << endl;
     
     for(int i=0; i!=entries; i++) { 
-        chain->GetEntry(i);
+       ntuple->GetEvent(i);
+       Bool_t GenFlag = kFALSE;
+       GenFlag = analyzer->SeparateDYLLSample_isHardProcess(tagname, ntuple);
+       if (!GenFlag) continue;
+       chain->GetEntry(i);
 
         if( !isData ) {
             if( event->weight>0 ) weight = 1.0;
@@ -121,7 +140,7 @@ void selectEmuEvts(SampleTag index)
 				//cout<<mu->pt<<endl;
                 pair<PhysicsMuon,int> taggedmu = {*mu,j};
                 passingMuons->push_back(taggedmu);
-                if(mu->pt > 15) leadingMu = true;
+                if(mu->pt > cuts::ptmin1) leadingMu = true;
             } 
         } 
 
@@ -133,18 +152,17 @@ void selectEmuEvts(SampleTag index)
                 totalEl += weight;
                 pair<PhysicsElectron,int> taggedel = {*el,j};
                 passingElectrons->push_back(taggedel);
-                if(el->pt > 15) leadingEl = true;
+                if(el->pt > cuts::ptmin1) leadingEl = true;
             } 
         } 
 
-        if( !leadingMu && !leadingEl ) continue;  // try to change acceptance
 
         // if( (event->TriggerSelection("HLT_Ele22_eta2p1_WP75_Gsf_v") || event->TriggerSelection("HLT_Ele22_eta2p1_WPLoose_Gsf_v")) && (event->TriggerSelection("HLT_IsoMu20_v") || event->TriggerSelection("HLT_IsoTkMu20_v")) ) { //Single electron spectra
         if( // event->TriggerSelection("HLT_PAEle20_WPLoose_Gsf_v") && 
               event->TriggerSelection("HLT_PAL3Mu12_v") ) { //Single electron spectra
             for(unsigned j=0; j!=passingElectrons->size(); j++) { 
                 PhysicsElectron el = passingElectrons->at(j).first;
-                if( el.acceptance(15,2.1) ) { 
+                if( el.acceptance(cuts::ptmin1,2.1) ) { 
                     el_etSC->Fill(el.etSC,weight);
                     el_etaSC->Fill(el.etaSC,weight);
                     el_phi->Fill(el.phi,weight);
