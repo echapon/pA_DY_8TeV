@@ -23,12 +23,16 @@ void makeHFweight_main() {
    // make data/MC ratios
    TH1F *h_hiHF_ratio = (TH1F*) hists_data.h_hiHF->Clone("h_hiHF_ratio");
    h_hiHF_ratio->Divide(hists_MC.h_hiHF);
+   TH1F *h_hiNtracks_ratio = (TH1F*) hists_data.h_hiNtracks->Clone("h_hiNtracks_ratio");
+   h_hiNtracks_ratio->Divide(hists_MC.h_hiNtracks);
    TH1F *h_hiHFplus_ratio = (TH1F*) hists_data.h_hiHFplus->Clone("h_hiHFplus_ratio");
    h_hiHFplus_ratio->Divide(hists_MC.h_hiHFplus);
    TH1F *h_hiHFminus_ratio = (TH1F*) hists_data.h_hiHFminus->Clone("h_hiHFminus_ratio");
    h_hiHFminus_ratio->Divide(hists_MC.h_hiHFminus);
    TH1F *h_hiHF_PV1_ratio = (TH1F*) hists_data.h_hiHF_PV1->Clone("h_hiHF_PV1_ratio");
    h_hiHF_PV1_ratio->Divide(hists_MC.h_hiHF_PV1);
+   TH1F *h_hiNtracks_PV1_ratio = (TH1F*) hists_data.h_hiNtracks_PV1->Clone("h_hiNtracks_PV1_ratio");
+   h_hiNtracks_PV1_ratio->Divide(hists_MC.h_hiNtracks_PV1);
    TH1F *h_hiHFplus_PV1_ratio = (TH1F*) hists_data.h_hiHFplus_PV1->Clone("h_hiHFplus_PV1_ratio");
    h_hiHFplus_PV1_ratio->Divide(hists_MC.h_hiHFplus_PV1);
    TH1F *h_hiHFminus_PV1_ratio = (TH1F*) hists_data.h_hiHFminus_PV1->Clone("h_hiHFminus_PV1_ratio");

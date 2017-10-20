@@ -40,6 +40,7 @@ void MakeHFweight::Loop(HistPack& thepack)
    fChain->SetBranchStatus("nMuon",1);  // activate nMuon
    fChain->SetBranchStatus("runNum",1);  // activate evtNum
    fChain->SetBranchStatus("hiHF",1);  // activate hiHF
+   fChain->SetBranchStatus("hiNtracks",1);  // activate hiHF
    fChain->SetBranchStatus("hiHFplus",1);  // activate hiHFplus
    fChain->SetBranchStatus("hiHFminus",1);  // activate hiHFminus
    fChain->SetBranchStatus("nVertices",1);  // activate nVertices
@@ -52,15 +53,18 @@ void MakeHFweight::Loop(HistPack& thepack)
    double bins[47] = {0, 21, 27, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90, 93, 96, 99, 102, 105, 108, 111, 114, 117, 120, 123, 126, 129, 132, 135, 141, 147, 153, 159, 168, 180, 192, 216, 300};
    double binsplus[48] = {0, 8, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 84, 88, 92, 96, 100, 104, 110, 118, 126, 142, 200};
    double binsminus[33] = {0, 8, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 66, 70, 74, 82, 200};
+   double binsntracks[44] = {0, 14, 22, 28, 32, 36, 40, 44, 48, 50, 52, 54, 56, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 92, 94, 98, 102, 106, 110, 114, 118, 122, 126, 132, 138, 146, 154, 168, 300};
 
    thepack.h_nVertices = new TH1F("h_nVertices_"+thepack.label, "Number of vertices;nPV;Events", 10, 0, 10);
    thepack.h_mass = new TH1F("h_mass_"+thepack.label, "Mass;M_{#mu#mu} [GeV/c^{2}];Events", 100, 70, 110);
    thepack.h_rap = new TH1F("h_rap_"+thepack.label, "Rapidity;y;Events", 100, -2.4,2.4);
    thepack.h_hiHF = new TH1F("h_hiHF_"+thepack.label, "HF energy;hiHF;Events", 46, bins);
+   thepack.h_hiNtracks = new TH1F("h_hiNtracks_"+thepack.label, "Ntracks;hiNtracks;Events", 43, bins);
    thepack.h_hiHFplus = new TH1F("h_hiHFplus_"+thepack.label, "HF energy (plus);hiHFplus;Events", 47, binsplus);
    thepack.h_hiHFminus = new TH1F("h_hiHFminus_"+thepack.label, "HF energy (minus);hiHFminus;Events", 32, binsminus);
    thepack.h_hiHF2D = new TH2F("h_hiHF2D_"+thepack.label, "HF energy;hiHFplus;hiHFminus", 100,0,200,100,0,200);
    thepack.h_hiHF_PV1 = new TH1F("h_hiHF_PV1_"+thepack.label, "HF energy, nPV==1;hiHF;Events", 46, bins);
+   thepack.h_hiNtracks_PV1 = new TH1F("h_hiNtracks_PV1_"+thepack.label, "Ntracks, nPV==1;hiNtracks;Events", 43, bins);
    thepack.h_hiHFplus_PV1 = new TH1F("h_hiHFplus_PV1_"+thepack.label, "HF energy (plus), nPV==1;hiHFplus;Events", 47, binsplus);
    thepack.h_hiHFminus_PV1 = new TH1F("h_hiHFminus_PV1_"+thepack.label, "HF energy (minus), nPV==1;hiHFminus;Events", 32, binsminus);
    thepack.h_hiHF2D_PV1 = new TH2F("h_hiHF2D_PV1_"+thepack.label, "HF energy, nPV==1;hiHFplus;hiHFminus", 100,0,200,100,0,200);
@@ -110,11 +114,13 @@ void MakeHFweight::Loop(HistPack& thepack)
       thepack.h_mass->Fill(mumu.M());
       thepack.h_rap->Fill(mumu.Rapidity());
       thepack.h_hiHF->Fill(hiHF);
+      thepack.h_hiNtracks->Fill(hiNtracks);
       thepack.h_hiHFplus->Fill(myHFplus);
       thepack.h_hiHFminus->Fill(myHFminus);
       thepack.h_hiHF2D->Fill(myHFplus,myHFminus);
       if (nVertices==1) {
          thepack.h_hiHF_PV1->Fill(hiHF);
+         thepack.h_hiNtracks_PV1->Fill(hiNtracks);
          thepack.h_hiHFplus_PV1->Fill(myHFplus);
          thepack.h_hiHFminus_PV1->Fill(myHFminus);
          thepack.h_hiHF2D_PV1->Fill(myHFplus,myHFminus);
@@ -126,9 +132,11 @@ void MakeHFweight::Loop(HistPack& thepack)
    thepack.h_mass->Scale(1./thepack.h_mass->Integral());
    thepack.h_rap->Scale(1./thepack.h_rap->Integral());
    thepack.h_hiHF->Scale(1./thepack.h_hiHF->Integral());
+   thepack.h_hiNtracks->Scale(1./thepack.h_hiNtracks->Integral());
    thepack.h_hiHFplus->Scale(1./thepack.h_hiHFplus->Integral());
    thepack.h_hiHFminus->Scale(1./thepack.h_hiHFminus->Integral());
    thepack.h_hiHF_PV1->Scale(1./thepack.h_hiHF_PV1->Integral());
+   thepack.h_hiNtracks_PV1->Scale(1./thepack.h_hiNtracks_PV1->Integral());
    thepack.h_hiHFplus_PV1->Scale(1./thepack.h_hiHFplus_PV1->Integral());
    thepack.h_hiHFminus_PV1->Scale(1./thepack.h_hiHFminus_PV1->Integral());
 }

@@ -24,10 +24,12 @@ struct HistPack {
    TH1F* h_mass;
    TH1F* h_rap;
    TH1F* h_hiHF;
+   TH1F* h_hiNtracks;
    TH1F* h_hiHFplus;
    TH1F* h_hiHFminus;
    TH2F* h_hiHF2D;
    TH1F* h_hiHF_PV1;
+   TH1F* h_hiNtracks_PV1;
    TH1F* h_hiHFplus_PV1;
    TH1F* h_hiHFminus_PV1;
    TH2F* h_hiHF2D_PV1;
