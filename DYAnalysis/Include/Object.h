@@ -10,6 +10,7 @@
 #pragma once
 
 #include <TLorentzVector.h>
+#include <TMath.h>
 
 //customized header files
 #include "Include/NtupleHandle.h"
@@ -30,6 +31,18 @@ public:
    void flip() {
       eta = -eta;
       Momentum.SetPz(-Momentum.Pz());
+   };
+
+   static double phistar(Object o1, Object o2) {
+      return phistar(o1.Momentum, o2.Momentum);
+   };
+
+   static double phistar(TLorentzVector tlv1, TLorentzVector tlv2) {
+      return phistar(tlv1.Eta(), tlv2.Eta(), tlv1.Phi(), tlv2.Phi());
+   };
+
+   static double phistar(double eta1, double eta2, double phi1, double phi2) {
+      return tan((TMath::Pi()-fabs(phi2-phi1))/2.)*sin(acos(tanh(fabs(eta2-eta1)/2.)));
    };
 };
 

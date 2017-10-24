@@ -32,6 +32,8 @@ public:
 	TH1D *h_mass3;
 	TH1D *h_diPt;
 	TH1D *h_diPt2_M60to120;
+	TH1D *h_Phistar_M60to120;
+	TH1D *h_Phistar2_M60to120;
 	TH1D *h_diRap;
 
 	TH1D *h_diRap_M15to60;
@@ -147,6 +149,8 @@ public:
 		h_mass3 = new TH1D("h_mass3_"+Type, "", binnum, bins); Histo.push_back( h_mass3 );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
+		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 300,0,3.); Histo.push_back( h_Phistar_M60to120 );
+		h_Phistar2_M60to120 = new TH1D("h_Phistar2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_M60to120 );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
 		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
@@ -434,6 +438,8 @@ public:
 			h_diRap_M60to120->Fill( reco_Rap, weight);
          h_diRap2_M60to120->Fill( reco_Rap-rapshift, weight);
          h_diPt2_M60to120->Fill( reco_Pt, weight );
+         h_Phistar_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         h_Phistar2_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
       } else if( reco_M >= 120 && reco_M < 600 )
 			h_diRap_M120to600->Fill( reco_Rap, weight);
 

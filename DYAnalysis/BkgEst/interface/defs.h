@@ -46,6 +46,9 @@ namespace DYana {
    double rapbin_1560[rapbinnum_1560+1] = {-2.87,-2.4,-1.93,-1.6,-1.2,-0.8,-0.4,0,0.4,0.8,1.2,1.6,1.93};
    const int rapbinnum_60120 = 24;
    double rapbin_60120[rapbinnum_60120+1] = {-2.87,-2.6,-2.4,-2.2,-1.93,-1.8,-1.6,-1.4,-1.2,-1.,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.,1.2,1.4,1.6,1.8,1.93};
+   // phi* binning
+   const int phistarnum = 10;
+   double phistarbin[phistarnum+1] = {0, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 3.};
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {

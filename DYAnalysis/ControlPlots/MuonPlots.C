@@ -143,7 +143,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 
 
 		Bool_t isNLO = 0;
-      if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets") )
+      if( Type=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets") )
       {
          isNLO = 1;
          cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
