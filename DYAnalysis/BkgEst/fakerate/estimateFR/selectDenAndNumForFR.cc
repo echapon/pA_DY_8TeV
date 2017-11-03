@@ -35,8 +35,10 @@ using namespace DYana;
 
 void selectDenAndNumForFR(SampleTag index)
 {
+
     // Event & muon
-    cout<<"Event"<<endl;
+    cout << "index : " << index << "  " << TString(Name(index)) << endl;
+	 cout << "Event"<<endl;
     PhysicsEvent* event = new PhysicsEvent();
     vector<PhysicsMuon>* passingMuons = new vector<PhysicsMuon>;
 
