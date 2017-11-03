@@ -15,7 +15,7 @@
 using namespace RooFit;
 using namespace DYana;
 
-void fitTemplates(const TString& category)
+void fitTemplates(const TString& category, const TString& xtitle, double xmin, double xmax)
 {
    //Get ROOT Files
    TFile* file[NSamples+2];
@@ -23,22 +23,25 @@ void fitTemplates(const TString& category)
    file[QCD] = new TFile(PathFRHistos(QCD));
 
 	//Get Histograms
-	TH1D *h_ttbar = (TH1D*)file[TT]->Get( "denominator_" + category );
-	TH1D *h_WJets = (TH1D*)file[WMu]->Get( "denominator_" + category );
-	TH1D *h_DYJets = (TH1D*)file[DY1050]->Get( "denominator_" + category );
-   for (int i=DY50100; i<=DY4001000; i++) {
-      h_DYJets->Add((TH1D*)file[i]->Get( "denominator_" + category ));
+	TH1D *h_ttbar = (TH1D*)file[TT]->Get( "denominator" + category );
+	TH1D *h_WJets = (TH1D*)file[WpMu]->Get( "denominator" + category );
+   for (int i=WmMu; i<=WmTau; i++) {
+      h_WJets->Add((TH1D*)file[i]->Get( "denominator" + category ));
+	}
+	TH1D *h_DYJets = (TH1D*)file[DYTauTau1030]->Get( "denominator" + category );
+   for (int i=DYTauTau30; i<=DYMuMu30_PbP; i++) {
+      h_DYJets->Add((TH1D*)file[i]->Get( "denominator" + category ));
    }
-	TH1D *h_QCD = (TH1D*)file[QCD]->Get( "denominator_" + category );
-	TH1D *h_WW = (TH1D*)file[WW]->Get( "denominator_" + category );
-	TH1D *h_WZ = (TH1D*)file[WZ]->Get( "denominator_" + category );
-	TH1D *h_ZZ = (TH1D*)file[ZZ]->Get( "denominator_" + category );
+	TH1D *h_QCD = (TH1D*)file[QCD]->Get( "denominator" + category );
+	TH1D *h_WW = (TH1D*)file[WW]->Get( "denominator" + category );
+	TH1D *h_WZ = (TH1D*)file[WZ]->Get( "denominator" + category );
+	TH1D *h_ZZ = (TH1D*)file[ZZ]->Get( "denominator" + category );
 
-   TH1D *h_data = (TH1D*)file[Data1]->Get( "denominator_" + category );
-   h_data->Add((TH1D*)file[Data2]->Get( "denominator_" + category ));
+   TH1D *h_data = (TH1D*)file[Data1]->Get( "denominator" + category );
+   h_data->Add((TH1D*)file[Data2]->Get( "denominator" + category ));
 
 	//Convert TH1D to RooDataHist
-	RooRealVar obs("obs", "p_{T}", 0, 1);
+	RooRealVar obs("obs", xtitle, xmin, xmax);
 
 	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", obs, h_ttbar);
 	RooDataHist *RooHist_WJets = new RooDataHist("RooHist_WJets", "RooHistogram_WJets", obs, h_WJets);
@@ -67,7 +70,7 @@ void fitTemplates(const TString& category)
 	cout << "N_ttbar: "<< NN_ttbar << endl;
 
 	Double_t xsec_DYJets = 0; Double_t Nprocessed_DYJets = 0; Double_t Npass_DYJets = h_DYJets->Integral();
-   for (int i=DY1050; i<=DY4001000; i++) {
+   for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       xsec_DYJets+=Xsec(tag);
       Nprocessed_DYJets+=Nevts(tag);
@@ -75,7 +78,12 @@ void fitTemplates(const TString& category)
 	Double_t NN_DYJets = ((xsec_DYJets * Lumi) / Nprocessed_DYJets) * Npass_DYJets;
 	cout << "N_DYJets: "<< NN_DYJets << endl;
 
-	Double_t xsec_WJets = Xsec(WMu); Double_t Nprocessed_WJets = Nevts(WMu); Double_t Npass_WJets = h_WJets->Integral();
+	Double_t xsec_WJets = 0; Double_t Nprocessed_WJets = 0; Double_t Npass_WJets = h_WJets->Integral();
+   for (int i=WpMu; i<=WmTau; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      xsec_WJets+=Xsec(tag);
+      Nprocessed_WJets+=Nevts(tag);
+   }
 	Double_t NN_WJets = ((xsec_WJets * Lumi) / Nprocessed_WJets) * Npass_WJets;
 	cout << "N_WJets: "<< NN_WJets << endl;
 
@@ -92,9 +100,20 @@ void fitTemplates(const TString& category)
 	Double_t NN_ZZ = ((xsec_ZZ * Lumi) / Nprocessed_ZZ) * Npass_ZZ;
 	cout << "N_ZZ: "<< NN_ZZ << endl;
 
-	Double_t NN_QCD = Lumi * h_QCD->Integral();
+	cout << "#############################" << endl;
+// Question : why we don't use former formula for QCD, and use different one?
+/*
+	Double_t xsec_QCD = Xsec(QCD); Double_t Nprocessed_QCD = Nevts(QCD); Double_t Npass_QCD = h_QCD->Integral();
+	Double_t NN_QCD = ((xsec_QCD * Lumi) / Nprocessed_QCD) * Npass_QCD;
 	cout << "N_QCD: "<< NN_QCD << endl;
 
+*/
+
+	Double_t NN_QCD = Lumi * h_QCD->Integral();
+	cout << "N_QCD: "<< NN_QCD << endl;
+	
+	cout << "#############################" << endl;
+	
 	double N_total = NN_ttbar + NN_DYJets + NN_WJets + NN_QCD + NN_WW + NN_WZ + NN_ZZ;
 	double N_ttbar = h_data->Integral()*NN_ttbar/N_total;
 	double N_DYJets = h_data->Integral()*NN_DYJets/N_total;
@@ -115,7 +134,7 @@ void fitTemplates(const TString& category)
 	RooRealVar n_WZ("n_WZ", "n_WZ", N_WZ, 0.1*N_WZ, N_WZ*10);
 	RooRealVar n_ZZ("n_ZZ", "n_ZZ", N_ZZ, 0.1*N_ZZ, N_ZZ*10);
   	RooAddPdf model( "model","model",RooArgList(*pdf_QCD, *pdf_WJets, *pdf_DYJets, *pdf_ttbar, *pdf_WW, *pdf_WZ, *pdf_ZZ), RooArgList(n_QCD, n_WJets, n_DYJets, n_ttbar, n_WW, n_WZ, n_ZZ) );
-     // RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
+   // RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
 
    // RooFitResult* r = pdf_WJets->fitTo( *RooHist_data, Save() );
    RooFitResult* r = model.fitTo( *RooHist_data, Save() );
@@ -154,6 +173,16 @@ void fitTemplates(const TString& category)
 	//model.paramOn(frame1, Layout(0.65,0.9,0.9) );
 	frame1->Draw();
    r->Print();
+
+	std::cout << "########################" << std::endl;
+	std::cout << "n_ttbar/N_ttbar: " << n_ttbar.getVal()/N_ttbar << std::endl;
+	std::cout << "n_DYJets/N_DYJets: " << n_DYJets.getVal()/N_DYJets << std::endl;
+	std::cout << "n_WJets/N_WJets: " << n_WJets.getVal()/N_WJets << std::endl;
+	std::cout << "n_QCD/N_QCD: " << n_QCD.getVal()/N_QCD << std::endl;
+	std::cout << "n_WW/N_WW: " << n_WW.getVal()/N_WW << std::endl;
+	std::cout << "n_WZ/N_WZ: " << n_WZ.getVal()/N_WZ << std::endl;
+	std::cout << "n_ZZ/N_ZZ: " << n_ZZ.getVal()/N_ZZ << std::endl;
+	std::cout << "########################" << std::endl;
 
 	TLegend *leg1 = new TLegend(0.65,0.7,.95,.97);
 	leg1->SetFillColor(kWhite);
@@ -231,7 +260,7 @@ void fitTemplates(const TString& category)
 	RooAbsReal *chi2 = model.createChi2(*RooHist_data);
 	cout << "chi2: " << chi2->getVal() << endl;
 	cout << "Normalized chi2: " << chi2->getVal() / ((Double_t)h_data->GetNbinsX()) << endl;
-
-	c_fit->Print("print/fit_"+category+".pdf");
+	cout << "#### UNTIL NOW : " << category << endl;
+	c_fit->Print("print/fit"+category+".pdf");
 }
 
