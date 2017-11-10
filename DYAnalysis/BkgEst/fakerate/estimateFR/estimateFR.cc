@@ -46,6 +46,14 @@ void estimateFR() {
 
 
     TFile* file[NSamples+2];
+
+	 TFile* fin_fitNch_barrel = new TFile("histograms/histFRFit_barrel_opt6_woPbPDYJets.root","read");
+	 TFile* fin_fitNch_endcap = new TFile("histograms/histFRFit_endcap_opt6_woPbPDYJets.root","read");
+
+	 TH1D* h_fitNch_barrel = (TH1D*)fin_fitNch_barrel->Get("h_fitNch");
+	 TH1D* h_fitNch_endcap = (TH1D*)fin_fitNch_endcap->Get("h_fitNch");
+
+
     for (int i=0; i<ALL; i++) file[i] = new TFile(PathFRHistos(static_cast<SampleTag>(i)));
     file[QCD] = new TFile(PathFRHistos(QCD));
 
@@ -104,120 +112,89 @@ void estimateFR() {
 
        norm_all[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
     }
-/*
-    // NB: the numbers below are the output of fitTemplate.cc
-    double intDY_barrel=0, intDY_endcap=0;
-    for (int i=DY1050; i<=DY4001000; i++) {
-       intDY_barrel+=denominator_barrel[i]->Integral();
-       intDY_endcap+=denominator_endcap[i]->Integral();
-    }
-    for (int i=DY1050; i<=DY4001000; i++) {
-       norm_fit_barrel[i] = 1.8340e+04/intDY_barrel;
-    }
-    norm_fit_barrel[TT] = 1.5495e+04/denominator_barrel[TT]->Integral();
-    norm_fit_barrel[WMu] = 8.3640e+04/denominator_barrel[WMu]->Integral();
-    norm_fit_barrel[QCD] = 1.4770e+05/denominator_barrel[QCD]->Integral();
-    norm_fit_barrel[WW] = 7.1414e+02/denominator_barrel[WW]->Integral();
-    norm_fit_barrel[WZ] = 1.8417e+02/denominator_barrel[WZ]->Integral();
-    norm_fit_barrel[ZZ] = 1.4233e+01/denominator_barrel[ZZ]->Integral();
-
-    for (int i=DY1050; i<=DY4001000; i++) {
-       norm_fit_endcap[i] = 1.4295e+04/intDY_barrel;
-    }
-    norm_fit_endcap[TT] = 7.5868e+03/denominator_endcap[TT]->Integral();
-    norm_fit_endcap[WMu] = 8.4252e+04/denominator_endcap[WMu]->Integral();
-    norm_fit_endcap[QCD] = 1.0105e+05/denominator_endcap[QCD]->Integral();
-    norm_fit_endcap[WW] = 5.6528e+02/denominator_endcap[WW]->Integral();
-    norm_fit_endcap[WZ] = 1.4257e+02/denominator_endcap[WZ]->Integral();
-    norm_fit_endcap[ZZ] = 1.0795e+01/denominator_endcap[ZZ]->Integral();
-
-  */
-    // NB: the numbers below are the output of fitTemplate.cc
-/*
-    double intDY_barrel=0, intDY_endcap=0;
-    for (int i=DYMuMu1030; i<=DYMuMu30; i++) {
-       intDY_barrel+=denominator_barrel[i]->Integral();
-       intDY_endcap+=denominator_endcap[i]->Integral();
-    }
-    for (int i=DYMuMu1030; i<=DYMuMu30; i++) {
-       norm_fit_barrel[i] = 6.0491e+04/intDY_barrel;
-    }
-    norm_fit_barrel[TT] =9.6190e+02/denominator_barrel[TT]->Integral();
-    norm_fit_barrel[WpMu] = 1.1110e+05/denominator_barrel[WpMu]->Integral();
-    norm_fit_barrel[QCD] = 1.1869e+06/denominator_barrel[QCD]->Integral();
-    norm_fit_barrel[WW] = 3.8305e+01/denominator_barrel[WW]->Integral();
-    norm_fit_barrel[WZ] = 1.7711e+01/denominator_barrel[WZ]->Integral();
-    norm_fit_barrel[ZZ] = 6.7838e+00/denominator_barrel[ZZ]->Integral();
-
-    for (int i=DYMuMu1030; i<=DYMuMu30; i++) {
-       norm_fit_endcap[i] = 4.7340e+04/intDY_barrel;
-    }
-    norm_fit_endcap[TT] = 4.4251e+02/denominator_endcap[TT]->Integral();
-    norm_fit_endcap[WpMu] = 1.0743e+05/denominator_endcap[WpMu]->Integral();
-    norm_fit_endcap[QCD] = 8.7395e+05/denominator_endcap[QCD]->Integral();
-    norm_fit_endcap[WW] = 2.7097e+01/denominator_endcap[WW]->Integral();
-    norm_fit_endcap[WZ] = 1.2242e+01/denominator_endcap[WZ]->Integral();
-    norm_fit_endcap[ZZ] = 4.6082e+00/denominator_endcap[ZZ]->Integral();
-*/
 
     // NB: the numbers below are the output of fitTemplate.cc
+
     double intDY_barrel=0, intDY_endcap=0;
-    for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
-       intDY_barrel+=denominator_barrel[i]->Integral();
-       intDY_endcap+=denominator_endcap[i]->Integral();
+	 TH1D* denominator_barrel_DYJets;
+    TH1D* denominator_endcap_DYJets;
+		 TH1D* tmp_barrel=(TH1D*)denominator_barrel[DYTauTau1030]->Clone();
+		 TH1D* tmp_endcap=(TH1D*)denominator_endcap[DYTauTau1030]->Clone();
+       tmp_barrel->Scale(norm_all[DYTauTau1030]);
+       tmp_endcap->Scale(norm_all[DYTauTau1030]);
+	    denominator_barrel_DYJets=(TH1D*)tmp_barrel->Clone();
+	    denominator_endcap_DYJets=(TH1D*)tmp_endcap->Clone();
+	    intDY_barrel+=denominator_barrel_DYJets->Integral();
+       intDY_endcap+=denominator_endcap_DYJets->Integral();
+    for (int i=DYTauTau30; i<=DYMuMu30_PbP; i++) {
+		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
+		 tmp_barrel=(TH1D*)denominator_barrel[i]->Clone();
+		 tmp_endcap=(TH1D*)denominator_endcap[i]->Clone();
+       tmp_barrel->Scale(norm_all[i]);
+       tmp_endcap->Scale(norm_all[i]);
+	    denominator_barrel_DYJets->Add(tmp_barrel);
+	    denominator_endcap_DYJets->Add(tmp_endcap);
+	    intDY_barrel+=denominator_barrel_DYJets->Integral();
+       intDY_endcap+=denominator_endcap_DYJets->Integral();
     }
+
     double intWJets_barrel=0, intWJets_endcap=0;
-    for (int i=WpMu; i<=WmTau; i++) {
+ 	 TH1D* denominator_barrel_WJets;
+    TH1D* denominator_endcap_WJets;
+		 TH1D* tmp_barrel_WJets=(TH1D*)denominator_barrel[WpMu]->Clone();
+		 TH1D* tmp_endcap_WJets=(TH1D*)denominator_endcap[WpMu]->Clone();
+       tmp_barrel_WJets->Scale(norm_all[WpMu]);
+       tmp_endcap_WJets->Scale(norm_all[WpMu]);
+	    denominator_barrel_WJets=(TH1D*)tmp_barrel_WJets->Clone();
+	    denominator_endcap_WJets=(TH1D*)tmp_endcap_WJets->Clone();
+	    intDY_barrel+=denominator_barrel_WJets->Integral();
+       intDY_endcap+=denominator_endcap_WJets->Integral();
+    for (int i=WmMu; i<=WmTau; i++) {
+		 tmp_barrel_WJets=(TH1D*)denominator_barrel[i]->Clone();
+		 tmp_endcap_WJets=(TH1D*)denominator_endcap[i]->Clone();
+       tmp_barrel_WJets->Scale(norm_all[i]);
+       tmp_endcap_WJets->Scale(norm_all[i]);
+	    denominator_barrel_WJets->Add(tmp_barrel_WJets);
+	    denominator_endcap_WJets->Add(tmp_endcap_WJets);
+	    intDY_barrel+=denominator_barrel_WJets->Integral();
+       intDY_endcap+=denominator_endcap_WJets->Integral();
+    }
+ 
+  for (int i=WmMu; i<=WmTau; i++) {
        intWJets_barrel+=denominator_barrel[i]->Integral();
        intWJets_endcap+=denominator_endcap[i]->Integral();
     }
 
     for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
-       norm_fit_barrel[i] = 7.6047e+04/intDY_barrel;
-        //norm_fit_barrel[i] = 1.0444e+05/intDY_barrel;
+		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
+       norm_fit_barrel[i] = h_fitNch_barrel->GetBinContent(1)/intDY_barrel;
     }
-    norm_fit_barrel[TT] =4.2011e+04/denominator_barrel[TT]->Integral();
-    //norm_fit_barrel[TT] =7.7207e+02/denominator_barrel[TT]->Integral();
+    norm_fit_barrel[TT] = h_fitNch_barrel->GetBinContent(7)/denominator_barrel[TT]->Integral();
 
     for (int i=WpMu; i<=WmTau; i++) {
-       norm_fit_barrel[i] = 5.8947e+04/intWJets_barrel;
-       //norm_fit_barrel[i] = 1.8119e+04/intWJets_barrel;
+       norm_fit_barrel[i] = h_fitNch_barrel->GetBinContent(3)/intWJets_barrel;
     }
 
-    norm_fit_barrel[QCD] = 1.1815e+06/denominator_barrel[QCD]->Integral();
-    norm_fit_barrel[WW] = 5.3532e+01/denominator_barrel[WW]->Integral();
-    norm_fit_barrel[WZ] = 8.1925e+00/denominator_barrel[WZ]->Integral();
-    norm_fit_barrel[ZZ] = 6.0809e+00/denominator_barrel[ZZ]->Integral();
+    norm_fit_barrel[QCD] = h_fitNch_barrel->GetBinContent(2)/denominator_barrel[QCD]->Integral();
+    norm_fit_barrel[WW] = h_fitNch_barrel->GetBinContent(4)/denominator_barrel[WW]->Integral();
+    norm_fit_barrel[WZ] = h_fitNch_barrel->GetBinContent(5)/denominator_barrel[WZ]->Integral();
+    norm_fit_barrel[ZZ] = h_fitNch_barrel->GetBinContent(6)/denominator_barrel[ZZ]->Integral();
 
 	 std::cout << "#######################" << std::endl;
 	 std::cout << "norm_fit_barrel[QCD]: "<< norm_fit_barrel[QCD] << std::endl;
-/*
-    norm_fit_barrel[QCD] = 1.8470e+06/denominator_barrel[QCD]->Integral();
-    norm_fit_barrel[WW] = 2.3510e+01/denominator_barrel[WW]->Integral();
-    norm_fit_barrel[WZ] = 1.0898e+01/denominator_barrel[WZ]->Integral();
-    norm_fit_barrel[ZZ] = 4.1737e+00/denominator_barrel[ZZ]->Integral();
-*/
-    for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
-       norm_fit_endcap[i] = 5.8169e+04/intDY_endcap;
-//       norm_fit_endcap[i] = 7.3860e+04/intDY_endcap;
-    }
-    norm_fit_endcap[TT] = 1.9147e+04/denominator_endcap[TT]->Integral();
-//    norm_fit_endcap[TT] = 3.0594e+02/denominator_endcap[TT]->Integral();
-    for (int i=WpMu; i<=WmTau; i++) {
-       norm_fit_endcap[i] = 7.9277e+04/intWJets_endcap;
-//       norm_fit_endcap[i] = 3.6968e+04/intWJets_endcap;
-    }
-    norm_fit_endcap[QCD] = 8.7160e+05/denominator_endcap[QCD]->Integral();
-    norm_fit_endcap[WW] = 4.8647e+02/denominator_endcap[WW]->Integral();
-    norm_fit_endcap[WZ] = 5.3017e+02/denominator_endcap[WZ]->Integral();
-    norm_fit_endcap[ZZ] = 1.9886e+02/denominator_endcap[ZZ]->Integral();
 
-/*
-    norm_fit_endcap[QCD] = 1.2412e+06/denominator_endcap[QCD]->Integral();
-    norm_fit_endcap[WW] = 1.4999e+01/denominator_endcap[WW]->Integral();
-    norm_fit_endcap[WZ] = 6.7946e+00/denominator_endcap[WZ]->Integral();
-    norm_fit_endcap[ZZ] = 2.5479e+00/denominator_endcap[ZZ]->Integral();
-*/
+    for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
+   		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
+	   norm_fit_endcap[i] = h_fitNch_endcap->GetBinContent(1)/intDY_endcap;
+    }
+    norm_fit_endcap[TT] = h_fitNch_endcap->GetBinContent(7)/denominator_endcap[TT]->Integral();
+    for (int i=WpMu; i<=WmTau; i++) {
+       norm_fit_endcap[i] = h_fitNch_endcap->GetBinContent(3)/intWJets_endcap;
+    }
+    norm_fit_endcap[QCD] = h_fitNch_endcap->GetBinContent(2)/denominator_endcap[QCD]->Integral();
+    norm_fit_endcap[WW] = h_fitNch_endcap->GetBinContent(4)/denominator_endcap[WW]->Integral();
+    norm_fit_endcap[WZ] = h_fitNch_endcap->GetBinContent(5)/denominator_endcap[WZ]->Integral();
+    norm_fit_endcap[ZZ] = h_fitNch_endcap->GetBinContent(6)/denominator_endcap[ZZ]->Integral();
 
 	  for(int i=0;i<=QCD;i++) {
        if (i==ALL) continue;
@@ -235,7 +212,6 @@ void estimateFR() {
 		 std::cout << "#######################" << std::endl;
 		 std::cout << "scaled denominator_pt_fit_barrel[" << i << "]: " << denominator_pt_fit_barrel[i]->Integral() << std::endl;
 		 std::cout << "scaled denominator_pt_fit_endcap[" << i << "]: " << denominator_pt_fit_endcap[i]->Integral() << std::endl;
-	
 		 std::cout << "#######################" << std::endl;
 
        if(IsData(tag)) {
@@ -266,17 +242,7 @@ void estimateFR() {
 		hs_xsec->Add(denominator_pt_xsec_barrel[i]);
 		hs_fit->Add(denominator_pt_fit_barrel[i]);
    }
-/*	
-	TH1D* hratio_xsec;
-	hratio_xsec=(TH1D*)denominator_pt_xsec_barrel[i]->Clone();
-	hratio_xsec->Sumw2();
-	hratio_xsec->Divide(denominator_pt_xsec_barrel[i],denominator_pt_xsec_barrel[i],1,1,"B");
 
-	TH1D* hratio_fit;
-	hratio_fit=(TH1D*)denominator_pt_fit_barrel[i]->Clone();
-	hratio_fit->Sumw2();
-	hratio_fit->Divide(denominator_pt_fit_barrel[i],denominator_pt_fit_barrel[i],1,1,"B");
-*/
 	TH1D* hratio_xsecvsfit;
 	hratio_xsecvsfit=(TH1D*)denominator_pt_fit_barrel[i]->Clone();
 	hratio_xsecvsfit->Sumw2();
@@ -327,16 +293,16 @@ void estimateFR() {
 
 	
 	hratio_xsecvsfit->Draw("pe");
-	chs->SaveAs(Form("comppt_%s.pdf",Name(tag)));	
+	chs->SaveAs(Form("print/Comp_Xsec_vs_Fit_%s_opt6.pdf",Name(tag)));	
 }
 	 TCanvas* chs1 = new TCanvas("chs1","stacked hists",600,600);
 	 chs1->SetLogy(1);
 	 hs_data->Draw("");
 	 hs_xsec->Draw("same");
-	 chs1->SaveAs("comp_data_vs_xsec.pdf");
+	 chs1->SaveAs("print/Comp_Data_vs_Xsec_stacked_opt6.pdf");
 	 hs_data->Draw("");
 	 hs_fit->Draw("same");
-	 chs1->SaveAs("comp_data_vs_fit.pdf");
+	 chs1->SaveAs("print/Comp_Data_vs_Fit_stacked_opt6.pdf");
 
 
 
@@ -345,17 +311,6 @@ void estimateFR() {
 
     TH1D* FR_xsec_barrel = (TH1D*)FRBytRatio(numerator_pt_barrel, denominator_pt_xsec_barrel);
     TH1D* FR_xsec_endcap = (TH1D*)FRBytRatio(numerator_pt_endcap, denominator_pt_xsec_endcap);
-
-    TH1D* FR_template_barrel_swap = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_xsec_barrel);
-    TH1D* FR_template_endcap_swap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_xsec_endcap);
-
-    TH1D* FR_xsec_barrel_swap = (TH1D*)FRBytRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
-    TH1D* FR_xsec_endcap_swap = (TH1D*)FRBytRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-
-
-	 TH1D* FR_check_barrel = (TH1D*)FRCheck(numerator_pt_barrel, denominator_pt_xsec_barrel);
-	 TH1D* FR_check_endcap = (TH1D*)FRCheck(numerator_pt_endcap, denominator_pt_xsec_endcap);
-
 
     int W = 1200;
     int H = 1200;
@@ -456,7 +411,7 @@ void estimateFR() {
     FR_template_barrel->Draw("");
     FR_xsec_barrel->Draw("same");
     legend2->Draw("SAME");
-    canv->Print("print/FR_Barrel.pdf");
+    canv->Print("print/FR_Barrel_opt6.pdf");
 
     canv->Clear();
     ptFrame->Draw();
@@ -467,65 +422,13 @@ void estimateFR() {
     FR_template_endcap->Draw("");
     FR_xsec_endcap->Draw("same");
     legend2->Draw("SAME");
-    canv->Print("print/FR_Endcap.pdf");
+    canv->Print("print/FR_Endcap_opt6.pdf");
 
-    FR_template_barrel_swap->SetMarkerSize(3);
-    FR_template_endcap_swap->SetMarkerSize(3);
-    FR_xsec_barrel_swap->SetMarkerSize(3);
-    FR_xsec_endcap_swap->SetMarkerSize(3);
-
-    FR_template_barrel_swap->SetLineColor(1);
-    FR_template_barrel_swap->SetLineWidth(2);
-    FR_template_barrel_swap->SetMarkerStyle(20);
-    FR_template_barrel_swap->SetMarkerColor(1);
-
-    FR_xsec_barrel_swap->SetLineColor(2);
-    FR_xsec_barrel_swap->SetLineWidth(2);
-    FR_xsec_barrel_swap->SetMarkerStyle(21);
-    FR_xsec_barrel_swap->SetMarkerColor(2);
-
-    FR_template_endcap_swap->SetLineColor(1);
-    FR_template_endcap_swap->SetLineWidth(2);
-    FR_template_endcap_swap->SetMarkerStyle(20);
-    FR_template_endcap_swap->SetMarkerColor(1);
-
-    FR_xsec_endcap_swap->SetLineColor(2);
-    FR_xsec_endcap_swap->SetLineWidth(2);
-    FR_xsec_endcap_swap->SetMarkerStyle(21);
-    FR_xsec_endcap_swap->SetMarkerColor(2);
-
-     ptFrame->Draw();
-    CMS_lumi(canv,4,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    FR_template_barrel_swap->Draw("");
-    FR_xsec_barrel_swap->Draw("same");
-    legend2->Draw("SAME");
-    canv->Print("print/FR_Barrel_swap.pdf");
-
-    canv->Clear();
-    ptFrame->Draw();
-    CMS_lumi(canv,4,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    FR_template_endcap_swap->Draw("");
-    FR_xsec_endcap_swap->Draw("same");
-    legend2->Draw("SAME");
-    canv->Print("print/FR_Endcap_swap.pdf");
-
-
-    TFile* g = new TFile("result/fakerate.root","RECREATE");
+    TFile* g = new TFile("result/fakerate_opt6.root","RECREATE");
     FR_template_barrel->Write();
     FR_template_endcap->Write();
     FR_xsec_barrel->Write();
     FR_xsec_endcap->Write();
-    FR_template_barrel_swap->Write();
-    FR_template_endcap_swap->Write();
-    FR_xsec_barrel_swap->Write();
-    FR_xsec_endcap_swap->Write();
-
 
     g->Close();
 
@@ -553,18 +456,6 @@ void estimateFR() {
         cout<<FR_xsec_endcap->GetBinContent(i);
     }
     cout<<endl;
-    cout<<"Check Barrel"<<endl;
-    for(int i=1; i<ptbinnum+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_check_barrel->GetBinContent(i);
-    }
-    cout<<endl;
-    cout<<"Check Endcap"<<endl;
-    for(int i=1; i<ptbinnum_endcap+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_check_endcap->GetBinContent(i);
-    }
-    cout<<endl;
     cout<<"Template/Ratio Barrel"<<endl;
     for(int i=1; i<ptbinnum+1; i++) {
         if(i!=1) cout<<",";
@@ -577,46 +468,6 @@ void estimateFR() {
         cout<<(FR_template_endcap->GetBinContent(i))/(FR_xsec_endcap->GetBinContent(i));
     }
     cout<<endl;
-
-
-	 cout << "###### SWAP ############" << endl;
-    cout<<"Template Barrel"<<endl;
-    for(int i=1; i<ptbinnum+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_template_barrel_swap->GetBinContent(i);
-    }
-    cout<<endl;
-    cout<<"Template Endcap"<<endl;
-    for(int i=1; i<ptbinnum_endcap+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_template_endcap_swap->GetBinContent(i);
-    }
-    cout<<endl;
-    cout<<"Ratio Barrel"<<endl;
-    for(int i=1; i<ptbinnum+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_xsec_barrel_swap->GetBinContent(i);
-    }
-    cout<<endl;
-    cout<<"Ratio Endcap"<<endl;
-        for(int i=1; i<ptbinnum_endcap+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<FR_xsec_endcap_swap->GetBinContent(i);
-    }
-    cout<<endl;
-    cout<<"Template/Ratio Barrel"<<endl;
-    for(int i=1; i<ptbinnum+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<(FR_template_barrel_swap->GetBinContent(i))/(FR_xsec_barrel_swap->GetBinContent(i));
-    }
-    cout<<endl;
-    cout<<"Template/Ratio Endcap"<<endl;
-        for(int i=1; i<ptbinnum_endcap+1; i++) {
-        if(i!=1) cout<<",";
-        cout<<(FR_template_endcap_swap->GetBinContent(i))/(FR_xsec_endcap_swap->GetBinContent(i));
-    }
-    cout<<endl;
-
 
 }
 
@@ -640,27 +491,17 @@ TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 
     TH1D* num = (TH1D*)numerator[Data1]->Clone(name);
     num->Add(numerator[Data2]);
-/*
-    TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
-    den->Add(numerator[DY50100]);
-    den->Add(numerator[DY100200]);
-    den->Add(numerator[DY200400]);
-    den->Add(numerator[DY4001000]);
-*/
+
     TH1D* den = (TH1D*)numerator[DYTauTau1030]->Clone(name+"_");
     den->Add(numerator[DYTauTau30]);
     den->Add(numerator[DYMuMu1030]);
     den->Add(numerator[DYMuMu30]);
-    den->Add(numerator[DYMuMu1030_PbP]);
-    den->Add(numerator[DYMuMu30_PbP]);
-
-
-
+//    den->Add(numerator[DYMuMu1030_PbP]);
+//    den->Add(numerator[DYMuMu30_PbP]);
 
     num->Multiply(numerator[QCD]);
 
     den->Add(numerator[TT]);
-//    den->Add(numerator[WMu]);
     den->Add(numerator[WpMu]);
     den->Add(numerator[WmMu]);
     den->Add(numerator[WpTau]);
@@ -681,35 +522,22 @@ TH1D* FRByTemplate(TH1D** numerator, TH1D** denominator) {
 TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
 
     TString name = ( ((TString)(denominator[QCD]->GetName())).Contains("barrel") ) ? "FR_xsec_barrel" : "FR_xsec_endcap";
-/*
-    TH1D* num = (TH1D*)denominator[DY1050]->Clone(name);
-    num->Add(numerator[DY50100]);
-    num->Add(numerator[DY100200]);
-    num->Add(numerator[DY200400]);
-    num->Add(numerator[DY4001000]);
-    TH1D* den = (TH1D*)numerator[DY1050]->Clone(name+"_");
-    den->Add(numerator[DY50100]);
-    den->Add(numerator[DY100200]);
-    den->Add(numerator[DY200400]);
-    den->Add(numerator[DY4001000]);
-*/
 
     TH1D* num = (TH1D*)denominator[DYTauTau1030]->Clone(name);
     num->Add(denominator[DYTauTau30]);
     num->Add(denominator[DYMuMu1030]);
     num->Add(denominator[DYMuMu30]);
-    num->Add(denominator[DYMuMu1030_PbP]);
-    num->Add(denominator[DYMuMu30_PbP]);
+//    num->Add(denominator[DYMuMu1030_PbP]);
+//    num->Add(denominator[DYMuMu30_PbP]);
 
     TH1D* den = (TH1D*)numerator[DYTauTau1030]->Clone(name+"_");
     den->Add(numerator[DYTauTau30]);
     den->Add(numerator[DYMuMu1030]);
     den->Add(numerator[DYMuMu30]);
-    den->Add(numerator[DYMuMu1030_PbP]);
-    den->Add(numerator[DYMuMu30_PbP]);
+//    den->Add(numerator[DYMuMu1030_PbP]);
+//    den->Add(numerator[DYMuMu30_PbP]);
 
     num->Add(denominator[TT]);
-//    num->Add(denominator[WMu]);
 	 num->Add(denominator[WpMu]);
 	 num->Add(denominator[WmMu]);
 	 num->Add(denominator[WpTau]);
@@ -721,13 +549,11 @@ TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator) {
     num->Add(denominator[ZZ]);
     num->Multiply(numerator[QCD]);
 
-    //TH1D* num = (TH1D*)numerator[QCD]->Clone(name);
     TH1D *num_dataAll = (TH1D*) numerator[Data1]->Clone(name+"_tmp");
     num_dataAll->Add(numerator[Data2]);
     num->Multiply(num_dataAll);
 
     den->Add(numerator[TT]);
-//    den->Add(numerator[WMu]);
 	 den->Add(numerator[WpMu]);
 	 den->Add(numerator[WmMu]);
 	 den->Add(numerator[WpTau]);
@@ -756,11 +582,10 @@ TH1D* FRCheck(TH1D** numerator, TH1D** denominator) {
     num->Add(denominator[DYTauTau30]);
     num->Add(denominator[DYMuMu1030]);
     num->Add(denominator[DYMuMu30]);
-    num->Add(denominator[DYMuMu1030_PbP]);
-    num->Add(denominator[DYMuMu30_PbP]);
+//    num->Add(denominator[DYMuMu1030_PbP]);
+//    num->Add(denominator[DYMuMu30_PbP]);
 
     num->Add(denominator[TT]);
-//    num->Add(denominator[WMu]);
 	 num->Add(denominator[WpMu]);
 	 num->Add(denominator[WmMu]);
 	 num->Add(denominator[WpTau]);

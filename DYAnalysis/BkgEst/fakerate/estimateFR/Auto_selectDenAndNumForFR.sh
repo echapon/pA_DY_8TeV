@@ -16,6 +16,5 @@ root -l -b -q 'selectDenAndNumForFR.cc++(DYTauTau1030)';
 root -l -b -q 'selectDenAndNumForFR.cc++(DYTauTau30)';
 root -l -b -q 'selectDenAndNumForFR.cc++(Data1)';
 root -l -b -q 'selectDenAndNumForFR.cc++(Data2)';
-root -l -b -q 'selectDenAndNumForFR.cc++(ALL)';
 root -l -b -q 'selectDenAndNumForFR.cc++(QCD)';
 
