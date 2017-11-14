@@ -208,7 +208,7 @@ void selectDenAndNumForFR_SS(SampleTag index)
 					denominator_pt_endcap->Fill(pt,wt);
 					denominator_ptunibin_endcap->Fill(pt,wt);
 				}
-
+/*
 				if (iniiso<0.15 && iso<0.15) {
 					numerator_pt->Fill(inipt,iniwt);
 					numerator_eta->Fill(inieta,iniwt);
@@ -240,7 +240,44 @@ void selectDenAndNumForFR_SS(SampleTag index)
 					}
 
 				}
+*/
+				if (iniiso<0.15) {
+					numerator_pt->Fill(inipt,iniwt);
+					numerator_eta->Fill(inieta,iniwt);
+					numerator->Fill(iniiso,iniwt); 
+					numerator_ptunibin->Fill(inipt,iniwt);
+				}
+				if (iso<0.15) {
+					numerator_pt->Fill(pt,wt);
+					numerator_eta->Fill(eta,wt);
+					numerator->Fill(iso,wt); 
+					numerator_ptunibin->Fill(pt,wt);
+				}
+				
+				
+				if (iniiso<0.15 && fabs(inieta)<1.2) {
+						numerator_barrel->Fill(iniiso,iniwt); 
+						numerator_pt_barrel->Fill(inipt,iniwt);
+						numerator_ptunibin_barrel->Fill(inipt,iniwt);
+				}
+				if (iso<0.15 && fabs(eta)<1.2) {
+						numerator_barrel->Fill(iso,wt); 
+						numerator_pt_barrel->Fill(pt,wt);
+						numerator_ptunibin_barrel->Fill(pt,wt);
+					
+				}
 
+				if (iniiso<0.15 && fabs(inieta)>1.2) {
+						numerator_endcap->Fill(iniiso,iniwt); 
+						numerator_pt_endcap->Fill(inipt,iniwt);
+						numerator_ptunibin_endcap->Fill(inipt,iniwt);
+				}
+				if (iso<0.15 && fabs(eta)>1.2) {
+						numerator_endcap->Fill(iso,wt); 
+						numerator_pt_endcap->Fill(pt,wt);
+						numerator_ptunibin_endcap->Fill(pt,wt);
+					
+				}
 				isStored=2;
 			}
 
