@@ -35,17 +35,38 @@ using namespace DYana;
 void fillSystematics( TH1D* data_driven, TH1D* stat, TH1D* systematic, TH1D* total );
 void removeNegativeBins( TH1D* hist );
 
-void estimateBkg() {
+void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560 | rap60120
 
    setTDRStyle();
 
     // const int binnum = 43;
     // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
 
+    // the bins depend on the variable
+    int varbinnum;
+    double *varbins;
+    TString tvar(var);
+    if (tvar=="mass") {
+       varbinnum = binnum;
+       varbins = bins;
+    } else if (tvar=="pt") {
+       varbinnum = ptbinnum_meas;
+       varbins = ptbin_meas;
+    } else if (tvar=="phistar") {
+       varbinnum = phistarnum;
+       varbins = phistarbin;
+    } else if (tvar=="rap1560") {
+       varbinnum = rapbinnum_1560;
+       varbins = rapbin_1560;
+    } else if (tvar=="rap60120") {
+       varbinnum = rapbinnum_60120;
+       varbins = rapbin_60120;
+    }
+
     TFile* file[NSamples];
     for (int i=0; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
 
-    TFile* g = new TFile("result/emu.root","RECREATE");
+    TFile* g = new TFile(Form("result/emu_%s.root",var),"RECREATE");
 
     double norm[NSamples];
 
@@ -61,9 +82,9 @@ void estimateBkg() {
         }
         norm[i] = (Xsec(tag)*lumi)/Nevts(tag);
 
-        emu[i] = (TH1D*)file[i]->Get("emu_mass")->Clone("emu"+TString(Name(tag)));
-        emuSS[i] = (TH1D*)file[i]->Get("emuSS_mass")->Clone("emuSS"+TString(Name(tag)));
-        dimu[i] = (TH1D*)file[i]->Get("dimu_mass")->Clone("dimu"+TString(Name(tag)));
+        emu[i] = (TH1D*)file[i]->Get(Form("emu_%s",var))->Clone("emu"+TString(Name(tag)));
+        emuSS[i] = (TH1D*)file[i]->Get(Form("emuSS_%s",var))->Clone("emuSS"+TString(Name(tag)));
+        dimu[i] = (TH1D*)file[i]->Get(Form("dimu_%s",var))->Clone("dimu"+TString(Name(tag)));
 
         emu[i]->Scale(norm[i]);
         emuSS[i]->Scale(norm[i]);
@@ -83,13 +104,13 @@ void estimateBkg() {
         dimu[i]->SetStats(kFALSE);
     } 
 
-    TH1D* emu_data1 = (TH1D*)file[Data1]->Get("emu_mass")->Clone("emu_data1");
-    TH1D* emu_data2 = (TH1D*)file[Data2]->Get("emu_mass")->Clone("emu_data2");
+    TH1D* emu_data1 = (TH1D*)file[Data1]->Get(Form("emu_%s",var))->Clone("emu_data1");
+    TH1D* emu_data2 = (TH1D*)file[Data2]->Get(Form("emu_%s",var))->Clone("emu_data2");
     TH1D* emu_data = (TH1D*)emu_data1->Clone("emu_data");
     emu_data->Add(emu_data2);
 
-    TH1D* emuSS_data1 = (TH1D*)file[Data1]->Get("emuSS_mass")->Clone("emuSS_data1");
-    TH1D* emuSS_data2 = (TH1D*)file[Data2]->Get("emuSS_mass")->Clone("emuSS_data2");
+    TH1D* emuSS_data1 = (TH1D*)file[Data1]->Get(Form("emuSS_%s",var))->Clone("emuSS_data1");
+    TH1D* emuSS_data2 = (TH1D*)file[Data2]->Get(Form("emuSS_%s",var))->Clone("emuSS_data2");
     TH1D* emuSS_data = (TH1D*)emuSS_data1->Clone("emuSS_data");
     emuSS_data->Add(emuSS_data2);
 
@@ -153,10 +174,10 @@ void estimateBkg() {
     removeNegativeBins( emuSS_DYtautau );
     removeNegativeBins( dimu_DYtautau );
 
-    TH1D* emu_sumBkg = new TH1D("emu_sumBkg","",binnum,bins);
+    TH1D* emu_sumBkg = new TH1D("emu_sumBkg","",varbinnum,varbins);
     THStack* emu_stackBkg = new THStack("emu_stackBkg","");
 
-    TH1D* emuSS_sumMC = new TH1D("emuSS_sumMC","",binnum,bins);
+    TH1D* emuSS_sumMC = new TH1D("emuSS_sumMC","",varbinnum,varbins);
     THStack* emuSS_stackMC = new THStack("emuSS_stackMC","");
 
     emu_sumBkg->Add(emu_DYtautau);	
@@ -205,11 +226,17 @@ void estimateBkg() {
     legend->AddEntry(emu_QCD,"QCD","F");
 
     TCanvas *c1 = new TCanvas();
+    if (tvar=="phistar" || tvar=="pt") c1->SetLogx();
+    emu_data->GetYaxis()->SetTitle("Entries");
+    if (tvar=="mass") emu_data->GetXaxis()->SetTitle("M_{e#mu} [GeV/c^{2}]");
+    else if (tvar=="pt") emu_data->GetXaxis()->SetTitle("p_{T,e#mu} [GeV/c]");
+    else if (tvar=="phistar") emu_data->GetXaxis()->SetTitle("#phi^{*}_{e#mu}");
+    else emu_data->GetXaxis()->SetTitle("y_{e#mu}");
     emu_data->Draw();
     emu_stackBkg->Draw("hist same");
     emu_data->Draw("same");
     legend->Draw();
-    c1->SaveAs("plot.root");
+    c1->SaveAs(Form("plot_%s.root",var));
 
     TH1D* emu_ratio = (TH1D*)emu_data->Clone("emu_ratio");
     emu_ratio->Divide(emu_data,emu_sumBkg,1.0,1.0,"B");
@@ -229,25 +256,25 @@ void estimateBkg() {
     data_driven_WW->Multiply(dimu[WW]);
     // data_driven_tW->Multiply(dimu_tW);
 
-    // replace the highest mass bins with MC (becasue data-driven entries are zero)
-    data_driven_ttbar->SetBinContent(43,dimu[TT]->GetBinContent(43));
-    data_driven_ttbar->SetBinError(43,dimu[TT]->GetBinError(43)); 
+    // // replace the highest mass bins with MC (becasue data-driven entries are zero)
+    // data_driven_ttbar->SetBinContent(43,dimu[TT]->GetBinContent(43));
+    // data_driven_ttbar->SetBinError(43,dimu[TT]->GetBinError(43)); 
 
-    TH1D* ttbar_total = new TH1D("ttbar_total","",binnum,bins);
-    TH1D* ttbar_systematic = new TH1D("ttbar_systematic","",binnum,bins);
-    TH1D* ttbar_stat = new TH1D("ttbar_stat","",binnum,bins);
+    TH1D* ttbar_total = new TH1D("ttbar_total","",varbinnum,varbins);
+    TH1D* ttbar_systematic = new TH1D("ttbar_systematic","",varbinnum,varbins);
+    TH1D* ttbar_stat = new TH1D("ttbar_stat","",varbinnum,varbins);
 
-    // TH1D* tW_total = new TH1D("tW_total","",binnum,bins);
-    // TH1D* tW_systematic = new TH1D("tW_systematic","",binnum,bins);
-    // TH1D* tW_stat = new TH1D("tW_stat","",binnum,bins);
+    // TH1D* tW_total = new TH1D("tW_total","",varbinnum,varbins);
+    // TH1D* tW_systematic = new TH1D("tW_systematic","",varbinnum,varbins);
+    // TH1D* tW_stat = new TH1D("tW_stat","",varbinnum,varbins);
 
-    TH1D* WW_total = new TH1D("WW_total","",binnum,bins);
-    TH1D* WW_systematic = new TH1D("WW_systematic","",binnum,bins);
-    TH1D* WW_stat = new TH1D("WW_stat","",binnum,bins);
+    TH1D* WW_total = new TH1D("WW_total","",varbinnum,varbins);
+    TH1D* WW_systematic = new TH1D("WW_systematic","",varbinnum,varbins);
+    TH1D* WW_stat = new TH1D("WW_stat","",varbinnum,varbins);
 
-    TH1D* DYtautau_total = new TH1D("DYtautau_total","",binnum,bins);
-    TH1D* DYtautau_systematic = new TH1D("DYtautau_systematic","",binnum,bins);
-    TH1D* DYtautau_stat = new TH1D("DYtautau_stat","",binnum,bins);
+    TH1D* DYtautau_total = new TH1D("DYtautau_total","",varbinnum,varbins);
+    TH1D* DYtautau_systematic = new TH1D("DYtautau_systematic","",varbinnum,varbins);
+    TH1D* DYtautau_stat = new TH1D("DYtautau_stat","",varbinnum,varbins);
 
     ttbar_systematic->Add(dimu[TT]);
     ttbar_systematic->Add(data_driven_ttbar,-1.0);
