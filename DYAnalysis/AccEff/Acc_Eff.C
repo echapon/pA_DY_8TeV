@@ -69,6 +69,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	TH1D *h_mass_AccPass = new TH1D("h_mass_AccPass", "", binnum, bins);
  	TH1D *h_pt_AccTotal = new TH1D("h_pt_AccTotal", "", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_AccPass = new TH1D("h_pt_AccPass", "", ptbinnum_meas, ptbin_meas);
+ 	TH1D *h_phistar_AccTotal = new TH1D("h_phistar_AccTotal", "", phistarnum, phistarbin);
+	TH1D *h_phistar_AccPass = new TH1D("h_phistar_AccPass", "", phistarnum, phistarbin);
  	TH1D *h_rap1560_AccTotal = new TH1D("h_rap1560_AccTotal", "", rapbinnum_1560, rapbin_1560);
 	TH1D *h_rap1560_AccPass = new TH1D("h_rap1560_AccPass", "", rapbinnum_1560, rapbin_1560);
  	TH1D *h_rap60120_AccTotal = new TH1D("h_rap60120_AccTotal", "", rapbinnum_60120, rapbin_60120);
@@ -78,6 +80,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", binnum, bins);
    TH1D *h_pt_EffPass = new TH1D("h_pt_EffPass", "", ptbinnum_meas, ptbin_meas);	 
    TH1D *h_pt_EffTotal = new TH1D("h_pt_EffTotal", "", ptbinnum_meas, ptbin_meas);
+   TH1D *h_phistar_EffPass = new TH1D("h_phistar_EffPass", "", phistarnum, phistarbin);	 
+   TH1D *h_phistar_EffTotal = new TH1D("h_phistar_EffTotal", "", phistarnum, phistarbin);
    TH1D *h_rap1560_EffPass = new TH1D("h_rap1560_EffPass", "", rapbinnum_1560, rapbin_1560);	 
    TH1D *h_rap1560_EffTotal = new TH1D("h_rap1560_EffTotal", "", rapbinnum_1560, rapbin_1560);
    TH1D *h_rap60120_EffPass = new TH1D("h_rap60120_EffPass", "", rapbinnum_60120, rapbin_60120);	 
@@ -87,11 +91,13 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    const int nweights = 211;
    TH1D* h_mass_EffPass_Corr_tnp[nweights];
    TH1D* h_pt_EffPass_Corr_tnp[nweights];
+   TH1D* h_phistar_EffPass_Corr_tnp[nweights];
    TH1D* h_rap1560_EffPass_Corr_tnp[nweights];
    TH1D* h_rap60120_EffPass_Corr_tnp[nweights];
    for (int i=0; i<nweights; i++) {
       h_mass_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass_EffPass_Corr_tnp%d",i), "", binnum, bins);
       h_pt_EffPass_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_Corr_tnp%d",i), "", ptbinnum_meas, ptbin_meas);
+      h_phistar_EffPass_Corr_tnp[i] = new TH1D(Form("h_phistar_EffPass_Corr_tnp%d",i), "", phistarnum, phistarbin);
       h_rap1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap1560_EffPass_Corr_tnp%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap60120_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap60120_EffPass_Corr_tnp%d",i), "", rapbinnum_60120, rapbin_60120);
    }
@@ -205,6 +211,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
 				Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
 				Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
+				Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
 				// -- Flags -- //
 				Bool_t Flag_PassAcc = kFALSE;
@@ -220,6 +227,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             h_mass_AccTotal->Fill( gen_M, TotWeight );
             if (gen_M>60 && gen_M<120) {
                h_pt_AccTotal->Fill( gen_Pt, TotWeight );
+               h_phistar_AccTotal->Fill( gen_Phistar, TotWeight );
                h_rap60120_AccTotal->Fill( gen_Rap, TotWeight );
             } else if (gen_M>15 && gen_M<60) {
                h_rap1560_AccTotal->Fill( gen_Rap, TotWeight );
@@ -229,6 +237,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 					h_mass_AccPass->Fill( gen_M, TotWeight );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccPass->Fill( gen_Pt, TotWeight );
+                  h_phistar_AccPass->Fill( gen_Phistar, TotWeight );
                   h_rap60120_AccPass->Fill( gen_Rap, TotWeight );
                } else if (gen_M>15 && gen_M<60) {
                   h_rap1560_AccPass->Fill( gen_Rap, TotWeight );
@@ -314,6 +323,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
                if (gen_M>60 && gen_M<120) {
                   h_pt_EffTotal->Fill( gen_Pt, TotWeight * PUWeight );
+                  h_phistar_EffTotal->Fill( gen_Phistar, TotWeight * PUWeight );
                   h_rap60120_EffTotal->Fill( gen_Rap, TotWeight * PUWeight );
                } else if (gen_M>15 && gen_M<60) {
                   h_rap1560_EffTotal->Fill( gen_Rap, TotWeight * PUWeight );
@@ -323,6 +333,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                   h_mass_EffPass->Fill( gen_M, TotWeight * PUWeight );
                   if (gen_M>60 && gen_M<120) {
                      h_pt_EffPass->Fill( gen_Pt, TotWeight * PUWeight );
+                     h_phistar_EffPass->Fill( gen_Phistar, TotWeight * PUWeight );
                      h_rap60120_EffPass->Fill( gen_Rap, TotWeight * PUWeight );
                   } else if (gen_M>15 && gen_M<60) {
                      h_rap1560_EffPass->Fill( gen_Rap, TotWeight * PUWeight );
@@ -364,6 +375,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, TotWeight * PUWeight * TnpWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, TotWeight * PUWeight * TnpWeight );
+                        h_phistar_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, TotWeight * PUWeight * TnpWeight );
                         h_rap60120_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, TotWeight * PUWeight * TnpWeight );
                      } else if (gen_M>15 && gen_M<60) {
                         h_rap1560_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, TotWeight * PUWeight * TnpWeight );
@@ -403,7 +415,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_mass_AccTotal->Write();
 	h_mass_AccPass->Write();
 	h_pt_AccTotal->Write();
+	h_phistar_AccTotal->Write();
 	h_pt_AccPass->Write();
+	h_phistar_AccPass->Write();
 	h_rap1560_AccTotal->Write();
 	h_rap1560_AccPass->Write();
 	h_rap60120_AccTotal->Write();
@@ -411,7 +425,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_mass_EffTotal->Write();
 	h_mass_EffPass->Write();
 	h_pt_EffTotal->Write();
+	h_phistar_EffTotal->Write();
 	h_pt_EffPass->Write();
+	h_phistar_EffPass->Write();
 	h_rap1560_EffTotal->Write();
 	h_rap1560_EffPass->Write();
 	h_rap60120_EffTotal->Write();
@@ -419,6 +435,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	for (int i=0; i<nweights; i++) {
       h_mass_EffPass_Corr_tnp[i]->Write();
       h_pt_EffPass_Corr_tnp[i]->Write();
+      h_phistar_EffPass_Corr_tnp[i]->Write();
       h_rap1560_EffPass_Corr_tnp[i]->Write();
       h_rap60120_EffPass_Corr_tnp[i]->Write();
    }
@@ -427,6 +444,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	Acc_Mass->SetName("TEff_Acc_Mass");
 	TEfficiency *Acc_Pt = new TEfficiency(*h_pt_AccPass, *h_pt_AccTotal);
 	Acc_Pt->SetName("TEff_Acc_Pt");
+	TEfficiency *Acc_Phistar = new TEfficiency(*h_phistar_AccPass, *h_phistar_AccTotal);
+	Acc_Phistar->SetName("TEff_Acc_Phistar");
 	TEfficiency *Acc_Rap1560 = new TEfficiency(*h_rap1560_AccPass, *h_rap1560_AccTotal);
 	Acc_Rap1560->SetName("TEff_Acc_Rap1560");
 	TEfficiency *Acc_Rap60120 = new TEfficiency(*h_rap60120_AccPass, *h_rap60120_AccTotal);
@@ -436,6 +455,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	Eff_Mass->SetName("TEff_Eff_Mass");
 	TEfficiency *Eff_Pt = new TEfficiency(*h_pt_EffPass, *h_pt_EffTotal);
 	Eff_Pt->SetName("TEff_Eff_Pt");
+	TEfficiency *Eff_Phistar = new TEfficiency(*h_phistar_EffPass, *h_phistar_EffTotal);
+	Eff_Phistar->SetName("TEff_Eff_Phistar");
 	TEfficiency *Eff_Rap1560 = new TEfficiency(*h_rap1560_EffPass, *h_rap1560_EffTotal);
 	Eff_Rap1560->SetName("TEff_Eff_Rap1560");
 	TEfficiency *Eff_Rap60120 = new TEfficiency(*h_rap60120_EffPass, *h_rap60120_EffTotal);
@@ -446,10 +467,12 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
    TGraphAsymmErrors *g_Eff_Mass_Corr_tnp_stat = NULL;
    TGraphAsymmErrors *g_Eff_Pt_Corr_tnp_stat = NULL;
+   TGraphAsymmErrors *g_Eff_Phistar_Corr_tnp_stat = NULL;
    TGraphAsymmErrors *g_Eff_Rap1560_Corr_tnp_stat = NULL;
    TGraphAsymmErrors *g_Eff_Rap60120_Corr_tnp_stat = NULL;
    TEfficiency* Eff_Mass_Corr_tnp[nweights];
    TEfficiency* Eff_Pt_Corr_tnp[nweights];
+   TEfficiency* Eff_Phistar_Corr_tnp[nweights];
    TEfficiency* Eff_Rap1560_Corr_tnp[nweights];
    TEfficiency* Eff_Rap60120_Corr_tnp[nweights];
    for (int i=0; i<nweights; i++) {
@@ -481,6 +504,21 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
          c_Eff_Pt_Corr_tnp->Write();
          g_Eff_Pt_Corr_tnp_stat = Eff_Pt_Corr_tnp[i]->GetPaintedGraph();
          g_Eff_Pt_Corr_tnp_stat->SetName("g_Eff_Pt_Corr_tnp_stat");
+      }
+
+      // phistar
+      Eff_Phistar_Corr_tnp[i] = new TEfficiency(*h_phistar_EffPass_Corr_tnp[i], *h_phistar_EffTotal);
+      Eff_Phistar_Corr_tnp[i]->SetName(Form("TEff_Eff_Phistar_Corr_tnp%d",i));
+      Eff_Phistar_Corr_tnp[i]->Write();
+
+      if (i==0) {
+         TCanvas *c_Eff_Phistar_Corr_tnp = new TCanvas("c_Eff_Phistar_Corr_tnp", "", 800, 600);
+         c_Eff_Phistar_Corr_tnp->cd();
+         Eff_Phistar_Corr_tnp[i]->Draw("AP");
+         gPad->Update();
+         c_Eff_Phistar_Corr_tnp->Write();
+         g_Eff_Phistar_Corr_tnp_stat = Eff_Phistar_Corr_tnp[i]->GetPaintedGraph();
+         g_Eff_Phistar_Corr_tnp_stat->SetName("g_Eff_Phistar_Corr_tnp_stat");
       }
 
       // rap 15-60
@@ -520,6 +558,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    TGraphAsymmErrors *g_Eff_Mass_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_Mass_Corr_tnp_stat->Clone("g_Eff_Mass_Corr_tnp_tot");
    TGraphAsymmErrors *g_Eff_Pt_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_Pt_Corr_tnp_stat->Clone("g_Eff_Pt_Corr_tnp_syst");
    TGraphAsymmErrors *g_Eff_Pt_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_Pt_Corr_tnp_stat->Clone("g_Eff_Pt_Corr_tnp_tot");
+   TGraphAsymmErrors *g_Eff_Phistar_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_Phistar_Corr_tnp_stat->Clone("g_Eff_Phistar_Corr_tnp_syst");
+   TGraphAsymmErrors *g_Eff_Phistar_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_Phistar_Corr_tnp_stat->Clone("g_Eff_Phistar_Corr_tnp_tot");
    TGraphAsymmErrors *g_Eff_Rap1560_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_Rap1560_Corr_tnp_stat->Clone("g_Eff_Rap1560_Corr_tnp_syst");
    TGraphAsymmErrors *g_Eff_Rap1560_Corr_tnp_tot = (TGraphAsymmErrors*) g_Eff_Rap1560_Corr_tnp_stat->Clone("g_Eff_Rap1560_Corr_tnp_tot");
    TGraphAsymmErrors *g_Eff_Rap60120_Corr_tnp_syst = (TGraphAsymmErrors*) g_Eff_Rap60120_Corr_tnp_stat->Clone("g_Eff_Rap60120_Corr_tnp_syst");
@@ -619,6 +659,53 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    g_Eff_Pt_Corr_tnp_syst->Write();
    g_Eff_Pt_Corr_tnp_tot->Write();
 
+   // phistar
+   for (int ibin=0; ibin<phistarnum; ibin++) {
+      // compute the tnp syst uncertainty
+      double tnphistarot = 0;
+      double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
+      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
+      double e0 = Eff_Phistar_Corr_tnp[0]->GetEfficiency(ibin+1);
+      TEfficiency** ee = Eff_Phistar_Corr_tnp; // shortcut
+
+      // stat uncertainties
+      // trigger
+      tnpstat1 = max(fabs(ee[201]->GetEfficiency(ibin+1)-e0),fabs(ee[202]->GetEfficiency(ibin+1)-e0));
+      // muID
+      for (int ix=1; ix<=100; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
+      tnpstat2 = sqrt(tnpstat2/100.);
+      // iso
+      for (int ix=101; ix<=200; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
+      tnpstat3 = sqrt(tnpstat3/100.);
+
+      // syst uncertainties
+      // trigger
+      tnpsyst1 = max(fabs(ee[203]->GetEfficiency(ibin+1)-e0),fabs(ee[204]->GetEfficiency(ibin+1)-e0));
+      // muID
+      tnpsyst2 = max(fabs(ee[205]->GetEfficiency(ibin+1)-e0),fabs(ee[206]->GetEfficiency(ibin+1)-e0));
+      // iso
+      tnpsyst3 = max(fabs(ee[207]->GetEfficiency(ibin+1)-e0),fabs(ee[208]->GetEfficiency(ibin+1)-e0));
+      // muID binned
+      tnpsyst4 = fabs(ee[209]->GetEfficiency(ibin+1)-e0);
+      // iso binned
+      tnpsyst5 = fabs(ee[210]->GetEfficiency(ibin+1)-e0);
+
+      // total
+      tnphistarot = sqrt(pow(tnpstat1,2)+pow(tnpstat2,2)+pow(tnpstat3,2)
+            +pow(tnpsyst1,2)+pow(tnpsyst2,2)+pow(tnpsyst3,2)+pow(tnpsyst4,2)+pow(tnpsyst5,2)+pow(tnpsyst6,2)+pow(tnpsyst7,2));
+      cout << tnphistarot << "<-" << tnpstat1 << "," << tnpstat2 << "," << tnpstat3 << ";"
+         << tnpsyst1 << "," << tnpsyst2 << "," << tnpsyst3 << ","  << tnpsyst4 << "," << tnpsyst5 << "," << tnpsyst6 << "," << tnpsyst7 << endl;
+
+      // assign it to the graphs
+      g_Eff_Phistar_Corr_tnp_syst->SetPointEYlow(ibin,tnphistarot);
+      g_Eff_Phistar_Corr_tnp_syst->SetPointEYhigh(ibin,tnphistarot);
+      g_Eff_Phistar_Corr_tnp_tot->SetPointEYlow(ibin,sqrt(pow(tnphistarot,2)+pow(Eff_Phistar_Corr_tnp[0]->GetEfficiencyErrorLow(ibin+1),2)));
+      g_Eff_Phistar_Corr_tnp_tot->SetPointEYhigh(ibin,sqrt(pow(tnphistarot,2)+pow(Eff_Phistar_Corr_tnp[0]->GetEfficiencyErrorUp(ibin+1),2)));
+   } // ibin loop for tnp uncertainty
+   g_Eff_Phistar_Corr_tnp_stat->Write();
+   g_Eff_Phistar_Corr_tnp_syst->Write();
+   g_Eff_Phistar_Corr_tnp_tot->Write();
+
    // rap 15-60
    for (int ibin=0; ibin<rapbinnum_1560; ibin++) {
       // compute the tnp syst uncertainty
@@ -717,6 +804,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	Eff_Mass->Write();
 	Acc_Pt->Write();
 	Eff_Pt->Write();
+	Acc_Phistar->Write();
+	Eff_Phistar->Write();
 	Acc_Rap1560->Write();
 	Eff_Rap1560->Write();
 	Acc_Rap60120->Write();
@@ -743,6 +832,17 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	c_Eff_Pt->cd();
 	Eff_Pt->Draw("AP");
 	c_Eff_Pt->Write();
+
+   // phistar
+	TCanvas *c_Acc_Phistar = new TCanvas("c_Acc_Phistar", "", 800, 600);
+	c_Acc_Phistar->cd();
+	Acc_Phistar->Draw("AP");
+	c_Acc_Phistar->Write();
+
+	TCanvas *c_Eff_Phistar = new TCanvas("c_Eff_Phistar", "", 800, 600);
+	c_Eff_Phistar->cd();
+	Eff_Phistar->Draw("AP");
+	c_Eff_Phistar->Write();
 
    // rap 15-60
 	TCanvas *c_Acc_Rap1560 = new TCanvas("c_Acc_Rap1560", "", 800, 600);
