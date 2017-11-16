@@ -237,7 +237,7 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
     emu_data->Draw("same");
     legend->Draw();
     c1->RedrawAxis();
-    c1->SaveAs(Form("plot_%s.root",var));
+    c1->SaveAs(Form("result/plot_%s.root",var));
 
     TH1D* emu_ratio = (TH1D*)emu_data->Clone("emu_ratio");
     emu_ratio->Divide(emu_data,emu_sumBkg,1.0,1.0,"B");
