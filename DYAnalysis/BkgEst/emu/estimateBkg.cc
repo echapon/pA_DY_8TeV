@@ -226,7 +226,7 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
     legend->AddEntry(emu_QCD,"QCD","F");
 
     TCanvas *c1 = new TCanvas();
-    if (tvar=="phistar" || tvar=="pt") c1->SetLogx();
+    if (!tvar.Contains("rap")) c1->SetLogx();
     emu_data->GetYaxis()->SetTitle("Entries");
     if (tvar=="mass") emu_data->GetXaxis()->SetTitle("M_{e#mu} [GeV/c^{2}]");
     else if (tvar=="pt") emu_data->GetXaxis()->SetTitle("p_{T,e#mu} [GeV/c]");
@@ -236,6 +236,7 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
     emu_stackBkg->Draw("hist same");
     emu_data->Draw("same");
     legend->Draw();
+    c1->RedrawAxis();
     c1->SaveAs(Form("plot_%s.root",var));
 
     TH1D* emu_ratio = (TH1D*)emu_data->Clone("emu_ratio");
