@@ -42,7 +42,11 @@ public:
    };
 
    static double phistar(double eta1, double eta2, double phi1, double phi2) {
-      return tan((TMath::Pi()-fabs(phi2-phi1))/2.)*sin(acos(tanh(fabs(eta2-eta1)/2.)));
+      double muonDelPhi = TMath::Abs(TVector2::Phi_mpi_pi(phi1-phi2));
+      double phiACOP = TMath::Pi() - muonDelPhi;
+      double thetaStarEta = TMath::ACos(TMath::TanH(TMath::Abs(eta1-eta2)/2));
+      double phiStar = TMath::Tan(phiACOP/2)*TMath::Sin(thetaStarEta);
+      return phiStar;
    };
 };
 
