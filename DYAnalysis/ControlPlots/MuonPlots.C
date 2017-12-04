@@ -56,6 +56,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
    if (doData) doHFrew = false;
    if (doHFrew) {
       if (rewmode==HFweight::HFside::both) srew="rewboth";
+      else if (rewmode==HFweight::HFside::Ntracks) srew="rewNtracks";
       else if (rewmode==HFweight::HFside::plus) srew="rewplus";
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
    }
