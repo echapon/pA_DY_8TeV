@@ -26,9 +26,15 @@
 #include <Include/DYAnalyzer.h>
 #include <Include/ControlPlots.h>
 #include <HIstuff/HFweight.h>
+#include <Include/tnp_weight.h>
 
 static inline void loadBar(int x, int n, int r, int w);
-void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname = "PAL3Mu12", bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both)
+void MuonPlots(Bool_t isCorrected = kFALSE, 
+      TString Type = "MC", 
+      TString HLTname = "PAL3Mu12", 
+      bool doHFrew = true, 
+      HFweight::HFside rewmode = HFweight::HFside::both, 
+      bool doTnPrew = true)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -178,6 +184,9 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 			Double_t PUWeight = 1.; //analyzer->PileUpWeightValue( ntuple->nPileUp );
          if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
+         // -- Tag and probe weights -- //
+         Double_t TnpWeight = 1.;
+
 			Bool_t GenFlag = kFALSE;
 			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
@@ -267,32 +276,55 @@ void MuonPlots(Bool_t isCorrected = kFALSE, TString Type = "MC", TString HLTname
 				{
 					Muon mu1 = SelectedMuonCollection[0];
 					Muon mu2 = SelectedMuonCollection[1];
-					Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight);
-					Plots_MET->FillHistograms_MET(GenWeight*PUWeight);
+               double pt1 = mu1.Pt;
+               double pt2 = mu2.Pt;
+               double eta1 = mu1.eta;
+               double eta2 = mu2.eta;
+
+               // TnP
+               if (doTnPrew) {
+                  TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,eta1,0)
+                     *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,eta2,0);
+                  // add trg... careful!
+                  double sf_trg;
+                  if (pt2>=15. && pt1>=15.) { // both muons could trigger
+                     double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)) * (1 - tnp_weight_trg_ppb(eta2,200)) );
+                     double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
+                     sf_trg = eff_data/eff_mc;
+                  } else if (pt1<15) {
+                     sf_trg = tnp_weight_trg_ppb(eta2,0);
+                  } else if (pt2<15) {
+                     sf_trg = tnp_weight_trg_ppb(eta1,0);
+                  }
+                  TnpWeight = TnpWeight * sf_trg;
+               }
+
+					Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
+					Plots_MET->FillHistograms_MET(GenWeight*PUWeight*TnpWeight);
 
 					Int_t PU = ntuple->nPileUp;
-					h_PU->Fill( PU, PUWeight );
+					h_PU->Fill( PU, PUWeight*TnpWeight );
 
 					Int_t nVertices = ntuple->nVertices;
-					h_nVertices_before->Fill(nVertices, GenWeight);
-					h_nVertices_after->Fill(nVertices, GenWeight*PUWeight);
+					h_nVertices_before->Fill(nVertices, GenWeight*TnpWeight);
+					h_nVertices_after->Fill(nVertices, GenWeight*PUWeight*TnpWeight);
 
-               h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight);
-               h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight);
-               h_hiHFminus->Fill(ntuple->hiHFminus,GenWeight*PUWeight);
-               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,GenWeight*PUWeight);
-               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,GenWeight*PUWeight);
-               h_hiHFhit->Fill(ntuple->hiHFhit,GenWeight*PUWeight);
-               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,GenWeight*PUWeight);
-               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,GenWeight*PUWeight);
-               h_hiET->Fill(ntuple->hiET,GenWeight*PUWeight);
-               h_hiEE->Fill(ntuple->hiEE,GenWeight*PUWeight);
-               h_hiEB->Fill(ntuple->hiEB,GenWeight*PUWeight);
-               h_hiEEplus->Fill(ntuple->hiEEplus,GenWeight*PUWeight);
-               h_hiEEminus->Fill(ntuple->hiEEminus,GenWeight*PUWeight);
-               h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight);
-               h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight);
-               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight);
+               h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight*TnpWeight);
+               h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight*TnpWeight);
+               h_hiHFminus->Fill(ntuple->hiHFminus,GenWeight*PUWeight*TnpWeight);
+               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,GenWeight*PUWeight*TnpWeight);
+               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,GenWeight*PUWeight*TnpWeight);
+               h_hiHFhit->Fill(ntuple->hiHFhit,GenWeight*PUWeight*TnpWeight);
+               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,GenWeight*PUWeight*TnpWeight);
+               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,GenWeight*PUWeight*TnpWeight);
+               h_hiET->Fill(ntuple->hiET,GenWeight*PUWeight*TnpWeight);
+               h_hiEE->Fill(ntuple->hiEE,GenWeight*PUWeight*TnpWeight);
+               h_hiEB->Fill(ntuple->hiEB,GenWeight*PUWeight*TnpWeight);
+               h_hiEEplus->Fill(ntuple->hiEEplus,GenWeight*PUWeight*TnpWeight);
+               h_hiEEminus->Fill(ntuple->hiEEminus,GenWeight*PUWeight*TnpWeight);
+               h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight*TnpWeight);
+               h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
+               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight*TnpWeight);
 				}
 				
 			} //End of if( isTriggered )
