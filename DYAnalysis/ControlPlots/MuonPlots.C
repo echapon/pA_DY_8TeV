@@ -57,7 +57,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-   TString srew("norew");
+   TString srew("noHFrew");
    // if data, do not HF reweight
    if (doData) doHFrew = false;
    if (doHFrew) {
@@ -66,8 +66,9 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       else if (rewmode==HFweight::HFside::plus) srew="rewplus";
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
    }
+   TString stnprew = doTnprew ? "tnprew" : "notnprew";
 
-	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + "_" + stnprew + ".root", "RECREATE");
 
    // TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
    // TString BaseLocation = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/";

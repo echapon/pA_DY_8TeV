@@ -5,4 +5,4 @@ error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
 +JobFlavour           = "workday"
 # RequestCpus           = 8
-queue 9
+queue 10
