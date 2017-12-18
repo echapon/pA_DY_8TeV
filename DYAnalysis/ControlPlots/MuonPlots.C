@@ -66,7 +66,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       else if (rewmode==HFweight::HFside::plus) srew="rewplus";
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
    }
-   TString stnprew = doTnprew ? "tnprew" : "notnprew";
+   TString stnprew = doTnPrew ? "tnprew" : "notnprew";
 
 	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + "_" + stnprew + ".root", "RECREATE");
 
