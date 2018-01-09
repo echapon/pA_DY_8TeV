@@ -376,7 +376,7 @@ void selectEmuEvts_filltree(SampleTag index)
 
 // produce all plots
 void selectEmuEvts_filltree() {
-   for (int i=Data1; i<=QCD; i++) {
+   for (int i=0; i<=QCD; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       if (tag==ALL) continue;
       cout << Name(tag) << endl;
