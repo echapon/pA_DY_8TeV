@@ -67,17 +67,20 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
 map<bin, syst> readSyst_all(var thevar, bool doPrintTex=false, const char* texName="Systematics/systs.tex") {
    vector< map<bin, syst> > systmap_all;
 
+   vector<TString> tags;
+   tags.push_back("test");
+
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;
-      TFile systfilename = "Systematics/" + TString(varname(thevar)) + ".csv";
-      systmap = readSyst(systfilename->Data());
+      TString systfilename = "Systematics/" + TString(varname(thevar)) + ".csv";
+      systmap = readSyst(systfilename.Data());
       systmap_all.push_back(systmap);
    }
 
    map<bin,syst> ans = combineSyst(systmap_all, "Total");
    systmap_all.push_back(ans);
 
-   if (doPrintTex) printTex(systmap_all, texName, true);
+   if (doPrintTex) printTex(systmap_all, texName);
 
    return ans;
 };
@@ -98,7 +101,6 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    file<< "\\\\" << endl;
    file << "\\hline" << endl;
 
-   bin oldbin(0,0);
    map<bin, vector<syst> > themap = vm2mv(theSysts);
    map<bin, vector<syst> >::const_iterator itm;
    for (itm=themap.begin(); itm!=themap.end(); itm++) {
@@ -109,23 +111,10 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
          return;
       }
       bin thebin = itm->first;
-      if (thebin.rapbin() == oldbin.rapbin()) {
-         file << " - ";
-      } else {
-         if (itm != themap.begin()) file << "\\hline" << endl;
-         file.precision(1); file.setf(ios::fixed);
-         file << thebin.rapbin().low() << " $< |y| < $ " << thebin.rapbin().high();
-      }
+      if (itm != themap.begin()) file << "\\hline" << endl;
+      file.precision(1); file.setf(ios::fixed);
+      file << thebin.low() << ", " << thebin.high();
       file << " & ";
-      if (thebin.ptbin() == oldbin.ptbin()) {
-         file << " - ";
-      } else {
-         file.precision(1); file.setf(ios::fixed);
-         file << thebin.ptbin().low() << " $< \\pt < $ " << thebin.ptbin().high();
-      }
-      file << " & ";
-      file.unsetf(ios::fixed);
-      file << thebin.centbin().low()/2 << "-" << thebin.centbin().high()/2 << "\\% ";
       file.precision(1);
       file.setf(ios::fixed);
 
@@ -133,8 +122,6 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
          file << " & " << 100.*v[i].value;
       }
       file << " \\\\" << endl;
-
-      oldbin = thebin;
    }
 
    file << "\\hline" << endl;
