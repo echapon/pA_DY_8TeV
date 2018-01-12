@@ -32,9 +32,9 @@ static inline void loadBar(int x, int n, int r, int w);
 void MuonPlots(Bool_t isCorrected = kFALSE, 
       TString Type = "MC", 
       TString HLTname = "PAL3Mu12", 
-      bool doHFrew = true, 
+      bool doHFrew = false, 
       HFweight::HFside rewmode = HFweight::HFside::both, 
-      bool doTnPrew = true)
+      bool doTnPrew = false)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
