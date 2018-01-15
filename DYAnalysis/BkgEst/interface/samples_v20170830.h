@@ -184,26 +184,74 @@ namespace DYana_v20170830 {
    // path to the histos for fake rate
    const char* PathFRHistos(SampleTag s) {
       switch (s) {
-         case DYMuMu1030:		return "./estimateFR/histograms/histFRDYMuMu1030.root"; break;
-         case DYMuMu30:			return "./estimateFR/histograms/histFRDYMuMu30.root"; break;
-         case DYMuMu1030_PbP:	return "./estimateFR/histograms/histFRDYMuMu1030_PbP.root"; break;
-         case DYMuMu30_PbP:	return "./estimateFR/histograms/histFRDYMuMu30_PbP.root"; break;
-         case DYTauTau1030:	return "./estimateFR/histograms/histFRDYTauTau1030.root"; break;
-         case DYTauTau30:		return "./estimateFR/histograms/histFRDYTauTau30.root"; break;
-         case WW:					return "./estimateFR/histograms/histFRWW.root"; break;
-         case WZ:					return "./estimateFR/histograms/histFRWZ.root"; break;
-         case ZZ:					return "./estimateFR/histograms/histFRZZ.root"; break;
-         case TT:					return "./estimateFR/histograms/histFRTT.root"; break;
-         case QCD:				return "./estimateFR/histograms/histFRQCD.root"; break;
-         case WpMu:				return "./estimateFR/histograms/histFRWpMu.root"; break;
-         case WmMu:				return "./estimateFR/histograms/histFRWmMu.root"; break;
-         case WpTau:				return "./estimateFR/histograms/histFRWpTau.root"; break;
-         case WmTau:				return "./estimateFR/histograms/histFRWmTau.root"; break;
-         case Data1:				return "./estimateFR/histograms/histFRData1.root"; break;
-         case Data2:				return "./estimateFR/histograms/histFRData2.root"; break;
+         case DYMuMu1030:		return "./histograms/histFRDYMuMu1030.root"; break;
+         case DYMuMu30:			return "./histograms/histFRDYMuMu30.root"; break;
+         case DYMuMu1030_PbP:	return "./histograms/histFRDYMuMu1030_PbP.root"; break;
+         case DYMuMu30_PbP:	return "./histograms/histFRDYMuMu30_PbP.root"; break;
+         case DYTauTau1030:	return "./histograms/histFRDYTauTau1030.root"; break;
+         case DYTauTau30:		return "./histograms/histFRDYTauTau30.root"; break;
+         case WW:					return "./histograms/histFRWW.root"; break;
+         case WZ:					return "./histograms/histFRWZ.root"; break;
+         case ZZ:					return "./histograms/histFRZZ.root"; break;
+         case TT:					return "./histograms/histFRTT.root"; break;
+         case QCD:				return "./histograms/histFRQCD.root"; break;
+         case WpMu:				return "./histograms/histFRWpMu.root"; break;
+         case WmMu:				return "./histograms/histFRWmMu.root"; break;
+         case WpTau:				return "./histograms/histFRWpTau.root"; break;
+         case WmTau:				return "./histograms/histFRWmTau.root"; break;
+         case Data1:				return "./histograms/histFRData1.root"; break;
+         case Data2:				return "./histograms/histFRData2.root"; break;
          default:					return "Unknown sample";
       }
    };
+
+   // path to the histos for fake rate
+   const char* PathFRQCDHistos(SampleTag s) {
+      switch (s) {
+         case DYMuMu1030:		return "./histograms/histFRQCDDYMuMu1030.root"; break;
+         case DYMuMu30:			return "./histograms/histFRQCDDYMuMu30.root"; break;
+         case DYMuMu1030_PbP:	return "./histograms/histFRQCDDYMuMu1030_PbP.root"; break;
+         case DYMuMu30_PbP:	return "./histograms/histFRQCDDYMuMu30_PbP.root"; break;
+         case DYTauTau1030:	return "./histograms/histFRQCDDYTauTau1030.root"; break;
+         case DYTauTau30:		return "./histograms/histFRQCDDYTauTau30.root"; break;
+         case WW:					return "./histograms/histFRQCDWW.root"; break;
+         case WZ:					return "./histograms/histFRQCDWZ.root"; break;
+         case ZZ:					return "./histograms/histFRQCDZZ.root"; break;
+         case TT:					return "./histograms/histFRQCDTT.root"; break;
+         case QCD:				return "./histograms/histFRQCDQCD.root"; break;
+         case WpMu:				return "./histograms/histFRQCDWpMu.root"; break;
+         case WmMu:				return "./histograms/histFRQCDWmMu.root"; break;
+         case WpTau:				return "./histograms/histFRQCDWpTau.root"; break;
+         case WmTau:				return "./histograms/histFRQCDWmTau.root"; break;
+         case Data1:				return "./histograms/histFRQCDData1.root"; break;
+         case Data2:				return "./histograms/histFRQCDData2.root"; break;
+         default:					return "Unknown sample";
+      }
+   };
+
+   const char* PathFRZVETOHistos(SampleTag s) {
+      switch (s) {
+         case DYMuMu1030:		return "./histograms/histFRZVETODYMuMu1030.root"; break;
+         case DYMuMu30:			return "./histograms/histFRZVETODYMuMu30.root"; break;
+         case DYMuMu1030_PbP:	return "./histograms/histFRZVETODYMuMu1030_PbP.root"; break;
+         case DYMuMu30_PbP:	return "./histograms/histFRZVETODYMuMu30_PbP.root"; break;
+         case DYTauTau1030:	return "./histograms/histFRZVETODYTauTau1030.root"; break;
+         case DYTauTau30:		return "./histograms/histFRZVETODYTauTau30.root"; break;
+         case WW:					return "./histograms/histFRZVETOWW.root"; break;
+         case WZ:					return "./histograms/histFRZVETOWZ.root"; break;
+         case ZZ:					return "./histograms/histFRZVETOZZ.root"; break;
+         case TT:					return "./histograms/histFRZVETOTT.root"; break;
+         case QCD:				return "./histograms/histZVETOQCD.root"; break;
+         case WpMu:				return "./histograms/histFRZVETOWpMu.root"; break;
+         case WmMu:				return "./histograms/histFRZVETOWmMu.root"; break;
+         case WpTau:				return "./histograms/histFRZVETOWpTau.root"; break;
+         case WmTau:				return "./histograms/histFRZVETOWmTau.root"; break;
+         case Data1:				return "./histograms/histZVETOData1.root"; break;
+         case Data2:				return "./histograms/histZVETOData2.root"; break;
+         default:					return "Unknown sample";
+      }
+   };
+
    const char* PathFRHistos2(SampleTag s) {
       switch (s) {
          case DYMuMu1030:return "FIXME"; break;
