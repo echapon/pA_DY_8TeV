@@ -27,6 +27,7 @@ public:
 
     NtupleTriggerObject(){};
     virtual ~NtupleTriggerObject(){};
+    void switcheta() {eta=-eta;};
 
 };
 
@@ -37,6 +38,11 @@ public:
     bool isStandAloneMuon;
     bool isTrackerMuon;
     bool isPFMuon;
+    bool isLooseMuon;
+    bool isMediumMuon;
+    bool isTightMuon;
+    bool isSoftMuon;
+    bool isHighPtMuon;
     double px;
     double py;
     double pz;
@@ -140,6 +146,15 @@ public:
     NtupleMuon(){};
     virtual ~NtupleMuon(){};
 
+    void switcheta() {
+       pz=-pz;
+       eta=-eta;
+       vz=-vz;
+       muonBestTrack_pz=-muonBestTrack_pz;
+       tunePMuonBestTrack_pz=-tunePMuonBestTrack_pz;
+       innerTrack_pz=-innerTrack_pz;
+       outerTrack_pz=-outerTrack_pz;
+    };
 };
    
 class NtupleElectron{
@@ -211,6 +226,11 @@ public:
     NtupleElectron(){};
     virtual ~NtupleElectron(){};
 
+    void switcheta() {
+       eta=-eta;
+       rap=-rap;
+       etaSC=-etaSC;
+    };
 };
 
 
@@ -292,6 +312,9 @@ public:
     NtupleGenParticle(){};
     virtual ~NtupleGenParticle(){};
 
+    void switcheta() {
+       eta=-eta;
+    };
 };
 
 class NtuplePhoton {
@@ -321,6 +344,10 @@ public:
     NtuplePhoton(){};
     virtual ~NtuplePhoton(){};
 
+    void switcheta() {
+       eta=-eta;
+       etaSC=-etaSC;
+    };
 };
 
 
@@ -381,6 +408,11 @@ public:
     double rho;        
     double weight;
     int nGenParticles;
+
+    // centrality-related variables
+    int hiBin;
+    int hiNpix, hiNpixelTracks, hiNtracks, hiNtracksPtCut, hiNtracksEtaCut, hiNtracksEtaPtCut;
+    float hiHF, hiHFplus, hiHFminus, hiHFplusEta4, hiHFminusEta4, hiHFhit, hiHFhitPlus, hiHFhitMinus, hiEB, hiET, hiEE, hiEEplus, hiEEminus, hiZDC, hiZDCplus, hiZDCminus;
 
     std::vector<NtupleTrigger> triggers;
     std::vector<NtupleTriggerObject> triggerobjects;
