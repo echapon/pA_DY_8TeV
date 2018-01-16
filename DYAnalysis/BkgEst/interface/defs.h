@@ -64,6 +64,34 @@ namespace DYana {
       // 285956-286496: pPb
       return (run>285470 && run<runcut) ? -1 : 1;
    };
+
+   // enum for variable type
+   enum var : int {
+      mass=0, 
+      pt, 
+      phi, 
+      rap60120, 
+      rap1560,
+      ALLvar
+   };
+
+   const char* varname(var thevar) {
+      if (thevar==var::mass) return "mass";
+      else if (thevar==var::pt) return "pt";
+      else if (thevar==var::phi) return "phistar";
+      else if (thevar==var::rap60120) return "rap60120";
+      else if (thevar==var::rap1560) return "rap1560";
+      else return "unknown";
+   };
+
+   const char* Varname(var thevar) {
+      if (thevar==var::mass) return "Mass";
+      else if (thevar==var::pt) return "Pt";
+      else if (thevar==var::phi) return "Phistar";
+      else if (thevar==var::rap60120) return "Rap60120";
+      else if (thevar==var::rap1560) return "Rap1560";
+      else return "unknown";
+   };
 };
 
 #endif // ifndef def_h
