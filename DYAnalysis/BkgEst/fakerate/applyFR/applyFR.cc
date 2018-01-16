@@ -28,6 +28,11 @@
 #include <vector>
 #include "../../interface/analysis.h"
 #include "../../interface/defs.h"
+
+#include "../../../Include/NtupleHandle.h"
+#include "../../../Include/Object.h"
+
+
 using namespace std;
 using namespace DYana;
 
@@ -131,6 +136,7 @@ void applyFR(SampleTag index) {
     double wt = 1.0;
     double wtsum = 0;
    double phistar = -999.0;
+	double dimu_pt=-9.0;
 	  bool leading = false;
 
     double FR1_template;
@@ -197,6 +203,7 @@ void applyFR(SampleTag index) {
                 sign = tempMuons->first.charge * tempMuons->second.charge;
                 rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
 					phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
+					dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 
                 if( sign < 0 ) {
                     if( mass > bins[0] && mass < bins[binnum-1]) {
@@ -208,8 +215,8 @@ void applyFR(SampleTag index) {
                         rapDijet2->Fill(rap, weight_ratio);
                     }
 							if( mass > 60 && mass < 120) {
-								ZptDijet1->Fill(pt, weight_template);
-								ZptDijet2->Fill(pt, weight_ratio);
+								ZptDijet1->Fill(dimu_pt, weight_template);
+								ZptDijet2->Fill(dimu_pt, weight_ratio);
 								ZphistarDijet1->Fill(phistar, weight_template);
 								ZphistarDijet2->Fill(phistar, weight_ratio);
 							}
@@ -228,8 +235,8 @@ void applyFR(SampleTag index) {
                         rapSameDijet2->Fill(rap, weight_ratio);
                     }
    							if( mass > 60 && mass < 120) {
-								ZptSameDijet1->Fill(pt, weight_template);
-								ZptSameDijet2->Fill(pt, weight_ratio);
+								ZptSameDijet1->Fill(dimu_pt, weight_template);
+								ZptSameDijet2->Fill(dimu_pt, weight_ratio);
 								ZphistarSameDijet1->Fill(phistar, weight_template);
 								ZphistarSameDijet2->Fill(phistar, weight_ratio);
 							}
@@ -251,6 +258,8 @@ void applyFR(SampleTag index) {
                 sign = tempMuons->first.charge * tempMuons->second.charge;
                 rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
 					phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
+					dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
+
 
 
                 if( sign < 0 ) {
@@ -263,8 +272,8 @@ void applyFR(SampleTag index) {
                         rapWJets2->Fill(rap, weight_ratio);
                     }
 							if( mass > 60 && mass < 120) {
-								ZptWJets1->Fill(pt, weight_template);
-								ZptWJets2->Fill(pt, weight_ratio);
+								ZptWJets1->Fill(dimu_pt, weight_template);
+								ZptWJets2->Fill(dimu_pt, weight_ratio);
 								ZphistarWJets1->Fill(phistar, weight_template);
 								ZphistarWJets2->Fill(phistar, weight_ratio);
 							}
@@ -284,8 +293,8 @@ void applyFR(SampleTag index) {
                         rapSameWJets2->Fill(rap, weight_ratio);
                     }
    							if( mass > 60 && mass < 120) {
-								ZptSameWJets1->Fill(pt, weight_template);
-								ZptSameWJets2->Fill(pt, weight_ratio);
+								ZptSameWJets1->Fill(dimu_pt, weight_template);
+								ZptSameWJets2->Fill(dimu_pt, weight_ratio);
 								ZphistarSameWJets1->Fill(phistar, weight_template);
 								ZphistarSameWJets2->Fill(phistar, weight_ratio);
 							}
