@@ -6,7 +6,7 @@
 
 namespace fr {
 //   const char* fakeratefile = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/fakerate.root";
-	const char* fakeratefile = "../fakerate/estimateFR/result/fakerate_opt16_QCDopt2_histFR_QCDin0p875Data.root";
+	const char* fakeratefile = "../estimateFR/result/fakerate_opt16_QCDopt2_histFR_QCDin0p875Data.root";
    TH1D gFR_template_barrel;
    TH1D gFR_template_endcap;
    TH1D gFR_xsec_barrel;
