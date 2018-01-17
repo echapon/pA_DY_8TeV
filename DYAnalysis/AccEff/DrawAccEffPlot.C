@@ -5,6 +5,7 @@
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
 void PrintOutGraph(TGraphAsymmErrors* g);
+void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr, TString texname);
 Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
@@ -364,4 +365,55 @@ void PrintOutGraph(TGraphAsymmErrors* g)
 		printf("\t[%2.d point] (x, x_errorLow, x_errorHigh, y, y_errorLow, y_errorHigh) = (%9.3lf, %9.3lf, %9.3lf, %9.5lf, %9.5lf, %9.5lf)\n", i, x, x_errorLow, x_errorHigh, y, y_errorLow, y_errorHigh);
 	}
 	cout << "==========================================" << endl;
+}
+
+void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr, TString texname) {
+   ofstream file(texname.Data());
+   file << "\\begin{tabular}{l|ccc|c}" << endl;
+   file << "Bin & Acc. & Eff. (no TnP) & Eff. (TnP) & Acc $\\times$ Eff (TnP) \\\\" << endl;
+
+   for (int i=0; i<g_Acc->GetN(); i++) {
+      file << g_Acc->GetX()[i] - g_Acc->GetEXlow()[i] << ", " << g_Acc->GetX()[i] + g_Acc->GetEXhigh()[i] << " & ";
+      double val = g_Acc->GetY()[i];
+      double errlow = g_Acc->GetErrorYlow(i);
+      double errhigh = g_Acc->GetErrorYhigh(i);
+      if (fabs(errlow-errhigh)>1e-3) {
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+      } else {
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+      }
+      file << " & ";
+      val = g_Eff->GetY()[i];
+      errlow = g_Eff->GetErrorYlow(i);
+      errhigh = g_Eff->GetErrorYhigh(i);
+      if (fabs(errlow-errhigh)>1e-3) {
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+      } else {
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+      }
+      file << " & ";
+      val = g_Eff_Corr->GetY()[i];
+      errlow = g_Eff_Corr->GetErrorYlow(i);
+      errhigh = g_Eff_Corr->GetErrorYhigh(i);
+      if (fabs(errlow-errhigh)>1e-3) {
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+      } else {
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+      }
+      file << " & ";
+      val = g_AccEff_Corr->GetY()[i];
+      errlow = g_AccEff_Corr->GetErrorYlow(i);
+      errhigh = g_AccEff_Corr->GetErrorYhigh(i);
+      if (fabs(errlow-errhigh)>1e-3) {
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+      } else {
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+      }
+      file << " \\\\" << endl;
+   }
+
+   file << "\\hline" << endl;
+   file << "\\end{tabular}" << endl;
+   file.close();
+   cout << "Closed " << texName << endl;
 }
