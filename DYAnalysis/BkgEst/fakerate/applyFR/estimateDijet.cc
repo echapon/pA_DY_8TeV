@@ -17,6 +17,7 @@
 #include <TColor.h>
 #include <TLatex.h>
 #include <TEfficiency.h>
+#include <TFrame.h>
 
 #include <iostream>
 #include <string>
@@ -72,8 +73,11 @@ void estimateDijet() {
     massFrame->GetXaxis()->SetMoreLogLabels();
 
     TFile* f[NSamples+2];
-    for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
-    f[QCD] = new TFile(PathFRHistos2(QCD));
+//    for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
+//    f[QCD] = new TFile(PathFRHistos2(QCD));
+    for (int i=0; i<ALL; i++) f[i] = new TFile(Form("histograms/fake%s.root",(TString*)(Name(static_cast<SampleTag>(i)))));
+    f[QCD] = new TFile("histograms/fakeQCD.root");
+
 
     TH1D* wjets_template[NSamples+2]; // just for draw MC histograms
     TH1D* dijet_template[NSamples+2];
@@ -85,7 +89,7 @@ void estimateDijet() {
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
        norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
-       cout<< "norm[" << i << "] = " << norm[i]<<endl;
+       cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
        dijet_template[i] = (TH1D*)f[i]->Get("histDijet1");
        dijet_template[i]->Scale(norm[i]);
@@ -139,9 +143,9 @@ void estimateDijet() {
              // h[j]->SetmarkerStyle(22);
           }
 
-          if (tag != DY1050) {
+          if (tag != DYTauTau1030) {
              toadd = true;
-             tagtoadd = DY1050;
+             tagtoadd = DYTauTau1030;
           }
        }
        if (IsData(tag)) {
@@ -174,9 +178,9 @@ void estimateDijet() {
              h[j]->SetFillColor(4);
           }
 
-          if (tag != WE) {
+          if (tag != WpMu) {
              toadd = true;
-             tagtoadd = WE;
+             tagtoadd = WpMu;
           }
        }
        if (tag==TT) {
@@ -197,8 +201,8 @@ void estimateDijet() {
     cout<<"ttbar OS before = "<<dijet_template[TT]->Integral()<<endl;
     cout<<"ttbar SS before = "<<dijetSS_template[TT]->Integral()<<endl;
 
-    cout<<"DY(template): "<<dijet_template[DY1050]->Integral()<<endl;
-    cout<<"DY(ratio): "<<dijet_ratio[DY1050]->Integral()<<endl;
+    cout<<"DY(template): "<<dijet_template[DYTauTau1030]->Integral()<<endl;
+    cout<<"DY(ratio): "<<dijet_ratio[DYTauTau1030]->Integral()<<endl;
 
     setTDRStyle();
     tdrGrid(true);
@@ -220,11 +224,11 @@ void estimateDijet() {
 
     /////
     // subtract MC from data here
-    dijet_template[Data1]->Add(dijet_template[DY1050],-1.0);
+    dijet_template[Data1]->Add(dijet_template[DYTauTau1030],-1.0);
     dijet_template[Data1]->Add(dijet_template[TT],-1.0);
     dijet_template[Data1]->Add(dijet_template[WW],-1.0);
 
-    dijet_ratio[Data1]->Add(dijet_ratio[DY1050],-1.0);
+    dijet_ratio[Data1]->Add(dijet_ratio[DYTauTau1030],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[TT],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[WW],-1.0);
 
