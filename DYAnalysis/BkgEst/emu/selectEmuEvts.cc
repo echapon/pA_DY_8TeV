@@ -54,7 +54,7 @@ void selectEmuEvts(SampleTag index)
     // -- Each ntuple directory & corresponding Tags -- //
     // -- GenWeights are already taken into account in nEvents -- //
     vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
-    analyzer->SetupMCsamples_v20170830("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+    analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
     vector<pair<PhysicsMuon,int>>*     passingMuons     = new vector<pair<PhysicsMuon,int>>;
     vector<pair<PhysicsElectron,int>>* passingElectrons = new vector<pair<PhysicsElectron,int>>;

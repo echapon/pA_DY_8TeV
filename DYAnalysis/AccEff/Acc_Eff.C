@@ -135,7 +135,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // initialise the HF reweighting tool
    HFweight hftool;

@@ -54,7 +54,7 @@ namespace DYana {
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
-      cout << mu->pt << endl;
+      // cout << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->isolation(cuts::isomax) << endl;
       return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {
