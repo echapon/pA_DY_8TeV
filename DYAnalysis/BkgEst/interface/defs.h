@@ -6,6 +6,8 @@
 #include "samples_v20170519.h"
 #include "samples_v20170830.h"
 #include "samples_v20170830_Pyquen.h"
+#include "samples_v20180111.h"
+#include "samples_v20180111_Pyquen.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -25,7 +27,7 @@ const double rapshift = 0.465;
 
 namespace DYana {
    // put the default samples here
-   using namespace DYana_v20170830;
+   using namespace DYana_v20180111;
 
    // kinematic bins
    // mass
@@ -52,6 +54,7 @@ namespace DYana {
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
+      cout << mu->pt << endl;
       return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {

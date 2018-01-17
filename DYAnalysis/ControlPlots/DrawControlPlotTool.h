@@ -112,8 +112,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
 
-	DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-	analyzer->SetupMCsamples_v20170830("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+	DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
+	analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )

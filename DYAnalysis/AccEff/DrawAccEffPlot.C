@@ -10,7 +10,7 @@ Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Doubl
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
 void DrawAccEffPlot(TString version = "None", 
-      TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120
+      TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar
       TString MomCor = "MomCorr", // MomCorr or MomUnCorr
       TString Rew = "rewboth", // rewboth or norew or rewplus or rewminus
       TString Generator = "Powheg") 
@@ -95,6 +95,8 @@ void DrawAccEffPlot(TString version = "None",
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
    } else if (variable=="Rap60120") {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
+   } else if (variable=="Phistar") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon #phi^{*} (post-FSR)");
    }
 	g_Acc->GetXaxis()->SetNoExponent();
 	g_Acc->GetXaxis()->SetMoreLogLabels();
@@ -245,6 +247,8 @@ void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmE
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
    } else if (variable=="Rap60120") {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
+   } else if (variable=="Phistar") {
+      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon #phi^{*} (post-FSR)");
    }
 	g_Acc->GetXaxis()->SetNoExponent();
 	if (!variable.Contains("Rap")) g_Acc->GetXaxis()->SetMoreLogLabels();
