@@ -470,6 +470,11 @@ void NtupleMaker::fillMuons(const edm::Event& iEvent) {
         mu_.isGlobalMuon     = mu->isGlobalMuon();
         mu_.isTrackerMuon    = mu->isTrackerMuon();
         mu_.isPFMuon         = mu->isPFMuon();
+        mu_.isLooseMuon      = mu->isLooseMuon();
+        mu_.isMediumMuon     = mu->isMediumMuon();
+        mu_.isTightMuon      = mu->isTightMuon(vtx);
+        mu_.isSoftMuon       = mu->isSoftMuon(vtx);
+        mu_.isHighPtMuon     = mu->isHighPtMuon(vtx);
         mu_.px               = mu->px();
         mu_.py               = mu->py();
         mu_.pz               = mu->pz();
