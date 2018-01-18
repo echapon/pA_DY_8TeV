@@ -5,7 +5,7 @@
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);
 void PrintOutGraph(TGraphAsymmErrors* g);
-void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr, TString texname);
+void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_tnp, TGraphAsymmErrors* g_AccEff_Corr, TString texname);
 Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
@@ -206,6 +206,8 @@ void DrawAccEffPlot(TString version = "None",
 	g_AccEff_Corr_tnp->SetName("g_AccEff_Corr_tnp");
 	g_AccEff_Corr_tnp->Write();
 
+   // print TeX table
+   PrintTex(g_Acc, g_Eff, g_EffCorr_tnp, g_AccEff_Corr_tnp, "AccEff/tex/acceff_" + variable + ".tex");
 
 }
 
@@ -367,53 +369,53 @@ void PrintOutGraph(TGraphAsymmErrors* g)
 	cout << "==========================================" << endl;
 }
 
-void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr, TString texname) {
+void PrintTex(TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff, TGraphAsymmErrors* g_tnp, TGraphAsymmErrors* g_AccEff_Corr, TString texname) {
    ofstream file(texname.Data());
+   file.precision(3);
    file << "\\begin{tabular}{l|ccc|c}" << endl;
-   file << "Bin & Acc. & Eff. (no TnP) & Eff. (TnP) & Acc $\\times$ Eff (TnP) \\\\" << endl;
+   file << "Bin & Acc. & Eff. (no TnP) & TnP corr. & Acc $\\times$ Eff (TnP) \\\\" << endl;
+   file << "\\hline" << endl;
 
    for (int i=0; i<g_Acc->GetN(); i++) {
-      file << g_Acc->GetX()[i] - g_Acc->GetEXlow()[i] << ", " << g_Acc->GetX()[i] + g_Acc->GetEXhigh()[i] << " & ";
+      file << g_Acc->GetX()[i] - g_Acc->GetEXlow()[i] << ", " << g_Acc->GetX()[i] + g_Acc->GetEXhigh()[i];
+      file.setf(ios::fixed);
       double val = g_Acc->GetY()[i];
       double errlow = g_Acc->GetErrorYlow(i);
       double errhigh = g_Acc->GetErrorYhigh(i);
       if (fabs(errlow-errhigh)>1e-3) {
-         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "}$ ";
       } else {
-         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << "$ ";
       }
-      file << " & ";
       val = g_Eff->GetY()[i];
       errlow = g_Eff->GetErrorYlow(i);
       errhigh = g_Eff->GetErrorYhigh(i);
       if (fabs(errlow-errhigh)>1e-3) {
-         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "}$ ";
       } else {
-         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << "$ ";
       }
-      file << " & ";
-      val = g_Eff_Corr->GetY()[i];
-      errlow = g_Eff_Corr->GetErrorYlow(i);
-      errhigh = g_Eff_Corr->GetErrorYhigh(i);
+      val = g_tnp->GetY()[i];
+      errlow = g_tnp->GetErrorYlow(i);
+      errhigh = g_tnp->GetErrorYhigh(i);
       if (fabs(errlow-errhigh)>1e-3) {
-         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "}$ ";
       } else {
-         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << "$ ";
       }
-      file << " & ";
       val = g_AccEff_Corr->GetY()[i];
       errlow = g_AccEff_Corr->GetErrorYlow(i);
       errhigh = g_AccEff_Corr->GetErrorYhigh(i);
       if (fabs(errlow-errhigh)>1e-3) {
-         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "} ";
+         file << " & $" << val << "_{-" << errlow << "}^{+" << errhigh << "}$ ";
       } else {
-         file << " & $" << val << " \\pm " << max(errlow,errhigh) << " ";
+         file << " & $" << val << " \\pm " << max(errlow,errhigh) << "$ ";
       }
+      file.unsetf(ios::fixed);
       file << " \\\\" << endl;
    }
 
-   file << "\\hline" << endl;
    file << "\\end{tabular}" << endl;
    file.close();
-   cout << "Closed " << texName << endl;
+   cout << "Closed " << texname << endl;
 }
