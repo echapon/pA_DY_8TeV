@@ -209,7 +209,7 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
     legend->AddEntry(emu_diboson,"VV","F");
     legend->SetBorderSize(0);  
 
-    TH1D* emu_QCD = (TH1D*)emuSS_data->Clone();
+    TH1D* emu_QCD = (TH1D*)emuSS_data->Clone("emu_QCD");
     emu_QCD->Add(emuSS_DYtautau,-1.0);
     emu_QCD->Add(emuSS[TT],-1.0);
     emu_QCD->Add(emuSS_diboson,-1.0);
