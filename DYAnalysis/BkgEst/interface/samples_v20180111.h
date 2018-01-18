@@ -72,7 +72,7 @@ namespace DYana_v20180111 {
          case WW:        return 208.*60.1; break; // CMS pp 8TeV: SMP-14-016
          case WZ:        return 208.*24.09; break; // CMS pp 8TeV: SMP-14-014
          case ZZ:        return 208.*7.7; break; // CMS pp 8TeV: SMP-13-005
-         case TT:        return 59.0e3; break; // according to DDE: NNLO (MCFM + Top++, CT14+EPPS16)
+         case TT:        return 45e3; break; // CMS pPb 8.16TeV: HIN-17-002
          // // PYTHIA
          // case WW:        return 208.*3.728; break;
          // case WZ:        return 208.*1.339; break;
