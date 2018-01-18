@@ -69,9 +69,9 @@ namespace DYana_v20180111_Pyquen {
          case DYMuMu30_PbP:  return 266.271e3; break; // Powheg
          case DYTauTau1030:return 1171.91e3; break; // Powheg
          case DYTauTau30:  return 265.810e3; break; // Powheg
-         case WW:        return 208.*32.93; break; // PYTHIA8, inclusive
-         case WZ:        return 208.*12.26; break; // PYTHIA8, inclusive
-         case ZZ:        return 208.*4.755; break; // PYTHIA8, inclusive
+         case WW:        return 208.*60.1; break; // CMS pp 8TeV: SMP-14-016
+         case WZ:        return 208.*24.09; break; // CMS pp 8TeV: SMP-14-014
+         case ZZ:        return 208.*7.7; break; // CMS pp 8TeV: SMP-13-005
          case TT:        return 59.0e3; break; // according to DDE: NNLO (MCFM + Top++, CT14+EPPS16)
          // // PYTHIA
          // case WW:        return 208.*3.728; break;
