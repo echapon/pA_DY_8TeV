@@ -30,6 +30,9 @@ public:
 	Double_t MassBinEdges[nMassBin+1];
 	Bool_t DrawDataDriven;
 	TString NormType;
+   TString Rew;
+   TString TnpRew;
+   TString MomCor;
 
    // TeX options
 	Bool_t doTex;
@@ -38,7 +41,9 @@ public:
 	TString FileLocation;
 	TFile *f_input;
 	TFile *f_input_Data;
-	TFile *f_input_bkg_dataDriven;
+	TFile *f_input_bkg_emu;
+	TFile *f_input_bkg_dijet;
+	TFile *f_input_bkg_wjets;
 	TFile *f_output;
 
 	vector< TString > HistNames; vector< TString> Variables; vector< TString > XTitles;
@@ -47,7 +52,7 @@ public:
 
 	double Nfactor_overall;
 	
-	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor, TString Rew, bool TnpRew);
+	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew);
 	virtual void SetupHistogramNames();
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
@@ -70,7 +75,7 @@ public:
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
-DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor, TString Rew, bool TnpRew)
+DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew)
 {
 	if( !(NormType_arg == "Lumi" || NormType_arg == "Zpeak") )
 	{
@@ -80,6 +85,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	DrawDataDriven = DrawDataDriven_arg;
 	NormType = NormType_arg;
+	MomCor = MomCor_arg;
+   Rew = Rew_arg;
    doTex = false;
 
 	setTDRStyle();
@@ -103,14 +110,14 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	if( version == "None" ) FileLocation = ".";
 
-   TString TnpRewS = "";
-   if (TnpRew) TnpRewS = "_tnprew";
+   TnpRew = "";
+   if (doTnpRew) TnpRew = "_tnprew";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_" + MomCor + "_" + Rew + TnpRewS + ".root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
 	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_" + MomCor + "_noHFrew_tnprew.root");
 	
 	// -- output file -- //
-	f_output = new TFile("ROOTFile_YieldHistogram.root", "RECREATE");
+	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
 	analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
@@ -381,7 +388,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
 		/////////////////////////////////////////////////////////////////////////////////////////
-		if( Variables[i_hist] == "OSMass_DYBin" || Variables[i_hist] == "OSMass_DYBin_part1" || Variables[i_hist] == "OSMass_DYBin_part2" 
+		if( Variables[i_hist] == "MassAnaBins" 
             || Variables[i_hist] == "diPtM60120"
             || Variables[i_hist] == "diRapidityM1560AnaBins" || Variables[i_hist] == "diRapidityM60120AnaBins"
             || Variables[i_hist] == "PhistarAnaBins")
@@ -450,7 +457,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		legend->AddEntry(h_data, "Data");
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
-         cout << Tag[i_MC] << endl;
+         // cout << Tag[i_MC] << endl;
 			if( STags[i_MC] == DYana::TT )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
 			else if( STags[i_MC] == DYana::VVFirst )
@@ -493,7 +500,7 @@ void DrawControlPlotTool::RebinHistograms( TH1D& h_data, vector< TH1D* > &h_MC, 
 		for(Int_t i=0; i<nMC; i++)
 			h_MC[i]->Rebin(2);
 	}
-	else if( Variable.Contains("OSMass_DYBin") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
+	else if( Variable.Contains("MassAnaBins") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
 	{
 		h_data = *(TH1D*)h_data.Rebin(nMassBin, h_data.GetName(), MassBinEdges);
 		for(Int_t i=0; i<nMC; i++)
@@ -526,7 +533,8 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 
 	Int_t nBkg = (Int_t)h_bkgs.size();
 	for(Int_t i_bkg=0; i_bkg<nBkg; i_bkg++)
-	{
+   {
+      // cout << Names[i_bkg] << endl;
 		TH1D* h_temp = h_bkgs[i_bkg];
 
 		// -- total backgrounds -- //
@@ -536,7 +544,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") )
+		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets" )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -709,11 +717,11 @@ void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_b
 	h_totBkg->Sumw2();
 
 	TString HistoName = h_data->GetName();
-	HistoName.ReplaceAll("mass", "mass_bkgsub");
-	HistoName.ReplaceAll("pt", "pt_bkgsub");
-	HistoName.ReplaceAll("phistar", "phistar_bkgsub");
-	HistoName.ReplaceAll("rap1560", "rap1560_bkgsub");
-	HistoName.ReplaceAll("rap60120", "rap60120_bkgsub");
+	HistoName.ReplaceAll("mass3", "mass_bkgsub");
+	HistoName.ReplaceAll("diPt2_M60to120", "diPt_M60to120_bkgsub");
+	HistoName.ReplaceAll("Phistar2_M60to120", "Phistar_M60to120_bkgsub");
+	HistoName.ReplaceAll("diRap2_M15to60", "diRap_M15to60_bkgsub");
+	HistoName.ReplaceAll("diRap_M60to120", "diRap_M60to120_bkgsub");
 	HistoName.ReplaceAll("_Data", "_"+Type);
 
 	TH1D *h_yield = (TH1D*)h_data->Clone();
@@ -774,10 +782,12 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	////////////////////////////////////////////////////////////////
 	// -- Bring the histograms estimated by data-driven method -- //
 	////////////////////////////////////////////////////////////////
-	f_input_bkg_dataDriven = new TFile(FileLocation + Form("/ROOTFile_Bkg_DataDrivenMethod_%s.root",variable));
-	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dataDriven->Get("dijet")->Clone();
-	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_dataDriven->Get("wjets")->Clone();
-   TH1D *h_emu_ratio = (TH1D*)f_input_bkg_dataDriven->Get("emu_ratio")->Clone();
+	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
+	f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
+	f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet")->Clone();
+	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets")->Clone();
+   TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -787,9 +797,10 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    h_WZ_emu->Multiply(h_emu_ratio);
    h_ZZ_emu->Multiply(h_emu_ratio);
 
-	f_input_bkg_dataDriven->cd();
-	TH1D *h_StatUnc_diJet_FR = (TH1D*)f_input_bkg_dataDriven->Get("dijet_stat")->Clone();
-	TH1D *h_StatUnc_WJets_FR = (TH1D*)f_input_bkg_dataDriven->Get("wjets_stat")->Clone();
+	f_input_bkg_dijet->cd();
+	TH1D *h_StatUnc_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet_stat")->Clone();
+	f_input_bkg_wjets->cd();
+	TH1D *h_StatUnc_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets_stat")->Clone();
 
 	ChangeHistError_StatOnlyError(h_diJet_FR, h_StatUnc_diJet_FR);
 	ChangeHistError_StatOnlyError(h_WJets_FR, h_StatUnc_WJets_FR);
@@ -888,7 +899,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	f_output->cd();
 	h_SignalMC->Write();
 
-	TFile *f_output2 = TFile::Open(Form("ROOTFile_Histograms_%s_",variable)+Type+".root", "RECREATE");
+	TFile *f_output2 = TFile::Open(Form("ROOTFile_Histograms_%s_",variable) + MomCor + "_" + Rew + TnpRew + "_" + Type + ".root", "RECREATE");
 	f_output2->cd();
 
 	h_data->SetName("h_data");
