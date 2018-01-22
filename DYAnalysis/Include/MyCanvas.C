@@ -667,6 +667,8 @@ public:
 		f_line->Draw("SAME");
 
 		g_ratio->Draw("PSAME");		
+
+      CMS_lumi( TopPad, 111, 0 );
 	}
 
 	void MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2)

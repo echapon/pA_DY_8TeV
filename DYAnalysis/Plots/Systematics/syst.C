@@ -3,6 +3,7 @@
 
 #include "syst.h"
 
+
 map<bin, syst> readSyst(const char* systfile) {
    map<bin, syst> ans;
 
@@ -57,6 +58,7 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
          {
            thesyst.value = sqrt(pow(thesyst.value,2) + pow(ans[thebin].value,2));
          }
+         thesyst.value = fabs(thesyst.value);
          ans[thebin] = thesyst;
       }
    }
@@ -64,7 +66,7 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
    return ans;
 };
 
-map<bin, syst> readSyst_all(var thevar, bool doPrintTex=false, const char* texName="Systematics/systs.tex") {
+map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName) {
    vector< map<bin, syst> > systmap_all;
 
    vector<TString> tags;
@@ -72,7 +74,8 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex=false, const char* texNa
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;
-      TString systfilename = "Systematics/" + TString(varname(thevar)) + ".csv";
+      TString systfilename = "Plots/Systematics/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      cout << systfilename << endl;
       systmap = readSyst(systfilename.Data());
       systmap_all.push_back(systmap);
    }
@@ -96,7 +99,7 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    }
    file << "}" << endl;
    file << "\\hline" << endl;
-   file << "$|y|$ & \\pt & Centrality";
+   file << "bin";
    for (unsigned int i=0; i<nsyst; i++) file << " & " << theSysts[i].begin()->second.name;
    file<< "\\\\" << endl;
    file << "\\hline" << endl;

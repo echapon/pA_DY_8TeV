@@ -13,6 +13,6 @@ void DrawControlPlot(TString version="None",
    tool->GenLevelMassSpectrum();
    tool->SetupHistogramNames();
    // tool->LoopForHistograms(-1);
-   tool->LoopForHistograms(1);
+   tool->LoopForHistograms(3);
 }
 

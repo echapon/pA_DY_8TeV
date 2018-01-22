@@ -29,7 +29,7 @@ public:
 	TH1D *h_phi;
 	TH1D *h_mass;
 	TH1D *h_mass2;
-	TH1D *h_mass3;
+	TH1D *h_massZ;
 	TH1D *h_diPt;
 	TH1D *h_diPt2_M60to120;
 	TH1D *h_Phistar_M60to120;
@@ -112,16 +112,6 @@ public:
 	TH1D* h_mass_OS_BE;
 	TH1D* h_mass_OS_EE;
 
-	TH1D *h_mass_OS_part1;
-	TH1D *h_mass_OS_part1_BB;
-	TH1D *h_mass_OS_part1_BE;
-	TH1D *h_mass_OS_part1_EE;
-
-	TH1D *h_mass_OS_part2;
-	TH1D *h_mass_OS_part2_BB;
-	TH1D *h_mass_OS_part2_BE;
-	TH1D *h_mass_OS_part2_EE;
-
 	TH1D *h_muonHits;
 	TH1D *h_nMatches;
 	TH1D *h_RelPtError;
@@ -145,8 +135,8 @@ public:
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
 		h_mass = new TH1D("h_mass_"+Type, "", 600, 0, 600); Histo.push_back( h_mass );
-		h_mass2 = new TH1D("h_mass2_"+Type, "", 60, 60, 120); Histo.push_back( h_mass2 );
-		h_mass3 = new TH1D("h_mass3_"+Type, "", binnum, bins); Histo.push_back( h_mass3 );
+		h_mass2 = new TH1D("h_mass2_"+Type, "", binnum, bins); Histo.push_back( h_mass2 );
+		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
 		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 300,0,3.); Histo.push_back( h_Phistar_M60to120 );
@@ -233,17 +223,6 @@ public:
 		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BB );
 		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BE );
 		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_EE );
-
-		h_mass_OS_part1 = new TH1D("h_mass_OS_part1_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1 );
-		h_mass_OS_part1_BB = new TH1D("h_mass_OS_part1_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_BB );
-		h_mass_OS_part1_BE = new TH1D("h_mass_OS_part1_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_BE );
-		h_mass_OS_part1_EE = new TH1D("h_mass_OS_part1_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part1_EE );
-
-		h_mass_OS_part2 = new TH1D("h_mass_OS_part2_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2 );
-		h_mass_OS_part2_BB = new TH1D("h_mass_OS_part2_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_BB );
-		h_mass_OS_part2_BE = new TH1D("h_mass_OS_part2_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_BE );
-		h_mass_OS_part2_EE = new TH1D("h_mass_OS_part2_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_part2_EE );
-
 
 		h_muonHits = new TH1D("h_muonHits_"+Type, "", 70, 0, 70); Histo.push_back( h_muonHits );
 		h_nMatches = new TH1D("h_nMatches_"+Type, "", 7, 0, 7); Histo.push_back( h_nMatches );
@@ -426,7 +405,7 @@ public:
 		Double_t reco_Pt = (reco_v1 + reco_v2).Pt();
 		h_mass->Fill( reco_M, weight );
 		h_mass2->Fill( reco_M, weight );
-		h_mass3->Fill( reco_M, weight );
+		h_massZ->Fill( reco_M, weight );
 		h_diPt->Fill( reco_Pt, weight );
 		h_diRap->Fill( reco_Rap, weight );
 
@@ -486,55 +465,6 @@ public:
 				h_mass_OS_BE->Fill( reco_M, weight );
 			else if( isEE == kTRUE )
 				h_mass_OS_EE->Fill( reco_M, weight );
-
-			if( isMC == kFALSE ) // -- Data -- //
-			{
-				if( ntuple->runNum < runcut ) // pPb
-				{
-					h_mass_OS_part1->Fill( reco_M, weight );
-
-					if( isBB == kTRUE )
-						h_mass_OS_part1_BB->Fill( reco_M, weight );
-					else if( isBE == kTRUE )
-						h_mass_OS_part1_BE->Fill( reco_M, weight );
-					else if( isEE == kTRUE )
-						h_mass_OS_part1_EE->Fill( reco_M, weight );
-				}
-				else // Pbp
-				{
-					h_mass_OS_part2->Fill( reco_M, weight );
-
-					if( isBB == kTRUE )
-						h_mass_OS_part2_BB->Fill( reco_M, weight );
-					else if( isBE == kTRUE )
-						h_mass_OS_part2_BE->Fill( reco_M, weight );
-					else if( isEE == kTRUE )
-						h_mass_OS_part2_EE->Fill( reco_M, weight );
-				}
-			}
-			else // -- MC -- //
-			{
-				h_mass_OS_part1->Fill( reco_M, weight );
-				h_mass_OS_part2->Fill( reco_M, weight );
-
-				if( isBB == kTRUE )
-				{
-					h_mass_OS_part1_BB->Fill( reco_M, weight );
-					h_mass_OS_part2_BB->Fill( reco_M, weight );
-				}
-				else if( isBE == kTRUE )
-				{
-					h_mass_OS_part1_BE->Fill( reco_M, weight );
-					h_mass_OS_part2_BE->Fill( reco_M, weight );
-				}
-				else if( isEE == kTRUE )
-				{
-					h_mass_OS_part1_EE->Fill( reco_M, weight );
-					h_mass_OS_part2_EE->Fill( reco_M, weight );
-				}
-
-			}
-
 
 		}
 		else

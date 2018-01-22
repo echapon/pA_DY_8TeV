@@ -1,9 +1,20 @@
-#include "../BkgEst/interface/defs.h"
+#include "TFile.h"
+#include "TGraphAsymmErrors.h"
+#include "TH1.h"
+#include "TCanvas.h"
+#include "TEfficiency.h"
+
+#include <iostream>
+
+#include "BkgEst/interface/defs.h"
 #include "Plots/TheoryTools.h"
 #include "Include/bin.h"
-#include "Plots/Systematics/syst.h"
+#include "Plots/Systematics/syst.C"
+#include "Include/MyCanvas.C"
+#include "Include/texUtils.h"
 
 using namespace DYana;
+using namespace std;
 
 void Obtain_dSigma_dX(TH1D *h){
 	Int_t nBins = h->GetNbinsX();
@@ -29,7 +40,34 @@ void Obtain_dSigma_dX(TH1D *h){
 	}
 }
 
-void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", const char* accefffile="ROOTFile_AccEff.root", const char* outputfile="result.root", bool dosyst=true) {
+TGraphAsymmErrors *h2gae(TH1 *h) {
+   const int n = h->GetNbinsX();
+   double *x = new double[n];
+   double *y = new double[n];
+   double *exl = new double[n];
+   double *exh = new double[n];
+   double *eyl = new double[n];
+   double *eyh = new double[n];
+
+   for (int i=0; i<n; i++) {
+      x[i] = h->GetBinCenter(i+1);
+      y[i] = h->GetBinContent(i+1);
+      exl[i] = h->GetBinWidth(i+1)/2.;
+      exh[i] = exl[i];
+      eyl[i] = h->GetBinError(i+1);
+      eyh[i] = eyl[i];
+   }
+
+   TGraphAsymmErrors *ans = new TGraphAsymmErrors(n,x,y,exl,exh,eyl,eyh);
+
+   delete x; delete y; delete exl; delete exh; delete eyl; delete eyh;
+   return ans;
+}
+
+void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg histos
+      const char* accefffile="ROOTFile_AccEff.root",             // acceptance and efficiency
+      const char* outputfile="Plots/results/xsec.root",          // where to write the output xsec
+      bool forsyst=false) {                                      // if true, don't print canvases and tables
    TFile *fy = TFile::Open(datafile);
    TFile *fae = TFile::Open(accefffile);
 
@@ -37,61 +75,101 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", const char* acc
 
 
    // loop on the variables
-   for (int thevar=0; thevar<ALLvar; thevar++) {
+   // for (int ivar=0; ivar<ALLvar; ivar++) {
+   for (int ivar=0; ivar<pt; ivar++) { // only mass for now
+      var thevar = static_cast<var>(ivar);
       // the systs
       map<bin,syst> thesyst = readSyst_all(thevar);
 
-      TH1D *hy = (TH1D*) fy->Get("h_yield_OS_MCBasedBkg1");
+      TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg1",varname(thevar)));
+      hy->Scale(1./lumi_all);
+      Obtain_dSigma_dX(hy);
+      hy->SetName(Form("hy_%s",varname(thevar)));
+
       // TGraph *gae = (TGraph*) fae->Get("g_AccEff_Corr_tnp");
       // get acc and eff and multiply them in the loop
-      TEfficiency *TEff_Acc = (TEfficiency*)f_input->Get(Form("TEff_Acc_%s",Variablename(thevar)));
+      TEfficiency *TEff_Acc = (TEfficiency*)fae->Get(Form("TEff_Acc_%s",Varname(thevar)));
       TGraphAsymmErrors *ga = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
 
-      TEfficiency *TEff_Eff = (TEfficiency*)f_input->Get(Form("TEff_Eff_%s",Variablename(thevar)));
+      TEfficiency *TEff_Eff = (TEfficiency*)fae->Get(Form("TEff_Eff_%s",Varname(thevar)));
       TGraphAsymmErrors *ge = (TGraphAsymmErrors*)TEff_Eff->CreateGraph()->Clone();
+
+      TGraphAsymmErrors *gres = (TGraphAsymmErrors*) ga->Clone(Form("gres_%s",varname(thevar)));
+      TGraphAsymmErrors *gres_statonly = (TGraphAsymmErrors*) ga->Clone(Form("gres_statonly_%s",varname(thevar)));
 
       for (int i=0; i<ga->GetN(); i++) {
          bin thebin;
-         thebin.first = hy->GetBinLowEdge(i);
-         thebin.second = thebin.first + hy->GetBinWidth(i);
-         hy->SetBinContent(i+1,hy->GetBinContent(i+1)/(ga>GetY()[i]*ge>GetY()[i]));
-         double err;
-         if (dosyst) {
-            err = sqrt(
-                  pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
-                  + pow(ga->GetEY()[i]/ga->GetY()[i],2) // acceptance
-                  + pow(ge->GetEY()[i]/ge->GetY()[i],2) // efficiency
-                  + pow(thesyst[thebin],2) // other systs
-                  );
-            err = err * hy->GetBinContent(i+1)/(ga>GetY()[i]*ge>GetY()[i]);
-         } else {
-            err = hy->GetBinError(i+1)/(ga>GetY()[i]*ge>GetY()[i])
-         }
-         hy->SetBinError(i+1,err);
-      }
-      hy->Scale(1./lumi_all);
-      Obtain_dSigma_dX(hy);
-      if (thevar==mass) {
-         hy->GetXaxis()->SetTitle("M [GeV/c^{2}]");
-         hy->GetYaxis()->SetTitle("d#sigma/dM [nb/GeV/c^{2}]");
-      } else if (thevar==pt) {
-         hy->GetXaxis()->SetTitle("p_{T} [GeV/c]");
-         hy->GetYaxis()->SetTitle("d#sigma/dp_{T} [nb/GeV/c]");
-      } else if (thevar==phistar) {
-         hy->GetXaxis()->SetTitle("#phi^{*}");
-         hy->GetYaxis()->SetTitle("d#sigma/d#phi^{*} [nb]");
-      } else if (thevar==rap60120) {
-         hy->GetXaxis()->SetTitle("y_{CM}");
-         hy->GetYaxis()->SetTitle("d#sigma/dy [nb]");
-      } else if (thevar==rap1560) {
-         hy->GetXaxis()->SetTitle("y_{CM}");
-         hy->GetYaxis()->SetTitle("d#sigma/dy [nb]");
+         thebin.first = hy->GetBinLowEdge(i+1);
+         thebin.second = thebin.first + hy->GetBinWidth(i+1);
+         double val = hy->GetBinContent(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+         double errl,errh;
+         double errl_stat,errh_stat;
+         // cout << hy->GetBinError(i+1)/hy->GetBinContent(i+1) << " ";
+         // cout << ga->GetEYlow()[i]/ga->GetY()[i] << " ";
+         // cout << ge->GetEYlow()[i]/ge->GetY()[i] << " ";
+         // cout << thesyst[thebin].value << endl;
+         errl = sqrt(
+               pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
+               + pow(ga->GetEYlow()[i]/ga->GetY()[i],2) // acceptance
+               + pow(ge->GetEYlow()[i]/ge->GetY()[i],2) // efficiency
+               + pow(thesyst[thebin].value,2) // other systs
+               );
+         errl = errl * val;
+         errh = sqrt(
+               pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
+               + pow(ga->GetEYhigh()[i]/ga->GetY()[i],2) // acceptance
+               + pow(ge->GetEYhigh()[i]/ge->GetY()[i],2) // efficiency
+               + pow(thesyst[thebin].value,2) // other systs
+               );
+         errh = errh * val;
+         errl_stat = hy->GetBinError(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+         errh_stat = errl_stat;
+
+         gres->SetPoint(i,hy->GetBinCenter(i+1),val);
+         gres->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl,errh);
+         gres_statonly->SetPoint(i,hy->GetBinCenter(i+1),val);
+         gres_statonly->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl_stat,errh_stat);
+         hy->SetBinContent(i+1,val);
+         hy->SetBinError(i+1,(errl+errh)/2.);
       }
 
-      TCanvas* c1 = new TCanvas();
-      c1->SetLogx();
-      c1->SetLogy();
-      hy->Draw();
+      bool logx=false, logy=true;
+      TString xtitle, ytitle;
+      TString xtitle_tex, ytitle_tex;
+      int lx=800, ly=800;
+
+      if (thevar==mass) {
+         xtitle = "M [GeV/c^{2}]";
+         ytitle = "d#sigma/dM [nb/GeV/c^{2}]";
+         xtitle_tex = "\\mmumu (\\GeVcc)";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeVcc)";
+         logx= true;
+      } else if (thevar==pt) {
+         xtitle = "p_{T} [GeV/c]";
+         ytitle = "d#sigma/dp_{T} [nb/GeV/c]";
+         xtitle_tex = "\\pt (\\GeVc)";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeVc)";
+         logx = true;
+      } else if (thevar==phistar) {
+         xtitle = "#phi^{*}";
+         ytitle = "d#sigma/d#phi^{*} [nb]";
+         xtitle_tex = "\\phistar";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\phistar$ (nb)";
+         logx = true;
+      } else if (thevar==rap60120) {
+         xtitle = "y_{CM}";
+         ytitle = "d#sigma/dy [nb]";
+         xtitle_tex = "\\ylab";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
+      } else if (thevar==rap1560) {
+         xtitle = "y_{CM}";
+         ytitle = "d#sigma/dy [nb]";
+         xtitle_tex = "\\ylab";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
+      }
+      MyCanvas c1(Form("Plots/results/plots/result_%s",varname(thevar)),xtitle,ytitle,lx,ly);
+      if (logx) c1.SetLogx();
+      if (logy) c1.SetLogy(false);
 
       // // temporary dummy theory
       // TFile *fth = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/MCFM/MCFM-8.0/Bin/DYpA8TeV/CT14_eigenvectors/Z_only_nlo_CT14nlo_90___90___DY15600_CT14nlo_CT14nlo_7_7.root");
@@ -102,10 +180,40 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", const char* acc
       // hth->Scale(208*1e-3);
 
       TFile *fth = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_norew.root");
-      TH1F *hth = (TH1F*) hth->Get(Form("h_%s_AccTotal",varname(thevar)));
-      hth->Scale((Xsec(DYMuMu1030)+Xsec(DYMuMu30))/(Nevts(DYMuMu1030)+Nevts(DYMuMu30)));
+      TH1D *hth = (TH1D*) fth->Get(Form("h_%s_AccTotal",varname(thevar)));
+      hth->Scale(1./lumi_all);
       Obtain_dSigma_dX(hth);
-      hth->SetLineColor(kRed);
-      hth->Draw("same HIST");
+      TGraphAsymmErrors *gth = h2gae(hth);
+      gth->SetMarkerSize(0);
+      gth->SetName(Form("gth_%s",varname(thevar)));
+
+      if (!forsyst) {
+         c1.CanvasWithGraphRatioPlot(gres,gth,
+               "Data","Powheg","Data/Powheg",
+               kBlack,kRed,
+               "EP","5");
+         c1.PrintCanvas();
+         c1.PrintCanvas_C();
+
+         // print graph
+         inittex(Form("Plots/results/tex/%s.tex",varname(thevar)),xtitle.Data(),ytitle.Data());
+         printGraph(gres_statonly,gres,Form("Plots/tex/%s.tex",varname(thevar)));
+         closetex(Form("Plots/results/tex/%s.tex",varname(thevar)));
+      }
+
+
+      // write to file
+      fout->cd();
+      gres->Write();
+      gth->Write();
+      hy->Write();
+
+      fth->Close();
    }
+
+   // close file
+   fout->Write();
+   fout->Close();
+   fy->Close();
+   fae->Close();
 }

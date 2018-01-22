@@ -147,18 +147,28 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 void DrawControlPlotTool::SetupHistogramNames()
 {
    // put the observables first
-   HistNames.push_back( "h_mass3" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins_part1" );				XTitles.push_back( "Invariant Mass(#mu#mu) (PbP) [GeV]");
+   HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins_part2" );				XTitles.push_back( "Invariant Mass(#mu#mu) (pPb) [GeV]");
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) [GeV]");
+	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120_part1" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) (PbP) [GeV]");
+	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120_part2" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) (pPb) [GeV]");
 	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins_part1" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV) (PbP)");
+	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins_part2" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV) (pPb)");
 	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins_part1" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV) (PbP)");
+	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins_part2" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV) (pPb)");
 	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins_part1" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV) (PbP)");
+	HistNames.push_back( "h_diRap2_M60to120" );			Variables.push_back( "diRapidityM60120AnaBins_part2" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV) (pPb)");
 
    // then the rest
    HistNames.push_back( "h_Pt" );				Variables.push_back( "Pt" );				XTitles.push_back( "Muon P_{T} [GeV]");
    HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta_{lab}");
    HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
    HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
-   HistNames.push_back( "h_mass2" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_massZ" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
    HistNames.push_back( "h_Phistar_M60to120" );			Variables.push_back( "Phistar" );				XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV)");
 
@@ -206,17 +216,6 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_DYBin_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_DYBin_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
 	HistNames.push_back( "h_mass_OS_EE" );				Variables.push_back( "OSMass_DYBin_EE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, EE) [GeV]");
-
-	HistNames.push_back( "h_mass_OS_part1" );				Variables.push_back( "OSMass_DYBin_part1" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part1)");
-	HistNames.push_back( "h_mass_OS_part2" );				Variables.push_back( "OSMass_DYBin_part2" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV] (part2)");
-
-	HistNames.push_back( "h_mass_OS_part1_BB" );			Variables.push_back( "OSMass_DYBin_part1_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (part1)");
-	HistNames.push_back( "h_mass_OS_part1_BE" );			Variables.push_back( "OSMass_DYBin_part1_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (part1)");
-	HistNames.push_back( "h_mass_OS_part1_EE" );			Variables.push_back( "OSMass_DYBin_part1_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (part1)");
-	
-	HistNames.push_back( "h_mass_OS_part2_BB" );			Variables.push_back( "OSMass_DYBin_part2_BB" );		XTitles.push_back( "Invariant Mass(OS, BB) [GeV] (part2)");
-	HistNames.push_back( "h_mass_OS_part2_BE" );			Variables.push_back( "OSMass_DYBin_part2_BE" );		XTitles.push_back( "Invariant Mass(OS, BE) [GeV] (part2)");
-	HistNames.push_back( "h_mass_OS_part2_EE" );			Variables.push_back( "OSMass_DYBin_part2_EE" );		XTitles.push_back( "Invariant Mass(OS, EE) [GeV] (part2)");
 
 	HistNames.push_back( "h_muonHits" );			Variables.push_back( "MuonHits" );			XTitles.push_back( "# Muon Hits");
 	HistNames.push_back( "h_nMatches" );			Variables.push_back( "nMatches" );			XTitles.push_back( "# Matched Stations");
@@ -388,10 +387,10 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
 		/////////////////////////////////////////////////////////////////////////////////////////
-		if( Variables[i_hist] == "MassAnaBins" 
-            || Variables[i_hist] == "diPtM60120"
-            || Variables[i_hist] == "diRapidityM1560AnaBins" || Variables[i_hist] == "diRapidityM60120AnaBins"
-            || Variables[i_hist] == "PhistarAnaBins")
+		if( Variables[i_hist].Contains("MassAnaBins") 
+            || Variables[i_hist].Contains("diPtM60120")
+            || Variables[i_hist].Contains("diRapidityM1560AnaBins") || Variables[i_hist].Contains("diRapidityM60120AnaBins")
+            || Variables[i_hist].Contains("PhistarAnaBins"))
 		{
 			vector< TH1D* > h_bkgs;
 			for(Int_t i_tag=0; i_tag<nTag; i_tag++)
@@ -402,17 +401,17 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 			this->StoreYieldHistogram( h_data, h_bkgs, "MCBasedBkg" );
 
 			if( DrawDataDriven == kTRUE )
-			{
-				TString Type = "All";
-				if( Variables[i_hist] == "OSMass_DYBin_part1" ) Type = "part1";
-				else if( Variables[i_hist] == "OSMass_DYBin_part2" ) Type = "part2";
+         {
+            TString Type = "All";
+            if( Variables[i_hist].Contains("part1") ) Type = "part1";
+            else if( Variables[i_hist].Contains("part2") ) Type = "part2";
             TString variable = "mass";
             if (Variables[i_hist] == "diPtM60120") variable = "pt";
             if (Variables[i_hist] == "PhistarAnaBins") variable = "phistar";
             if (Variables[i_hist] == "diRapidityM60120AnaBins") variable = "rap60120";
             if (Variables[i_hist] == "diRapidityM1560AnaBins") variable = "rap1560";
-				this->DrawMassHistogram_DataDrivenBkg(Type, h_data, h_MC, variable);
-			}
+            this->DrawMassHistogram_DataDrivenBkg(Type, h_data, h_MC, variable);
+         }
 		}
 
 
@@ -717,12 +716,13 @@ void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_b
 	h_totBkg->Sumw2();
 
 	TString HistoName = h_data->GetName();
-	HistoName.ReplaceAll("mass3", "mass_bkgsub");
+	HistoName.ReplaceAll("mass2", "mass_bkgsub");
 	HistoName.ReplaceAll("diPt2_M60to120", "diPt_M60to120_bkgsub");
 	HistoName.ReplaceAll("Phistar2_M60to120", "Phistar_M60to120_bkgsub");
 	HistoName.ReplaceAll("diRap2_M15to60", "diRap_M15to60_bkgsub");
 	HistoName.ReplaceAll("diRap_M60to120", "diRap_M60to120_bkgsub");
 	HistoName.ReplaceAll("_Data", "_"+Type);
+   cout << "whaou " << HistoName.Data() << endl;
 
 	TH1D *h_yield = (TH1D*)h_data->Clone();
 	h_yield->SetName( HistoName );
@@ -818,6 +818,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 		h_ttbar_emu->Scale( NormFactor );
 		h_DYTauTau_emu->Scale( NormFactor );
 		h_WW_emu->Scale( NormFactor );
+		h_WZ_emu->Scale( NormFactor );
+		h_ZZ_emu->Scale( NormFactor );
 	}
 
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
@@ -893,7 +895,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	h_bkgs.push_back( h_DYTauTau_emu ); Names.push_back("DYTauTau");
 	h_bkgs.push_back( h_ttbar_emu ); Names.push_back("ttbar");
 	
-	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg" );
+	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
 	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names );
 
 	f_output->cd();
@@ -1290,7 +1292,7 @@ void DrawControlPlotTool::ChangeHistError_StatOnlyError(TH1D *h_mass, TH1D *h_St
 	}
 }
 
-void DrawControlPlotTool::SetTexOptions(bool groupTex=true) {
+void DrawControlPlotTool::SetTexOptions(bool groupTex) {
    doTex = true;
    doGroupTex = groupTex;
 }
@@ -1327,7 +1329,7 @@ void DrawControlPlotTool::PrintTex( TString Variable, TH1D* h_data, TH1D* h_pred
          // TT
          file << h_MC[0]->GetBinContent(i) << "$\\pm$" << h_MC[0]->GetBinError(i) << " & ";
          // Other bkgs
-         for (int j=1; j<h_MC.size(); j++) {
+         for (unsigned int j=1; j<h_MC.size(); j++) {
             val += h_MC[j]->GetBinContent(i);
             err2 += pow(h_MC[j]->GetBinError(i),2);
             if (j==VVLast || j==WLast || j==DYLast || j==DYTauTau30 || j==DYLast) {

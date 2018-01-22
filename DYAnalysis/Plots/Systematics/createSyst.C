@@ -15,8 +15,8 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    if (!tfnom || !tfsyst) return;
 
    // get the histos
-   TH1D* hnom = (TH1D*) tfnom->Get();
-   TH1D* hsyst = (TH1D*) tfsyst->Get();
+   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_%s",varname(thevar)));
+   TH1D* hsyst = (TH1D*) tfsyst->Get(Form("hy_%s",varname(thevar)));
    if (!hnom || !hsyst) return;
 
    // get the relative difference
