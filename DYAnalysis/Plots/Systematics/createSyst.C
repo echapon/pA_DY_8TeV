@@ -11,7 +11,7 @@ using namespace DYana;
 void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", const char* systname="somesyst", var thevar=mass) {
    // open the files
    TFile *tfnom = TFile::Open(fnom);
-   TFile *tfsyst = TFile::Open(fnom);
+   TFile *tfsyst = TFile::Open(fsyst);
    if (!tfnom || !tfsyst) return;
 
    // get the histos
@@ -25,15 +25,19 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
       bin thebin;
       thebin.first = hnom->GetBinLowEdge(i);
       thebin.second = thebin.first + hnom->GetBinWidth(i);
-      double theval = hsyst->GetBinContent(i)-hnom->GetBinContent(i);
+      double theval = (hsyst->GetBinContent(i)-hnom->GetBinContent(i))/hnom->GetBinContent(i);
       thesyst[thebin] = theval;
+      // cout << theval << endl;
    }
 
    // print to a csv
-   ofstream systfile(Form("%s_%s.csv",systname,varname(thevar)));
+   ofstream systfile(Form("Systematics/csv/%s_%s.csv",systname,varname(thevar)));
    systfile << systname << endl;
-   for (vector<bin,double>::const_iterator it = thesys.begin(), it != thesyst.end(), it++) {
+   for (map<bin,double>::const_iterator it = thesyst.begin(); it != thesyst.end(); it++) {
       systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
    }
    systfile.close();
+
+   tfnom->Close();
+   tfsyst->Close();
 }

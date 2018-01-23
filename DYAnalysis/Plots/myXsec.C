@@ -81,7 +81,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       // the systs
       map<bin,syst> thesyst = readSyst_all(thevar);
 
-      TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg1",varname(thevar)));
+      TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",varname(thevar)));
       hy->Scale(1./lumi_all);
       Obtain_dSigma_dX(hy);
       hy->SetName(Form("hy_%s",varname(thevar)));
