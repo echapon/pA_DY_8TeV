@@ -31,7 +31,7 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    }
 
    // print to a csv
-   ofstream systfile(Form("Systematics/csv/%s_%s.csv",systname,varname(thevar)));
+   ofstream systfile(Form("csv/%s_%s.csv",systname,varname(thevar)));
    systfile << systname << endl;
    for (map<bin,double>::const_iterator it = thesyst.begin(); it != thesyst.end(); it++) {
       systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
@@ -42,8 +42,41 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    tfsyst->Close();
 }
 
+void createStat(const char* fnom, var thevar=mass) {
+   // open the files
+   TFile *tfnom = TFile::Open(fnom);
+   if (!tfnom) return;
+
+   // get the histos
+   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_%s",varname(thevar)));
+   if (!hnom) return;
+
+   // get the uncert
+   map<bin,double> thesyst;
+   for (int i=1; i<hnom->GetNbinsX(); i++) {
+      bin thebin;
+      thebin.first = hnom->GetBinLowEdge(i);
+      thebin.second = thebin.first + hnom->GetBinWidth(i);
+      double theval = hnom->GetBinError(i)/hnom->GetBinContent(i);
+      thesyst[thebin] = theval;
+      // cout << theval << endl;
+   }
+
+   // print to a csv
+   ofstream systfile(Form("csv/stat_%s.csv",varname(thevar)));
+   systfile << "stat." << endl;
+   for (map<bin,double>::const_iterator it = thesyst.begin(); it != thesyst.end(); it++) {
+      systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
+   }
+   systfile.close();
+
+   tfnom->Close();
+}
+
 // create all systs
 void createSystAll(var thevar=mass) {
-   createSyst("results/xsec_nom.root","results/xsec_rewNtracks.root","rewNtracks",thevar);
-   createSyst("results/xsec_nom.root","results/xsec_MomCorr.root","MomCorr",thevar);
+   createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_rewNtracks.root","rewNtracks",thevar);
+   createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_MomCorr.root","MomCorr",thevar);
+
+   createStat("../Plots/results/xsec_nom.root",thevar);
 }
