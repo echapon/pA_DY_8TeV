@@ -1,8 +1,8 @@
 #ifndef syst_h
 #define syst_h
 
-#include "../../Include/bin.h"
-#include "../../BkgEst/interface/defs.h"
+#include "../Include/bin.h"
+#include "../BkgEst/interface/defs.h"
 #include "TString.h"
 #include "TSystemFile.h"
 #include "TSystemDirectory.h"
@@ -12,9 +12,6 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-
-#include "RooWorkspace.h"
-#include "RooRealVar.h"
 
 struct syst {
    string name;

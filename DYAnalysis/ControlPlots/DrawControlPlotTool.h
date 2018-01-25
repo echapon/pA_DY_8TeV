@@ -110,11 +110,11 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 
 	if( version == "None" ) FileLocation = ".";
 
-   TnpRew = "";
+   TnpRew = "_notnprew";
    if (doTnpRew) TnpRew = "_tnprew";
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_" + MomCor + "_noHFrew_tnprew.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_" + MomCor + "_noHFrew_notnprew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");

@@ -555,6 +555,7 @@ public:
 		legend->Draw();
 
 		
+      CMS_lumi( c, 111, 0 );
 	}
 
 	void CanvasWithGraphRatioPlot(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2,

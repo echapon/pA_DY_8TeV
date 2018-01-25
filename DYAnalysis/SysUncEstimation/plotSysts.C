@@ -25,6 +25,12 @@ void plotSysts(var thevar) {
    systfilename = "Systematics/csv/MomCorr_" + TString(varname(thevar)) + ".csv";
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
+   systfilename = "Systematics/csv/tnp_up_" + TString(varname(thevar)) + ".csv";
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
+   systfilename = "Systematics/csv/acceffstat_up_" + TString(varname(thevar)) + ".csv";
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
 
    // add stat for comparison
    systfilename = "Systematics/csv/stat_" + TString(varname(thevar)) + ".csv";
@@ -50,6 +56,7 @@ void plotSysts(var thevar) {
 
       TGraphAsymmErrors *thegraph = new TGraphAsymmErrors(x.size(),x.data(),y.data(),dx.data(),dx.data(),dy.data(),dy.data());
       thegraph->Sort();
+      thegraph->SetFillStyle(0);
       graphs.push_back(thegraph);
    }
 

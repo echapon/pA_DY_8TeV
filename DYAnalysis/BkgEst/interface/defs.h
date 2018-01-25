@@ -72,7 +72,7 @@ namespace DYana {
    enum var : int {
       mass=0, 
       pt, 
-      phi, 
+      phistar, 
       rap60120, 
       rap1560,
       ALLvar
@@ -81,7 +81,7 @@ namespace DYana {
    const char* varname(var thevar) {
       if (thevar==var::mass) return "mass";
       else if (thevar==var::pt) return "pt";
-      else if (thevar==var::phi) return "phistar";
+      else if (thevar==var::phistar) return "phistar";
       else if (thevar==var::rap60120) return "rap60120";
       else if (thevar==var::rap1560) return "rap1560";
       else return "unknown";
@@ -90,10 +90,17 @@ namespace DYana {
    const char* Varname(var thevar) {
       if (thevar==var::mass) return "Mass";
       else if (thevar==var::pt) return "Pt";
-      else if (thevar==var::phi) return "Phistar";
+      else if (thevar==var::phistar) return "Phistar";
       else if (thevar==var::rap60120) return "Rap60120";
       else if (thevar==var::rap1560) return "Rap1560";
       else return "unknown";
+   };
+
+   const char* xaxistitle(var thevar) {
+      if (thevar==var::mass) return "M [GeV/c^{2}]";
+      else if (thevar==var::pt) return "p_{T} [GeV/c]";
+      else if (thevar==var::phistar) return "#phi^{*}";
+      else return "y_{CM}";
    };
 };
 
