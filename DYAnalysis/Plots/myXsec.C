@@ -9,7 +9,7 @@
 #include "BkgEst/interface/defs.h"
 #include "Plots/TheoryTools.h"
 #include "Include/bin.h"
-#include "Plots/Systematics/syst.C"
+#include "SysUncEstimation/syst.C"
 #include "Include/MyCanvas.C"
 #include "Include/texUtils.h"
 
@@ -134,35 +134,31 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       }
 
       bool logx=false, logy=true;
-      TString xtitle, ytitle;
+      TString xtitle = xaxistitle(thevar);
+      TString ytitle;
       TString xtitle_tex, ytitle_tex;
       int lx=800, ly=800;
 
       if (thevar==mass) {
-         xtitle = "M [GeV/c^{2}]";
          ytitle = "d#sigma/dM [nb/GeV/c^{2}]";
          xtitle_tex = "\\mmumu (\\GeVcc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeVcc)";
          logx= true;
       } else if (thevar==pt) {
-         xtitle = "p_{T} [GeV/c]";
          ytitle = "d#sigma/dp_{T} [nb/GeV/c]";
          xtitle_tex = "\\pt (\\GeVc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeVc)";
          logx = true;
       } else if (thevar==phistar) {
-         xtitle = "#phi^{*}";
          ytitle = "d#sigma/d#phi^{*} [nb]";
          xtitle_tex = "\\phistar";
          ytitle_tex = "$\\dd\\sigma/\\dd\\phistar$ (nb)";
          logx = true;
       } else if (thevar==rap60120) {
-         xtitle = "y_{CM}";
          ytitle = "d#sigma/dy [nb]";
          xtitle_tex = "\\ylab";
          ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
       } else if (thevar==rap1560) {
-         xtitle = "y_{CM}";
          ytitle = "d#sigma/dy [nb]";
          xtitle_tex = "\\ylab";
          ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";

@@ -41,3 +41,9 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    tfnom->Close();
    tfsyst->Close();
 }
+
+// create all systs
+void createSystAll(var thevar=mass) {
+   createSyst("results/xsec_nom.root","results/xsec_rewNtracks.root","rewNtracks",thevar);
+   createSyst("results/xsec_nom.root","results/xsec_MomCorr.root","MomCorr",thevar);
+}

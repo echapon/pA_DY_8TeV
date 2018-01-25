@@ -66,15 +66,16 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
    return ans;
 };
 
-map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName) {
+map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix="./") {
    vector< map<bin, syst> > systmap_all;
 
    vector<TString> tags;
-   tags.push_back("test");
+   tags.push_back("rewNtracks");
+   tags.push_back("MomCorr");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;
-      TString systfilename = "Plots/Systematics/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      TString systfilename = prefix + "Plots/Systematics/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
       cout << systfilename << endl;
       systmap = readSyst(systfilename.Data());
       systmap_all.push_back(systmap);
