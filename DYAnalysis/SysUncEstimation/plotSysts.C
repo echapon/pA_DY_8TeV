@@ -18,20 +18,18 @@ void plotSysts(var thevar) {
    tags.push_back(systs.back().begin()->second.name.c_str());
 
    // individual systs
-   cout << __LINE__ << endl;
    TString systfilename = "Systematics/csv/rewNtracks_" + TString(varname(thevar)) + ".csv";
-   cout << __LINE__ << endl;
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
-   cout << __LINE__ << endl;
    tags.push_back(systs.back().begin()->second.name.c_str());
-   cout << __LINE__ << endl;
    systfilename = "Systematics/csv/MomCorr_" + TString(varname(thevar)) + ".csv";
-   cout << __LINE__ << endl;
    systs.push_back(readSyst(systfilename.Data()));
-   cout << __LINE__ << endl;
    tags.push_back(systs.back().begin()->second.name.c_str());
-   cout << __LINE__ << endl;
+
+   // add stat for comparison
+   systfilename = "Systematics/csv/stat_" + TString(varname(thevar)) + ".csv";
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
 
    for (unsigned int i=0; i<systs.size(); i++) {
       map<bin, syst> thesyst = systs[i];

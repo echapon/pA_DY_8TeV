@@ -12,7 +12,7 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    // open the files
    TFile *tfnom = TFile::Open(fnom);
    TFile *tfsyst = TFile::Open(fsyst);
-   if (!tfnom || !tfsyst) return;
+   if (!tfnom || !tfsyst || !tfnom->IsOpen() || !tfsyst->IsOpen()) return;
 
    // get the histos
    TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_%s",varname(thevar)));
@@ -37,6 +37,7 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
       systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
    }
    systfile.close();
+   cout << "closed " << Form("csv/%s_%s.csv",systname,varname(thevar)) endl;
 
    tfnom->Close();
    tfsyst->Close();
@@ -69,6 +70,7 @@ void createStat(const char* fnom, var thevar=mass) {
       systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
    }
    systfile.close();
+   cout << "closed " << Form("csv/stat_%s.csv",varname(thevar)) << endl;
 
    tfnom->Close();
 }

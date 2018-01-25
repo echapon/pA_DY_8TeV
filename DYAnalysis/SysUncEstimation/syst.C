@@ -72,10 +72,12 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    vector<TString> tags;
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr");
+   tags.push_back("tnp_up");
+   tags.push_back("acceffstat_up");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;
-      TString systfilename = prefix + "Plots/Systematics/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      TString systfilename = prefix + "SysUncEstimation/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
       cout << systfilename << endl;
       systmap = readSyst(systfilename.Data());
       systmap_all.push_back(systmap);
