@@ -5,7 +5,7 @@
 #include "TH1.h"
 
 namespace fr {
-   const char* fakeratefile = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/fakerate.root";
+   const char* fakeratefile = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/fakerate_opt6_Hyunchul.root";
    TH1D gFR_template_barrel;
    TH1D gFR_template_endcap;
    TH1D gFR_xsec_barrel;

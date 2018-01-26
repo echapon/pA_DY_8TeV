@@ -139,9 +139,9 @@ void estimateDijet() {
              // h[j]->SetmarkerStyle(22);
           }
 
-          if (tag != DY1050) {
+          if (tag != DYFirst) {
              toadd = true;
-             tagtoadd = DY1050;
+             tagtoadd = DYFirst;
           }
        }
        if (IsData(tag)) {
@@ -174,9 +174,9 @@ void estimateDijet() {
              h[j]->SetFillColor(4);
           }
 
-          if (tag != WE) {
+          if (tag != WFirst) {
              toadd = true;
-             tagtoadd = WE;
+             tagtoadd = WFirst;
           }
        }
        if (tag==TT) {
@@ -197,8 +197,8 @@ void estimateDijet() {
     cout<<"ttbar OS before = "<<dijet_template[TT]->Integral()<<endl;
     cout<<"ttbar SS before = "<<dijetSS_template[TT]->Integral()<<endl;
 
-    cout<<"DY(template): "<<dijet_template[DY1050]->Integral()<<endl;
-    cout<<"DY(ratio): "<<dijet_ratio[DY1050]->Integral()<<endl;
+    cout<<"DY(template): "<<dijet_template[DYFirst]->Integral()<<endl;
+    cout<<"DY(ratio): "<<dijet_ratio[DYFirst]->Integral()<<endl;
 
     setTDRStyle();
     tdrGrid(true);
@@ -220,11 +220,11 @@ void estimateDijet() {
 
     /////
     // subtract MC from data here
-    dijet_template[Data1]->Add(dijet_template[DY1050],-1.0);
+    dijet_template[Data1]->Add(dijet_template[DYFirst],-1.0);
     dijet_template[Data1]->Add(dijet_template[TT],-1.0);
     dijet_template[Data1]->Add(dijet_template[WW],-1.0);
 
-    dijet_ratio[Data1]->Add(dijet_ratio[DY1050],-1.0);
+    dijet_ratio[Data1]->Add(dijet_ratio[DYFirst],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[TT],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[WW],-1.0);
 
