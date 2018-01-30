@@ -75,11 +75,11 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
 
 
    // loop on the variables
-   // for (int ivar=0; ivar<ALLvar; ivar++) {
-   for (int ivar=0; ivar<pt; ivar++) { // only mass for now
+   for (int ivar=0; ivar<ALLvar; ivar++) {
+   // for (int ivar=0; ivar<pt; ivar++) { // only mass for now
       var thevar = static_cast<var>(ivar);
       // the systs
-      map<bin,syst> thesyst = readSyst_all(thevar);
+      map<bin,syst> thesyst = readSyst_all(thevar,false,"","./");
 
       TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",varname(thevar)));
       hy->Scale(1./lumi_all);

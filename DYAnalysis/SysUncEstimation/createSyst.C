@@ -37,7 +37,7 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
       systfile << it->first.low() << ", " << it->first.high() << ", " << it->second << endl;
    }
    systfile.close();
-   cout << "closed " << Form("csv/%s_%s.csv",systname,varname(thevar)) endl;
+   cout << "closed " << Form("csv/%s_%s.csv",systname,varname(thevar)) << endl;
 
    tfnom->Close();
    tfsyst->Close();
@@ -54,7 +54,7 @@ void createStat(const char* fnom, var thevar=mass) {
 
    // get the uncert
    map<bin,double> thesyst;
-   for (int i=1; i<hnom->GetNbinsX(); i++) {
+   for (int i=1; i<=hnom->GetNbinsX(); i++) {
       bin thebin;
       thebin.first = hnom->GetBinLowEdge(i);
       thebin.second = thebin.first + hnom->GetBinWidth(i);
@@ -79,6 +79,7 @@ void createStat(const char* fnom, var thevar=mass) {
 void createSystAll(var thevar=mass) {
    createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_rewNtracks.root","rewNtracks",thevar);
    createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_MomCorr.root","MomCorr",thevar);
+   createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_notnprew.root","TnpRew",thevar);
 
    createStat("../Plots/results/xsec_nom.root",thevar);
 }

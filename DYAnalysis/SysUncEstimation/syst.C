@@ -66,13 +66,13 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
    return ans;
 };
 
-map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix="./") {
+map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix) {
    vector< map<bin, syst> > systmap_all;
 
    vector<TString> tags;
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr");
-   tags.push_back("tnp_up");
+   tags.push_back("tnp_tot");
    tags.push_back("acceffstat_up");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {

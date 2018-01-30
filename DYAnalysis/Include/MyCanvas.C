@@ -87,7 +87,7 @@ public:
 		isSetNoExpo_MoreLogLabels_Y = kFALSE;
 
 		for(Int_t i=1; i<=9; i++)
-			Colors.push_back( i );
+			if (i!=5) Colors.push_back( i ); // skip yellow
 		Colors.push_back( kOrange );
 		Colors.push_back( kViolet );
 

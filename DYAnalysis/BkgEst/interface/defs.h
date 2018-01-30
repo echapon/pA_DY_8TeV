@@ -78,6 +78,15 @@ namespace DYana {
       ALLvar
    };
 
+   var str2var(TString variable) {
+      if (variable=="mass") return mass;
+      else if (variable=="pt") return pt;
+      else if (variable=="phistar") return phistar;
+      else if (variable=="rap60120") return rap60120;
+      else if (variable=="rap1560") return rap1560;
+      return mass;
+   };
+
    const char* varname(var thevar) {
       if (thevar==var::mass) return "mass";
       else if (thevar==var::pt) return "pt";
@@ -102,6 +111,8 @@ namespace DYana {
       else if (thevar==var::phistar) return "#phi^{*}";
       else return "y_{CM}";
    };
+
+   const char* xaxistitle(TString variable) {return xaxistitle(str2var(variable));};
 };
 
 #endif // ifndef def_h

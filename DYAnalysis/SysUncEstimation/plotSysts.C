@@ -13,27 +13,37 @@ void plotSysts(var thevar) {
    vector<TGraphAsymmErrors*> graphs;
    vector<map<bin, syst> > systs;
 
+   // stat
+   TString systfilename = "csv/stat_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
+
    // total
    systs.push_back(readSyst_all(thevar,false,"","../"));
    tags.push_back(systs.back().begin()->second.name.c_str());
 
    // individual systs
-   TString systfilename = "Systematics/csv/rewNtracks_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/rewNtracks_" + TString(varname(thevar)) + ".csv";
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
-   systfilename = "Systematics/csv/MomCorr_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/MomCorr_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
-   systfilename = "Systematics/csv/tnp_up_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/tnp_tot_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
-   systfilename = "Systematics/csv/acceffstat_up_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/acceffstat_up_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
 
-   // add stat for comparison
-   systfilename = "Systematics/csv/stat_" + TString(varname(thevar)) + ".csv";
+   // lumi
+   systfilename = "csv/lumi_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
 
