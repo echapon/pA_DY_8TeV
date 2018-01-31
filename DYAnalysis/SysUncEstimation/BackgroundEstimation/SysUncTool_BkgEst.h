@@ -126,7 +126,7 @@ public:
 
 	vector< HistogramContainer* > Hists_Bkg;	
 	HistogramContainer* Hists_ttbar;
-	HistogramContainer* Hists_tW;
+   // HistogramContainer* Hists_tW;
 	HistogramContainer* Hists_DYtautau;
 	HistogramContainer* Hists_WJets;
 	HistogramContainer* Hists_QCD;
@@ -255,7 +255,7 @@ protected:
 		this->Hists_Total = new HistogramContainer( "Total" );
 
 		this->Hists_ttbar = new HistogramContainer( "ttbar" ); Hists_Bkg.push_back( Hists_ttbar );
-		this->Hists_tW = new HistogramContainer( "tW" ); Hists_Bkg.push_back( Hists_tW );
+      // this->Hists_tW = new HistogramContainer( "tW" ); Hists_Bkg.push_back( Hists_tW );
 		this->Hists_DYtautau = new HistogramContainer( "DYtautau" ); Hists_Bkg.push_back( Hists_DYtautau );
 		this->Hists_WJets = new HistogramContainer( "WJets" ); Hists_Bkg.push_back( Hists_WJets );
 		this->Hists_QCD = new HistogramContainer( "QCD" ); Hists_Bkg.push_back( Hists_QCD );
@@ -275,7 +275,7 @@ protected:
 		//////////////////////
 		vector< HistogramContainer* > vec_Hists_emu;
 		vec_Hists_emu.push_back( Hists_ttbar );
-		vec_Hists_emu.push_back( Hists_tW );
+      // vec_Hists_emu.push_back( Hists_tW );
 		vec_Hists_emu.push_back( Hists_DYtautau );
 		vec_Hists_emu.push_back( Hists_WW );
 		this->MakeCombinedHistogram( vec_Hists_emu, this->Hists_emu );
@@ -283,7 +283,7 @@ protected:
 		vector< TH1D* > vec_h_RelUnc_emu; vector< TString > Names_emu;
 		vec_h_RelUnc_emu.push_back( this->Hists_emu->h_RelUnc_Tot ); Names_emu.push_back( "Total Unc. from e#mu method" );
 		vec_h_RelUnc_emu.push_back( this->Hists_ttbar->h_RelUnc_Tot ); Names_emu.push_back( "t#bar{t}" );
-		vec_h_RelUnc_emu.push_back( this->Hists_tW->h_RelUnc_Tot ); Names_emu.push_back( "tW + #bar{t}W" );
+      // vec_h_RelUnc_emu.push_back( this->Hists_tW->h_RelUnc_Tot ); Names_emu.push_back( "tW + #bar{t}W" );
 		vec_h_RelUnc_emu.push_back( this->Hists_DYtautau->h_RelUnc_Tot ); Names_emu.push_back( "Z/#gamma* #rightarrow #tau#tau" );
 		vec_h_RelUnc_emu.push_back( this->Hists_WW->h_RelUnc_Tot ); Names_emu.push_back( "WW" );
 		this->MakeCanvas_SysUnc( "emu", vec_h_RelUnc_emu, Names_emu );
@@ -445,7 +445,7 @@ protected:
 		this->SetupHistogram_DataDrivenBkg( "dijet", this->Hists_QCD );
 		this->SetupHistogram_DataDrivenBkg( "wjets", this->Hists_WJets );
 		this->SetupHistogram_DataDrivenBkg( "ttbar", this->Hists_ttbar );
-		this->SetupHistogram_DataDrivenBkg( "tW", this->Hists_tW );
+      // this->SetupHistogram_DataDrivenBkg( "tW", this->Hists_tW );
 		this->SetupHistogram_DataDrivenBkg( "DYtautau", this->Hists_DYtautau );
 		this->SetupHistogram_DataDrivenBkg( "WW", this->Hists_WW );
 	}

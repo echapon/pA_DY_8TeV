@@ -133,7 +133,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          hy->SetBinError(i+1,(errl+errh)/2.);
       }
 
-      bool logx=false, logy=true;
+      bool logx=false, logy=false;
       TString xtitle = xaxistitle(thevar);
       TString ytitle;
       TString xtitle_tex, ytitle_tex;
@@ -143,17 +143,17 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          ytitle = "d#sigma/dM [nb/GeV/c^{2}]";
          xtitle_tex = "\\mmumu (\\GeVcc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeVcc)";
-         logx= true;
+         logx= true; logy=true;
       } else if (thevar==pt) {
          ytitle = "d#sigma/dp_{T} [nb/GeV/c]";
          xtitle_tex = "\\pt (\\GeVc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeVc)";
-         logx = true;
+         logx = true; logy=true;
       } else if (thevar==phistar) {
          ytitle = "d#sigma/d#phi^{*} [nb]";
          xtitle_tex = "\\phistar";
          ytitle_tex = "$\\dd\\sigma/\\dd\\phistar$ (nb)";
-         logx = true;
+         logx = true; logy=true;
       } else if (thevar==rap60120) {
          ytitle = "d#sigma/dy [nb]";
          xtitle_tex = "\\ylab";
@@ -193,7 +193,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
 
          // print graph
          inittex(Form("Plots/results/tex/%s.tex",varname(thevar)),xtitle.Data(),ytitle.Data());
-         printGraph(gres_statonly,gres,Form("Plots/tex/%s.tex",varname(thevar)));
+         printGraph(gres_statonly,gres,Form("Plots/results/tex/%s.tex",varname(thevar)));
          closetex(Form("Plots/results/tex/%s.tex",varname(thevar)));
       }
 
