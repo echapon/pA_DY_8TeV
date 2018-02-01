@@ -40,6 +40,10 @@ void plotSysts(var thevar) {
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
+   systfilename = "csv/bkg_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
 
    // lumi
    systfilename = "csv/lumi_" + TString(varname(thevar)) + ".csv";
@@ -76,4 +80,11 @@ void plotSysts(var thevar) {
    c1.CanvasWithMultipleGraphs(graphs,tags,"5");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+}
+
+void plotSysts() {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      plotSysts(thevar_i);
+   }
 }
