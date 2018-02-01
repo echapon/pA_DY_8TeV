@@ -8,6 +8,8 @@
 using namespace std;
 using DYana::var;
 
+bool plotboxes = false; // if true, plot boxes instead of lines
+
 void plotSysts(var thevar) {
    vector<TString> tags;
    vector<TGraphAsymmErrors*> graphs;
@@ -64,20 +66,26 @@ void plotSysts(var thevar) {
          x.push_back((low+high)/2.);
          dx.push_back((high-low)/2.);
          y.push_back(0);
-         dy.push_back(it->second.value);
+         dy.push_back(it->second.value*100.);
          valmax = max(valmax,dy.back());
       }
 
-      TGraphAsymmErrors *thegraph = new TGraphAsymmErrors(x.size(),x.data(),y.data(),dx.data(),dx.data(),dy.data(),dy.data());
+      TGraphAsymmErrors *thegraph;
+      if (plotboxes) thegraph = new TGraphAsymmErrors(x.size(),x.data(),y.data(),dx.data(),dx.data(),dy.data(),dy.data());
+      else {
+         thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
+         thegraph->SetMinimum(0);
+      }
       thegraph->Sort();
       thegraph->SetFillStyle(0);
       graphs.push_back(thegraph);
    }
 
 
-   MyCanvas c1(Form("systematics_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty",800,800);
+   MyCanvas c1(Form("systematics_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
-   c1.CanvasWithMultipleGraphs(graphs,tags,"5");
+   if (thevar==var::phistar) c1.SetYRange(0,6);
+   c1.CanvasWithMultipleGraphs(graphs,tags, plotboxes ? "5" : "LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
 }

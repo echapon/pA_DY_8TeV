@@ -8,6 +8,8 @@
 using namespace std;
 using DYana::var;
 
+bool plotboxes = false; // if true, plot boxes instead of lines
+
 void plotSysts_tnp(var thevar, bool plotabs=false) {
    vector<TString> tags;
    vector<TGraphAsymmErrors*> graphs;
@@ -64,21 +66,33 @@ void plotSysts_tnp(var thevar, bool plotabs=false) {
          x.push_back((low+high)/2.);
          dx.push_back((high-low)/2.);
          y.push_back(0);
-         dy.push_back(it->second.value);
+         dy.push_back(plotabs ? it->second.value : it->second.value*100.);
          valmax = max(valmax,dy.back());
       }
 
-      TGraphAsymmErrors *thegraph = new TGraphAsymmErrors(x.size(),x.data(),y.data(),dx.data(),dx.data(),dy.data(),dy.data());
+      TGraphAsymmErrors *thegraph;
+      if (plotboxes) thegraph = new TGraphAsymmErrors(x.size(),x.data(),y.data(),dx.data(),dx.data(),dy.data(),dy.data());
+      else {
+         thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
+         thegraph->SetMinimum(0);
+      }
       thegraph->Sort();
       thegraph->SetFillStyle(0);
       graphs.push_back(thegraph);
    }
 
 
-   MyCanvas c1(Form("systematics_tnp_%s_%s",plotabs ? "abs" : "rel",varname(thevar)),xaxistitle(thevar),plotabs ? "Abs. uncertainty" : "Rel. uncertainty",800,800);
+   MyCanvas c1(Form("systematics_tnp_%s_%s",plotabs ? "abs" : "rel",varname(thevar)),xaxistitle(thevar),plotabs ? "Abs. uncertainty" : "Rel. uncertainty (%)",800,800);
    c1.SetLegendPosition(0.65,0.69,0.95,0.93);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
-   c1.CanvasWithMultipleGraphs(graphs,tags,"5");
+   c1.CanvasWithMultipleGraphs(graphs,tags, plotboxes ? "5" : "LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+}
+
+void plotSysts_tnp(bool plotabs=false) {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      plotSysts_tnp(thevar_i, plotabs);
+   }
 }
