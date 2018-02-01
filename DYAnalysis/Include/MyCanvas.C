@@ -86,10 +86,23 @@ public:
 		isSetNoExpo_MoreLogLabels_X = kTRUE;
 		isSetNoExpo_MoreLogLabels_Y = kFALSE;
 
-		for(Int_t i=1; i<=9; i++)
-			if (i!=5) Colors.push_back( i ); // skip yellow
-		Colors.push_back( kOrange );
-		Colors.push_back( kViolet );
+		Colors.push_back( kBlack );
+		Colors.push_back( kRed+1 );
+		Colors.push_back( kGreen+1 );
+		Colors.push_back( kBlue+1 );
+		Colors.push_back( kYellow+1 );
+		Colors.push_back( kMagenta+1 );
+		Colors.push_back( kCyan+1 );
+		Colors.push_back( kOrange+1 );
+		Colors.push_back( kViolet+1 );
+		Colors.push_back( kTeal+1 );
+		Colors.push_back( kPink+1 );
+		Colors.push_back( kAzure+1 );
+		Colors.push_back( kSpring+1 );
+		Colors.push_back( kGray );
+		Colors.push_back( kGray+1 );
+		Colors.push_back( kGray+2 );
+		Colors.push_back( kGray+3 );
 
 		DoTranspose = kFALSE;
 	}
