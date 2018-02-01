@@ -21,7 +21,7 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
 
    // get the relative difference
    map<bin,double> thesyst;
-   for (int i=1; i<hnom->GetNbinsX(); i++) {
+   for (int i=1; i<=hnom->GetNbinsX(); i++) {
       bin thebin;
       thebin.first = hnom->GetBinLowEdge(i);
       thebin.second = thebin.first + hnom->GetBinWidth(i);

@@ -96,10 +96,11 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    unsigned int nsyst = theSysts.size();
 
    ofstream file(texName);
-   file << "\\begin{tabular}{|ccc|"; 
+   file << "\\begin{tabular}{|c|"; 
    for (unsigned int i=0; i<nsyst; i++) {
       if (i==nsyst-1) file << "|";
-      file << "c|";
+      file << "c";
+      if (i==nsyst-1) file << "|";
    }
    file << "}" << endl;
    file << "\\hline" << endl;
@@ -119,9 +120,9 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
       }
       bin thebin = itm->first;
       if (itm != themap.begin()) file << "\\hline" << endl;
-      file.precision(1); file.setf(ios::fixed);
+      file.unsetf(ios::fixed);
+      file.precision(5);
       file << thebin.low() << ", " << thebin.high();
-      file << " & ";
       file.precision(1);
       file.setf(ios::fixed);
 

@@ -75,6 +75,7 @@ void plotSysts(var thevar) {
       else {
          thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
          thegraph->SetMinimum(0);
+         if (thevar==var::phistar) thegraph->SetMaximum(6);
       }
       thegraph->Sort();
       thegraph->SetFillStyle(0);
