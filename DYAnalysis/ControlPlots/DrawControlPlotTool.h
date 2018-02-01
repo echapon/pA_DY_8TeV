@@ -646,7 +646,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	h_BkgRatio_totBkg->GetYaxis()->SetLabelSize(0.05);
 	h_BkgRatio_totBkg->GetYaxis()->SetTitle("Fraction of backgrounds");
 	h_BkgRatio_totBkg->GetYaxis()->SetTitleSize(0.045);
-	h_BkgRatio_totBkg->GetYaxis()->SetTitleOffset(1.25);
+	h_BkgRatio_totBkg->GetYaxis()->SetTitleOffset(0.75);
 	
 
 	h_BkgRatio_totBkg->GetXaxis()->SetMoreLogLabels();
@@ -792,8 +792,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    h_ttbar_emu->Multiply(h_emu_ratio);
    h_WW_emu->Multiply(h_emu_ratio);
    // NB: originally the WZ and ZZ were not emu-corrected
-   h_WZ_emu->Multiply(h_emu_ratio);
-   h_ZZ_emu->Multiply(h_emu_ratio);
+   // h_WZ_emu->Multiply(h_emu_ratio);
+   // h_ZZ_emu->Multiply(h_emu_ratio);
 
 	f_input_bkg_dijet->cd();
 	TH1D *h_StatUnc_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet_stat")->Clone();
@@ -823,8 +823,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
 	StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);
 	StackHistos.push_back( h_WW_emu ); LegendNames.push_back( "WW (e#mu)" ); colors.push_back(kGreen);
-	StackHistos.push_back( h_WZ_emu ); LegendNames.push_back( "WZ (e#mu)" ); colors.push_back(kGreen+2);
-	StackHistos.push_back( h_ZZ_emu ); LegendNames.push_back( "ZZ (e#mu)" ); colors.push_back(kGreen+4);
+	StackHistos.push_back( h_WZ_emu ); LegendNames.push_back( "WZ" ); colors.push_back(kGreen+2);
+	StackHistos.push_back( h_ZZ_emu ); LegendNames.push_back( "ZZ" ); colors.push_back(kGreen+4);
 	StackHistos.push_back( h_WJets_FR ); LegendNames.push_back( "WJets (FR)" ); colors.push_back(kBlue);
 	StackHistos.push_back( h_DYTauTau_emu ); LegendNames.push_back( "DYTauTau (e#mu)" ); colors.push_back(kBlue-9);
 	StackHistos.push_back( h_ttbar_emu ); LegendNames.push_back( "ttbar (e#mu)" ); colors.push_back(kRed);
@@ -914,10 +914,10 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	h_WJets_FR->SetName("h_WJets_FR");
 	h_WJets_FR->Write();
 
-	h_WZ_emu->SetName("h_WZ_emu");
+	h_WZ_emu->SetName("h_WZ_MC");
 	h_WZ_emu->Write();
 
-	h_ZZ_emu->SetName("h_ZZ_emu");
+	h_ZZ_emu->SetName("h_ZZ_MC");
 	h_ZZ_emu->Write();
 
 	h_WW_emu->SetName("h_WW_emu");
