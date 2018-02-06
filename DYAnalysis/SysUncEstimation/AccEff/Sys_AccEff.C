@@ -1,0 +1,327 @@
+#include "../../BkgEst/interface/defs.h"
+#include "../../Include/MyCanvas.C"
+#include "../../Include/texUtils.h"
+#include "../../Include/lhapdf_utils.h"
+#include "../syst.C"
+
+#include "TFile.h"
+#include "TH1.h"
+
+#include <vector>
+
+using namespace std;
+using DYana::var;
+
+// HOW TO USE THIS FILE
+// [0] .include /dir/to/lhapdf/include
+// [1] gSystem->Load("/dir/to/lhapdf/lib/libLHAPDF.so");
+// .L AccEff/Sys_AccEff.C+
+
+void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+   TFile *fin = TFile::Open(file);
+
+   vector<TH1D*> hAccTotal, hAccPass, hEffTotal, hEffPass_Corr_tnp;
+   vector<TGraphAsymmErrors*> gAccEffs;
+   vector<TString> graphNames;
+
+   int idx[7] = {0, 8, 4, 6, 3, 2, 1}; // muR, muF = (1, 1), (0.5, 0.5), (2, 2), (0.5, 1), (2, 1), (1, 0.5), (1, 2)
+   const char* gn[7] = {"(1,1)", "(0.5,0.5)", "(2,2)", "(0.5,1)", "(2,1)", "(1,0.5)", "(1,2)"};
+   MyCanvas c1(Form("AccEff/AccEff_scales_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass) c1.SetLogy();
+
+   for (int i=0; i<7; i++) {
+      hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
+      hAccPass.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),idx[i])));
+      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+   }
+
+   gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
+   gAcc->SetName("gAcc_scales");
+   gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
+   gEff->SetName("gEff_scales");
+   gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
+   gAccEff->SetName("gAccEff_scales");
+   gAccEffs.push_back(gAccEff);
+   graphNames.push_back(gn[0]);
+
+   for (int i=1; i<7; i++) {
+      TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
+      TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
+      TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
+      gAccEffs.push_back(gAccEffTmp);
+      graphNames.push_back(gn[i]);
+
+      for (int j=0; j<gAccTmp->GetN(); j++) {
+         if (i==1) {
+            gAcc->SetPointEYlow(j,0);
+            gAcc->SetPointEYhigh(j,0);
+            gEff->SetPointEYlow(j,0);
+            gEff->SetPointEYhigh(j,0);
+            gAccEff->SetPointEYlow(j,0);
+            gAccEff->SetPointEYhigh(j,0);
+         }
+         gAcc->SetPointEYlow(j,-min(gAccTmp->GetY()[j]-gAcc->GetY()[j],-gAcc->GetEYlow()[j]));
+         gAcc->SetPointEYhigh(j,max(gAccTmp->GetY()[j]-gAcc->GetY()[j],gAcc->GetEYhigh()[j]));
+         gEff->SetPointEYlow(j,-min(gEffTmp->GetY()[j]-gEff->GetY()[j],-gEff->GetEYlow()[j]));
+         gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
+         gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
+         gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+      } // loop on bins
+   } // loop on scales
+
+   c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
+   c1.PrintCanvas();
+   c1.PrintCanvas_C();
+}
+
+void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+   TFile *fin = TFile::Open(file);
+
+   vector<TH1D*> hAccTotal, hAccPass, hEffTotal, hEffPass_Corr_tnp;
+   vector<TGraphAsymmErrors*> gAccEffs;
+   vector<TString> graphNames;
+
+   int idx[3] = {0, 109, 110}; // nominal, 0.117, 0.119 
+   const char* gn[3] = {"#alpha_{S}=0.118","#alpha_{S}=0.117","#alpha_{S}=0.119"};
+   MyCanvas c1(Form("AccEff/AccEff_alphas_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass) c1.SetLogy();
+
+   for (int i=0; i<3; i++) {
+      hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
+      hAccPass.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),idx[i])));
+      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+   }
+
+   gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
+   gAcc->SetName("gAcc_alphas");
+   gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
+   gEff->SetName("gEff_alphas");
+   gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
+   gAccEff->SetName("gAccEff_alphas");
+   gAccEffs.push_back(gAccEff);
+   graphNames.push_back(gn[0]);
+
+   for (int i=1; i<3; i++) {
+      TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
+      TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
+      TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
+      gAccEffs.push_back(gAccEffTmp);
+      graphNames.push_back(gn[i]);
+
+      for (int j=0; j<gAccTmp->GetN(); j++) {
+         if (i==1) {
+            gAcc->SetPointEYlow(j,0);
+            gAcc->SetPointEYhigh(j,0);
+            gEff->SetPointEYlow(j,0);
+            gEff->SetPointEYhigh(j,0);
+            gAccEff->SetPointEYlow(j,0);
+            gAccEff->SetPointEYhigh(j,0);
+         }
+         gAcc->SetPointEYlow(j,-min(gAccTmp->GetY()[j]-gAcc->GetY()[j],-gAcc->GetEYlow()[j]));
+         gAcc->SetPointEYhigh(j,max(gAccTmp->GetY()[j]-gAcc->GetY()[j],gAcc->GetEYhigh()[j]));
+         gEff->SetPointEYlow(j,-min(gEffTmp->GetY()[j]-gEff->GetY()[j],-gEff->GetEYlow()[j]));
+         gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
+         gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
+         gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+      } // loop on bins
+   } // loop on scales
+
+   c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
+   c1.PrintCanvas();
+   c1.PrintCanvas_C();
+   
+   // scale by a factor 1.5 the errors, because PDF4LHC recommends delta alpha_S = 0.0015 instead of 0.001
+   for (int j=0; j<gAcc->GetN(); j++) {
+      gAcc->SetPointEYlow(j,1.5*gAcc->GetEYlow()[j]);
+      gAcc->SetPointEYhigh(j,1.5*gAcc->GetEYhigh()[j]);
+      gEff->SetPointEYlow(j,1.5*gEff->GetEYlow()[j]);
+      gEff->SetPointEYhigh(j,1.5*gEff->GetEYhigh()[j]);
+      gAccEff->SetPointEYlow(j,1.5*gAccEff->GetEYlow()[j]);
+      gAccEff->SetPointEYhigh(j,1.5*gAccEff->GetEYhigh()[j]);
+   }
+}
+
+void Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+   TFile *fin = TFile::Open(file);
+
+   vector<TH1D*> hAcc, hEff, hAccEff;
+   vector<TString> histNames;
+   MyCanvas c1(Form("AccEff/AccEff_EPPS16_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass) c1.SetLogy();
+
+   int i=0;
+   hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+   hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+   hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+   hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+   hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+   hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+   histNames.push_back(Form("%d",i));
+
+   for (i=285; i<=324; i++) {
+      hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      histNames.push_back(Form("%d",i-284));
+   }
+
+   for (i=112; i<=167; i++) {
+      hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      histNames.push_back(Form("%d",i-111+40));
+   }
+
+   gAcc = pdfuncert(hAcc, "EPPS16nlo_CT14nlo_Pb208");
+   gEff = pdfuncert(hEff, "EPPS16nlo_CT14nlo_Pb208");
+   gAccEff = pdfuncert(hAccEff, "EPPS16nlo_CT14nlo_Pb208");
+
+   c1.CanvasWithMultipleHistograms(hAccEff, histNames, "HIST LP");
+   c1.PrintCanvas();
+   c1.PrintCanvas_C();
+}
+
+void Sys_AccEff(const char* file, var thevar = var::mass) {
+   TGraphAsymmErrors *gAcc_scales=0, *gEff_scales=0, *gAccEff_scales=0;
+   Sys_AccEff_scales(file, thevar, gAcc_scales, gEff_scales, gAccEff_scales);
+   TGraphAsymmErrors *gAcc_alphas=0, *gEff_alphas=0, *gAccEff_alphas=0;
+   Sys_AccEff_alphas(file, thevar, gAcc_alphas, gEff_alphas, gAccEff_alphas);
+   TGraphAsymmErrors *gAcc_EPPS16=0, *gEff_EPPS16=0, *gAccEff_EPPS16=0;
+   Sys_AccEff_EPPS16(file, thevar, gAcc_EPPS16, gEff_EPPS16, gAccEff_EPPS16);
+
+   // print to a TeX
+   vector<string> ynames;
+   ynames.push_back("scales");
+   ynames.push_back("$\\alpha_S$");
+   ynames.push_back("CT14+EPPS16");
+
+   // create special graphs for making the table, with the relative uncertainty, and print the csv at the same time
+   map<bin, syst> syst_scales;
+   map<bin, syst> syst_alphas;
+   map<bin, syst> syst_EPPS16;
+   TGraphAsymmErrors *gAccEff4tex_scales = (TGraphAsymmErrors*) gAccEff_scales->Clone("gAccEff4text_scales");
+   TGraphAsymmErrors *gAccEff4tex_alphas = (TGraphAsymmErrors*) gAccEff_alphas->Clone("gAccEff4text_alphas");
+   TGraphAsymmErrors *gAccEff4tex_EPPS16 = (TGraphAsymmErrors*) gAccEff_EPPS16->Clone("gAccEff4text_EPPS16");
+
+   for (int i=0; i<gAccEff4tex_scales->GetN(); i++) {
+      double eyl, eyh, x, xmin, xmax;
+      x = gAccEff4tex_scales->GetX()[i];
+      xmin = x-gAccEff4tex_scales->GetEXlow()[i];
+      xmax = x+gAccEff4tex_scales->GetEXhigh()[i];
+
+      eyl = gAccEff4tex_scales->GetEYlow()[i]/gAccEff4tex_scales->GetY()[i];
+      eyh = gAccEff4tex_scales->GetEYhigh()[i]/gAccEff4tex_scales->GetY()[i];
+      syst tmpsyst; tmpsyst.name = "AccEff (scales)";
+      tmpsyst.value = max(eyl,eyh);
+      syst_scales[bin(xmin,xmax)] = tmpsyst;
+      gAccEff4tex_scales->SetPoint(i,x,0.999);
+      gAccEff4tex_scales->SetPointEYlow(i,eyl);
+      gAccEff4tex_scales->SetPointEYhigh(i,eyh);
+
+      eyl = gAccEff4tex_alphas->GetEYlow()[i]/gAccEff4tex_alphas->GetY()[i];
+      eyh = gAccEff4tex_alphas->GetEYhigh()[i]/gAccEff4tex_alphas->GetY()[i];
+      tmpsyst.name = "AccEff (alphaS)";
+      tmpsyst.value = max(eyl,eyh);
+      syst_alphas[bin(xmin,xmax)] = tmpsyst;
+      gAccEff4tex_alphas->SetPoint(i,x,0.999);
+      gAccEff4tex_alphas->SetPointEYlow(i,eyl);
+      gAccEff4tex_alphas->SetPointEYhigh(i,eyh);
+
+      eyl = gAccEff4tex_EPPS16->GetEYlow()[i]/gAccEff4tex_EPPS16->GetY()[i];
+      eyh = gAccEff4tex_EPPS16->GetEYhigh()[i]/gAccEff4tex_EPPS16->GetY()[i];
+      tmpsyst.name = "AccEff (CT14+EPPS16)";
+      tmpsyst.value = max(eyl,eyh);
+      syst_EPPS16[bin(xmin,xmax)] = tmpsyst;
+      gAccEff4tex_EPPS16->SetPoint(i,x,0.999);
+      gAccEff4tex_EPPS16->SetPointEYlow(i,eyl);
+      gAccEff4tex_EPPS16->SetPointEYhigh(i,eyh);
+   }
+
+   // print the syst to a table
+   TString filename = Form("tex/AccEff_scales_%s.tex",varname(thevar));
+   inittex(filename.Data(),xaxistitletex(thevar),ynames);
+   vector<TGraphAsymmErrors*> tg;
+   tg.push_back(gAccEff4tex_scales);
+   tg.push_back(gAccEff4tex_alphas);
+   tg.push_back(gAccEff4tex_EPPS16);
+   printGraph(tg,filename.Data());
+   closetex(filename.Data());
+   // remove all the unwanted 0.999
+   TString command = "sed -i 's/0.999//g' " + filename;
+   system(command.Data());
+
+
+   // produce the combined syst, plot it and print it
+   vector< map<bin,syst> > theSysts;
+   theSysts.push_back(syst_scales);
+   theSysts.push_back(syst_alphas);
+   theSysts.push_back(syst_EPPS16);
+   map<bin,syst> syst_tot = combineSyst(theSysts,"AccEff (theory)");
+   
+   // print the csv
+   ofstream of_syst(Form("csv/AccEff_theory_%s.csv",varname(thevar)));
+   of_syst << "AccEff (theory)" << endl;
+   for (map<bin,syst>::const_iterator it=syst_tot.begin(); it!=syst_tot.end(); it++) {
+      of_syst << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
+   }
+   of_syst.close();
+
+   // make the plot
+   vector<TString> tags;
+   vector<TGraphAsymmErrors*> graphs;
+   vector<map<bin, syst> > systs;
+
+   systs.push_back(syst_tot);
+   tags.push_back("Total");
+   systs.push_back(syst_scales);
+   tags.push_back("scales");
+   systs.push_back(syst_alphas);
+   tags.push_back("#alpha_{S}");
+   systs.push_back(syst_EPPS16);
+   tags.push_back("CT14+EPPS16");
+
+   for (unsigned int i=0; i<systs.size(); i++) {
+      map<bin, syst> thesyst = systs[i];
+      vector<double> x, y, dx, dy;
+
+      double valmax=-1e99;
+
+      for (map<bin, syst>::const_iterator it=thesyst.begin(); it!=thesyst.end(); it++) {
+         bin it2 = it->first;
+
+         double low = it2.low(), high = it2.high();
+         x.push_back((low+high)/2.);
+         dx.push_back((high-low)/2.);
+         y.push_back(0);
+         dy.push_back(it->second.value*100.);
+         valmax = max(valmax,dy.back());
+      }
+
+      TGraphAsymmErrors *thegraph;
+      thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
+      thegraph->SetMinimum(0);
+      if (thevar==var::phistar) thegraph->SetMaximum(6);
+      thegraph->Sort();
+      thegraph->SetFillStyle(0);
+      graphs.push_back(thegraph);
+   }
+
+
+   MyCanvas c1(Form("systematics_AccEff_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::phistar) c1.SetYRange(0,6);
+   c1.CanvasWithMultipleGraphs(graphs,tags, "LP");
+   c1.PrintCanvas();
+   c1.PrintCanvas_C();
+}

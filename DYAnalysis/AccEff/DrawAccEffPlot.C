@@ -1,6 +1,12 @@
-#include "Include/MyCanvas.C"
-#include "Include/tdrstyle.C"
-#include "Include/CMS_lumi.C"
+#include "TEfficiency.h"
+#include "TFile.h"
+#include "TLegend.h"
+#include "TCanvas.h"
+#include "TFrame.h"
+
+#include "../Include/MyCanvas.C"
+#include "../Include/tdrstyle.C"
+#include "../Include/CMS_lumi.C"
 
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);

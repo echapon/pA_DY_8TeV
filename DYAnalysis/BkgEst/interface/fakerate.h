@@ -3,6 +3,7 @@
 
 #include "PhysicsMuon.h"
 #include "TH1.h"
+#include "TFile.h"
 
 namespace fr {
    const char* fakeratefile = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/fakerate_opt6_Hyunchul.root";

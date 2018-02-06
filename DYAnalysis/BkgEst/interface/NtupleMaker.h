@@ -313,6 +313,7 @@ public:
 
     void switcheta() {
        eta=-eta;
+       pz=-pz;
     };
 };
 

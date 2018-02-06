@@ -103,6 +103,21 @@ public:
 		Colors.push_back( kGray+1 );
 		Colors.push_back( kGray+2 );
 		Colors.push_back( kGray+3 );
+      for (int ic=0; ic<7; ic++) {
+         int icc = -4-ic;
+         Colors.push_back( kRed+icc );
+         Colors.push_back( kGreen+icc );
+         Colors.push_back( kBlue+icc );
+         Colors.push_back( kYellow+icc );
+         Colors.push_back( kMagenta+icc );
+         Colors.push_back( kCyan+icc );
+         Colors.push_back( kOrange+icc );
+         Colors.push_back( kViolet+icc );
+         Colors.push_back( kTeal+icc );
+         Colors.push_back( kPink+icc );
+         Colors.push_back( kAzure+icc );
+         Colors.push_back( kSpring+icc );
+      }
 
 		DoTranspose = kFALSE;
 	}

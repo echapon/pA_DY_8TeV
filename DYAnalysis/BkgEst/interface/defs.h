@@ -112,6 +112,13 @@ namespace DYana {
       else return "y_{CM}";
    };
 
+   const char* xaxistitletex(var thevar) {
+      if (thevar==var::mass) return "\\mmumu [\\GeVcc]";
+      else if (thevar==var::pt) return "\\pt [\\GeVc]";
+      else if (thevar==var::phistar) return "\\phistar";
+      else return "$y_\\text{CM}$";
+   };
+
    const char* xaxistitle(TString variable) {return xaxistitle(str2var(variable));};
 };
 

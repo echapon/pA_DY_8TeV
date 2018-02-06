@@ -69,7 +69,6 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-		cout << "NOT IMPLEMENTED YET" << endl;
 		isApplyMomCorr = "MomCorr";
 	}
 	else
@@ -370,8 +369,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                   // TnP
                   double pt1 = SelectedMuonCollection[0].Pt;
                   double pt2 = SelectedMuonCollection[1].Pt;
-                  double eta1 = SelectedMuonCollection[0].eta;
-                  double eta2 = SelectedMuonCollection[1].eta;
+                  double eta1 = analyzer->sign*SelectedMuonCollection[0].eta;
+                  double eta2 = analyzer->sign*SelectedMuonCollection[1].eta;
 
                   for (int iwt=0; iwt<nweights; iwt++) {
                      int imuid1=0,itrg1=0,iiso1=0; // nominal
