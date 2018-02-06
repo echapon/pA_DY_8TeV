@@ -192,7 +192,7 @@ void Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
    c1.PrintCanvas_C();
 }
 
-void Sys_AccEff(const char* file, var thevar = var::mass) {
+void Sys_AccEff(const char* file, var thevar) {
    TGraphAsymmErrors *gAcc_scales=0, *gEff_scales=0, *gAccEff_scales=0;
    Sys_AccEff_scales(file, thevar, gAcc_scales, gEff_scales, gAccEff_scales);
    TGraphAsymmErrors *gAcc_alphas=0, *gEff_alphas=0, *gAccEff_alphas=0;
@@ -324,4 +324,12 @@ void Sys_AccEff(const char* file, var thevar = var::mass) {
    c1.CanvasWithMultipleGraphs(graphs,tags, "LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+}
+
+void Sys_AccEff(const char* file) {
+   Sys_AccEff(file,var::mass);
+   Sys_AccEff(file,var::pt);
+   Sys_AccEff(file,var::phistar);
+   Sys_AccEff(file,var::rap1560);
+   Sys_AccEff(file,var::rap60120);
 }
