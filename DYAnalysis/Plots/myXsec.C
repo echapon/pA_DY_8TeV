@@ -6,12 +6,13 @@
 
 #include <iostream>
 
-#include "BkgEst/interface/defs.h"
-#include "Plots/TheoryTools.h"
-#include "Include/bin.h"
-#include "SysUncEstimation/syst.C"
-#include "Include/MyCanvas.C"
-#include "Include/texUtils.h"
+#include "../BkgEst/interface/defs.h"
+#include "TheoryTools.h"
+#include "../Include/bin.h"
+#include "../SysUncEstimation/syst.C"
+#include "../Include/MyCanvas.C"
+#include "../Include/texUtils.h"
+#include "../Include/lhapdf_utils.h"
 
 using namespace DYana;
 using namespace std;
@@ -60,7 +61,7 @@ TGraphAsymmErrors *h2gae(TH1 *h) {
 
    TGraphAsymmErrors *ans = new TGraphAsymmErrors(n,x,y,exl,exh,eyl,eyh);
 
-   delete x; delete y; delete exl; delete exh; delete eyl; delete eyh;
+   delete[] x; delete[] y; delete[] exl; delete[] exh; delete[] eyl; delete[] eyh;
    return ans;
 }
 
@@ -110,15 +111,15 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          // cout << thesyst[thebin].value << endl;
          errl = sqrt(
                pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
-               + pow(ga->GetEYlow()[i]/ga->GetY()[i],2) // acceptance
-               + pow(ge->GetEYlow()[i]/ge->GetY()[i],2) // efficiency
+               // + pow(ga->GetEYlow()[i]/ga->GetY()[i],2) // acceptance
+               // + pow(ge->GetEYlow()[i]/ge->GetY()[i],2) // efficiency
                + pow(thesyst[thebin].value,2) // other systs
                );
          errl = errl * val;
          errh = sqrt(
                pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
-               + pow(ga->GetEYhigh()[i]/ga->GetY()[i],2) // acceptance
-               + pow(ge->GetEYhigh()[i]/ge->GetY()[i],2) // efficiency
+               // + pow(ga->GetEYhigh()[i]/ga->GetY()[i],2) // acceptance
+               // + pow(ge->GetEYhigh()[i]/ge->GetY()[i],2) // efficiency
                + pow(thesyst[thebin].value,2) // other systs
                );
          errh = errh * val;
@@ -175,11 +176,24 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       // TH1F *hth = rebin_theory(hth1,hth19,hth20);
       // hth->Scale(208*1e-3);
 
-      TFile *fth = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_norew.root");
-      TH1D *hth = (TH1D*) fth->Get(Form("h_%s_AccTotal",varname(thevar)));
-      hth->Scale(1./lumi_all);
-      Obtain_dSigma_dX(hth);
-      TGraphAsymmErrors *gth = h2gae(hth);
+      TFile *fth = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
+      vector<TH1D*> hth;
+      int i=0;
+      hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hth.back()->Scale(1./lumi_all);
+      Obtain_dSigma_dX(hth.back());
+      for (i=285; i<=324; i++) {
+         hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+         hth.back()->Scale(1./lumi_all);
+         Obtain_dSigma_dX(hth.back());
+      }
+      for (i=112; i<=167; i++) {
+         hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+         hth.back()->Scale(1./lumi_all);
+         Obtain_dSigma_dX(hth.back());
+      }
+
+      TGraphAsymmErrors *gth = pdfuncert(hth, "EPPS16nlo_CT14nlo_Pb208");
       gth->SetMarkerSize(0);
       gth->SetName(Form("gth_%s",varname(thevar)));
 

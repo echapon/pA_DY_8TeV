@@ -283,8 +283,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             // -- Acceptance Calculation -- //
             if (ttbar_w->size()!=nweights) cout << i << " -> " << ttbar_w->size() << " " << nweights << endl;
             for (unsigned int iwt=0; iwt<nweights; iwt++) {
-               if (iwt>=ttbar_w->size()) break;
-               double wt = ttbar_w->at(iwt)*TotWeight;
+               double wt = 1;
+               // sometimes the last weight is missing... protect against this
+               if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
+               else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
                h_mass_AccTotal[iwt]->Fill( gen_M, wt );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
@@ -383,8 +386,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
 					// -- Efficiency Calculation -- //
                for (unsigned int iwt=0; iwt<nweights; iwt++) {
-                  if (iwt>=ttbar_w->size()) break;
-                  double wt = ttbar_w->at(iwt)*TotWeight;
+                  double wt = 1;
+                  // sometimes the last weight is missing... protect against this
+                  if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
+                  else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
                   h_mass_EffTotal[iwt]->Fill( gen_M, wt * PUWeight );
                   if (gen_M>60 && gen_M<120) {
                      h_pt_EffTotal[iwt]->Fill( gen_Pt, wt * PUWeight );
@@ -397,8 +403,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 					if( Flag_PassEff == kTRUE)
 					{
                   for (unsigned int iwt=0; iwt<nweights; iwt++) {
-                     if (iwt>=ttbar_w->size()) break;
-                     double wt = ttbar_w->at(iwt)*TotWeight;
+                     double wt = 1;
+                     // sometimes the last weight is missing... protect against this
+                     if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
+                     else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
                      h_mass_EffPass[iwt]->Fill( gen_M, wt * PUWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_EffPass[iwt]->Fill( gen_Pt, wt * PUWeight );
@@ -432,8 +441,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                   TnpWeight = TnpWeight * sf_trg;
 
                   for (unsigned int iwt=0; iwt<nweights; iwt++) {
-                     if (iwt>=ttbar_w->size()) break;
-                     double wt = ttbar_w->at(iwt)*TotWeight;
+                     double wt = 1;
+                     // sometimes the last weight is missing... protect against this
+                     if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
+                     else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, wt * PUWeight * TnpWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, wt * PUWeight * TnpWeight );
