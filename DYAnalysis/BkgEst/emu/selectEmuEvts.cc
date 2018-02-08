@@ -45,7 +45,7 @@ void selectEmuEvts(SampleTag index)
     chain->SetBranchAddress("event",&event);  
     TChain *chain2 = new TChain("recoTree/DYTree");
     chain2->Add(PathTuple(index));
-    bool doflip = switcheta(index);
+    bool doflip = (switcheta(index)<0);
     NtupleHandle *ntuple = new NtupleHandle( chain2, doflip );
     ntuple->TurnOnBranches_GenLepton();
 

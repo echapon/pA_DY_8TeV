@@ -22,7 +22,7 @@ void plotSysts(var thevar) {
    tags.push_back(systs.back().begin()->second.name.c_str());
 
    // total
-   systs.push_back(readSyst_all(thevar,false,"","../"));
+   systs.push_back(readSyst_all(thevar,true,Form("tex/systs_%s.tex",varname(thevar)),"../"));
    tags.push_back(systs.back().begin()->second.name.c_str());
 
    // individual systs

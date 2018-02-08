@@ -2,6 +2,7 @@
 #define syst_C
 
 #include "syst.h"
+#include "TString.h"
 
 
 map<bin, syst> readSyst(const char* systfile) {
@@ -96,6 +97,14 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
 void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    unsigned int nsyst = theSysts.size();
 
+   // find out the variable from the texName
+   TString ts(texName);
+   TString tvarname("bin");
+   if (ts.Contains("mass")) tvarname = "\\mmumu [\\GeVcc]";
+   else if (ts.Contains("pt")) tvarname = "\\pt [\\GeVc]";
+   else if (ts.Contains("phistar")) tvarname = "\\phistar";
+   else if (ts.Contains("rap")) tvarname = "$y_\\text{CM}$";
+
    ofstream file(texName);
    file << "\\begin{tabular}{|c|"; 
    for (unsigned int i=0; i<nsyst; i++) {
@@ -105,7 +114,7 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    }
    file << "}" << endl;
    file << "\\hline" << endl;
-   file << "bin";
+   file << tvarname.Data();
    for (unsigned int i=0; i<nsyst; i++) file << " & " << theSysts[i].begin()->second.name;
    file<< "\\\\" << endl;
    file << "\\hline" << endl;
@@ -123,7 +132,7 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
       if (itm != themap.begin()) file << "\\hline" << endl;
       file.unsetf(ios::fixed);
       file.precision(5);
-      file << thebin.low() << ", " << thebin.high();
+      file << "$[" << thebin.low() << "-" << thebin.high() << "]$";
       file.precision(1);
       file.setf(ios::fixed);
 
