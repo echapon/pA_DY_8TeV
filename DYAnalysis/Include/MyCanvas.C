@@ -11,6 +11,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TCanvas.h>
+#include <TROOT.h>
 
 #include <vector>
 
@@ -61,7 +62,8 @@ public:
 
 	MyCanvas(TString CanvasName, TString XTitle, TString YTitle, Int_t length_x = 800, Int_t length_y = 800)
 	{
-		setTDRStyle();
+      setTDRStyle();
+      gROOT->SetStyle( "tdrStyle" );
 		// tdrStyle->SetErrorX(0.5);
 		c = new TCanvas(CanvasName, "", length_x, length_y);
 
@@ -747,7 +749,7 @@ public:
 		}
 	}
 
-	void CanvasWitOneHistogram(TH1D *h, TString DrawOp = "EP", Int_t color = kRed)
+	void CanvasWithOneHistogram(TH1D *h, TString DrawOp = "EP", Int_t color = kRed)
 	{
 		c->cd();
 
@@ -818,7 +820,7 @@ public:
 		h_2D->GetYaxis()->SetNoExponent();
 		h_2D->GetYaxis()->SetMoreLogLabels();
 		h_2D->GetYaxis()->SetTitleOffset(2);
-		h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
+      // h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
 		// h_2D->SetMinimum(LowerEdge_Z);
 		// h_2D->SetMaximum(UpperEdge_Z);
 
