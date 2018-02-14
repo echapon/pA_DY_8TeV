@@ -820,7 +820,7 @@ public:
 		h_2D->GetYaxis()->SetNoExponent();
 		h_2D->GetYaxis()->SetMoreLogLabels();
 		h_2D->GetYaxis()->SetTitleOffset(2);
-      // h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
+      if (LowerEdge_Z<UpperEdge_Z) h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
 		// h_2D->SetMinimum(LowerEdge_Z);
 		// h_2D->SetMaximum(UpperEdge_Z);
 

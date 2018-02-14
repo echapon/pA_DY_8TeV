@@ -43,7 +43,7 @@ void plotResponseMatrix(TFile *f, var thevar) {
    extraText = "Simulation";
    writeExtraText = true;
 
-   c1D.CanvasWithHistogramsRatioPlot(h_gen,h_reco,"Reco","Gen","Reco/Gen",kBlack,kRed,false,false,"EP","EPSAME");
+   c1D.CanvasWithHistogramsRatioPlot(h_gen,h_reco,"Gen","Reco","Gen/Reco",kBlack,kRed,false,false,"EP","EPSAME");
    CMS_lumi(c1D.c, 111, 0);
    c1D.PrintCanvas();
 

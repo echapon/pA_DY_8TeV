@@ -120,6 +120,22 @@ namespace DYana {
    };
 
    const char* xaxistitle(TString variable) {return xaxistitle(str2var(variable));};
+
+   int nbinsvar(var thevar) {
+      if (thevar==var::mass) return binnum;
+      else if (thevar==var::pt) return ptbinnum_meas;
+      else if (thevar==var::phistar) return phistarnum;
+      else if (thevar==var::rap1560) return rapbinnum_1560;
+      else return rapbinnum_60120;
+   };
+
+   double* binsvar(var thevar) {
+      if (thevar==var::mass) return bins;
+      else if (thevar==var::pt) return ptbin_meas;
+      else if (thevar==var::phistar) return phistarbin;
+      else if (thevar==var::rap1560) return rapbin_1560;
+      else return rapbin_60120;
+   };
 };
 
 #endif // ifndef def_h

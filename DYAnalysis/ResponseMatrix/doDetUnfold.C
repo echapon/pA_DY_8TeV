@@ -106,12 +106,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    TH1D *histMdetFold = NULL;
    TH2D *histEmatTotal = NULL;
 
-   // scale the response matrix
-   int nn = h_response->GetNbinsX();
-   for (int i=1; i<=nn; i++)
-      for (int j=1; j<=nn; j++)
-         if (i!=j) h_response->SetBinContent(i,j,h_response->GetBinContent(i,j)/sqrt(h_response->GetBinContent(i,i)*h_response->GetBinContent(j,j)));
-   for (int i=1; i<=nn; i++) h_response->SetBinContent(i,i,1);
+   // // scale the response matrix
+   // int nn = h_response->GetNbinsX();
+   // for (int i=1; i<=nn; i++)
+   //    for (int j=1; j<=nn; j++)
+   //       if (i!=j) h_response->SetBinContent(i,j,h_response->GetBinContent(i,j)/sqrt(h_response->GetBinContent(i,i)*h_response->GetBinContent(j,j)));
+   // for (int i=1; i<=nn; i++) h_response->SetBinContent(i,i,1);
 
    if (doreg) {
    ////////////////////////////////////////////////////////////////////////////////////
@@ -358,8 +358,8 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       c_cor.SetLogx();
       c_cor.SetLogy();
    }
-   if (thevar==var::mass) c1D.SetRatioRange(0.5,1.5);
-   else if (thevar==var::pt) c1D.SetRatioRange(0.7,1.3);
+   if (thevar==var::mass) c1D.SetRatioRange(0.7,1.3);
+   else if (thevar==var::pt) c1D.SetRatioRange(0.8,1.2);
    else c1D.SetRatioRange(0.9,1.1);
 
    c1D.CanvasWithHistogramsRatioPlot(histMunfold,h_Measured_TUnfold,"Unfolded","Measured","Unfolded/Measured",kBlack,kRed,false,false,"EP","EPSAME");
@@ -394,6 +394,8 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
 }
 
 TH1D* unfold_MLE(TH1D *hin, TH2D *hresponse, TH2D *&hcov) {
+   cout << hin->GetNbinsX() << endl;
+   cout << hresponse->GetNbinsX() << " " << hresponse->GetNbinsY() << endl;
    // input values
    TVectorD vin(hin->GetNbinsX());
    // input covariance
@@ -408,7 +410,7 @@ TH1D* unfold_MLE(TH1D *hin, TH2D *hresponse, TH2D *&hcov) {
    TMatrixD mr(hresponse->GetNbinsX(),hresponse->GetNbinsY());
    for (int i=1; i<=hresponse->GetNbinsX(); i++) {
       for (int j=1; j<=hresponse->GetNbinsY(); j++) {
-         mr(j-1,i-1) = hresponse->GetBinContent(i,j);
+         mr(i-1,j-1) = hresponse->GetBinContent(i,j);
          cout << mr(i-1,j-1) << " ";
       }
       cout << endl;
@@ -420,14 +422,20 @@ TH1D* unfold_MLE(TH1D *hin, TH2D *hresponse, TH2D *&hcov) {
    
    // invert the response matrix
    mr.Invert();
+   for (int i=1; i<=hresponse->GetNbinsX(); i++) {
+      for (int j=1; j<=hresponse->GetNbinsY(); j++) {
+         cout << mr(i-1,j-1) << " ";
+      }
+      cout << endl;
+   }
 
    // compute the unfolded result
    vout = mr * vin;
 
    // create the output histos: distribution and covariance matrix
-   TH1D *hout = new TH1D("hout","hout",
+   TH1D *hout = new TH1D(Form("%s_unfoldedMLE",hin->GetName()),"Unfolded (MLE)",
          hresponse->GetNbinsY(),hresponse->GetYaxis()->GetXbins()->GetArray());
-   hcov = new TH2D("hcov","hcov",
+   hcov = new TH2D(Form("%s_unfoldedMLE_cov",hin->GetName()),"Covariance",
          hresponse->GetNbinsY(),hresponse->GetYaxis()->GetXbins()->GetArray(),
          hresponse->GetNbinsY(),hresponse->GetYaxis()->GetXbins()->GetArray());
    for (int i=1; i<=hout->GetNbinsX(); i++) {
@@ -444,6 +452,8 @@ TH1D* unfold_MLE(TH1D *hin, TH2D *hresponse, TH2D *&hcov) {
 }
 
 TH1D* fold_MLE(TH1D *hin, TH2D *hresponse) {
+   cout << hin->GetNbinsX() << endl;
+   cout << hresponse->GetNbinsX() << " " << hresponse->GetNbinsY() << endl;
    // input values
    TVectorD vin(hin->GetNbinsY());
    // input covariance
@@ -458,7 +468,7 @@ TH1D* fold_MLE(TH1D *hin, TH2D *hresponse) {
    TMatrixD mr(hresponse->GetNbinsX(),hresponse->GetNbinsY());
    for (int i=1; i<=hresponse->GetNbinsX(); i++)
       for (int j=1; j<=hresponse->GetNbinsY(); j++)
-         mr(i-1,j-1) = hresponse->GetBinContent(i,j);
+         mr(j-1,i-1) = hresponse->GetBinContent(i,j);
 
    // helper matrix for the covariance
    TMatrixD cmat(hresponse->GetNbinsX(),hresponse->GetNbinsX());
@@ -468,8 +478,9 @@ TH1D* fold_MLE(TH1D *hin, TH2D *hresponse) {
    vout = mr * vin;
 
    // create the output histos: distribution and covariance matrix
-   TH1D *hout = new TH1D("hout","hout",hresponse->GetNbinsX(),hresponse->GetXaxis()->GetXbins()->GetArray());
-   TH2D *hcov = new TH2D("hcov","hcov",
+   TH1D *hout = new TH1D(Form("%s_foldedMLE",hin->GetName()),"Folded (MLE)",
+         hresponse->GetNbinsX(),hresponse->GetXaxis()->GetXbins()->GetArray());
+   TH2D *hcov = new TH2D(Form("%s_foldedMLE_cov",hin->GetName()),"Covariance",
          hresponse->GetNbinsX(),hresponse->GetXaxis()->GetXbins()->GetArray(),
          hresponse->GetNbinsX(),hresponse->GetXaxis()->GetXbins()->GetArray());
    for (int i=1; i<=hout->GetNbinsX(); i++) {
