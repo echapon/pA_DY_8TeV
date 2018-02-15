@@ -69,7 +69,7 @@ void dataMC(var thevar)
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
-   TFile* f1 = new TFile(Form("ROOTFile_Histograms_%s_MomUnCorr_rewboth_tnprew_All.root",thevarname));
+   TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomUnCorr_rewboth_tnprew_All.root",thevarname));
    f1->cd();
 
    TH1D* h_data = (TH1D*) f1->Get("h_data");
@@ -77,8 +77,8 @@ void dataMC(var thevar)
    TH1D* h_ttbar_emu = (TH1D*) f1->Get("h_ttbar_emu");
    TH1D* h_DYTauTau_emu = (TH1D*) f1->Get("h_DYTauTau_emu");
    TH1D* h_WW_emu = (TH1D*) f1->Get("h_WW_emu");
-   TH1D* h_WZ = (TH1D*) f1->Get("h_WZ_emu");
-   TH1D* h_ZZ = (TH1D*) f1->Get("h_ZZ_emu");
+   TH1D* h_WZ = (TH1D*) f1->Get("h_WZ_MC");
+   TH1D* h_ZZ = (TH1D*) f1->Get("h_ZZ_MC");
    TH1D* h_WJets_FR = (TH1D*) f1->Get("h_WJets_FR");
    TH1D* h_diJet_FR = (TH1D*) f1->Get("h_diJet_FR");
    TH1D* htotal = (TH1D*) h_SignalMC->Clone("htotal");
@@ -166,6 +166,17 @@ void dataMC(var thevar)
    h_data->GetZaxis()->SetTitleSize(0.035);
    h_data->GetZaxis()->SetTitleFont(42);
    h_data->SetMinimum(0.001);
+   if (thevar == var::pt) h_data->SetMinimum(0.1);
+   else if (thevar == var::rap1560) {
+      h_data->SetMinimum(0);
+      h_data->SetMaximum(1450);
+   } else if (thevar == var::rap60120) {
+      h_data->SetMinimum(0);
+      h_data->SetMaximum(7750);
+   } else if (thevar == var::phistar) {
+      h_data->SetMinimum(1);
+      h_data->SetMaximum(2e5);
+   }
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -204,7 +215,7 @@ void dataMC(var thevar)
    // TText* ttitle = ptitle->AddText("CMS Preliminary");
    // ttitle->SetTextSize(0.035);
    // ptitle->Draw("0");
-   CMS_lumi( c1, 111, 0 );
+   CMS_lumi( TopPad, 111, 0 );
 
 // ------------>Primitives in pad: bottomPad
    TPad *bottomPad = new TPad("bottomPad", "bottomPad",0.01,0.01,0.99,0.3);
