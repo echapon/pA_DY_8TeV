@@ -29,22 +29,10 @@
 using namespace DYana;
 using unfold::gUnfold;
 
-void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, var thevar = var::mass ) 
+void doDetUnfold( var thevar = var::mass ) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
-
-	TString isApplyMomCorr = "";
-	if( isCorrected == kTRUE )
-	{
-		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomCorr";
-	}
-	else
-	{
-		cout << "DO *NOT* Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomUnCorr";
-	}
 
 	TStopwatch totaltime;
 	totaltime.Start();
@@ -55,16 +43,16 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    double* binsv = binsvar(thevar);
 
 
-	TFile *f = new TFile("ResponseMatrix/ROOTFile_ResponseMatrix_" + Sample + "_" + isApplyMomCorr + "_" + Form("%d",run) + ".root");
-   TH2D *h_response = (TH2D*) f->Get(Form("h_%s_response",thevarname));
-   TH1D *h_gen = (TH1D*) f->Get(Form("h_%s_gen",thevarname));
-   TH1D *h_reco = (TH1D*) f->Get(Form("h_%s_reco",thevarname));
+	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+   TH2D *h_postpreFSR_tot = (TH2D*) f->Get(Form("h_%s_postpreFSR_tot",thevarname));
+   TH1D *h_preFSR = (TH1D*) f->Get(Form("h_%s_preFSR",thevarname));
+   TH1D *h_postFSR = (TH1D*) f->Get(Form("h_%s_postFSR",thevarname));
 
    // compute the condition number
    TMatrixD m(nbinsv,nbinsv);
    for (int i=0; i<nbinsv; i++)
       for (int j=0; j<nbinsv; j++)
-         m[i][j] = h_response->GetBinContent(i+1,j+1);
+         m[i][j] = h_postpreFSR_tot->GetBinContent(i+1,j+1);
    TDecompSVD tsvd(m);
    tsvd.Decompose();
    TVectorD sv = tsvd.GetSig();
@@ -81,20 +69,20 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    // errors larger or equal 10000 are fatal:
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
-   TString fdataname = "ROOTFile_YieldHistogram_" + isApplyMomCorr + "_rewboth_tnprew.root";
+   TString fdataname = "Plots/results/xsec_nom.root";
    TFile *fdata = TFile::Open(fdataname);
    if (!fdata || !fdata->IsOpen()) {
       cout << "Error, file " << fdataname.Data() << " not found" << endl;
       return;
    }
-   TH1F *histMdetData = (TH1F*) fdata->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname));
+   TH1F *histMdetData = (TH1F*) fdata->Get(Form("hy_%s",thevarname));
    if (!histMdetData) {
-      cout << "Error, histo " << Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname)<< "not found" << endl;
+      cout << "Error, histo " << Form("hy_%s",thevarname)<< "not found" << endl;
       return;
    }
 
    // output
-   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s.root",thevarname),"RECREATE");
+   TFile *fout = new TFile(Form("FSRCorrection/xsec_FSRcor_%s.root",thevarname),"RECREATE");
    fout->cd();
 
    // output
@@ -104,13 +92,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    TH2D *histEmatTotal = NULL;
 
    // // scale the response matrix
-   // int nn = h_response->GetNbinsX();
+   // int nn = h_postpreFSR_tot->GetNbinsX();
    // for (int i=1; i<=nn; i++)
    //    for (int j=1; j<=nn; j++)
-   //       if (i!=j) h_response->SetBinContent(i,j,h_response->GetBinContent(i,j)/sqrt(h_response->GetBinContent(i,i)*h_response->GetBinContent(j,j)));
-   // for (int i=1; i<=nn; i++) h_response->SetBinContent(i,i,1);
+   //       if (i!=j) h_postpreFSR_tot->SetBinContent(i,j,h_postpreFSR_tot->GetBinContent(i,j)/sqrt(h_postpreFSR_tot->GetBinContent(i,i)*h_postpreFSR_tot->GetBinContent(j,j)));
+   // for (int i=1; i<=nn; i++) h_postpreFSR_tot->SetBinContent(i,i,1);
 
-   
    if (doreg) {
    ////////////////////////////////////////////////////////////////////////////////////
    // 
@@ -125,21 +112,21 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    ////////////////////////////////////////////////////////////////////////////////////
 
    // // first a little tri to please TUnfold's treatment of the underflow and overflow bin
-   // int nbinsX = h_response->GetNbinsX();
-   // const double *binsX = h_response->GetXaxis()->GetXbins()->GetArray();
+   // int nbinsX = h_postpreFSR_tot->GetNbinsX();
+   // const double *binsX = h_postpreFSR_tot->GetXaxis()->GetXbins()->GetArray();
    // double *binsXnew = new double[nbinsX+2];
    // for (int i=0; i<nbinsX+1; i++) binsXnew[i] = binsX[i];
    // binsXnew[nbinsX+1] = binsXnew[nbinsX]+1e-10;
 
    // TH1D *histMdetData_new = new TH1D("histMdetData_new","histMdetData_new",nbinsX+1,binsXnew);
-   // TH2D *h_response_new = new TH2D("h_response_new","h_response_new",nbinsX+1,binsXnew,nbinsX,binsX);
+   // TH2D *h_postpreFSR_tot_new = new TH2D("h_postpreFSR_tot_new","h_postpreFSR_tot_new",nbinsX+1,binsXnew,nbinsX,binsX);
    // for (int i=1; i<=nbinsX; i++) {
    //    for (int j=1; j<=nbinsX; j++) {
-   //       h_response_new->SetBinContent(i,j,h_response->GetBinContent(i,j));
-   //       h_response_new->SetBinError(i,j,h_response->GetBinError(i,j));
+   //       h_postpreFSR_tot_new->SetBinContent(i,j,h_postpreFSR_tot->GetBinContent(i,j));
+   //       h_postpreFSR_tot_new->SetBinError(i,j,h_postpreFSR_tot->GetBinError(i,j));
    //    }
-   //    h_response_new->SetBinContent(nbinsX+1,i,h_response->GetBinContent(0,i));
-   //    h_response_new->SetBinError(nbinsX+1,i,h_response->GetBinError(0,i));
+   //    h_postpreFSR_tot_new->SetBinContent(nbinsX+1,i,h_postpreFSR_tot->GetBinContent(0,i));
+   //    h_postpreFSR_tot_new->SetBinError(nbinsX+1,i,h_postpreFSR_tot->GetBinError(0,i));
 
    //    histMdetData_new->SetBinContent(i,histMdetData->GetBinContent(i));
    //    histMdetData_new->SetBinError(i,histMdetData->GetBinError(i));
@@ -148,7 +135,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    // histMdetData_new->SetBinError(nbinsX+1,histMdetData->GetBinError(0));
 
    // init the TUnfold object
-   unfold::initTUnfold(h_response,TUnfold::kHistMapOutputVert, doreg ? TUnfold::kRegModeCurvature : TUnfold::kRegModeNone );
+   unfold::initTUnfold(h_postpreFSR_tot,TUnfold::kHistMapOutputVert, doreg ? TUnfold::kRegModeCurvature : TUnfold::kRegModeNone );
 
    if(gUnfold->SetInput(histMdetData)>=10000) {
       std::cout<<"Unfolding result may be wrong\n";
@@ -188,12 +175,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    // -- Response Matrix -- //
    TCanvas *c_RespM = new TCanvas("c_RespM", "", 800, 800);
    c_RespM->cd();
-   h_response->SetStats(kFALSE);
-   h_response->Draw("COLZ");
-   h_response->SetMinimum(1e-3);
-   h_response->SetMaximum(1);
-   h_response->GetXaxis()->SetTitle(Form("%s (reco level)", xaxistitle(thevar)));
-   h_response->GetYaxis()->SetTitle(Form("%s (gen level)", xaxistitle(thevar)));
+   h_postpreFSR_tot->SetStats(kFALSE);
+   h_postpreFSR_tot->Draw("COLZ");
+   h_postpreFSR_tot->SetMinimum(1e-3);
+   h_postpreFSR_tot->SetMaximum(1);
+   h_postpreFSR_tot->GetXaxis()->SetTitle(Form("%s (reco level)", xaxistitle(thevar)));
+   h_postpreFSR_tot->GetYaxis()->SetTitle(Form("%s (gen level)", xaxistitle(thevar)));
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
       gPad->SetLogx();
       gPad->SetLogy();
@@ -271,7 +258,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    // events which are not reconstructed. These are necessary for proper MC
    // normalisation
    output.cd(1);
-   h_response->Draw("BOX");
+   h_postpreFSR_tot->Draw("BOX");
 
    // draw generator-level distribution:
    //   data (red) [for real data this is not available]
@@ -284,10 +271,10 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    TH1D *histDensityGenMC=new TH1D("DensityGenMC",Form("%s; (gen)", xaxistitle(thevar)),
          nbinsv,binsv);
    for(Int_t i=1;i<=nbinsv;i++) {
-      histDensityGenData->SetBinContent(i,h_reco->GetBinContent(i)/
-            h_reco->GetBinWidth(i));
-      histDensityGenMC->SetBinContent(i,h_gen->GetBinContent(i)/
-            h_gen->GetBinWidth(i));
+      histDensityGenData->SetBinContent(i,h_postFSR->GetBinContent(i)/
+            h_postFSR->GetBinWidth(i));
+      histDensityGenMC->SetBinContent(i,h_preFSR->GetBinContent(i)/
+            h_preFSR->GetBinWidth(i));
    }
    histTotalError->SetLineColor(kBlue);
    histTotalError->Draw("E");
@@ -304,7 +291,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    output.cd(3);
    histMdetFold->SetLineColor(kBlue);
    histMdetFold->Draw();
-   h_reco->Draw("SAME HIST");
+   h_postFSR->Draw("SAME HIST");
 
    TH1D *histInput = (TH1D*) gUnfold->GetInput("Minput",Form(";%s (det)",xaxistitle(thevar)));
 
@@ -341,14 +328,14 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       //
       ////////////////////////////////////////////////////////////////////////////////////
 
-      histMunfold = unfold::unfold_MLE(h_Measured_TUnfold,h_response,histEmatTotal);
-      histMdetFold = unfold::fold_MLE(histMunfold,h_response);
+      histMunfold = unfold::unfold_MLE(h_Measured_TUnfold,h_postpreFSR_tot,histEmatTotal);
+      histMdetFold = unfold::fold_MLE(histMunfold,h_postpreFSR_tot);
    }
 
    // compare data before and after unfolding
-   MyCanvas c1D(Form("ResponseMatrix/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
-   MyCanvas c_cov(Form("ResponseMatrix/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
-   MyCanvas c_cor(Form("ResponseMatrix/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c1D(Form("FSRCorrection/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c_cov(Form("FSRCorrection/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c_cor(Form("FSRCorrection/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
       c1D.SetLogx();
       c_cov.SetLogx();
@@ -399,3 +386,4 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    fout->Close();
    f->Close();
 }
+

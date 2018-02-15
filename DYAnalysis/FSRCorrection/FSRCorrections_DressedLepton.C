@@ -59,7 +59,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 
    analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
-	TFile *f = new TFile("ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root", "RECREATE");
+	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root", "RECREATE");
 
 	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", binnum, bins);
 	TH1D *h_mass_preFSR_tot_fine = new TH1D("h_mass_preFSR_fine", "", 585,15,600);
@@ -93,6 +93,14 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	TH1D *h_rap60120_ratio_tot = new TH1D("h_rap60120_ratio", "", 100, -1, 1);
    TH2D *h_rap60120_postpreFSR_tot = new TH2D("h_rap60120_postpreFSR_tot", ";rap60120(post-FSR);rap60120(pre-FSR)", rapbinnum_60120, rapbin_60120, rapbinnum_60120, rapbin_60120);
    TH2D *h_rap60120_postpreFSR_tot_fine = new TH2D("h_rap60120_postpreFSR_tot_fine", ";rap60120(post-FSR);rap60120(pre-FSR)", 500,-3,2,500,-3,2);
+
+	TH1D *h_phistar_preFSR_tot = new TH1D("h_phistar_preFSR", "", phistarnum, phistarbin);
+	TH1D *h_phistar_preFSR_tot_fine = new TH1D("h_phistar_preFSR_fine", "", 500,-3,2);
+	TH1D *h_phistar_postFSR_tot = new TH1D("h_phistar_postFSR", "", phistarnum, phistarbin);
+	TH1D *h_phistar_postFSR_tot_fine = new TH1D("h_phistar_postFSR_fine", "", 500,-3,2);
+	TH1D *h_phistar_ratio_tot = new TH1D("h_phistar_ratio", "", 100, -1, 1);
+   TH2D *h_phistar_postpreFSR_tot = new TH2D("h_phistar_postpreFSR_tot", ";phistar(post-FSR);phistar(pre-FSR)", phistarnum, phistarbin, phistarnum, phistarbin);
+   TH2D *h_phistar_postpreFSR_tot_fine = new TH2D("h_phistar_postpreFSR_tot_fine", ";phistar(post-FSR);phistar(pre-FSR)", 500,-3,2,500,-3,2);
 
 	// const Int_t ndRCuts = 10;
 	// Double_t dRCuts[ndRCuts] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
@@ -262,8 +270,9 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
 
             // acceptance flags
-				bool Flag_PassAcc_postFSR = analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
-				bool Flag_PassAcc_preFSR = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+            // NOW REMOVED we correct data after acceptance correction (ie before acceptance cuts)
+				bool Flag_PassAcc_postFSR = true; // analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
+				bool Flag_PassAcc_preFSR = true; //analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
 
             // if neither of the pre- and post-FSR leptons pass acceptance cuts... why bother?
             // if (!Flag_PassAcc_preFSR && !Flag_PassAcc_postFSR) continue;
@@ -316,6 +325,8 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				Double_t pt_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.Pt() : -99;
 				Double_t rap_preFSR = Flag_PassAcc_preFSR ? tlv_preFSR.Rapidity() - rapshift : -99;
 				Double_t rap_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.Rapidity() - rapshift : -99;
+				Double_t phistar_preFSR = Flag_PassAcc_preFSR ? Object::phistar(genlep_preFSR1, genlep_preFSR2) : -99;
+				Double_t phistar_postFSR = Flag_PassAcc_postFSR ? Object::phistar(genlep_preFSR1, genlep_preFSR2) : -99;
 
 				h_mass_preFSR->Fill( M_preFSR, TotWeight );
 				h_mass_postFSR->Fill( M_postFSR, TotWeight );
@@ -323,6 +334,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				Double_t mass_ratio = (M_preFSR - M_postFSR ) / M_preFSR;
 				Double_t pt_ratio = (pt_preFSR - pt_postFSR ) / pt_preFSR;
 				Double_t rap_ratio = (rap_preFSR - rap_postFSR ) / rap_preFSR;
+				Double_t phistar_ratio = (phistar_preFSR - phistar_postFSR ) / phistar_preFSR;
 				h_mass_ratio->Fill( mass_ratio, TotWeight );
 
             // mass histos
@@ -356,7 +368,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				if (M_postFSR>15 && M_postFSR<60) h_rap1560_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
 				h_rap1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? rap_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? rap_preFSR : -99, TotWeight );
 
-            // rap 60-9920 histos
+            // rap 60-120 histos
 				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot->Fill( rap_preFSR, TotWeight );
 				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot->Fill( rap_postFSR, TotWeight );
 				if (M_preFSR>60 && M_preFSR<120) h_rap60120_ratio_tot->Fill( rap_ratio, TotWeight );
@@ -365,6 +377,16 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
 				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
 				h_rap60120_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? rap_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? rap_preFSR : -99, TotWeight );
+
+            // phistar histos
+				if (M_preFSR>60 && M_preFSR<120) h_phistar_preFSR_tot->Fill( phistar_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_phistar_postFSR_tot->Fill( phistar_postFSR, TotWeight );
+				if (M_preFSR>60 && M_preFSR<120) h_phistar_ratio_tot->Fill( phistar_ratio, TotWeight );
+				h_phistar_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? phistar_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? phistar_preFSR : -99, TotWeight );
+
+				if (M_preFSR>60 && M_preFSR<120) h_phistar_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
+				if (M_postFSR>60 && M_postFSR<120) h_phistar_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
+				h_phistar_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? phistar_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? phistar_preFSR : -99, TotWeight );
 			} // -- End of if( GenFlag == kTRUE ) -- //
 
 		} //End of event iteration
@@ -381,6 +403,53 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 		Double_t LoopRunTime = looptime.CpuTime();
 		cout << "\tLoop RunTime(" << Tag[i_tup] << "): " << LoopRunTime << " seconds\n" << endl;
 	} //end of i_tup iteration
+
+   // normalise: divide each R_ij element of the response matrix by gen_j the number of pre-FSR events in pre-FSR bin j
+   for (int j=0; j<=h_mass_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_mass_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_mass_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_mass_postpreFSR_tot->SetBinContent(i,j,h_mass_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_mass_postpreFSR_tot->SetBinError(i,j,h_mass_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   for (int j=0; j<=h_pt_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_pt_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_pt_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_pt_postpreFSR_tot->SetBinContent(i,j,h_pt_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_pt_postpreFSR_tot->SetBinError(i,j,h_pt_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   for (int j=0; j<=h_rap1560_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_rap1560_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_rap1560_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_rap1560_postpreFSR_tot->SetBinContent(i,j,h_rap1560_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_rap1560_postpreFSR_tot->SetBinError(i,j,h_rap1560_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   for (int j=0; j<=h_rap60120_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_rap60120_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_rap60120_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_rap60120_postpreFSR_tot->SetBinContent(i,j,h_rap60120_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_rap60120_postpreFSR_tot->SetBinError(i,j,h_rap60120_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   for (int j=0; j<=h_phistar_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_phistar_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_phistar_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_phistar_postpreFSR_tot->SetBinContent(i,j,h_phistar_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_phistar_postpreFSR_tot->SetBinError(i,j,h_phistar_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
 
 	f->cd();
 	h_mass_preFSR_tot->Write();
@@ -416,274 +485,15 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	h_rap60120_postFSR_tot_fine->Write();
    h_rap60120_postpreFSR_tot_fine->Write();
 
-   // compute the condition numbers
-   TMatrixD m_mass(binnum,binnum);
-   for (int i=0; i<binnum; i++)
-      for (int j=0; j<binnum; j++)
-         m_mass[i][j] = h_mass_postpreFSR_tot->GetBinContent(i+1,j+1);
-   TDecompSVD tsvd_mass(m_mass);
-   tsvd_mass.Decompose();
-   TVectorD sv_mass = tsvd_mass.GetSig();
-   double condnum_mass = sv_mass[0]/max(0.,sv_mass[binnum-1]);
-   cout << "Condition number for mass: " << condnum_mass << endl;
+	h_phistar_preFSR_tot->Write();
+	h_phistar_postFSR_tot->Write();
+   h_phistar_ratio_tot->Write();
+   h_phistar_postpreFSR_tot->Write();
+	h_phistar_preFSR_tot_fine->Write();
+	h_phistar_postFSR_tot_fine->Write();
+   h_phistar_postpreFSR_tot_fine->Write();
 
-   TMatrixD m_pt(ptbinnum_meas,ptbinnum_meas);
-   for (int i=0; i<ptbinnum_meas; i++)
-      for (int j=0; j<ptbinnum_meas; j++)
-         m_pt[i][j] = h_pt_postpreFSR_tot->GetBinContent(i+1,j+1);
-   TDecompSVD tsvd_pt(m_pt);
-   tsvd_pt.Decompose();
-   TVectorD sv_pt = tsvd_pt.GetSig();
-   double condnum_pt = sv_pt[0]/max(0.,sv_pt[ptbinnum_meas-1]);
-   cout << "Condition number for pt: " << condnum_pt << endl;
 
-   TMatrixD m_rap1560(rapbinnum_1560,rapbinnum_1560);
-   for (int i=0; i<rapbinnum_1560; i++)
-      for (int j=0; j<rapbinnum_1560; j++)
-         m_rap1560[i][j] = h_rap1560_postpreFSR_tot->GetBinContent(i+1,j+1);
-   TDecompSVD tsvd_rap1560(m_rap1560);
-   tsvd_rap1560.Decompose();
-   TVectorD sv_rap1560 = tsvd_rap1560.GetSig();
-   double condnum_rap1560 = sv_rap1560[0]/max(0.,sv_rap1560[rapbinnum_1560-1]);
-   cout << "Condition number for rap1560: " << condnum_rap1560 << endl;
-
-   TMatrixD m_rap60120(rapbinnum_60120,rapbinnum_60120);
-   for (int i=0; i<rapbinnum_60120; i++)
-      for (int j=0; j<rapbinnum_60120; j++)
-         m_rap60120[i][j] = h_rap60120_postpreFSR_tot->GetBinContent(i+1,j+1);
-   TDecompSVD tsvd_rap60120(m_rap60120);
-   tsvd_rap60120.Decompose();
-   TVectorD sv_rap60120 = tsvd_rap60120.GetSig();
-   double condnum_rap60120 = sv_rap60120[0]/max(0.,sv_rap60120[rapbinnum_60120-1]);
-   cout << "Condition number for rap60120: " << condnum_rap60120 << endl;
-
-   // f->Close();
-   // return;
-
-   unfold::initTUnfold(h_mass_postpreFSR_tot,TUnfold::kHistMapOutputVert);
-
-   // gUnfold->SetName("unfold");
-
-   // define input and bias scame
-   // do not use the bias, because MC peak may be at the wrong place
-   // watch out for error codes returned by the SetInput method
-   // errors larger or equal 10000 are fatal:
-   // the data points specified as input are not sufficient to constrain the
-   // unfolding process
-   TFile *fdata = TFile::Open("ROOTFile_YieldHistogram.root");
-   if (!fdata || !fdata->IsOpen()) {
-      cout << "Error, file ROOTFile_YieldHistogram.root not found" << endl;
-      return;
-   }
-   TH1F *histMdetData = (TH1F*) fdata->Get("h_yield_OS_MCBasedBkg1");
-   if (!histMdetData) {
-      cout << "Error, histo h_yield_OS_MCBasedBkg1 not found" << endl;
-      return;
-   }
-   f->cd();
-
-   if(gUnfold->SetInput(histMdetData)>=10000) {
-      std::cout<<"Unfolding result may be wrong\n";
-   }
-
-   //========================================================================
-   // the unfolding is done here
-   //
-   // scan L curve and find best point
-   TSpline *logTauX=NULL;
-   TGraph *bestLogTauLogChi2=NULL;
-   TGraph *bestLcurve=NULL;
-   TGraph *lCurve=NULL;
-   unfold::doUnfold(logTauX, bestLogTauLogChi2, bestLcurve, lCurve);
-
-   // save the tau vs chi2
-   logTauX->Write("logTauX");
-   bestLogTauLogChi2->Write("bestLogTauLogChi2");
-   // save the L curve
-   lCurve->Write("lCurve");
-   bestLcurve->Write("bestLcurve");
-
-   // for(Int_t i_dr=0; i_dr < ndRCuts; i_dr++)
-   // {
-   // 	h_nPhotons[i_dr]->Write();
-   // 	h_RatioE[i_dr]->Write();
-   // 	h_SumE[i_dr]->Write();
-   // }
-
-   Int_t nHisto = (Int_t)GammaHisto.size();
-   for(Int_t i=0; i<nHisto; i++)
-      GammaHisto[i]->Write();
-
-   gUnfold->Write();
-
-	// -- Response Matrix -- //
-	TCanvas *c_RespM = new TCanvas("c_RespM", "", 800, 800);
-	c_RespM->cd();
-	h_mass_postpreFSR_tot->SetStats(kFALSE);
-	h_mass_postpreFSR_tot->Draw("COLZ");
-	h_mass_postpreFSR_tot->SetMinimum(1e-3);
-	h_mass_postpreFSR_tot->SetMaximum(1);
-	h_mass_postpreFSR_tot->GetXaxis()->SetTitle("Invariant Mass (post-FSR)");
-	h_mass_postpreFSR_tot->GetYaxis()->SetTitle("Invariant Mass (pre-FSR)");
-	gPad->SetLogx();
-	gPad->SetLogy();
-	gPad->SetLogz();
-	c_RespM->Write();
-
-   TH1* h_Measured_TUnfold = gUnfold->GetInput("h_Measured_TUnfold");
-   h_Measured_TUnfold->SetName("h_Measured_TUnfold");
-   // DIRTY FIX
-   for (int i=h_Measured_TUnfold->GetNbinsX(); i>0; i--) {
-      h_Measured_TUnfold->SetBinContent(i,h_Measured_TUnfold->GetBinContent(i-1));
-      h_Measured_TUnfold->SetBinError(i,h_Measured_TUnfold->GetBinError(i-1));
-   }
-   h_Measured_TUnfold->Write();
-
-   TH1* h_Truth_TUnfold = gUnfold->GetOutput("h_Truth_TUnfold");
-   h_Truth_TUnfold->SetName("h_Truth_TUnfold");
-   h_Truth_TUnfold->Write();
-
-   //==========================================================================
-   // retreive results into histograms
-
-   // get unfolded distribution
-   TH1 *histMunfold=gUnfold->GetOutput("Unfolded");
-   histMunfold->Write();
-
-   // get unfolding result, folded back
-   TH1 *histMdetFold=gUnfold->GetFoldedOutput("FoldedBack");
-   histMdetFold->Write();
-
-   // get error matrix (input distribution [stat] errors only)
-   // TH2D *histEmatData=gUnfold->GetEmatrix("EmatData");
-
-   // get total error matrix:
-   //   migration matrix uncorrelated and correlated systematic errors
-   //   added in quadrature to the data statistical errors
-   TH2 *histEmatTotal=gUnfold->GetEmatrixTotal("EmatTotal");
-
-   // create data histogram with the total errors
-   TH1D *histTotalError=
-      new TH1D("TotalError",";mass(gen)",binnum, bins);
-   for(Int_t bin=1;bin<=binnum;bin++) {
-      histTotalError->SetBinContent(bin,histMunfold->GetBinContent(bin));
-      histTotalError->SetBinError
-         (bin,TMath::Sqrt(histEmatTotal->GetBinContent(bin,bin)));
-   }
-
-   // get global correlation coefficients
-   // for this calculation one has to specify whether the
-   // underflow/overflow bins are included or not
-   // default: include all bins
-   // here: exclude underflow and overflow bins
-   TH2 *gHistInvEMatrix;
-   TH1 *histRhoi=gUnfold->GetRhoItotal("rho_I",
-         0, // use default title
-         0, // all distributions
-         "*[UO]", // discard underflow and overflow bins on all axes
-         kTRUE, // use original binning
-         &gHistInvEMatrix // store inverse of error matrix
-         );
-   histRhoi->Write();
-
-	// h_dR_E->Write();
-
-	// for(Int_t i_status=0; i_status<nStatus; i_status++)
-	// 	h_dR_Status[i_status]->Write();
-
-	// for(Int_t i_mother=0; i_mother<nMother; i_mother++)
-	// 	h_dR_Mother[i_mother]->Write();
-
-	// h_Mother_Status->Write();
-
-	// TCanvas *c_dR_E = new TCanvas("c_dR_E", "", 600, 600);
-	// c_dR_E->cd();
-	// // h_dR_E->SetStats(kFALSE);
-	// h_dR_E->Draw("COLZ");
-	// // h_dR_E->SetMinimum(1e-3);
-	// // h_dR_E->SetMaximum(1);
-	// // gPad->SetLogx();
-	// // gPad->SetLogy();
-	// gPad->SetLogz();
-	// c_dR_E->Write();
-
-   // let's make some canvas with unfolding plots as in the ROOT tuto
-
-   TCanvas output;
-   output.Divide(3,2);
-
-   // Show the matrix which connects input and output
-   // There are overflow bins at the bottom, not shown in the plot
-   // These contain the background shape.
-   // The overflow bins to the left and right contain
-   // events which are not reconstructed. These are necessary for proper MC
-   // normalisation
-   output.cd(1);
-   h_mass_postpreFSR_tot->Draw("BOX");
-
-   // draw generator-level distribution:
-   //   data (red) [for real data this is not available]
-   //   MC input (black) [with completely wrong peak position and shape]
-   //   unfolded data (blue)
-   output.cd(2);
-   // divide by bin withd to get density distributions
-   TH1D *histDensityGenData=new TH1D("DensityGenData",";mass(gen)",
-         binnum,bins);
-   TH1D *histDensityGenMC=new TH1D("DensityGenMC",";mass(gen)",
-         binnum,bins);
-   for(Int_t i=1;i<=binnum;i++) {
-      histDensityGenData->SetBinContent(i,h_mass_postFSR_tot->GetBinContent(i)/
-            h_mass_postFSR_tot->GetBinWidth(i));
-      histDensityGenMC->SetBinContent(i,h_mass_preFSR_tot->GetBinContent(i)/
-            h_mass_preFSR_tot->GetBinWidth(i));
-   }
-   histTotalError->SetLineColor(kBlue);
-   histTotalError->Draw("E");
-   histMunfold->SetLineColor(kGreen);
-   histMunfold->Draw("SAME E1");
-   histDensityGenData->SetLineColor(kRed);
-   histDensityGenData->Draw("SAME");
-   histDensityGenMC->Draw("SAME HIST");
-
-   // show detector level distributions
-   //    data (red)
-   //    MC (black) [with completely wrong peak position and shape]
-   //    unfolded data (blue)
-   output.cd(3);
-   histMdetFold->SetLineColor(kBlue);
-   histMdetFold->Draw();
-   h_mass_postFSR_tot->Draw("SAME HIST");
-
-   TH1 *histInput=gUnfold->GetInput("Minput",";mass(det)");
-
-   histInput->SetLineColor(kRed);
-   histInput->Draw("SAME");
-
-   // show correlation coefficients
-   output.cd(4);
-   histRhoi->Draw();
-
-   // show tau as a function of chi**2
-   output.cd(5);
-   logTauX->Draw();
-   bestLogTauLogChi2->SetMarkerColor(kRed);
-   bestLogTauLogChi2->Draw("*");
-
-   // show the L curve
-   output.cd(6);
-   lCurve->Draw("AL");
-   bestLcurve->SetMarkerColor(kRed);
-   bestLcurve->Draw("*");
-
-   output.Write();
-
-	Double_t TotalRunTime = totaltime.CpuTime();
-	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;
-
-	TTimeStamp ts_end;
-	cout << "[End Time(local time): " << ts_end.AsString("l") << "]" << endl;
-
-   fdata->Close();
    f->Close();
 }
 

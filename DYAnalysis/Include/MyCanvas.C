@@ -64,6 +64,7 @@ public:
 	{
       setTDRStyle();
       gROOT->SetStyle( "tdrStyle" );
+      gStyle->SetNumberContours(100);
 		// tdrStyle->SetErrorX(0.5);
 		c = new TCanvas(CanvasName, "", length_x, length_y);
 

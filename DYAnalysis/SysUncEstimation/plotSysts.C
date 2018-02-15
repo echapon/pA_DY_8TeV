@@ -70,7 +70,7 @@ void plotSysts(var thevar) {
          x.push_back((low+high)/2.);
          dx.push_back((high-low)/2.);
          y.push_back(0);
-         dy.push_back(it->second.value*100.);
+         dy.push_back(fabs(it->second.value*100.));
          valmax = max(valmax,dy.back());
       }
 
