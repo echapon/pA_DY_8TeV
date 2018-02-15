@@ -165,18 +165,19 @@ void dataMC(var thevar)
    h_data->GetZaxis()->SetLabelSize(0.035);
    h_data->GetZaxis()->SetTitleSize(0.035);
    h_data->GetZaxis()->SetTitleFont(42);
-   h_data->SetMinimum(0.001);
-   if (thevar == var::pt) h_data->SetMinimum(0.1);
+   double yaxismin = 0.001;
+   if (thevar == var::pt) yaxismin = 0.1;
    else if (thevar == var::rap1560) {
-      h_data->SetMinimum(0);
+      yaxismin = 0;
       h_data->SetMaximum(1450);
    } else if (thevar == var::rap60120) {
-      h_data->SetMinimum(0);
+      yaxismin = 0;
       h_data->SetMaximum(7750);
    } else if (thevar == var::phistar) {
-      h_data->SetMinimum(1);
+      yaxismin = 1;
       h_data->SetMaximum(2e5);
    }
+   h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -186,7 +187,7 @@ void dataMC(var thevar)
    grid_.SetLineStyle(kSolid);
    const double *xAxis = hdata->GetXaxis()->GetXbins()->GetArray();
    for( size_t ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
-     grid_.DrawLine(xAxis[ii],0.1,xAxis[ii],htotal->GetBinContent(ii+1));
+     grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
    TLegend *leg = new TLegend(0.70,0.70,0.90,0.90,NULL,"brNDC");

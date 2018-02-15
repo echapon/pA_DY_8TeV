@@ -1,6 +1,6 @@
 {
    // // EC version
-   // gSystem->SetIncludePath("-I/afs/cern.ch/user/e/echapon/workspace/private/xFitter/deps/lhapdf/include");
+   // gSystem->SetIncludePath("-I/afs/cern.ch/user/e/echapon/workspace/private/xFitter/deps/lhapdf/include -I.");
    // gSystem->AddLinkedLibs("/afs/cern.ch/user/e/echapon/workspace/private/xFitter/deps/lhapdf/lib/libLHAPDF.so");
    // printf("Setup done for Emilien's computer\n");
 

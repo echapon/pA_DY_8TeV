@@ -24,13 +24,11 @@ void plotResponseMatrix(TFile *f, var thevar) {
    MyCanvas c1D(Form("ResponseMatrix/c_%s_1D",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas cres(Form("ResponseMatrix/c_%s_resol",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c2D(Form("ResponseMatrix/c_%s_response",thevarname),xaxistitle(thevar),"Entries",800,800);
-   MyCanvas c2Dn(Form("ResponseMatrix/c_%s_response_norm",thevarname),xaxistitle(thevar),"Entries",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
       c1D.SetLogx();
       c2D.SetLogx();
       c2D.SetLogy();
-      c2Dn.SetLogx();
-      c2Dn.SetLogy();
+      c2D.SetLogz();
    }
    if (thevar==var::mass) c1D.SetRatioRange(0.8,1.2);
    else if (thevar==var::pt) c1D.SetRatioRange(0.9,1.1);
@@ -61,7 +59,4 @@ void plotResponseMatrix(TFile *f, var thevar) {
       for (int j=1; j<=n; j++)
          if (i!=j) h_response->SetBinContent(i,j,h_response->GetBinContent(i,j)/sqrt(h_response->GetBinContent(i,i)*h_response->GetBinContent(j,j)));
    for (int i=1; i<=n; i++) h_response->SetBinContent(i,i,1);
-   c2Dn.CanvasWith2DHistogram(h_response,"COLZ");
-   CMS_lumi(c2Dn.c, 111, 0);
-   c2Dn.PrintCanvas();
 }

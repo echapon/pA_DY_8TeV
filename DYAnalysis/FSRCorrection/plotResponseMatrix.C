@@ -28,6 +28,7 @@ void plotResponseMatrix(TFile *f, var thevar) {
       c1D.SetLogx();
       c2D.SetLogx();
       c2D.SetLogy();
+      c2D.SetLogz();
    }
    if (thevar==var::mass) c1D.SetRatioRange(0.8,1.2);
    else if (thevar==var::pt) c1D.SetRatioRange(0.9,1.1);

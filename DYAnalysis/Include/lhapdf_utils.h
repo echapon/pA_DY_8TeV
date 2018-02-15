@@ -33,7 +33,7 @@ TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname) {
       vector<double> y;
       for (unsigned int j=0; j<nm; j++) y.push_back(h[j]->GetBinContent(i+1));
 
-      double cl = 100. *erf(1/sqrt(2));
+      double cl = 100. *erf(1/sqrt(2)); // we want 68% CL (1 sigma)
       PDFUncertainty u = pdfset.uncertainty(y,cl);
 
       // set point
