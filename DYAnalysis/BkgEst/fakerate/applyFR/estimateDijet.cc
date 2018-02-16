@@ -17,6 +17,7 @@
 #include <TColor.h>
 #include <TLatex.h>
 #include <TEfficiency.h>
+#include <TFrame.h>
 
 #include <iostream>
 #include <string>
@@ -72,8 +73,11 @@ void estimateDijet() {
     massFrame->GetXaxis()->SetMoreLogLabels();
 
     TFile* f[NSamples+2];
-    for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
-    f[QCD] = new TFile(PathFRHistos2(QCD));
+//    for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
+//    f[QCD] = new TFile(PathFRHistos2(QCD));
+    for (int i=0; i<ALL; i++) f[i] = new TFile(Form("histograms/fake%s.root",(TString*)(Name(static_cast<SampleTag>(i)))));
+    f[QCD] = new TFile("histograms/fakeQCD.root");
+
 
     TH1D* wjets_template[NSamples+2]; // just for draw MC histograms
     TH1D* dijet_template[NSamples+2];
@@ -85,7 +89,7 @@ void estimateDijet() {
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
        norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
-       cout<< "norm[" << i << "] = " << norm[i]<<endl;
+       cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
        dijet_template[i] = (TH1D*)f[i]->Get("histDijet1");
        dijet_template[i]->Scale(norm[i]);
