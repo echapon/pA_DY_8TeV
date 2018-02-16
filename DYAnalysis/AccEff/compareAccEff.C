@@ -4,7 +4,7 @@
 
 void setStyle(TEfficiency *e, Color_t color=kBlack, Style_t markerstyle=kFullCircle);
 
-void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120
+void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 | Phistar
    TFile *fnom = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fmomcor = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fnorew = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_norew.root");
@@ -60,6 +60,10 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120
       xtitle="Gen-Level Dimuon y_{CM} (post-FSR)";
       xmin=-3.;
       xmax=2.;
+   } else if (variable=="Phistar") {
+      xtitle="Gen-Level Dimuon #phi^{*} (post-FSR)";
+      xmin=0.002;
+      xmax=3;
    }
    TH1F *haxes_acc = new TH1F("haxes_acc",";"+xtitle+";Acceptance",1,xmin,xmax);
    haxes_acc->GetYaxis()->SetRangeUser(1e-3,1.1);

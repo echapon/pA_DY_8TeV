@@ -18,7 +18,8 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 ## Source
 FileName = ""
 if isMC == True:
-   FileName = "file:/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/miniAOD_MC/Pyquen_DYtoLL_M_10to50_embd_pPb/DY1050_miniAOD_20170517/170517_143930/0000/miniaodtest_10.root"
+   # FileName = "file:/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/miniAOD_MC/Pyquen_DYtoLL_M_10to50_embd_pPb/DY1050_miniAOD_20170517/170517_143930/0000/miniaodtest_10.root"
+   FileName = "file:/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/miniAOD_MC/WW_PbP-EmbEPOS_8p16_Pythia8/WW_PbP_Pythia8_miniAOD_20180108/180108_162831/0000/miniaodtest_8.root"
 else:
 	FileName = "file:/cms/home/kplee/ROOTFiles_Test/ExampleAOD_Run2015Dv4_SingleMuon_Run259891.root"
 
@@ -220,7 +221,7 @@ process.kwtuple.effAreaPhoFile   = cms.untracked.FileInPath("RecoEgamma/PhotonId
 process.kwtuple.Vertex = cms.InputTag("offlineSlimmedPrimaryVertices") # -- miniAOD -- #
 
 # -- Else -- #
-process.kwtuple.PU = cms.InputTag("")
+process.kwtuple.PU = cms.InputTag("slimmedAddPileupInfo")
 process.kwtuple.TriggerObjects = cms.InputTag("selectedPatTrigger")
 process.kwtuple.miniRho = cms.InputTag("fixedGridRhoAll")
 process.kwtuple.PFCandidates = cms.InputTag("packedPFCandidates")

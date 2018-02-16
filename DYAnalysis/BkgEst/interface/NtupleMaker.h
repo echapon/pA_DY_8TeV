@@ -26,6 +26,7 @@ public:
 
     NtupleTriggerObject(){};
     virtual ~NtupleTriggerObject(){};
+    void switcheta() {eta=-eta;};
 
 };
 
@@ -144,6 +145,15 @@ public:
     NtupleMuon(){};
     virtual ~NtupleMuon(){};
 
+    void switcheta() {
+       pz=-pz;
+       eta=-eta;
+       vz=-vz;
+       muonBestTrack_pz=-muonBestTrack_pz;
+       tunePMuonBestTrack_pz=-tunePMuonBestTrack_pz;
+       innerTrack_pz=-innerTrack_pz;
+       outerTrack_pz=-outerTrack_pz;
+    };
 };
    
 class NtupleElectron{
@@ -215,6 +225,11 @@ public:
     NtupleElectron(){};
     virtual ~NtupleElectron(){};
 
+    void switcheta() {
+       eta=-eta;
+       rap=-rap;
+       etaSC=-etaSC;
+    };
 };
 
 
@@ -296,6 +311,10 @@ public:
     NtupleGenParticle(){};
     virtual ~NtupleGenParticle(){};
 
+    void switcheta() {
+       eta=-eta;
+       pz=-pz;
+    };
 };
 
 class NtuplePhoton {
@@ -310,7 +329,7 @@ public:
     double phiSC;
     double HoverE;
     double Full5x5_SigmaIEtaIEta;
-	double r9;
+    double r9;
     bool passMediumId;
     double mvaValue;
     double mvaCategory;
@@ -324,6 +343,10 @@ public:
     NtuplePhoton(){};
     virtual ~NtuplePhoton(){};
 
+    void switcheta() {
+       eta=-eta;
+       etaSC=-etaSC;
+    };
 };
 
 
@@ -346,6 +369,7 @@ public:
     NtupleJet(){};
     virtual ~NtupleJet(){};
 
+    void switcheta() {eta=-eta;};
 };
 
 class NtupleMET {

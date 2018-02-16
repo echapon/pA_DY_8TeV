@@ -9,18 +9,20 @@ source /afs/cern.ch/sw/lcg/app/releases/ROOT/6.04.02/x86_64-slc6-gcc49-opt/root/
 if [ $1 -eq 0 ]; then
    arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both)'
 elif [ $1 -eq 1 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::plus)'
+   arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::Ntracks)'
 elif [ $1 -eq 2 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::minus)'
+   arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::plus)'
 elif [ $1 -eq 3 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",0,false)'
+   arg='(kFALSE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::minus)'
 elif [ $1 -eq 4 ]; then
-   arg='(kFALSE,"Pyquen","PAL3Mu12",0,true,HFweight::HFside::both)'
+   arg='(kFALSE,"Powheg","PAL3Mu12",0,false)'
 elif [ $1 -eq 5 ]; then
-   arg='(kTRUE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both)'
+   arg='(kFALSE,"Pyquen","PAL3Mu12",0,true,HFweight::HFside::both)'
 elif [ $1 -eq 6 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",1,true,HFweight::HFside::both)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both)'
 elif [ $1 -eq 7 ]; then
+   arg='(kFALSE,"Powheg","PAL3Mu12",1,true,HFweight::HFside::both)'
+elif [ $1 -eq 8 ]; then
    arg='(kFALSE,"Powheg","PAL3Mu12",2,true,HFweight::HFside::both)'
 fi
 

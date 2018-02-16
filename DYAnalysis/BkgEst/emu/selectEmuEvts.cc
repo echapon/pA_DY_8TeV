@@ -30,6 +30,7 @@
 #include "../interface/defs.h"
 #include "Include/DYAnalyzer.h"
 #include "Include/NtupleHandle.h"
+#include "Include/Object.h"
 
 using namespace std;
 using namespace DYana;
@@ -44,7 +45,8 @@ void selectEmuEvts(SampleTag index)
     chain->SetBranchAddress("event",&event);  
     TChain *chain2 = new TChain("recoTree/DYTree");
     chain2->Add(PathTuple(index));
-    NtupleHandle *ntuple = new NtupleHandle( chain2, switcheta(index) );
+    bool doflip = (switcheta(index)<0);
+    NtupleHandle *ntuple = new NtupleHandle( chain2, doflip );
     ntuple->TurnOnBranches_GenLepton();
 
     DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
@@ -52,7 +54,7 @@ void selectEmuEvts(SampleTag index)
     // -- Each ntuple directory & corresponding Tags -- //
     // -- GenWeights are already taken into account in nEvents -- //
     vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
-    analyzer->SetupMCsamples_v20170830("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+    analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
     vector<pair<PhysicsMuon,int>>*     passingMuons     = new vector<pair<PhysicsMuon,int>>;
     vector<pair<PhysicsElectron,int>>* passingElectrons = new vector<pair<PhysicsElectron,int>>;
@@ -72,22 +74,26 @@ void selectEmuEvts(SampleTag index)
     TH1D* emuSS_mass  = new TH1D("emuSS_mass","",binsize,bins);
     TH1D* dimu_mass   = new TH1D("dimu_mass","",binsize,bins);
     TH1D* dimuSS_mass = new TH1D("dimuSS_mass","",binsize,bins);
+    TH1D* emu_pt    = new TH1D("emu_pt","",ptbinnum_meas,ptbin_meas);
+    TH1D* emuSS_pt  = new TH1D("emuSS_pt","",ptbinnum_meas,ptbin_meas);
+    TH1D* dimu_pt   = new TH1D("dimu_pt","",ptbinnum_meas,ptbin_meas);
+    TH1D* dimuSS_pt = new TH1D("dimuSS_pt","",ptbinnum_meas,ptbin_meas);
+    TH1D* emu_phistar    = new TH1D("emu_phistar","",phistarnum,phistarbin);
+    TH1D* emuSS_phistar  = new TH1D("emuSS_phistar","",phistarnum,phistarbin);
+    TH1D* dimu_phistar   = new TH1D("dimu_phistar","",phistarnum,phistarbin);
+    TH1D* dimuSS_phistar = new TH1D("dimuSS_phistar","",phistarnum,phistarbin);
+    TH1D* emu_rap1560    = new TH1D("emu_rap1560","",rapbinnum_1560,rapbin_1560);
+    TH1D* emuSS_rap1560  = new TH1D("emuSS_rap1560","",rapbinnum_1560,rapbin_1560);
+    TH1D* dimu_rap1560   = new TH1D("dimu_rap1560","",rapbinnum_1560,rapbin_1560);
+    TH1D* dimuSS_rap1560 = new TH1D("dimuSS_rap1560","",rapbinnum_1560,rapbin_1560);
+    TH1D* emu_rap60120    = new TH1D("emu_rap60120","",rapbinnum_60120,rapbin_60120);
+    TH1D* emuSS_rap60120  = new TH1D("emuSS_rap60120","",rapbinnum_60120,rapbin_60120);
+    TH1D* dimu_rap60120   = new TH1D("dimu_rap60120","",rapbinnum_60120,rapbin_60120);
+    TH1D* dimuSS_rap60120 = new TH1D("dimuSS_rap60120","",rapbinnum_60120,rapbin_60120);
     TH1D* emu_chi2    = new TH1D("emu_chi2","",100,0,20);
     TH1D* emuSS_chi2  = new TH1D("emuSS_chi2","",100,0,20);
     TH1D* dimu_chi2   = new TH1D("dimu_chi2","",100,0,20);
     TH1D* dimuSS_chi2 = new TH1D("dimuSS_chi2","",100,0,20);
-
-    el_etSC->Sumw2();
-    el_etaSC->Sumw2();
-    el_phi->Sumw2();
-    emu_mass->Sumw2();
-    emuSS_mass->Sumw2();
-    dimu_mass->Sumw2();
-    dimuSS_mass->Sumw2();
-    emu_chi2->Sumw2();
-    emuSS_chi2->Sumw2();
-    dimu_chi2->Sumw2();
-    dimuSS_chi2->Sumw2();
 
     cout<<"# of events = "<<chain->GetEntries()<<endl;
 
@@ -114,6 +120,7 @@ void selectEmuEvts(SampleTag index)
        GenFlag = analyzer->SeparateDYLLSample_isHardProcess(tagname, ntuple);
        if (!GenFlag) continue;
        chain->GetEntry(i);
+       event->switcheta(doflip);
 
         if( !isData ) {
             if( event->weight>0 ) weight = 1.0;
@@ -175,29 +182,63 @@ void selectEmuEvts(SampleTag index)
             if( passingMuons->size() > 0 && passingElectrons->size() > 0 ) ++tryEmu;
             if( emuDY(event->triggerobjects, event->emus, passingElectrons, passingMuons, emu, chi2min) ) {
                 double mass = ( emu->first.momentum() + emu->second.momentum() ).M();
+                double pt = ( emu->first.momentum() + emu->second.momentum() ).Pt();
+                double rapidity = ( emu->first.momentum() + emu->second.momentum() ).Rapidity()-rapshift;
+                double phistar = Object::phistar(emu->first.momentum(), emu->second.momentum() );
                 okEmu++;
                 if( emu->first.charge * emu->second.charge < 0 ) {
                    emu_mass->Fill(mass,weight); 
                    emu_chi2->Fill(chi2min,weight); 
+                   if (mass>60&&mass<120) {
+                      emu_pt->Fill(pt,weight); 
+                      emu_phistar->Fill(phistar,weight); 
+                      emu_rap60120->Fill(rapidity,weight); 
+                   } else if (mass>15 && mass<60) {
+                      emu_rap1560->Fill(rapidity,weight); 
+                   }
                 } else {
                    emuSS_mass->Fill(mass,weight);
                    emuSS_chi2->Fill(chi2min,weight);
-                }
-            } 
+                   if (mass>60&&mass<120) {
+                      emuSS_pt->Fill(pt,weight); 
+                      emuSS_phistar->Fill(phistar,weight); 
+                      emuSS_rap60120->Fill(rapidity,weight); 
+                   } else if (mass>15 && mass<60) {
+                      emuSS_rap1560->Fill(rapidity,weight); 
+                   }
+                } // if opp. sign
+            } // if emuDY 
             if( dimuonDY(event->triggerobjects, event->dimuons, passingMuons, dimuon, chi2min) ) { 
                 double mass = ( dimuon->first.momentum() + dimuon->second.momentum() ).M();
+                double pt = ( dimuon->first.momentum() + dimuon->second.momentum() ).Pt();
+                double rapidity = ( dimuon->first.momentum() + dimuon->second.momentum() ).Rapidity()-rapshift;
+                double phistar = Object::phistar(dimuon->first.momentum(), dimuon->second.momentum() );
                 if( (IsDY(index)) && !event->TauSelection() ) continue;
                 okDimu++;
                 if( dimuon->first.charge * dimuon->second.charge <0 ) {
                    dimu_mass->Fill(mass,weight);
                    dimu_chi2->Fill(chi2min,weight);
+                   if (mass>60&&mass<120) {
+                      dimu_pt->Fill(pt,weight); 
+                      dimu_phistar->Fill(phistar,weight); 
+                      dimu_rap60120->Fill(rapidity,weight); 
+                   } else if (mass>15 && mass<60) {
+                      dimu_rap1560->Fill(rapidity,weight); 
+                   }
                 } else {
                    dimuSS_mass->Fill(mass,weight);
                    dimuSS_chi2->Fill(chi2min,weight);
-                }
-            } 
-        } 
-    }
+                   if (mass>60&&mass<120) {
+                      dimuSS_pt->Fill(pt,weight); 
+                      dimuSS_phistar->Fill(phistar,weight); 
+                      dimuSS_rap60120->Fill(rapidity,weight); 
+                   } else if (mass>15 && mass<60) {
+                      dimuSS_rap1560->Fill(rapidity,weight); 
+                   }
+                } // if opp. sign
+            } // if dimuonDY
+        } // if PAL3Mu12 
+    } // event loop
 
     //Save 
     f->Write();

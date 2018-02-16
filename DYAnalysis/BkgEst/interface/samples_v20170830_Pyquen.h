@@ -32,8 +32,8 @@ namespace DYana_v20170830_Pyquen {
    const SampleTag VVLast = ZZ;
    const SampleTag WFirst = WpMu;
    const SampleTag WLast = WmTau;
-   const SampleTag DYFirst = DYMuMu1030;
-   const SampleTag DYLast = DYTauTau30;
+   const SampleTag DYFirst = DYTauTau1030;
+   const SampleTag DYLast = DYMuMu30_PbP;
    const SampleTag DataFirst = Data1;
    const SampleTag DataLast = Data2;
 
@@ -72,7 +72,7 @@ namespace DYana_v20170830_Pyquen {
          case WW:        return 3.*3.*208.*0.678813; break; // MCFM only generates p(p/n) and 1 flavour 
          case WZ:        return 3.*(1./10.63e-2)*208.*(0.0459629+0.036782); break; // MCFM: p(p/n), W+-(->munu)Z(->ee) / PYTHIA: W(->X)Z(->ll)
          case ZZ:        return pow((3*3.3658+20)/3.3658,2)*208.*18.0587e-3; break; // MCFM: p(p/n), ZZ->eemumu / PYTHIA: ZZ->lll'l' (where l=e,mu,tau,nu)
-         case TT:        return 56.6e3; break; // according to DDE: NNLO (MCFM + Top++, NNPDF3.0+EPS09)
+         case TT:        return 59.0e3; break; // according to DDE: NNLO (MCFM + Top++, CT14+EPPS16)
          // // PYTHIA
          // case WW:        return 208.*3.728; break;
          // case WZ:        return 208.*1.339; break;
@@ -148,10 +148,10 @@ namespace DYana_v20170830_Pyquen {
          case TT:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/ntuple_skim*root"; break;
          case WpMu:      return "eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/ntuple_skim*root"; break;
          case WmMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/ntuple_skim*root"; break;
-         case WpTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/ntuple_skim.root"; break;
-         case WmTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToTauNu_PbP_Powheg_20170817/170817_152252/0000/ntuple_skim.root"; break;
-         case Data1:     return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/ntuple_skim_*root"; break;
-         case Data2:     return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/ntuple_skim_*root"; break;
+         case WpTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/ntuple_skim*.root"; break;
+         case WmTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToTauNu_PbP_Powheg_20170817/170817_152252/0000/ntuple_skim*.root"; break;
+         case Data1:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/ntuple_skim*root"; break;
+         case Data2:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/ntuple_skim*root"; break;
          case QCD:       return "/eos/cms/store/group/cmst3/user/echapon/pA_8p16TeV/DYtuples/QCD/crab_QCD_DYntuple_20170522/170522_124914/0000/ntuple_skim*root"; break;
          default:        return "Unknown sample";
       }

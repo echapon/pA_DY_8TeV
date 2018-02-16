@@ -1,15 +1,20 @@
-#include <DYAnalysis_76X/CommonCodes/DYAnalyzer_v02.h>
+#include "Include/DYAnalyzer.h"
+#include "Include/tdrstyle.C"
+#include "Include/CMS_lumi.C"
 
-Double_t MassBinEdges[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-									 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-									 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-									 830, 1000, 1500, 3000};
+#include <fstream>
+
+using namespace std;
+
+using namespace DYana;
 
 class HistogramContainer
 {
 public:
 	TString Type;
+   var thevar;
+   int nBin;
+   double *BinEdges;
 
 	TH1D* h_nEvent;
 
@@ -21,24 +26,44 @@ public:
 	TH1D* h_RelUnc_Syst;
 	TH1D* h_RelUnc_Tot;
 
-	HistogramContainer(TString _Type)
+	HistogramContainer(TString _Type, var _thevar)
 	{
 		this->Type = _Type;
+      this->thevar = _thevar;
 
-		this->h_nEvent = new TH1D( "h_nEvent_"+Type, "", nMassBin, MassBinEdges );
+      if (thevar == var::mass) {
+         nBin = binnum;
+         BinEdges = bins;
+      } else if (thevar == var::pt) {
+         nBin = ptbinnum_meas;
+         BinEdges = ptbin_meas;
+      } else if (thevar == var::phistar) {
+         nBin = phistarnum;
+         BinEdges = phistarbin;
+      } else if (thevar == var::rap1560) {
+         nBin = rapbinnum_1560;
+         BinEdges = rapbin_1560;
+      } else if (thevar == var::rap60120) {
+         nBin = rapbinnum_60120;
+         BinEdges = rapbin_60120;
+      } else {
+         cout << "HistgoramContainer::HistogramContainer: Error! Unknown variable" << endl;
+      }
 
-		this->h_AbsUnc_Stat = new TH1D( "h_AbsUnc_Stat_"+Type, "", nMassBin, MassBinEdges );
-		this->h_AbsUnc_Syst = new TH1D( "h_AbsUnc_Syst_"+Type, "", nMassBin, MassBinEdges );
-		this->h_AbsUnc_Tot = new TH1D( "h_AbsUnc_Tot_"+Type, "", nMassBin, MassBinEdges );
+		this->h_nEvent = new TH1D( "h_nEvent_"+Type, "", nBin, BinEdges );
 
-		this->h_RelUnc_Stat = new TH1D( "h_RelUnc_Stat_"+Type, "", nMassBin, MassBinEdges );
-		this->h_RelUnc_Syst = new TH1D( "h_RelUnc_Syst_"+Type, "", nMassBin, MassBinEdges );
-		this->h_RelUnc_Tot = new TH1D( "h_RelUnc_Tot_"+Type, "", nMassBin, MassBinEdges );
+		this->h_AbsUnc_Stat = new TH1D( "h_AbsUnc_Stat_"+Type, "", nBin, BinEdges );
+		this->h_AbsUnc_Syst = new TH1D( "h_AbsUnc_Syst_"+Type, "", nBin, BinEdges );
+		this->h_AbsUnc_Tot = new TH1D( "h_AbsUnc_Tot_"+Type, "", nBin, BinEdges );
+
+		this->h_RelUnc_Stat = new TH1D( "h_RelUnc_Stat_"+Type, "", nBin, BinEdges );
+		this->h_RelUnc_Syst = new TH1D( "h_RelUnc_Syst_"+Type, "", nBin, BinEdges );
+		this->h_RelUnc_Tot = new TH1D( "h_RelUnc_Tot_"+Type, "", nBin, BinEdges );
 	}
 
 	void Fill_RelUncHist_wrt_nUnfolded( TH1D* h_unfolded )
 	{
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 
@@ -67,7 +92,7 @@ public:
 	{
 		printf("======================\n[%s]\n======================\n", Type.Data() );
 
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 
@@ -108,9 +133,12 @@ class SysUncTool_BkgEst
 {
 public:
 	TString version;
+   var thevar;
+   int nBin;
+   double *BinEdges;
 	TString FileLocation;
 
-	// Double_t MassBinEdges[nMassBin+1];
+	// Double_t BinEdges[nBin+1];
 
 	TFile *f_output;
 
@@ -119,14 +147,15 @@ public:
 	vector< TString > ntupleDirectory; 
 	vector< TString > Tag; 
 	vector< Double_t > Xsec; 
-	vector< Double_t > nEvents;
+   vector< Double_t > nEvents;
+   vector< DYana::SampleTag > STags;
 
 	// -- backgrounds -- //
 	HistogramContainer* Hists_Total;
 
 	vector< HistogramContainer* > Hists_Bkg;	
 	HistogramContainer* Hists_ttbar;
-	HistogramContainer* Hists_tW;
+   // HistogramContainer* Hists_tW;
 	HistogramContainer* Hists_DYtautau;
 	HistogramContainer* Hists_WJets;
 	HistogramContainer* Hists_QCD;
@@ -139,22 +168,35 @@ public:
 	HistogramContainer* Hists_FR;
 	HistogramContainer* Hists_MC;
 
-	SysUncTool_BkgEst(TString _version)
+	SysUncTool_BkgEst(TString _version, var _thevar)
 	{
-		// Double_t MassBinEdges_temp[nMassBin+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
-		// 									 64, 68, 72, 76, 81, 86, 91, 96, 101, 106,
-		// 									 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,
-		// 									 200, 220, 243, 273, 320, 380, 440, 510, 600, 700,
-		// 									 830, 1000, 1500, 3000};
-
-		// for(Int_t i=0; i<nMassBin+1; i++)
-		// 	MassBinEdges[i] = MassBinEdges_temp[i];
 
 		version = _version;
-		FileLocation = "/home/kplee/Physics/DYAnalysis_76X/CommonCodes/Results_ROOTFiles_76X/" + version;
+      thevar = _thevar;
 
-		DYAnalyzer *analyzer = new DYAnalyzer( "None" );
-		analyzer->SetupMCsamples_v20160309_76X_MiniAODv2("Full_AdditionalSF", &ntupleDirectory, &Tag, &Xsec, &nEvents); // -- 76X -- //
+      if (thevar == var::mass) {
+         nBin = binnum;
+         BinEdges = bins;
+      } else if (thevar == var::pt) {
+         nBin = ptbinnum_meas;
+         BinEdges = ptbin_meas;
+      } else if (thevar == var::phistar) {
+         nBin = phistarnum;
+         BinEdges = phistarbin;
+      } else if (thevar == var::rap1560) {
+         nBin = rapbinnum_1560;
+         BinEdges = rapbin_1560;
+      } else if (thevar == var::rap60120) {
+         nBin = rapbinnum_60120;
+         BinEdges = rapbin_60120;
+      } else {
+         cout << "HistgoramContainer::HistogramContainer: Error! Unknown variable" << endl;
+      }
+
+		FileLocation = "../" + version;
+
+      DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
+      analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 		this->f_output = new TFile("ROOTFile_SysUnc_BkgEst.root", "RECREATE");
 
@@ -162,7 +204,7 @@ public:
 
 		this->Initialize_SystHistograms();
 
-		this->SetupHistogram_Unfolded();
+      this->SetupHistogram_Unfolded();
 		this->SetupHistgram_MCBkg_All();
 		this->SetupHistogram_DataDrivenBkg_All();
 	}
@@ -171,11 +213,15 @@ public:
 	{
 		this->MakeCombinedHistogram( this->Hists_Bkg, this->Hists_Total );
 
+      // print to a csv
+      ofstream systfile(Form("csv/bkg_%s.csv",varname(thevar)));
+      systfile << "Bkg." << endl;
+
 		// -- print out the details -- //
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
-			Double_t nEvent_Unfold = h_unfolded->GetBinContent(i_bin);
+         Double_t nEvent_Unfold = h_unfolded->GetBinContent(i_bin);
 			printf("[%2d bin]: nEvent_Unfold = %.2lf\n", i_bin, nEvent_Unfold);
 
 
@@ -205,7 +251,14 @@ public:
 			printf("[Total] Uncertainty: (Stat, Syst, total) = (%.2lf (%.2lf%%), %.2lf (%.2lf%%), %.2lf (%.2lf%%))\n\n", 
 				AbsUnc_Stat_TotBkg, RelUnc_Stat_TotBkg, AbsUnc_Syst_TotBkg, RelUnc_Syst_TotBkg, AbsUnc_Tot_TotBkg, RelUnc_Tot_TotBkg);
 
+         double binc = Hists_Total->h_RelUnc_Tot->GetBinCenter(i_bin);
+         double binw = Hists_Total->h_RelUnc_Tot->GetBinWidth(i_bin);
+         systfile << binc-binw/2. << ", " << binc+binw/2. << ", " << RelUnc_Tot_TotBkg*0.01 << endl;
+
 		}
+
+      systfile.close();
+      cout << "closed " << Form("csv/bkg_%s.csv",varname(thevar)) << endl;
 	}
 
 	void MakeCanvas_ForEachBkgMethod()
@@ -252,20 +305,20 @@ public:
 protected:
 	void Initialize_SystHistograms()
 	{
-		this->Hists_Total = new HistogramContainer( "Total" );
+		this->Hists_Total = new HistogramContainer( "Total", thevar );
 
-		this->Hists_ttbar = new HistogramContainer( "ttbar" ); Hists_Bkg.push_back( Hists_ttbar );
-		this->Hists_tW = new HistogramContainer( "tW" ); Hists_Bkg.push_back( Hists_tW );
-		this->Hists_DYtautau = new HistogramContainer( "DYtautau" ); Hists_Bkg.push_back( Hists_DYtautau );
-		this->Hists_WJets = new HistogramContainer( "WJets" ); Hists_Bkg.push_back( Hists_WJets );
-		this->Hists_QCD = new HistogramContainer( "QCD" ); Hists_Bkg.push_back( Hists_QCD );
-		this->Hists_WW = new HistogramContainer( "WW" ); Hists_Bkg.push_back( Hists_WW );
-		this->Hists_WZ = new HistogramContainer( "WZ" ); Hists_Bkg.push_back( Hists_WZ );
-		this->Hists_ZZ = new HistogramContainer( "ZZ" ); Hists_Bkg.push_back( Hists_ZZ );
+		this->Hists_ttbar = new HistogramContainer( "ttbar", thevar ); Hists_Bkg.push_back( Hists_ttbar );
+      // this->Hists_tW = new HistogramContainer( "tW" ); Hists_Bkg.push_back( Hists_tW );
+		this->Hists_DYtautau = new HistogramContainer( "DYtautau", thevar ); Hists_Bkg.push_back( Hists_DYtautau );
+		this->Hists_WJets = new HistogramContainer( "WJets", thevar ); Hists_Bkg.push_back( Hists_WJets );
+		this->Hists_QCD = new HistogramContainer( "QCD", thevar ); Hists_Bkg.push_back( Hists_QCD );
+		this->Hists_WW = new HistogramContainer( "WW", thevar ); Hists_Bkg.push_back( Hists_WW );
+		this->Hists_WZ = new HistogramContainer( "WZ", thevar ); Hists_Bkg.push_back( Hists_WZ );
+		this->Hists_ZZ = new HistogramContainer( "ZZ", thevar ); Hists_Bkg.push_back( Hists_ZZ );
 
-		this->Hists_emu = new HistogramContainer( "emu" );
-		this->Hists_FR = new HistogramContainer( "FR" );
-		this->Hists_MC = new HistogramContainer( "MC" );
+		this->Hists_emu = new HistogramContainer( "emu", thevar );
+		this->Hists_FR = new HistogramContainer( "FR", thevar );
+		this->Hists_MC = new HistogramContainer( "MC", thevar );
 	}
 
 	void MakeCombinedHistogram_byEstimationMethod()
@@ -275,7 +328,7 @@ protected:
 		//////////////////////
 		vector< HistogramContainer* > vec_Hists_emu;
 		vec_Hists_emu.push_back( Hists_ttbar );
-		vec_Hists_emu.push_back( Hists_tW );
+      // vec_Hists_emu.push_back( Hists_tW );
 		vec_Hists_emu.push_back( Hists_DYtautau );
 		vec_Hists_emu.push_back( Hists_WW );
 		this->MakeCombinedHistogram( vec_Hists_emu, this->Hists_emu );
@@ -283,7 +336,7 @@ protected:
 		vector< TH1D* > vec_h_RelUnc_emu; vector< TString > Names_emu;
 		vec_h_RelUnc_emu.push_back( this->Hists_emu->h_RelUnc_Tot ); Names_emu.push_back( "Total Unc. from e#mu method" );
 		vec_h_RelUnc_emu.push_back( this->Hists_ttbar->h_RelUnc_Tot ); Names_emu.push_back( "t#bar{t}" );
-		vec_h_RelUnc_emu.push_back( this->Hists_tW->h_RelUnc_Tot ); Names_emu.push_back( "tW + #bar{t}W" );
+      // vec_h_RelUnc_emu.push_back( this->Hists_tW->h_RelUnc_Tot ); Names_emu.push_back( "tW + #bar{t}W" );
 		vec_h_RelUnc_emu.push_back( this->Hists_DYtautau->h_RelUnc_Tot ); Names_emu.push_back( "Z/#gamma* #rightarrow #tau#tau" );
 		vec_h_RelUnc_emu.push_back( this->Hists_WW->h_RelUnc_Tot ); Names_emu.push_back( "WW" );
 		this->MakeCanvas_SysUnc( "emu", vec_h_RelUnc_emu, Names_emu );
@@ -328,7 +381,7 @@ protected:
 			Hists_Combined->h_nEvent->Add( vec_Hists[i_hist]->h_nEvent );
 
 		// -- combine uncertainty histograms: quadrature sum -- //
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 
@@ -355,12 +408,12 @@ protected:
 			Hists_Combined->h_AbsUnc_Tot->SetBinContent( i_bin, AbsUnc_Tot );
 		}
 
-		Hists_Combined->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
+      Hists_Combined->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
 	}
 
 	void MakeCanvas_SysUnc( TString Type, vector< TH1D* > Histos, vector< TString > Names )
 	{
-		TCanvas *c_RelUnc = new TCanvas("c_RelSysUnc_"+Type, "", 800, 800);
+		TCanvas *c_RelUnc = new TCanvas("c_RelSysUnc_"+Type+"_"+TString(varname(thevar)), "", 800, 800);
 		c_RelUnc->cd();
 
 		gPad->SetTopMargin(0.05);
@@ -368,7 +421,7 @@ protected:
 		gPad->SetRightMargin(0.03);
 		gPad->SetLeftMargin(0.13);
 
-		gPad->SetLogx();
+		if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) gPad->SetLogx();
 		gPad->SetGridx();
 		gPad->SetGridy();
 
@@ -394,17 +447,19 @@ protected:
 		Histos[0]->GetXaxis()->SetTitleSize(0.04);
 		Histos[0]->GetXaxis()->SetNoExponent();
 		Histos[0]->GetXaxis()->SetMoreLogLabels();
-		Histos[0]->GetYaxis()->SetTitleOffset(1.4);
+		Histos[0]->GetYaxis()->SetTitleOffset(0.75);
 
-		Double_t yMax = 40;
-		if( Type == "emu") yMax = 16;
-		else if( Type == "FR") yMax = 3;
-		// else if( Type == "MCBased") yMax = 80;
+		Double_t yMax = 11;
+      if (thevar==var::phistar) yMax = 1;
+      else if (thevar==var::rap60120 || thevar==var::rap1560) yMax = 5;
+      // if( Type == "emu") yMax *= 0.6;
+		if( Type == "FR") yMax *= 0.2;
+      else if( Type == "MC") yMax *= 0.1;
 		// else if( Type == "total" ) yMax = 80;
 
 		Histos[0]->GetYaxis()->SetRangeUser(0, yMax);
 
-		Histos[0]->SetXTitle( "m (#mu#mu) [GeV]");
+		Histos[0]->SetXTitle( xaxistitle(thevar));
 		Histos[0]->SetYTitle( "Rel. Unc. (%)");
 
 		TLegend *legend = new TLegend(0.15, 0.65, 0.55, 0.95);
@@ -423,11 +478,8 @@ protected:
 		}
 		legend->Draw();
 
-		TLatex latex;
-		latex.DrawLatexNDC(0.70, 0.96, TString::Format("#font[42]{#scale[0.8]{%.2lf fb^{-1} (13 TeV)}}", Lumi / 1000.0) );
-		latex.DrawLatexNDC(0.13, 0.96, "#font[62]{CMS}");
-		latex.DrawLatexNDC(0.24, 0.96, "#font[42]{#it{#scale[0.8]{Preliminary}}}");
 
+      CMS_lumi( c_RelUnc, 111, 0 );
 		c_RelUnc->SaveAs( ".pdf" );
 
 		f_output->cd();
@@ -436,8 +488,12 @@ protected:
 
 	void SetupHistogram_Unfolded()
 	{
-		TFile *f_result = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
-		h_unfolded = (TH1D*)f_result->Get("h_yield_Unfolded")->Clone();
+      // FIXME
+      // TFile *f_result = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
+      // h_unfolded = (TH1D*)f_result->Get("h_yield_Unfolded")->Clone();
+
+      TFile *f_result = TFile::Open(FileLocation + "/ROOTFile_Histograms_" + TString(varname(thevar)) + "_MomUnCorr_rewboth_tnprew_All.root");
+      h_unfolded = (TH1D*)f_result->Get("h_data")->Clone();
 	}
 
 	void SetupHistogram_DataDrivenBkg_All()
@@ -445,19 +501,26 @@ protected:
 		this->SetupHistogram_DataDrivenBkg( "dijet", this->Hists_QCD );
 		this->SetupHistogram_DataDrivenBkg( "wjets", this->Hists_WJets );
 		this->SetupHistogram_DataDrivenBkg( "ttbar", this->Hists_ttbar );
-		this->SetupHistogram_DataDrivenBkg( "tW", this->Hists_tW );
+      // this->SetupHistogram_DataDrivenBkg( "tW", this->Hists_tW );
 		this->SetupHistogram_DataDrivenBkg( "DYtautau", this->Hists_DYtautau );
 		this->SetupHistogram_DataDrivenBkg( "WW", this->Hists_WW );
 	}
 
 	void SetupHistogram_DataDrivenBkg( TString Type, HistogramContainer* Hists )
 	{
-		TFile *f_input = TFile::Open(FileLocation + "/ROOTFile_Bkg_DataDrivenMethod.root");
+      TFile *f_input;
+      if (Type == "wjets") {
+         f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",DYana::varname(thevar)));
+      } else if (Type == "dijet") {
+         f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",DYana::varname(thevar)));
+      } else {
+         f_input = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",DYana::varname(thevar)));
+      }
 		Hists->h_nEvent = (TH1D*)f_input->Get(Type)->Clone();
 		Hists->h_AbsUnc_Stat = (TH1D*)f_input->Get(Type+"_stat")->Clone();
 		Hists->h_AbsUnc_Syst = (TH1D*)f_input->Get(Type+"_systematic")->Clone();
 
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 			Double_t AbsUnc_Stat = Hists->h_AbsUnc_Stat->GetBinContent(i_bin);
@@ -468,7 +531,7 @@ protected:
 			Hists->h_AbsUnc_Tot->SetBinError(i_bin, 0);
 		}
 
-		Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
+      Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
 
 		delete f_input;
 	}
@@ -476,7 +539,7 @@ protected:
 	void SetupHistgram_MCBkg_All()
 	{
 		// Double_t RelUnc_xSec_WW = 0.0799; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-14-016/index.html -- //
-		Double_t RelUnc_xSec_WZ = 0.4052; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-13-011/index.html -- //
+		Double_t RelUnc_xSec_WZ = 0.0807; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-14-014/index.html -- //
 		Double_t RelUnc_xSec_ZZ = 0.1087; // -- https://cms-results.web.cern.ch/cms-results/public-results/publications/SMP-13-005/index.html -- //
 
 		this->SetupHistgram_MCBkg( "WZ", RelUnc_xSec_WZ, this->Hists_WZ );
@@ -492,23 +555,30 @@ protected:
 		{
 			if( Tag[i_tag] == Type )
 			{
-				normFactor = (Xsec[i_tag] * Lumi) / nEvents[i_tag];
+				normFactor = (Xsec[i_tag] * lumi_all) / nEvents[i_tag];
 				printf( "[Normalization factor for %s = %lf]\n", Type.Data(), normFactor );
 				break;
 			}
 		}
 
-		TFile *f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MC_MomCorr.root"); f_MC->cd();
-		Hists->h_nEvent = (TH1D*)f_MC->Get("h_mass_OS_"+Type)->Clone();
-		Hists->h_nEvent = (TH1D*)Hists->h_nEvent->Rebin(nMassBin, Hists->h_nEvent->GetName(), MassBinEdges);
+      TString htag;
+      if (thevar == DYana::var::mass) htag = "mass2";
+      else if (thevar == DYana::var::pt) htag = "diPt2_M60to120";
+      else if (thevar == DYana::var::phistar) htag = "Phistar2_M60to120";
+      else if (thevar == DYana::var::rap1560) htag = "diRap2_M15to60";
+      else if (thevar == DYana::var::rap60120) htag = "diRap2_M60to120";
+
+		TFile *f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_MomUnCorr_rewboth_tnprew.root"); f_MC->cd();
+		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + htag + "_" + Type)->Clone();
+		Hists->h_nEvent = (TH1D*)Hists->h_nEvent->Rebin(nBin, Hists->h_nEvent->GetName(), BinEdges);
 		Hists->h_nEvent->Scale( normFactor );
 
 		// TFile *f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_IsoMu20_OR_IsoTkMu20_MCBkg_MomCorr.root"); f_MC->cd();
 		// h_bkg = (TH1D*)f_MC->Get("h_mass_OS_Norm_"+Type)->Clone();
-		// h_bkg = (TH1D*)h_bkg->Rebin(nMassBin, h_bkg->GetName(), MassBinEdges);
+		// h_bkg = (TH1D*)h_bkg->Rebin(nBin, h_bkg->GetName(), BinEdges);
 
 		// -- make stat. & syst. only histogram -- //
-		for(Int_t i=0; i<nMassBin; i++)
+		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 
@@ -527,7 +597,7 @@ protected:
 			Hists->h_AbsUnc_Tot->SetBinError(i_bin, 0);
 		}
 
-		Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
+      Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
 
 		delete f_MC;
 	}

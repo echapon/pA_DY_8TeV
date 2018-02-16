@@ -2,6 +2,8 @@
 #define PhysicsEvent_h
 
 #include "NtupleMaker.h"
+#include <utility>
+using std::swap;
 
 class PhysicsEvent : public NtupleEvent {
 public:
@@ -55,6 +57,22 @@ public:
         //cout<<"Mtt = "<<mass<<endl;
         if( mass > 700 ) return true;
         else return false;
+    }
+
+    // flip the eta of all objects in the events (if this is a PbP event)
+    void switcheta(bool doflip) {
+       if (!doflip) return;
+       for (unsigned int i=0; i<triggerobjects.size(); i++) triggerobjects[i].switcheta();
+       for (unsigned int i=0; i<muons.size(); i++) muons[i].switcheta();
+       for (unsigned int i=0; i<electrons.size(); i++) electrons[i].switcheta();
+       for (unsigned int i=0; i<photons.size(); i++) photons[i].switcheta();
+       for (unsigned int i=0; i<jets.size(); i++) jets[i].switcheta();
+       for (unsigned int i=0; i<genparticles.size(); i++) genparticles[i].switcheta();
+       swap(hiHFplus,hiHFminus);
+       swap(hiHFplusEta4,hiHFminusEta4);
+       swap(hiHFhitPlus,hiHFhitMinus);
+       swap(hiEEplus,hiEEminus);
+       swap(hiZDCplus,hiZDCminus);
     }
 };
 

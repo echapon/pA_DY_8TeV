@@ -69,6 +69,7 @@ public:
 	////////////////////////////
 	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
    void SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags );
+   void SetupMCsamples_v20180111( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180111::SampleTag> *STags );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
 
@@ -241,6 +242,36 @@ void DYAnalyzer::SetupMCsamples_v20170830( TString Type, vector<TString> *ntuple
    } else { // Powheg
       using namespace DYana_v20170830;
       cout << "Using samples from v20170830 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         STags->push_back(tag);
+      }
+   }
+}
+
+void DYAnalyzer::SetupMCsamples_v20180111( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180111::SampleTag> *STags )
+{
+   if (Type=="Pyquen") { // Pyquen
+      using namespace DYana_v20180111_Pyquen;
+      cout << "Using samples from v20180111 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         DYana_v20180111::SampleTag tag_Powheg = static_cast<DYana_v20180111::SampleTag>(i);
+         STags->push_back(tag_Powheg);
+      }
+   } else { // Powheg
+      using namespace DYana_v20180111;
+      cout << "Using samples from v20180111 for Type " << Type.Data() << endl;
       for (int i=0; i<DataFirst; i++) {
          SampleTag tag = static_cast<SampleTag>(i);
          // if (!IsDYMuMu(tag)) continue;

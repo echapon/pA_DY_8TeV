@@ -6,6 +6,8 @@
 #include "samples_v20170519.h"
 #include "samples_v20170830.h"
 #include "samples_v20170830_Pyquen.h"
+#include "samples_v20180111.h"
+#include "samples_v20180111_Pyquen.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -25,7 +27,7 @@ const double rapshift = 0.465;
 
 namespace DYana {
    // put the default samples here
-   using namespace DYana_v20170830;
+   using namespace DYana_v20180111;
 
    // kinematic bins
    // mass
@@ -52,6 +54,7 @@ namespace DYana {
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
+      // cout << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->isolation(cuts::isomax) << endl;
       return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {
@@ -63,6 +66,75 @@ namespace DYana {
       // 285480-285832: PbP
       // 285956-286496: pPb
       return (run>285470 && run<runcut) ? -1 : 1;
+   };
+
+   // enum for variable type
+   enum var : int {
+      mass=0, 
+      pt, 
+      phistar, 
+      rap60120, 
+      rap1560,
+      ALLvar
+   };
+
+   var str2var(TString variable) {
+      if (variable=="mass") return mass;
+      else if (variable=="pt") return pt;
+      else if (variable=="phistar") return phistar;
+      else if (variable=="rap60120") return rap60120;
+      else if (variable=="rap1560") return rap1560;
+      return mass;
+   };
+
+   const char* varname(var thevar) {
+      if (thevar==var::mass) return "mass";
+      else if (thevar==var::pt) return "pt";
+      else if (thevar==var::phistar) return "phistar";
+      else if (thevar==var::rap60120) return "rap60120";
+      else if (thevar==var::rap1560) return "rap1560";
+      else return "unknown";
+   };
+
+   const char* Varname(var thevar) {
+      if (thevar==var::mass) return "Mass";
+      else if (thevar==var::pt) return "Pt";
+      else if (thevar==var::phistar) return "Phistar";
+      else if (thevar==var::rap60120) return "Rap60120";
+      else if (thevar==var::rap1560) return "Rap1560";
+      else return "unknown";
+   };
+
+   const char* xaxistitle(var thevar) {
+      if (thevar==var::mass) return "M [GeV/c^{2}]";
+      else if (thevar==var::pt) return "p_{T} [GeV/c]";
+      else if (thevar==var::phistar) return "#phi^{*}";
+      else return "y_{CM}";
+   };
+
+   const char* xaxistitletex(var thevar) {
+      if (thevar==var::mass) return "\\mmumu [\\GeVcc]";
+      else if (thevar==var::pt) return "\\pt [\\GeVc]";
+      else if (thevar==var::phistar) return "\\phistar";
+      else return "$y_\\text{CM}$";
+   };
+
+   const char* xaxistitle(TString variable) {return xaxistitle(str2var(variable));};
+
+   int nbinsvar(var thevar) {
+      if (thevar==var::mass) return binnum;
+      else if (thevar==var::pt) return ptbinnum_meas;
+      else if (thevar==var::phistar) return phistarnum;
+      else if (thevar==var::rap1560) return rapbinnum_1560;
+      else return rapbinnum_60120;
+   };
+
+   double* binsvar(var thevar) {
+      if (thevar==var::mass) return bins;
+      else if (thevar==var::pt) return ptbin_meas;
+      else if (thevar==var::phistar) return phistarbin;
+      else if (thevar==var::rap1560) return rapbin_1560;
+      else return rapbin_60120;
    };
 };
 

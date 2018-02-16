@@ -1,5 +1,30 @@
-void dimuonMass()
+#include "TFile.h"
+#include "TH1.h"
+#include "TCanvas.h"
+#include "TString.h"
+#include "TPad.h"
+#include "TStyle.h"
+#include "TColor.h"
+#include "TF1.h"
+#include "TLine.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
+
+#include "BkgEst/interface/defs.h"
+#include "Include/tdrstyle.C"
+#include "Include/CMS_lumi.C"
+
+using namespace DYana;
+
+void normBinWidth(TH1D *hist);
+
+void dataMC(var thevar)
 {
+   setTDRStyle();
+
+   const char* thevarname = varname(thevar);
+   TString thexaxistitle = xaxistitle(thevar);
+
    TCanvas *c1 = new TCanvas("c1", "",0,0, 800, 800);
    gStyle->SetOptFit(1);
    gStyle->SetOptStat(0);
@@ -27,8 +52,10 @@ void dimuonMass()
    TopPad->SetFillColor(0);
    TopPad->SetBorderMode(0);
    TopPad->SetBorderSize(2);
-   TopPad->SetLogx();
-   TopPad->SetLogy();
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) {
+      TopPad->SetLogx();
+      TopPad->SetLogy();
+   }
    //TopPad->SetGridx();
    //TopPad->SetGridy();
    TopPad->SetTickx(1);
@@ -42,50 +69,47 @@ void dimuonMass()
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
-   TFile* f1 = new TFile("./ROOTFile_Histograms_DimuonMassSpectrum.root");
+   TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomUnCorr_rewboth_tnprew_All.root",thevarname));
    f1->cd();
-   Double_t xAxis[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185, 200, 220, 243, 273, 320, 380, 440, 510, 600, 700, 830, 1000, 1500, 3000}; 
 
-   TH1D* hdata = new TH1D("hdata", "hdata", 43, xAxis);
-   TH1D* hDY = new TH1D("hDY", "hDY", 43, xAxis);
-   TH1D* httbar = new TH1D("httbar", "httbar", 43, xAxis);
-   TH1D* hDYtautau = new TH1D("hDYtautau", "hDYtautau", 43, xAxis);
-   TH1D* hWW = new TH1D("hWW", "hWW", 43, xAxis);
-   TH1D* hWZ = new TH1D("hWZ", "hWZ", 43, xAxis);
-   TH1D* hZZ = new TH1D("hZZ", "hZZ", 43, xAxis);
-   TH1D* htW = new TH1D("htW", "htW", 43, xAxis);
-   TH1D* hWJets = new TH1D("hWJets", "hWJets", 43, xAxis);
-   TH1D* hdijet = new TH1D("hdijet", "hdijet", 43, xAxis);
-   TH1D* htotal = new TH1D("htotal", "htotal", 43, xAxis);
-   TH1D* hratio = new TH1D("hratio", "hratio", 43, xAxis);
+   TH1D* h_data = (TH1D*) f1->Get("h_data");
+   TH1D* h_SignalMC = (TH1D*) f1->Get("h_SignalMC");
+   TH1D* h_ttbar_emu = (TH1D*) f1->Get("h_ttbar_emu");
+   TH1D* h_DYTauTau_emu = (TH1D*) f1->Get("h_DYTauTau_emu");
+   TH1D* h_WW_emu = (TH1D*) f1->Get("h_WW_emu");
+   TH1D* h_WZ = (TH1D*) f1->Get("h_WZ_MC");
+   TH1D* h_ZZ = (TH1D*) f1->Get("h_ZZ_MC");
+   TH1D* h_WJets_FR = (TH1D*) f1->Get("h_WJets_FR");
+   TH1D* h_diJet_FR = (TH1D*) f1->Get("h_diJet_FR");
+   TH1D* htotal = (TH1D*) h_SignalMC->Clone("htotal");
+   htotal->Reset();
+   TH1D* hratio = (TH1D*) h_data->Clone("hratio");
 
-   // call
-   hdata = (TH1D*) h_data->Clone();
-   hDY = (TH1D*) h_SignalMC->Clone();
-   httbar = (TH1D*) h_ttbar_emu->Clone();
-   hDYtautau = (TH1D*) h_DYTauTau_emu->Clone();
-   hWW = (TH1D*) h_WW_emu->Clone(); hWW->Sumw2();
-   hWZ = (TH1D*) h_WZ->Clone(); hWZ->Sumw2();
-   hZZ = (TH1D*) h_ZZ->Clone(); hZZ->Sumw2();
-   hdiboson = (TH1D*) hWW->Clone();
+   // need to normalise all this by bin width
+   normBinWidth(h_data);
+   normBinWidth(h_SignalMC);
+   normBinWidth(h_ttbar_emu);
+   normBinWidth(h_DYTauTau_emu);
+   normBinWidth(h_WW_emu);
+   normBinWidth(h_WZ);
+   normBinWidth(h_ZZ);
+   normBinWidth(h_WJets_FR);
+   normBinWidth(h_diJet_FR);
+
+   TH1D *hdata = (TH1D*) h_data->Clone();
+   TH1D *hDY = (TH1D*) h_SignalMC->Clone();
+   TH1D *httbar = (TH1D*) h_ttbar_emu->Clone();
+   TH1D *hDYtautau = (TH1D*) h_DYTauTau_emu->Clone();
+   TH1D *hWW = (TH1D*) h_WW_emu->Clone(); hWW->Sumw2();
+   TH1D *hWZ = (TH1D*) h_WZ->Clone(); hWZ->Sumw2();
+   TH1D *hZZ = (TH1D*) h_ZZ->Clone(); hZZ->Sumw2();
+   TH1D *hWJets = (TH1D*) h_WJets_FR->Clone();
+   TH1D *hdijet = (TH1D*) h_diJet_FR->Clone();
+   TH1D *hdiboson = (TH1D*) hWW->Clone();
    hdiboson->Add( hWZ );
    hdiboson->Add( hZZ );
 
-   htW = (TH1D*) h_tW_emu->Clone();
-   hWJets = (TH1D*) h_WJets_FR->Clone();
-   hdijet = (TH1D*) h_diJet_FR->Clone();
-
-   hdata->Sumw2();
-   hDY->Sumw2();
-   httbar->Sumw2();
-   hDYtautau->Sumw2();
-   hdiboson->Sumw2();
-   htW->Sumw2();
-   hWJets->Sumw2();
-   hdijet->Sumw2();
-
    TH1D* hTop = (TH1D*) httbar->Clone();
-   hTop->Add(htW);
    TH1D* hEW = (TH1D*) hdiboson->Clone();
    hEW->Add(hDYtautau);
    hEW->Add(hWJets);
@@ -119,15 +143,19 @@ void dimuonMass()
    h_data->SetFillColor(ci);
    h_data->SetMarkerStyle(20);
    h_data->SetMarkerSize(1.0);
-   h_data->GetXaxis()->SetTitle("m [GeV]");
-   h_data->GetXaxis()->SetRange(1,43);
-   h_data->GetXaxis()->SetMoreLogLabels();
+   h_data->GetXaxis()->SetTitle(thexaxistitle);
+   // h_data->GetXaxis()->SetRange(1,43);
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) {
+      h_data->GetXaxis()->SetMoreLogLabels();
+   }
    h_data->GetXaxis()->SetNoExponent();
    h_data->GetXaxis()->SetLabelFont(42);
    h_data->GetXaxis()->SetLabelSize(0);
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
-   h_data->GetYaxis()->SetTitle("Entries per bin");
+   if (thevar==var::mass) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
+   else if (thevar==var::pt) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
+   else h_data->GetYaxis()->SetTitle("Entries");
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035);
    h_data->GetYaxis()->SetTitleSize(0.06);
@@ -137,7 +165,19 @@ void dimuonMass()
    h_data->GetZaxis()->SetLabelSize(0.035);
    h_data->GetZaxis()->SetTitleSize(0.035);
    h_data->GetZaxis()->SetTitleFont(42);
-   h_data->SetMinimum(0.1);
+   double yaxismin = 0.001;
+   if (thevar == var::pt) yaxismin = 0.1;
+   else if (thevar == var::rap1560) {
+      yaxismin = 0;
+      h_data->SetMaximum(1450);
+   } else if (thevar == var::rap60120) {
+      yaxismin = 0;
+      h_data->SetMaximum(7750);
+   } else if (thevar == var::phistar) {
+      yaxismin = 1;
+      h_data->SetMaximum(2e5);
+   }
+   h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -145,8 +185,9 @@ void dimuonMass()
    TLine grid_;
    grid_.SetLineColor(kGray+2);
    grid_.SetLineStyle(kSolid);
-   for( size_t ii=0; ii<44; ii++ ) {
-     grid_.DrawLine(xAxis[ii],0.1,xAxis[ii],htotal->GetBinContent(ii+1));
+   const double *xAxis = hdata->GetXaxis()->GetXbins()->GetArray();
+   for( size_t ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
+     grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
    TLegend *leg = new TLegend(0.70,0.70,0.90,0.90,NULL,"brNDC");
@@ -160,21 +201,22 @@ void dimuonMass()
    hdata->SetMarkerSize(1);
    TLegendEntry *entry=leg->AddEntry(hdata,"data","pl");
    entry=leg->AddEntry(hDY,"#gamma* /#font[122]{Z} #rightarrow #mu#mu","f");
-   entry=leg->AddEntry(hTop,"t#bar{t}+tW+#bar{t}W","f");
+   entry=leg->AddEntry(hTop,"t#bar{t}","f");
    entry=leg->AddEntry(hEW,"EW","f");
    entry=leg->AddEntry(hdijet,"QCD","f");
    leg->Draw();
 
-   TPaveText *pave = new TPaveText(1200,5000000,2000,7000000); // CHANGE
-   pave->SetFillColor(0);
-   TText* text = pave->AddText("2.8 fb^{#font[122]{\55}1} (13 TeV)");
-   text->SetTextSize(0.03);
-   pave->Draw("0");
-   TPaveText *ptitle = new TPaveText(20,900000,60,1020000); // CHANGE
-   ptitle->SetFillColor(0);
-   TText* ttitle = ptitle->AddText("CMS Preliminary");
-   ttitle->SetTextSize(0.035);
-   ptitle->Draw("0");
+   // TPaveText *pave = new TPaveText(1200,5000000,2000,7000000); // CHANGE
+   // pave->SetFillColor(0);
+   // TText* text = pave->AddText("2.8 fb^{#font[122]{\55}1} (13 TeV)");
+   // text->SetTextSize(0.03);
+   // pave->Draw("0");
+   // TPaveText *ptitle = new TPaveText(20,900000,60,1020000); // CHANGE
+   // ptitle->SetFillColor(0);
+   // TText* ttitle = ptitle->AddText("CMS Preliminary");
+   // ttitle->SetTextSize(0.035);
+   // ptitle->Draw("0");
+   CMS_lumi( TopPad, 111, 0 );
 
 // ------------>Primitives in pad: bottomPad
    TPad *bottomPad = new TPad("bottomPad", "bottomPad",0.01,0.01,0.99,0.3);
@@ -184,7 +226,7 @@ void dimuonMass()
    bottomPad->SetFillColor(0);
    bottomPad->SetBorderMode(0);
    bottomPad->SetBorderSize(2);
-   bottomPad->SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar)  bottomPad->SetLogx();
    //bottomPad->SetGridx();
    //bottomPad->SetGridy();
    bottomPad->SetTickx(1);
@@ -207,9 +249,9 @@ void dimuonMass()
    hratio->SetFillColor(kBlack);
    hratio->SetFillStyle(1001);
    hratio->SetMarkerStyle(20);
-   hratio->GetXaxis()->SetTitle("m [GeV]");
-   hratio->GetXaxis()->SetRange(1,43);
-   hratio->GetXaxis()->SetMoreLogLabels();
+   hratio->GetXaxis()->SetTitle(thexaxistitle);
+   // hratio->GetXaxis()->SetRange(1,43);
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) hratio->GetXaxis()->SetMoreLogLabels();
    hratio->GetXaxis()->SetNoExponent();
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
@@ -256,7 +298,7 @@ void dimuonMass()
    TLine gridRatio;
    gridRatio.SetLineColor(kGray+2);
    gridRatio.SetLineStyle(2);
-   for( size_t ii=0; ii<44; ii++ ) {
+   for( size_t ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
      gridRatio.DrawLine(xAxis[ii],0.45,xAxis[ii],1.55);
    }
 
@@ -264,5 +306,13 @@ void dimuonMass()
    c1->Modified();
    c1->cd();
    c1->SetSelected(c1);
+   c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
+   c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
 }
 
+void normBinWidth(TH1D *hist) {
+   for (int i=1; i<=hist->GetNbinsX(); i++) {
+      hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
+      hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
+   }
+}

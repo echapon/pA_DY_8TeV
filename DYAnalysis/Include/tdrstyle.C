@@ -1,6 +1,7 @@
 #ifndef tdrstyle_C
 #define tdrstyle_C
 #include "TStyle.h"
+#include "TColor.h"
 
 // tdrGrid: Turns the grid lines on (true) or off (false)
 

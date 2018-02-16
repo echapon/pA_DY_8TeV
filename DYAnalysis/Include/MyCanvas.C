@@ -11,6 +11,7 @@
 #include <TH1D.h>
 #include <TH2D.h>
 #include <TCanvas.h>
+#include <TROOT.h>
 
 #include <vector>
 
@@ -61,7 +62,9 @@ public:
 
 	MyCanvas(TString CanvasName, TString XTitle, TString YTitle, Int_t length_x = 800, Int_t length_y = 800)
 	{
-		setTDRStyle();
+      setTDRStyle();
+      gROOT->SetStyle( "tdrStyle" );
+      gStyle->SetNumberContours(100);
 		// tdrStyle->SetErrorX(0.5);
 		c = new TCanvas(CanvasName, "", length_x, length_y);
 
@@ -86,10 +89,38 @@ public:
 		isSetNoExpo_MoreLogLabels_X = kTRUE;
 		isSetNoExpo_MoreLogLabels_Y = kFALSE;
 
-		for(Int_t i=1; i<=9; i++)
-			Colors.push_back( i );
-		Colors.push_back( kOrange );
-		Colors.push_back( kViolet );
+		Colors.push_back( kBlack );
+		Colors.push_back( kRed+1 );
+		Colors.push_back( kGreen+1 );
+		Colors.push_back( kBlue+1 );
+		Colors.push_back( kYellow+1 );
+		Colors.push_back( kMagenta+1 );
+		Colors.push_back( kCyan+1 );
+		Colors.push_back( kOrange+1 );
+		Colors.push_back( kViolet+1 );
+		Colors.push_back( kTeal+1 );
+		Colors.push_back( kPink+1 );
+		Colors.push_back( kAzure+1 );
+		Colors.push_back( kSpring+1 );
+		Colors.push_back( kGray );
+		Colors.push_back( kGray+1 );
+		Colors.push_back( kGray+2 );
+		Colors.push_back( kGray+3 );
+      for (int ic=0; ic<7; ic++) {
+         int icc = -4-ic;
+         Colors.push_back( kRed+icc );
+         Colors.push_back( kGreen+icc );
+         Colors.push_back( kBlue+icc );
+         Colors.push_back( kYellow+icc );
+         Colors.push_back( kMagenta+icc );
+         Colors.push_back( kCyan+icc );
+         Colors.push_back( kOrange+icc );
+         Colors.push_back( kViolet+icc );
+         Colors.push_back( kTeal+icc );
+         Colors.push_back( kPink+icc );
+         Colors.push_back( kAzure+icc );
+         Colors.push_back( kSpring+icc );
+      }
 
 		DoTranspose = kFALSE;
 	}
@@ -555,6 +586,7 @@ public:
 		legend->Draw();
 
 		
+      CMS_lumi( c, 111, 0 );
 	}
 
 	void CanvasWithGraphRatioPlot(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2,
@@ -667,6 +699,8 @@ public:
 		f_line->Draw("SAME");
 
 		g_ratio->Draw("PSAME");		
+
+      CMS_lumi( TopPad, 111, 0 );
 	}
 
 	void MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2)
@@ -716,7 +750,7 @@ public:
 		}
 	}
 
-	void CanvasWitOneHistogram(TH1D *h, TString DrawOp = "EP", Int_t color = kRed)
+	void CanvasWithOneHistogram(TH1D *h, TString DrawOp = "EP", Int_t color = kRed)
 	{
 		c->cd();
 
@@ -787,7 +821,7 @@ public:
 		h_2D->GetYaxis()->SetNoExponent();
 		h_2D->GetYaxis()->SetMoreLogLabels();
 		h_2D->GetYaxis()->SetTitleOffset(2);
-		h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
+      if (LowerEdge_Z<UpperEdge_Z) h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
 		// h_2D->SetMinimum(LowerEdge_Z);
 		// h_2D->SetMaximum(UpperEdge_Z);
 

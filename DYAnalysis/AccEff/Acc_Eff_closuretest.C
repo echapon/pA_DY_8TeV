@@ -15,22 +15,52 @@
 #include <TF1.h>
 #include <TStyle.h>
 #include <TEfficiency.h>
+#include <TGraphAsymmErrors.h>
 
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-// #include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/RoccoR.cc>
-// #include </home/kplee/CommonCodes/DrellYanAnalysis/RochesterMomCorr_76X/rochcor2015.cc>
+#include <Include/roccor.2016.v3/RoccoR.cc>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include <Include/DYAnalyzer.h>
+#include <Include/tnp_weight.h>
 #include <BkgEst/interface/defs.h>
 #include <HIstuff/HFweight.h>
 
 using namespace DYana;
 
+// number of TnP variations
+const int nweights = 211;
+
+// tnp regions
+int tnpreg(int ireg, float eta, int ivar) {
+   if (fabs(eta)<1.2 && ireg==0) return ivar;
+   else if (fabs(eta)>=1.2 && fabs(eta)<2.1 && ireg==1) return ivar;
+   else if (fabs(eta)>=2.1 && fabs(eta)<2.4 && ireg==2) return ivar;
+   else return 0;
+}
+int tnpregtrg(int ireg, float eta, int ivar) {
+   if (eta>-2.4 && eta<=-2.1 && ireg==0) return ivar;
+   else if (eta>-2.1 && eta<=-1.6 && ireg==1) return ivar;
+   else if (eta>-1.6 && eta<=-1.2 && ireg==2) return ivar;
+   else if (eta>-1.2 && eta<=-0.9 && ireg==3) return ivar;
+   else if (eta>-0.9 && eta<=-0.6 && ireg==4) return ivar;
+   else if (eta>-0.6 && eta<=-0.3 && ireg==5) return ivar;
+   else if (eta>-0.3 && eta<=0 && ireg==6) return ivar;
+   else if (eta>0 && eta<=0.3 && ireg==7) return ivar;
+   else if (eta>0.3 && eta<=0.6 && ireg==8) return ivar;
+   else if (eta>0.6 && eta<=0.9 && ireg==9) return ivar;
+   else if (eta>0.9 && eta<=1.2 && ireg==10) return ivar;
+   else if (eta>1.2 && eta<=1.6 && ireg==11) return ivar;
+   else if (eta>1.6 && eta<=2.1 && ireg==12) return ivar;
+   else if (eta>2.1 && eta<=2.4 && ireg==13) return ivar;
+   else return 0;
+}
+
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*" )
+void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "HLT_PAL3Mu12_v*", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both ) // run: 0=all, 1=pPb, 2=PbP
+
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -54,7 +84,14 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_closuretest_" + Sample + "_" + HLTname + ".root", "RECREATE");
+   TString srew("norew");
+   if (doHFrew) {
+      if (rewmode==HFweight::HFside::both) srew="rewboth";
+      else if (rewmode==HFweight::HFside::plus) srew="rewplus";
+      else if (rewmode==HFweight::HFside::minus) srew="rewminus";
+      else if (rewmode==HFweight::HFside::Ntracks) srew="rewNtracks";
+   }
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_closuretest_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
@@ -77,7 +114,6 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 	TH1D *h_pt_EffPass2_2124 = new TH1D("h_pt_EffPass2_2124", "", nbinspt2,ptbins2);	 
 
 	// -- After applying efficiency correction -- //
-   const int nweights = 211;
    TH1D* h_pt_EffPass_0012_Corr_tnp[nweights];
    TH1D* h_pt_EffPass_1221_Corr_tnp[nweights];
    TH1D* h_pt_EffPass_2124_Corr_tnp[nweights];
@@ -90,9 +126,9 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
-	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents;
+	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20170830(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents);
+   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -103,6 +139,12 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 	{
       // loop only on DYMuMu!
       if (!Tag[i_tup].Contains("DYMuMu")) continue;
+
+      Bool_t doflip = (switcheta(STags[i_tup])<0);
+      Int_t  flipsign = doflip ? -1 : 1;
+      if (run==1 && doflip) continue;
+      if (run==2 && !doflip) continue;
+      analyzer->sign = flipsign;
 
 		TStopwatch looptime;
 		looptime.Start();
@@ -115,19 +157,19 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
       cout << tmp.Data() << endl;
       chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
-		NtupleHandle *ntuple = new NtupleHandle( chain );
+		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_HI();
 
-      // rochcor2015 *rmcor = new rochcor2015();
+      RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
 
 		Bool_t isMC;
 		Tag[i_tup] == "Data" ? isMC = kFALSE : isMC = kTRUE;
 
 		Bool_t isNLO = 0;
-		if( Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" )
+		if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
 		{
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
@@ -139,7 +181,13 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 		Int_t NEvents = chain->GetEntries();
 		cout << "\t[Total Events: " << NEvents << "]" << endl; 
 
-		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+      // // default norm
+      // Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+      // fancy norm with pPb / PbP mix
+		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+      if (doflip)
+         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 		// NEvents = 1000;
@@ -161,7 +209,8 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 
 			Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
-         Double_t PUWeight = hftool.weight(ntuple->hiHF,HFweight::HFside::both); 
+         Double_t PUWeight = 1.;
+         if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
 			Double_t TotWeight = norm * GenWeight;
 
@@ -201,12 +250,12 @@ void Acc_Eff_closuretest(Bool_t isCorrected = kFALSE, TString Sample = "Powheg",
 				Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
 
 				// -- Acceptance Calculation -- //
-				if( Flag_PassAcc == kTRUE ) 
-				{
-				}
-				else
-				{
-				} 	
+            // if( Flag_PassAcc == kTRUE ) 
+            // {
+            // }
+            // else
+            // {
+            // } 	
 
 				Double_t TnpWeight = 1.; // -- Efficiency correction factor -- //
 
