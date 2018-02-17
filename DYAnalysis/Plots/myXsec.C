@@ -14,6 +14,8 @@
 #include "../Include/texUtils.h"
 #include "../Include/lhapdf_utils.h"
 
+#define DIRTYPREFSR
+
 using namespace DYana;
 using namespace std;
 
@@ -68,7 +70,8 @@ TGraphAsymmErrors *h2gae(TH1 *h) {
 void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg histos
       const char* accefffile="ROOTFile_AccEff.root",             // acceptance and efficiency
       const char* outputfile="Plots/results/xsec.root",          // where to write the output xsec
-      bool forsyst=false) {                                      // if true, don't print canvases and tables
+      bool forsyst=false,                                        // if true, don't print canvases and tables
+      bool doxsec=true) {                                        // if false, don't do dxsec/dxxx, just correct for acc eff
    TFile *fy = TFile::Open(datafile);
    TFile *fae = TFile::Open(accefffile);
 
@@ -83,55 +86,92 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       map<bin,syst> thesyst = readSyst_all(thevar,false,"","./");
 
       TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",varname(thevar)));
-      hy->Scale(1./lumi_all);
-      Obtain_dSigma_dX(hy);
-      hy->SetName(Form("hy_%s",varname(thevar)));
+      TH1D *hy_statonly;
+      TGraphAsymmErrors* gres = NULL;
+      TGraphAsymmErrors* gres_statonly = NULL;
+      if (hy) {
+         if (doxsec) {
+            hy->Scale(1./lumi_all);
+            Obtain_dSigma_dX(hy);
+         }
+         hy->SetName(Form("hy_%s",varname(thevar)));
 
-      // TGraph *gae = (TGraph*) fae->Get("g_AccEff_Corr_tnp");
-      // get acc and eff and multiply them in the loop
-      TEfficiency *TEff_Acc = (TEfficiency*)fae->Get(Form("TEff_Acc_%s",Varname(thevar)));
-      TGraphAsymmErrors *ga = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
+         hy_statonly = (TH1D*) hy->Clone(Form("hy_statonly_%s",varname(thevar)));
 
-      TEfficiency *TEff_Eff = (TEfficiency*)fae->Get(Form("TEff_Eff_%s",Varname(thevar)));
-      TGraphAsymmErrors *ge = (TGraphAsymmErrors*)TEff_Eff->CreateGraph()->Clone();
+         // TGraph *gae = (TGraph*) fae->Get("g_AccEff_Corr_tnp");
+         // get acc and eff and multiply them in the loop
+         TEfficiency *TEff_Acc = (TEfficiency*)fae->Get(Form("TEff_Acc_%s",Varname(thevar)));
+         TGraphAsymmErrors *ga = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
 
-      TGraphAsymmErrors *gres = (TGraphAsymmErrors*) ga->Clone(Form("gres_%s",varname(thevar)));
-      TGraphAsymmErrors *gres_statonly = (TGraphAsymmErrors*) ga->Clone(Form("gres_statonly_%s",varname(thevar)));
+         TEfficiency *TEff_Eff = (TEfficiency*)fae->Get(Form("TEff_Eff_%s",Varname(thevar)));
+         TGraphAsymmErrors *ge = (TGraphAsymmErrors*)TEff_Eff->CreateGraph()->Clone();
 
-      for (int i=0; i<ga->GetN(); i++) {
-         bin thebin;
-         thebin.first = hy->GetBinLowEdge(i+1);
-         thebin.second = thebin.first + hy->GetBinWidth(i+1);
-         double val = hy->GetBinContent(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
-         double errl,errh;
-         double errl_stat,errh_stat;
-         // cout << hy->GetBinError(i+1)/hy->GetBinContent(i+1) << " ";
-         // cout << ga->GetEYlow()[i]/ga->GetY()[i] << " ";
-         // cout << ge->GetEYlow()[i]/ge->GetY()[i] << " ";
-         // cout << thesyst[thebin].value << endl;
-         errl = sqrt(
-               pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
-               // + pow(ga->GetEYlow()[i]/ga->GetY()[i],2) // acceptance
-               // + pow(ge->GetEYlow()[i]/ge->GetY()[i],2) // efficiency
-               + pow(thesyst[thebin].value,2) // other systs
-               );
-         errl = errl * val;
-         errh = sqrt(
-               pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
-               // + pow(ga->GetEYhigh()[i]/ga->GetY()[i],2) // acceptance
-               // + pow(ge->GetEYhigh()[i]/ge->GetY()[i],2) // efficiency
-               + pow(thesyst[thebin].value,2) // other systs
-               );
-         errh = errh * val;
-         errl_stat = hy->GetBinError(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
-         errh_stat = errl_stat;
+         gres = (TGraphAsymmErrors*) ga->Clone(Form("gres_%s",varname(thevar)));
+         gres_statonly = (TGraphAsymmErrors*) ga->Clone(Form("gres_statonly_%s",varname(thevar)));
 
-         gres->SetPoint(i,hy->GetBinCenter(i+1),val);
-         gres->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl,errh);
-         gres_statonly->SetPoint(i,hy->GetBinCenter(i+1),val);
-         gres_statonly->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl_stat,errh_stat);
-         hy->SetBinContent(i+1,val);
-         hy->SetBinError(i+1,(errl+errh)/2.);
+         for (int i=0; i<ga->GetN(); i++) {
+            bin thebin;
+            thebin.first = hy->GetBinLowEdge(i+1);
+            thebin.second = thebin.first + hy->GetBinWidth(i+1);
+            double val = hy->GetBinContent(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+            double errl,errh;
+            double errl_stat,errh_stat;
+            // cout << hy->GetBinError(i+1)/hy->GetBinContent(i+1) << " ";
+            // cout << ga->GetEYlow()[i]/ga->GetY()[i] << " ";
+            // cout << ge->GetEYlow()[i]/ge->GetY()[i] << " ";
+            // cout << thesyst[thebin].value << endl;
+            errl = sqrt(
+                  pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
+                  // + pow(ga->GetEYlow()[i]/ga->GetY()[i],2) // acceptance
+                  // + pow(ge->GetEYlow()[i]/ge->GetY()[i],2) // efficiency
+                  + pow(thesyst[thebin].value,2) // other systs
+                  );
+            errl = errl * val;
+            errh = sqrt(
+                  pow(hy->GetBinError(i+1)/hy->GetBinContent(i+1),2) // stat
+                  // + pow(ga->GetEYhigh()[i]/ga->GetY()[i],2) // acceptance
+                  // + pow(ge->GetEYhigh()[i]/ge->GetY()[i],2) // efficiency
+                  + pow(thesyst[thebin].value,2) // other systs
+                  );
+            errh = errh * val;
+            errl_stat = hy->GetBinError(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+            errh_stat = errl_stat;
+
+            gres->SetPoint(i,hy->GetBinCenter(i+1),val);
+            gres->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl,errh);
+            gres_statonly->SetPoint(i,hy->GetBinCenter(i+1),val);
+            gres_statonly->SetPointError(i,hy->GetBinWidth(i+1)/2.,hy->GetBinWidth(i+1)/2.,errl_stat,errh_stat);
+            hy->SetBinContent(i+1,val);
+            hy->SetBinError(i+1,(errl+errh)/2.);
+            hy_statonly->SetBinContent(i+1,val);
+            hy_statonly->SetBinError(i+1,(errl_stat+errh_stat)/2.);
+         }
+      } else {
+         // if we haven't found the histo... maybe we're looking at the output of the FSR unfolding, and then everything is ready! just get the result.
+         hy = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_%s",varname(thevar)));
+         hy_statonly = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_statonly_%s",varname(thevar)));
+         cout << hy->GetBinContent(1) << endl;
+
+         if (doxsec) {
+            hy->Scale(1./lumi_all);
+            Obtain_dSigma_dX(hy);
+            hy_statonly->Scale(1./lumi_all);
+            Obtain_dSigma_dX(hy_statonly);
+         }
+         cout << hy->GetBinContent(1) << endl;
+
+         if (!hy) {
+            cout << "Error, can't find yield histo in input file." << endl;
+            return;
+         }
+
+         hy->SetName(Form("hy_%s",varname(thevar)));
+         hy_statonly->SetName(Form("hy_statonly_%s",varname(thevar)));
+
+         gres = h2gae(hy);
+         gres->SetName(Form("gres_%s",varname(thevar)));
+         gres_statonly = h2gae(hy_statonly);
+         gres_statonly->SetName(Form("gres_statonly_%s",varname(thevar)));
       }
 
       bool logx=false, logy=false;
@@ -164,6 +204,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          xtitle_tex = "\\ylab";
          ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
       }
+
       MyCanvas c1(Form("Plots/results/plots/result_%s",varname(thevar)),xtitle,ytitle,lx,ly);
       if (logx) c1.SetLogx();
       if (logy) c1.SetLogy(false);
@@ -197,6 +238,24 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       gth->SetMarkerSize(0);
       gth->SetName(Form("gth_%s",varname(thevar)));
 
+      // dirty hack to plot the pre-FSR theory... fix for the final results!
+#ifdef DIRTYPREFSR
+      TFile *fsr = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+      TH1D *hpre = (TH1D*) fsr->Get(Form("h_%s_preFSR",varname(thevar)));
+      TH1D *hpost = (TH1D*) fsr->Get(Form("h_%s_postFSR",varname(thevar)));
+      for (int i=0; i<gth->GetN(); i++) {
+         double ratio = hpre->GetBinContent(i+1)/hpost->GetBinContent(i+1);
+         double x = gth->GetX()[i];
+         double y = gth->GetY()[i]*ratio;
+         double exl = gth->GetEXlow()[i];
+         double exh = gth->GetEXhigh()[i];
+         double eyl = gth->GetEYlow()[i]*ratio;
+         double eyh = gth->GetEYhigh()[i]*ratio;
+         gth->SetPoint(i,x,y);
+         gth->SetPointError(i,exl,exh,eyl,eyh);
+      }
+#endif
+
       if (!forsyst) {
          c1.CanvasWithGraphRatioPlot(gres,gth,
                "Data","Powheg","Data/Powheg",
@@ -217,6 +276,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       gres->Write();
       gth->Write();
       hy->Write();
+      hy_statonly->Write();
 
       fth->Close();
    }

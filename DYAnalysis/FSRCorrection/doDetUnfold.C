@@ -22,14 +22,14 @@
 #include <vector>
 
 //Customized header files
-#include <Include/DYAnalyzer.h>
-#include <Include/UnfoldUtils.h>
-#include <Include/MyCanvas.C>
+#include "Include/DYAnalyzer.h"
+#include "Include/UnfoldUtils.h"
+#include "Include/MyCanvas.C"
 
 using namespace DYana;
 using unfold::gUnfold;
 
-void doDetUnfold( var thevar = var::mass ) 
+void doDetUnfold( const char* datafile, const char* matrixfile, var thevar = var::mass ) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -43,7 +43,7 @@ void doDetUnfold( var thevar = var::mass )
    double* binsv = binsvar(thevar);
 
 
-	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+	TFile *f = new TFile(matrixfile);
    TH2D *h_postpreFSR_tot = (TH2D*) f->Get(Form("h_%s_postpreFSR_tot",thevarname));
    TH1D *h_preFSR = (TH1D*) f->Get(Form("h_%s_preFSR",thevarname));
    TH1D *h_postFSR = (TH1D*) f->Get(Form("h_%s_postFSR",thevarname));
@@ -69,14 +69,14 @@ void doDetUnfold( var thevar = var::mass )
    // errors larger or equal 10000 are fatal:
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
-   TString fdataname = "Plots/results/xsec_nom.root";
-   TFile *fdata = TFile::Open(fdataname);
+   TFile *fdata = TFile::Open(datafile);
    if (!fdata || !fdata->IsOpen()) {
-      cout << "Error, file " << fdataname.Data() << " not found" << endl;
+      cout << "Error, file " << datafile << " not found" << endl;
       return;
    }
-   TH1F *histMdetData = (TH1F*) fdata->Get(Form("hy_%s",thevarname));
-   if (!histMdetData) {
+   TH1D *histMdetData = (TH1D*) fdata->Get(Form("hy_%s",thevarname));
+   TH1D *histMdetData_statonly = (TH1D*) fdata->Get(Form("hy_statonly_%s",thevarname));
+   if (!histMdetData || !histMdetData_statonly) {
       cout << "Error, histo " << Form("hy_%s",thevarname)<< "not found" << endl;
       return;
    }
@@ -88,8 +88,10 @@ void doDetUnfold( var thevar = var::mass )
    // output
    TH1D *h_Measured_TUnfold = (TH1D*) histMdetData->Clone("h_Measured");
    TH1D *histMunfold = NULL;
+   TH1D *histMunfold_statonly = NULL;
    TH1D *histMdetFold = NULL;
    TH2D *histEmatTotal = NULL;
+   TH2D *histEmatTotal_statonly = NULL;
 
    // // scale the response matrix
    // int nn = h_postpreFSR_tot->GetNbinsX();
@@ -328,8 +330,21 @@ void doDetUnfold( var thevar = var::mass )
       //
       ////////////////////////////////////////////////////////////////////////////////////
 
+      histMunfold_statonly = unfold::unfold_MLE(h_Measured_TUnfold,h_postpreFSR_tot,histEmatTotal_statonly);
+      histMunfold_statonly->SetName(Form("%s_statonly_%s",histMunfold_statonly->GetName(),thevarname));
+      histEmatTotal_statonly->SetName(Form("%s_statonly_%s",histEmatTotal_statonly->GetName(),thevarname));
+
+      histMunfold_statonly->Write();
+      histEmatTotal_statonly->Write();
+
       histMunfold = unfold::unfold_MLE(h_Measured_TUnfold,h_postpreFSR_tot,histEmatTotal);
+
+      histMunfold->Write(Form("%s_%s",histMunfold->GetName(),thevarname));
+      h_postpreFSR_tot->Write(Form("%s_%s",h_postpreFSR_tot->GetName(),thevarname));
+      histEmatTotal->Write(Form("%s_%s",histEmatTotal->GetName(),thevarname));
+
       histMdetFold = unfold::fold_MLE(histMunfold,h_postpreFSR_tot);
+      histMdetFold->Write(Form("%s_%s",histMdetFold->GetName(),thevarname));
    }
 
    // compare data before and after unfolding

@@ -27,8 +27,8 @@ TH1D *g2h(TGraphAsymmErrors *g);
 
 using namespace std;
 
-void CompRFB () {
-   TFile* fin = TFile::Open("Plots/results/xsec_nom.root");
+void CompRFB (const char* infile="Plots/results/xsec_nom.root") {
+   TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");
    TGraphAsymmErrors* gaeres_rap60120 = (TGraphAsymmErrors*)fin->Get("gres_rap60120");

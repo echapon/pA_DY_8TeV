@@ -155,7 +155,7 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetTitleFont(42);
    if (thevar==var::mass) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
    else if (thevar==var::pt) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
-   else h_data->GetYaxis()->SetTitle("Entries");
+   else h_data->GetYaxis()->SetTitle("Entries / 1");
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035);
    h_data->GetYaxis()->SetTitleSize(0.06);

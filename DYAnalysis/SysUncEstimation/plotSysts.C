@@ -30,7 +30,7 @@ void plotSysts(var thevar) {
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
-   systfilename = "csv/MomCorr_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/MomCorr_afterdetunfold_smooth_" + TString(varname(thevar)) + ".csv";
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
@@ -42,7 +42,7 @@ void plotSysts(var thevar) {
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
-   systfilename = "csv/bkg_" + TString(varname(thevar)) + ".csv";
+   systfilename = "csv/bkg_smooth_" + TString(varname(thevar)) + ".csv";
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());

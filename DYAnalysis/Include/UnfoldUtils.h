@@ -5,6 +5,9 @@
 #include "TUnfoldDensity.h"
 // #define VERBOSE_LCURVE_SCAN
 
+#include <TVector.h>
+#include <TMatrix.h>
+
 namespace unfold {
    // global TUnfold object
    TUnfoldDensity *gUnfold=NULL;

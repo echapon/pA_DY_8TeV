@@ -87,14 +87,14 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       cout << "Error, file " << fdataname.Data() << " not found" << endl;
       return;
    }
-   TH1F *histMdetData = (TH1F*) fdata->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname));
+   TH1D *histMdetData = (TH1D*) fdata->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname));
    if (!histMdetData) {
       cout << "Error, histo " << Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname)<< "not found" << endl;
       return;
    }
 
    // output
-   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s.root",thevarname),"RECREATE");
+   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s.root",isApplyMomCorr.Data(),thevarname),"RECREATE");
    fout->cd();
 
    // output
@@ -343,6 +343,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
 
       histMunfold = unfold::unfold_MLE(h_Measured_TUnfold,h_response,histEmatTotal);
       histMdetFold = unfold::fold_MLE(histMunfold,h_response);
+
+      histMunfold->Write(Form("%s_%s",histMunfold->GetName(),thevarname));
+      histMunfold->Write(Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname));
+      histMdetFold->Write(Form("%s_%s",histMdetFold->GetName(),thevarname));
+      h_response->Write(Form("%s_%s",h_response->GetName(),thevarname));
+      histEmatTotal->Write(Form("%s_%s",histEmatTotal->GetName(),thevarname));
    }
 
    // compare data before and after unfolding

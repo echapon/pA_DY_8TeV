@@ -72,10 +72,10 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
 
    vector<TString> tags;
    tags.push_back("rewNtracks");
-   tags.push_back("MomCorr");
+   tags.push_back("MomCorr_afterdetunfold_smooth");
    tags.push_back("tnp_tot");
    tags.push_back("acceffstat_up");
-   tags.push_back("bkg");
+   tags.push_back("bkg_smooth");
    tags.push_back("AccEff_theory");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
@@ -162,6 +162,56 @@ map<bin, vector<syst> > vm2mv(vector< map<bin,syst> > v) {
    }
 
    return ans;
+}
+
+map<bin, syst> smooth(map<bin, syst> thesyst, int ntimes) {
+   vector<syst> values;
+   vector<bin> bins;
+   map<bin, syst>::const_iterator it;
+   for (it=thesyst.begin(); it!=thesyst.end(); it++) {
+      values.push_back(it->second);
+      bins.push_back(it->first);
+   }
+   
+   int nbins = values.size();
+   TH1F h1("htempsyst","",nbins,0,nbins);
+   
+   for (int i=0; i<nbins; i++) {
+      h1.SetBinContent(i+1,values[i].value);
+   }
+
+   // smooth here
+   h1.Smooth(ntimes);
+
+   // export to a new syst
+   map<bin, syst> ans;
+   for (int i=0; i<nbins; i++) {
+      syst thesyst; 
+      thesyst.name = values[0].name; 
+      thesyst.value = h1.GetBinContent(i+1);
+      ans[bins[i]] = thesyst;
+   }
+
+   return ans;
+}
+
+void smooth(const char* systfile, const char* systsuffix, int ntimes) {
+   map<bin,syst> smoothedsyst = smooth(readSyst(systfile),ntimes);
+
+   TString newsystname(systfile);
+   newsystname.ReplaceAll("_mass.csv",Form("%s_mass.csv",systsuffix));
+   newsystname.ReplaceAll("_pt.csv",Form("%s_pt.csv",systsuffix));
+   newsystname.ReplaceAll("_phistar.csv",Form("%s_phistar.csv",systsuffix));
+   newsystname.ReplaceAll("_rap1560.csv",Form("%s_rap1560.csv",systsuffix));
+   newsystname.ReplaceAll("_rap60120.csv",Form("%s_rap60120.csv",systsuffix));
+   
+   ofstream of(newsystname.Data());
+   of << smoothedsyst.begin()->second.name << " (smoothed)" << endl;
+   map<bin, syst>::const_iterator it;
+   for (it=smoothedsyst.begin(); it!=smoothedsyst.end(); it++) {
+      of << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
+   }
+   of.close();
 }
 
 #endif // ifndef syst_C
