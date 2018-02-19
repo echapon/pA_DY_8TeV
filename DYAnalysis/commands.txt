@@ -1,0 +1,33 @@
+# submit jobs for control plots (make histos)
+condor_submit condorConfig_controlplots.sub
+
+# submit jobs for acc eff
+condor_submit condorConfig_acceff.sub
+
+# background estimation
+# emu:
+cd BkgEst/emu
+# - select events
+root -l -b -q selectEmuEvts.cc
+# - estimate the bkg
+for var in mass pt rap1560 rap60120 phistar; do
+   root -l -b -q estimateBkg.cc'("'$var'")'
+   root -l -b -q drawplots'("'$var'")'
+done
+cd -
+
+# fakerate:
+# estimate
+cd BkgEst/fakerate/estimateFR
+root -l -b -q selectDenAndNumForFR.cc
+root -l -b -q estimateFR.cc
+# apply
+cd ../applyFR
+root -l -b -q applyFR.cc
+root -l -b -q estimateDijet.cc
+root -l -b -q estimateWjet.cc
+
+
+# draw the plots. for instance:
+root -l  -b -q ControlPlots/DrawControlPlot.C+'("None",kTRUE,"Lumi","MomUnCorr","rewboth",true)'
+
