@@ -71,6 +71,11 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     {
       lumiText += "8 TeV";
     }
+  else if ( iPeriod==13 )
+    {
+      lumiText += "(pPb 8.16 TeV)";
+    }
+
   else if ( iPeriod==0 )
     {
       lumiText += lumi_sqrtS;
