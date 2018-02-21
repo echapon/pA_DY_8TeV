@@ -125,7 +125,7 @@ void Sys_MomCorr(const char* file, var thevar) {
          eyh = graphs[i]->GetEYhigh()[j];
 
          // the graph was centered around 1 and with errors corresponding to the syst: put y at the syst and with 0 error
-         graphs[i]->SetPoint(j,x,max(eyl,eyh));
+         graphs[i]->SetPoint(j,x,max(eyl,eyh)*100.);
          graphs[i]->SetPointEYlow(j,0);
          graphs[i]->SetPointEYhigh(j,0);
 
@@ -160,12 +160,13 @@ void Sys_MomCorr(const char* file, var thevar) {
    }
    graphs[0] = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
    graphs[0]->Sort();
+   graphs[0]->SetMinimum(0);
 
 
    MyCanvas c1(Form("systematics_MomCorr_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
-   // if (thevar==var::phistar) c1.SetYRange(0,6);
-   c1.CanvasWithMultipleGraphs(graphs,ynames, "LP");
+   if (thevar==var::pt) c1.SetYRange(0,3.9);
+   c1.CanvasWithMultipleGraphs(graphs,ynames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
 }

@@ -31,3 +31,15 @@ root -l -b -q estimateWjet.cc
 # draw the plots. for instance:
 root -l  -b -q ControlPlots/DrawControlPlot.C+'("None",kTRUE,"Lumi","MomUnCorr","rewboth",true)'
 
+# Systematic uncertainties
+# momemtum corrections
+cd SysUncertainties
+root -l -b -q DetectorResolution/MomentumCorrection/Sys_MomCorr.C+'("DetectorResolution/MomentumCorrection/inputs/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomCorr00_noHFrew_notnprew.root")'
+
+# to smooth a syst, do:
+cd SysUncertainties
+root -l -b 
+.L syst.C
+smooth("csv/MomCorr_mass.csv")
+// repeat for all csv's you want to smooth
+.q

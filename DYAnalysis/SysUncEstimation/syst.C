@@ -72,7 +72,7 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
 
    vector<TString> tags;
    tags.push_back("rewNtracks");
-   tags.push_back("MomCorr_afterdetunfold_smooth");
+   tags.push_back("MomCorr_smooth");
    tags.push_back("tnp_tot");
    tags.push_back("acceffstat_up");
    tags.push_back("bkg_smooth");
