@@ -11,7 +11,7 @@ void ratioplots_2files(const char* file1, const char* file2, const char* legend1
    TCanvas *c1 = new TCanvas();
    c1->Print("ratioplots.pdf[");
 
-   const int nhist = 91;
+   const int nhist = 92;
    const char* histname[nhist] = {
       "h_Angle",
       "h_barrel_eta",
@@ -52,6 +52,7 @@ void ratioplots_2files(const char* file1, const char* file2, const char* legend1
       "h_lead_phi",
       "h_lead_Pt",
       "h_mass",
+      "h_massZ",
       "h_mass2",
       "h_mass3",
       "h_mass_OS",

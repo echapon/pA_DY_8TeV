@@ -5,8 +5,8 @@
 void setStyle(TEfficiency *e, Color_t color=kBlack, Style_t markerstyle=kFullCircle);
 
 void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 | Phistar
-   TFile *fnom = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
-   TFile *fmomcor = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr_Powheg_PAL3Mu12_0_rewboth.root");
+   TFile *fnom = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root");
+   TFile *fmomcor = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr76_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fnorew = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_norew.root");
    TFile *frewminus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewminus.root");
    TFile *frewplus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewplus.root");
@@ -103,10 +103,11 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    eff_momcor->Draw("same");
    tleg = new TLegend(xl1,yl1,xl2,yl2);
    tleg->SetBorderSize(0);
-   tleg->AddEntry(eff_nom,"No mom. corr.","lp");
-   tleg->AddEntry(eff_momcor,"Incl. mom. corr.","lp");
+   tleg->AddEntry(eff_nom,"Mom. corr. B-H","lp");
+   tleg->AddEntry(eff_momcor,"Mom. corr. H","lp");
    tleg->Draw();
-   c1->SaveAs("comp_eff_momcor_"+variable+".pdf");
+   c1->SaveAs("comp_eff_momcor_InclVsH_"+variable+".pdf");
+   return;
    
    // reweighting effect
    haxes_acc->Draw();

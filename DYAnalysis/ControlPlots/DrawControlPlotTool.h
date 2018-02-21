@@ -465,9 +465,9 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 			else if( STags[i_MC] == DYana::WFirst )
 				legend->AddEntry(h_MC[i_MC], "WJets" );
 			else if( STags[i_MC] == DYana::DYFirst )
-				legend->AddEntry(h_MC[i_MC], "DYMuMu" );
-			else if( STags[i_MC] == DYana::DYLast) 
 				legend->AddEntry(h_MC[i_MC], "DYTauTau" );
+			else if( STags[i_MC] == DYana::DYLast) 
+				legend->AddEntry(h_MC[i_MC], "DYMuMu" );
 		}
 
 		// -- Sum of all prediction: for ratio plot -- //

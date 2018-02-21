@@ -16,6 +16,7 @@
 #include <TStyle.h>
 #include <TEfficiency.h>
 #include <TGraphAsymmErrors.h>
+#include <TRandom3.h>
 
 #include <vector>
 
@@ -59,7 +60,7 @@ int tnpregtrg(int ireg, float eta, int ivar) {
 }
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both ) // run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, int cor_s=0, int cor_m=0 ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -69,7 +70,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomCorr";
+      cout << "Using s = " << cor_s << ", m = " << cor_m << endl;
+		isApplyMomCorr = Form("MomCorr%d%d",cor_s,cor_m);
 	}
 	else
 	{
@@ -169,6 +171,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		ntuple->TurnOnBranches_HI();
 
       RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
+      // set the seed
+      gRandom = new TRandom3(1);
 
 		Bool_t isNLO = 0;
 		if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
@@ -292,8 +296,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      if( isCorrected == kTRUE )
                      {
                         float qter = 1.0;
-                        int s=0, m=0; // nominal
-                        // int s=7, m=6; // Run2016H only
+                        int s=cor_s, m=cor_m;
 
                         if( Tag[i_tup] == "Data" )
                            // careful, need to switch back eta to the lab frame

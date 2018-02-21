@@ -34,7 +34,8 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       TString HLTname = "PAL3Mu12", 
       bool doHFrew = false, 
       HFweight::HFside rewmode = HFweight::HFside::both, 
-      bool doTnPrew = false)
+      bool doTnPrew = false,
+      int cor_s=0, int cor_m=0)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -44,7 +45,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomCorr";
+		isApplyMomCorr = Form("MomCorr%d%d",cor_s,cor_m);
 	}
 	else
 	{
@@ -227,8 +228,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 					if( isCorrected == kTRUE )
 					{
 						float qter = 1.0;
-                  int s=0, m=0; // nominal
-                  // int s=7, m=6; // Run2016H only
+                  int s=cor_s, m=cor_m; 
 						
                   if( Tag[i_tup].Contains("Data") )
                      // careful, need to switch back eta to the lab frame
