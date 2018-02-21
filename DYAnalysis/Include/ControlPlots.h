@@ -112,6 +112,10 @@ public:
 	TH1D* h_mass_OS_BE;
 	TH1D* h_mass_OS_EE;
 
+   TH1D* h_PtoM;
+   TH1D* h_PtoM_2060;
+   TH1D* h_PtoM_60120;
+
 	TH1D *h_muonHits;
 	TH1D *h_nMatches;
 	TH1D *h_RelPtError;
@@ -223,6 +227,10 @@ public:
 		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BB );
 		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BE );
 		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_EE );
+
+      h_PtoM = new TH1D("h_PtoM_"+Type, "", 50, 1, 10); Histo.push_back( h_PtoM );
+      h_PtoM_2060 = new TH1D("h_PtoM_2060_"+Type, "", 50, 1, 10); Histo.push_back( h_PtoM_2060 );
+      h_PtoM_60120 = new TH1D("h_PtoM_60120_"+Type, "", 50, 1, 10); Histo.push_back( h_PtoM_60120 );
 
 		h_muonHits = new TH1D("h_muonHits_"+Type, "", 70, 0, 70); Histo.push_back( h_muonHits );
 		h_nMatches = new TH1D("h_nMatches_"+Type, "", 7, 0, 7); Histo.push_back( h_nMatches );
@@ -399,6 +407,14 @@ public:
 		TLorentzVector reco_v1 = recolep1.Momentum;
 		TLorentzVector reco_v2 = recolep2.Momentum;
 		Double_t reco_M = (reco_v1 + reco_v2).M();
+      Bool_t isOS = ( recolep1.charge != recolep2.charge );
+
+      if (!isOS) {
+			h_mass_SS->Fill( reco_M, weight );
+         return;
+      }
+
+      // from now on, we are looking at opposite sign muons.
 
 		//Dimuon Mass/Pt/Rapidity
 		Double_t reco_Rap = (reco_v1 + reco_v2).Rapidity();
@@ -444,42 +460,40 @@ public:
 			h_sub_phi->Fill( recolep1.phi, weight );
 		}
 
-		//Same-Sign / Opposite Invariant Mass
-		if( recolep1.charge != recolep2.charge )
-		{
-			h_mass_OS->Fill( reco_M, weight );
+		//Invariant Mass
+      h_mass_OS->Fill( reco_M, weight );
 
-			Bool_t isBB = kFALSE;
-			Bool_t isBE = kFALSE;
-			Bool_t isEE = kFALSE;
-			if( fabs(recolep1.eta) < 0.9 && fabs(recolep2.eta) < 0.9 )
-				isBB = kTRUE;
-			else if( fabs(recolep1.eta) > 0.9 && fabs(recolep2.eta) > 0.9 )
-				isEE = kTRUE;
-			else
-				isBE = kTRUE;
+      Bool_t isBB = kFALSE;
+      Bool_t isBE = kFALSE;
+      Bool_t isEE = kFALSE;
+      if( fabs(recolep1.eta) < 0.9 && fabs(recolep2.eta) < 0.9 )
+         isBB = kTRUE;
+      else if( fabs(recolep1.eta) > 0.9 && fabs(recolep2.eta) > 0.9 )
+         isEE = kTRUE;
+      else
+         isBE = kTRUE;
 
-			if( isBB == kTRUE )
-				h_mass_OS_BB->Fill( reco_M, weight );
-			else if( isBE == kTRUE )
-				h_mass_OS_BE->Fill( reco_M, weight );
-			else if( isEE == kTRUE )
-				h_mass_OS_EE->Fill( reco_M, weight );
+      if( isBB == kTRUE )
+         h_mass_OS_BB->Fill( reco_M, weight );
+      else if( isBE == kTRUE )
+         h_mass_OS_BE->Fill( reco_M, weight );
+      else if( isEE == kTRUE )
+         h_mass_OS_EE->Fill( reco_M, weight );
 
-		}
-		else
-			h_mass_SS->Fill( reco_M, weight );
+      h_PtoM->Fill( reco_Pt / reco_M, weight );
 
 		// -- Fine binning -- //
 		if( reco_M > 15 && reco_M < 60 )
 		{
 			h_Pt_M15to60->Fill( recolep1.Pt, weight );
-			h_Pt_M15to60->Fill( recolep2.Pt, weight );
+         h_Pt_M15to60->Fill( recolep2.Pt, weight );
+         if (reco_M > 20) h_PtoM_2060->Fill( reco_Pt / reco_M, weight );
 		}
 		else if( reco_M > 60 && reco_M < 120 )
 		{
 			h_Pt_M60to120->Fill( recolep1.Pt, weight );
 			h_Pt_M60to120->Fill( recolep2.Pt, weight );
+         h_PtoM_60120->Fill( reco_Pt / reco_M, weight );
 		}
 		else if( reco_M > 120 && reco_M < 600 )
 		{
