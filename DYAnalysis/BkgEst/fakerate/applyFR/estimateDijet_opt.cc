@@ -53,6 +53,14 @@ for (int optval=1;optval<6;optval++) {
 	 else if (optval==4) {minx=-3.0;maxx=2.0;optbinnum=rapbinnum_60120;}
 	 else if (optval==5) {minx=-3.0;maxx=2.0;optbinnum=rapbinnum_1560;}
 
+	 TString outtitle;
+
+	 if (optval==1) {outtitle="mass";}
+	 else if (optval==2) {outtitle="phistar";}
+	 else if (optval==3) {outtitle="pt";}
+	 else if (optval==4) {outtitle="rap60120";}
+	 else if (optval==5) {outtitle="rap1560";}
+
 
 
 
@@ -115,7 +123,9 @@ for (int optval=1;optval<6;optval++) {
 
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
-       norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
+		 if (i==DYMuMu1030 || i==DYMuMu30) norm[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
+		 else if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) norm[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
+	    else norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
        cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
        //dijet_template[i] = (TH1D*)f[i]->Get("rap1560Dijet1");
@@ -268,7 +278,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_template_%s_noFRweight_v2_beforeremove.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_template_%s_beforeremove.pdf",outtitle.Data()));
 
 			dijet_template[Data1]->Add(dijet_template[DYTauTau1030],-1.0);
 
@@ -279,7 +289,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_template_%s_noFRweight_v2_removedDY.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_template_%s_removedDY.pdf",outtitle.Data()));
 
 
 			dijet_template[Data1]->Add(dijet_template[TT],-1.0);
@@ -291,7 +301,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_template_%s_noFRweight_v2_removedTT.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_template_%s_removedTT.pdf",outtitle.Data()));
 
 
 			dijet_template[Data1]->Add(dijet_template[WW],-1.0);
@@ -303,7 +313,37 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_template_%s_noFRweight_v2_removedWWs.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_template_%s_removedWWs.pdf",outtitle.Data()));
+
+			dijet_template[DYTauTau1030]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_template_%s_DYs.pdf",outtitle.Data()));
+
+			dijet_template[TT]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_template_%s_TTs.pdf",outtitle.Data()));
+
+			dijet_template[WW]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_template_%s_WWs.pdf",outtitle.Data()));
+
+
+///////////////////////////////////////////////////////
 
 			dijet_ratio[Data1]->Draw("HIST");
 			CMS_lumi(canv,13,11);
@@ -312,7 +352,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_ratio_%s_noFRweight_v2_beforeremove.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_ratio_%s_beforeremove.pdf",outtitle.Data()));
 
 			dijet_ratio[Data1]->Add(dijet_ratio[DYTauTau1030],-1.0);
 
@@ -323,7 +363,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_ratio_%s_noFRweight_v2_removedDY.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_ratio_%s_removedDY.pdf",outtitle.Data()));
 
 
 			dijet_ratio[Data1]->Add(dijet_ratio[TT],-1.0);
@@ -335,7 +375,7 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_ratio_%s_noFRweight_v2_removedTT.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_ratio_%s_removedTT.pdf",outtitle.Data()));
 
 
 			dijet_ratio[Data1]->Add(dijet_ratio[WW],-1.0);
@@ -347,7 +387,35 @@ for (int optval=1;optval<6;optval++) {
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/dijet_ratio_%s_noFRweight_v2_removedWWs.pdf",histtitle.Data()));
+			canv->Print(Form("print/dijet_ratio_%s_removedWWs.pdf",outtitle.Data()));
+
+			dijet_ratio[DYTauTau1030]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_ratio_%s_DYs.pdf",outtitle.Data()));
+
+			dijet_ratio[TT]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_ratio_%s_TTs.pdf",outtitle.Data()));
+
+			dijet_ratio[WW]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/dijet_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/dijet_ratio_%s_WWs.pdf",outtitle.Data()));
+
 
 /*
     dijet_template[Data1]->Add(dijet_template[DYTauTau1030],-1.0);
@@ -371,11 +439,11 @@ for (int optval=1;optval<6;optval++) {
     canv->GetFrame()->Draw();
     if (optval==1) canv->SetLogx();
     //canv->Print("print/dijet_template_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijet_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijet_template_%s.pdf",outtitle.Data()));
     dijetSS_template[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
     //canv->Print("print/dijetBoth_template_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijetBoth_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijetBoth_template_%s.pdf",outtitle.Data()));
     canv->Clear();
     dijetSS_template[Data1]->SetFillColor(7);
     dijetSS_template[Data1]->Draw("HIST");
@@ -385,7 +453,7 @@ for (int optval=1;optval<6;optval++) {
     canv->GetFrame()->Draw();
     if (optval==1) canv->SetLogx();
     //canv->Print("print/dijetSS_template_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijetSS_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijetSS_template_%s.pdf",outtitle.Data()));
     canv->Clear();
 
     dijet_ratio[Data1]->Draw("HIST");
@@ -395,11 +463,11 @@ for (int optval=1;optval<6;optval++) {
     canv->GetFrame()->Draw();
     if (optval==1) canv->SetLogx();
     //canv->Print("print/dijet_ratio_noFRweight.pdf");
-	 canv->Print(Form("print/dijet_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijet_ratio_%s.pdf",outtitle.Data()));
     dijetSS_ratio[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
     //canv->Print("print/dijetBoth_ratio_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijetBoth_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijetBoth_ratio_%s.pdf",outtitle.Data()));
     canv->Clear();
     dijetSS_ratio[Data1]->SetFillColor(7);
     dijetSS_ratio[Data1]->Draw("HIST");
@@ -409,7 +477,7 @@ for (int optval=1;optval<6;optval++) {
     canv->GetFrame()->Draw();
     if (optval==1) canv->SetLogx();
     //canv->Print("print/dijetSS_ratio_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijetSS_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijetSS_ratio_%s.pdf",outtitle.Data()));
     canv->Clear();
 
     double error = 0;
@@ -522,9 +590,10 @@ for (int optval=1;optval<6;optval++) {
     canv->GetFrame()->Draw();
     if (optval==1) canv->SetLogx();
     //canv->Print("print/dijet_uncertainty_rap1560_noFRweight.pdf");
-	 canv->Print(Form("print/dijet_uncertainty_%s_noFRweight_v2.pdf",histtitle.Data()));
+	 canv->Print(Form("print/dijet_uncertainty_%s.pdf",outtitle.Data()));
     //TFile* gg = new TFile("result/dijet_rap1560_noFRweight.root","RECREATE");
-    TFile* gg = new TFile(Form("result/dijet_%s_noFRweight_v2.root",histtitle.Data()),"RECREATE");
+    //###TFile* gg = new TFile(Form("result/dijet_%s_noFRweight_v2.root",histtitle.Data()),"RECREATE");
+	 TFile* gg = new TFile(Form("result/dijet_%s.root",outtitle.Data()),"RECREATE");
     gg->Write();
     gg->Close();
 }

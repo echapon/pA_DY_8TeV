@@ -54,6 +54,13 @@ void estimateWjets_opt(){
 		else if (optval==4) {minx=-3.0;maxx=2.0;optbinnum=rapbinnum_60120;}
 		else if (optval==5) {minx=-3.0;maxx=2.0;optbinnum=rapbinnum_1560;}
 
+	 TString outtitle;
+
+	 if (optval==1) {outtitle="mass";}
+	 else if (optval==2) {outtitle="phistar";}
+	 else if (optval==3) {outtitle="pt";}
+	 else if (optval==4) {outtitle="rap60120";}
+	 else if (optval==5) {outtitle="rap1560";}
 
 
 
@@ -114,7 +121,9 @@ void estimateWjets_opt(){
 
 		for (int i=0; i<ALL; i++) {
 			SampleTag tag = static_cast<SampleTag>(i);
-			norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
+		 if (i==DYMuMu1030 || i==DYMuMu30) norm[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
+		 else if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) norm[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
+	    else norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
 			cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
 			//wjets_template[i] = (TH1D*)f[i]->Get("rap1560Dijet1");
@@ -260,7 +269,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_template_%s_noFRweight_v2_beforeremove.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_template_%s_beforeremove.pdf",outtitle.Data()));
 
 			wjets_template[Data1]->Add(wjets_template[DYTauTau1030],-1.0);
 
@@ -271,7 +280,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_template_%s_noFRweight_v2_removedDY.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_template_%s_removedDY.pdf",outtitle.Data()));
 
 
 			wjets_template[Data1]->Add(wjets_template[TT],-1.0);
@@ -283,7 +292,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_template_%s_noFRweight_v2_removedTT.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_template_%s_removedTT.pdf",outtitle.Data()));
 
 
 			wjets_template[Data1]->Add(wjets_template[WW],-1.0);
@@ -295,7 +304,36 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_template_%s_noFRweight_v2_removedWWs.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_template_%s_removedWWs.pdf",outtitle.Data()));
+
+			wjets_template[DYTauTau1030]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_template_%s_DYs.pdf",outtitle.Data()));
+
+			wjets_template[TT]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_template_%s_TTs.pdf",outtitle.Data()));
+
+			wjets_template[WW]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_template_%s_WWs.pdf",outtitle.Data()));
+
+//////////////////////////////////////////////
 
 			wjets_ratio[Data1]->Draw("HIST");
 			CMS_lumi(canv,13,11);
@@ -304,7 +342,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_ratio_%s_noFRweight_v2_beforeremove.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_ratio_%s_beforeremove.pdf",outtitle.Data()));
 
 			wjets_ratio[Data1]->Add(wjets_ratio[DYTauTau1030],-1.0);
 
@@ -315,7 +353,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_ratio_%s_noFRweight_v2_removedDY.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_ratio_%s_removedDY.pdf",outtitle.Data()));
 
 
 			wjets_ratio[Data1]->Add(wjets_ratio[TT],-1.0);
@@ -327,7 +365,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_ratio_%s_noFRweight_v2_removedTT.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_ratio_%s_removedTT.pdf",outtitle.Data()));
 
 
 			wjets_ratio[Data1]->Add(wjets_ratio[WW],-1.0);
@@ -339,7 +377,35 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_ratio_%s_noFRweight_v2_removedWWs.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_ratio_%s_removedWWs.pdf",outtitle.Data()));
+
+			wjets_ratio[DYTauTau1030]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_ratio_%s_DYs.pdf",outtitle.Data()));
+
+			wjets_ratio[TT]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_ratio_%s_TTs.pdf",outtitle.Data()));
+
+			wjets_ratio[WW]->Draw("HIST");
+			CMS_lumi(canv,13,11);
+			canv->Update();
+			canv->RedrawAxis();
+			canv->GetFrame()->Draw();
+			if (optval==1) canv->SetLogx();
+			//canv->Print("print/wjets_ratio_rap1560_noFRweight.pdf");
+			canv->Print(Form("print/wjets_ratio_%s_WWs.pdf",outtitle.Data()));
+
 
 /*
 			wjets_ratio[Data1]->Add(wjets_ratio[DYTauTau1030],-1.0);
@@ -359,11 +425,11 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_template_%s.pdf",outtitle.Data()));
 			wjetsSS_template[Data1]->Draw("EPSAME");
 			legg->Draw("SAME");
 			//canv->Print("print/wjetsBoth_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjetsBoth_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjetsBoth_template_%s.pdf",outtitle.Data()));
 			canv->Clear();
 			wjetsSS_template[Data1]->SetFillColor(7);
 			wjetsSS_template[Data1]->Draw("HIST");
@@ -373,7 +439,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjetsSS_template_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjetsSS_template_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjetsSS_template_%s.pdf",outtitle.Data()));
 			canv->Clear();
 
 			wjets_ratio[Data1]->Draw("HIST");
@@ -383,11 +449,11 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_ratio_noFRweight.pdf");
-			canv->Print(Form("print/wjets_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_ratio_%s.pdf",outtitle.Data()));
 			wjetsSS_ratio[Data1]->Draw("EPSAME");
 			legg->Draw("SAME");
 			//canv->Print("print/wjetsBoth_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjetsBoth_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjetsBoth_ratio_%s.pdf",outtitle.Data()));
 			canv->Clear();
 			wjetsSS_ratio[Data1]->SetFillColor(7);
 			wjetsSS_ratio[Data1]->Draw("HIST");
@@ -397,7 +463,7 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjetsSS_ratio_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjetsSS_ratio_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjetsSS_ratio_%s.pdf",outtitle.Data()));
 			canv->Clear();
 
 			double error = 0;
@@ -510,9 +576,9 @@ void estimateWjets_opt(){
 			canv->GetFrame()->Draw();
 			if (optval==1) canv->SetLogx();
 			//canv->Print("print/wjets_uncertainty_rap1560_noFRweight.pdf");
-			canv->Print(Form("print/wjets_uncertainty_%s_noFRweight_v2.pdf",histtitle.Data()));
+			canv->Print(Form("print/wjets_uncertainty_%s.pdf",outtitle.Data()));
 			//TFile* gg = new TFile("result/wjets_rap1560_noFRweight.root","RECREATE");
-			TFile* gg = new TFile(Form("result/wjets_%s_noFRweight_v2.root",histtitle.Data()),"RECREATE");
+			TFile* gg = new TFile(Form("result/wjets_%s.root",outtitle.Data()),"RECREATE");
 			gg->Write();
 			gg->Close();
 		}
