@@ -14,8 +14,6 @@
 #include "../Include/texUtils.h"
 #include "../Include/lhapdf_utils.h"
 
-#define DIRTYPREFSR
-
 using namespace DYana;
 using namespace std;
 
@@ -217,48 +215,49 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       // TH1F *hth = rebin_theory(hth1,hth19,hth20);
       // hth->Scale(208*1e-3);
 
-      TFile *fth = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
-      vector<TH1D*> hth;
+      // // EPPS16
+      // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth_EPPS16.root");
+      // vector<TH1D*> hth_EPPS16;
+      // int i=0;
+      // hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      // hth_EPPS16.back()->Scale(1./lumi_all);
+      // Obtain_dSigma_dX(hth_EPPS16.back());
+      // for (i=285; i<=324; i++) {
+      //    hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      //    hth_EPPS16.back()->Scale(1./lumi_all);
+      //    Obtain_dSigma_dX(hth_EPPS16.back());
+      // }
+      // for (i=112; i<=167; i++) {
+      //    hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      //    hth_EPPS16.back()->Scale(1./lumi_all);
+      //    Obtain_dSigma_dX(hth_EPPS16.back());
+      // }
+
+      // TGraphAsymmErrors *gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+      // gth_EPPS16->SetMarkerSize(0);
+      // gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+
+      // CT14
+      TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+      vector<TH1D*> hth_CT14;
       int i=0;
-      hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-      hth.back()->Scale(1./lumi_all);
-      Obtain_dSigma_dX(hth.back());
-      for (i=285; i<=324; i++) {
-         hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-         hth.back()->Scale(1./lumi_all);
-         Obtain_dSigma_dX(hth.back());
-      }
+      hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      hth_CT14.back()->Scale(1./lumi_all);
+      Obtain_dSigma_dX(hth_CT14.back());
       for (i=112; i<=167; i++) {
-         hth.push_back((TH1D*) fth->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-         hth.back()->Scale(1./lumi_all);
-         Obtain_dSigma_dX(hth.back());
+         hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_CT14.back()->Scale(1./lumi_all);
+         Obtain_dSigma_dX(hth_CT14.back());
       }
 
-      TGraphAsymmErrors *gth = pdfuncert(hth, "EPPS16nlo_CT14nlo_Pb208");
-      gth->SetMarkerSize(0);
-      gth->SetName(Form("gth_%s",varname(thevar)));
+      TGraphAsymmErrors *gth_CT14 = pdfuncert(hth_CT14, "CT14nlo");
+      gth_CT14->SetMarkerSize(0);
+      gth_CT14->SetName(Form("gth_CT14_%s",varname(thevar)));
 
-      // dirty hack to plot the pre-FSR theory... fix for the final results!
-#ifdef DIRTYPREFSR
-      TFile *fsr = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
-      TH1D *hpre = (TH1D*) fsr->Get(Form("h_%s_preFSR",varname(thevar)));
-      TH1D *hpost = (TH1D*) fsr->Get(Form("h_%s_postFSR",varname(thevar)));
-      for (int i=0; i<gth->GetN(); i++) {
-         double ratio = hpre->GetBinContent(i+1)/hpost->GetBinContent(i+1);
-         double x = gth->GetX()[i];
-         double y = gth->GetY()[i]*ratio;
-         double exl = gth->GetEXlow()[i];
-         double exh = gth->GetEXhigh()[i];
-         double eyl = gth->GetEYlow()[i]*ratio;
-         double eyh = gth->GetEYhigh()[i]*ratio;
-         gth->SetPoint(i,x,y);
-         gth->SetPointError(i,exl,exh,eyl,eyh);
-      }
-#endif
 
       if (!forsyst) {
-         c1.CanvasWithGraphRatioPlot(gres,gth,
-               "Data","Powheg","Data/Powheg",
+         c1.CanvasWithGraphRatioPlot(gres,gth_CT14,
+               "Data","Powheg (CT14)","Data/CT14",
                kBlack,kRed,
                "EP","5");
          c1.PrintCanvas();
@@ -274,11 +273,12 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       // write to file
       fout->cd();
       gres->Write();
-      gth->Write();
+      gth_CT14->Write();
       hy->Write();
       hy_statonly->Write();
 
-      fth->Close();
+      fth_CT14->Close();
+      // fth_EPPS16->Close();
    }
 
    // close file

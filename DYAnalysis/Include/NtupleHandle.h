@@ -339,17 +339,17 @@ public:
        chain->SetBranchStatus("*", 0);
 
        // -- Event Information -- //
-       chain->SetBranchStatus("nVertices", 1);
+       if (chain->FindBranch("nVertices")) chain->SetBranchStatus("nVertices", 1);
        chain->SetBranchStatus("runNum", 1);
        chain->SetBranchStatus("lumiBlock", 1);
        chain->SetBranchStatus("evtNum", 1);
-       chain->SetBranchStatus("nPileUp", 1);
+       if (chain->FindBranch("nPileUp")) chain->SetBranchStatus("nPileUp", 1);
 
-       chain->SetBranchAddress("nVertices", &nVertices);
+       if (chain->FindBranch("nVertices")) chain->SetBranchAddress("nVertices", &nVertices);
        chain->SetBranchAddress("runNum", &runNum);
        chain->SetBranchAddress("lumiBlock", &lumiBlock);
        chain->SetBranchAddress("evtNum", &evtNum);
-       chain->SetBranchAddress("nPileUp", &nPileUp);
+       if (chain->FindBranch("nPileUp")) chain->SetBranchAddress("nPileUp", &nPileUp);
 
        // default all branches off
        isOn_LHEInfo = false;
