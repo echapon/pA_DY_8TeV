@@ -50,6 +50,10 @@ void plotSysts(var thevar) {
    cout << systfilename.Data() << endl;
    systs.push_back(readSyst(systfilename.Data()));
    tags.push_back(systs.back().begin()->second.name.c_str());
+   systfilename = "csv/DetResUnfold_smooth_" + TString(varname(thevar)) + ".csv";
+   cout << systfilename.Data() << endl;
+   systs.push_back(readSyst(systfilename.Data()));
+   tags.push_back(systs.back().begin()->second.name.c_str());
 
    // lumi
    systfilename = "csv/lumi_" + TString(varname(thevar)) + ".csv";

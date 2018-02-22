@@ -8,6 +8,7 @@
 #include "samples_v20170830_Pyquen.h"
 #include "samples_v20180111.h"
 #include "samples_v20180111_Pyquen.h"
+#include "samples_v20180111_CT14.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -27,7 +28,12 @@ const double rapshift = 0.465;
 
 namespace DYana {
    // put the default samples here
+#ifndef CT14_GENONLY
    using namespace DYana_v20180111;
+#else
+   using namespace DYana_CT14;
+#endif
+
 
    // kinematic bins
    // mass

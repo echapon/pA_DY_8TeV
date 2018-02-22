@@ -77,6 +77,7 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    tags.push_back("acceffstat_up");
    tags.push_back("bkg_smooth");
    tags.push_back("AccEff_theory");
+   tags.push_back("DetResUnfold_smooth");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;

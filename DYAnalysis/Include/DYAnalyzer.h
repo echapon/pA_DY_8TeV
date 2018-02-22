@@ -269,6 +269,19 @@ void DYAnalyzer::SetupMCsamples_v20180111( TString Type, vector<TString> *ntuple
          DYana_v20180111::SampleTag tag_Powheg = static_cast<DYana_v20180111::SampleTag>(i);
          STags->push_back(tag_Powheg);
       }
+   } else if (Type=="CT14") { // Pyquen
+      using namespace DYana_v20180111_CT14;
+      cout << "Using samples from v20180111_CT14 for Type " << Type.Data() << endl;
+      for (int i=DYMuMu1030_PbP; i<=DYMuMu30_PbP; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         DYana_v20180111::SampleTag tag_Powheg = static_cast<DYana_v20180111::SampleTag>(i);
+         STags->push_back(tag_Powheg);
+      }
    } else { // Powheg
       using namespace DYana_v20180111;
       cout << "Using samples from v20180111 for Type " << Type.Data() << endl;
