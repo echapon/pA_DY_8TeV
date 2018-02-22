@@ -94,7 +94,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    }
 
    // output
-   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s.root",isApplyMomCorr.Data(),thevarname),"RECREATE");
+   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d_%s.root",Sample.Data(),isApplyMomCorr.Data(),run,thevarname),"RECREATE");
    fout->cd();
 
    // output
@@ -404,4 +404,16 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    fdata->Close();
    fout->Close();
    f->Close();
+}
+
+// do all variations at once
+void doDetUnfold_all() {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      doDetUnfold(kTRUE, "Powheg", "PAL3Mu12", 0, thevar_i);
+      doDetUnfold(kFALSE, "Powheg", "PAL3Mu12", 0, thevar_i);
+      doDetUnfold(kTRUE, "Pyquen", "PAL3Mu12", 0, thevar_i);
+      doDetUnfold(kTRUE, "Powheg", "PAL3Mu12", 1, thevar_i);
+      doDetUnfold(kTRUE, "Powheg", "PAL3Mu12", 2, thevar_i);
+   }
 }
