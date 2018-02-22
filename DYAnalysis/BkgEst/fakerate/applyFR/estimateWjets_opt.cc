@@ -123,7 +123,8 @@ void estimateWjets_opt(){
 			SampleTag tag = static_cast<SampleTag>(i);
 		 if (i==DYMuMu1030 || i==DYMuMu30) norm[i] = (Xsec(tag)*lumi_part2)/Nevts(tag);
 		 else if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) norm[i] = (Xsec(tag)*lumi_part1)/Nevts(tag);
-	    else norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
+       else if (i==Data1 || i==Data2) norm[i]=1.0;
+       else norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
 			cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
 			//wjets_template[i] = (TH1D*)f[i]->Get("rap1560Dijet1");
