@@ -31,9 +31,12 @@ root -l -b -q estimateWjet.cc
 # draw the plots. for instance:
 root -l  -b -q ControlPlots/DrawControlPlot.C+'("None",kTRUE,"Lumi","MomUnCorr","rewboth",true)'
 
+# make the plots in official style
+root -l -b -q OfficialStyle/dataMC.C
+
 # Systematic uncertainties
-# momemtum corrections
 cd SysUncertainties
+# momemtum corrections
 root -l -b -q DetectorResolution/MomentumCorrection/Sys_MomCorr.C+'("DetectorResolution/MomentumCorrection/inputs/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_MomCorr00_noHFrew_notnprew.root")'
 
 # to smooth a syst, do:
@@ -43,3 +46,17 @@ root -l -b
 smooth("csv/MomCorr_mass.csv")
 // repeat for all csv's you want to smooth
 .q
+
+# create the csv for stat
+root -l -b
+.L createSyst.C
+createStat("../Plots/result/xsec_nom.root",var::mass)
+createStat("../Plots/result/xsec_nom.root",var::pt)
+createStat("../Plots/result/xsec_nom.root",var::phistar)
+createStat("../Plots/result/xsec_nom.root",var::rap1560)
+createStat("../Plots/result/xsec_nom.root",var::rap60120)
+.q
+
+# plot the systs
+root -l -b -q plotSysts.C+
+root -l -b -q plotSysts.C+'(var::rap60120)' # need to redo rap60120 

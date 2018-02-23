@@ -69,7 +69,7 @@ void dataMC(var thevar)
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
-   TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomUnCorr_rewboth_tnprew_All.root",thevarname));
+   TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr_rewboth_tnprew_All.root",thevarname));
    f1->cd();
 
    TH1D* h_data = (TH1D*) f1->Get("h_data");
@@ -314,5 +314,12 @@ void normBinWidth(TH1D *hist) {
    for (int i=1; i<=hist->GetNbinsX(); i++) {
       hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
       hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
+   }
+}
+
+void dataMC() {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      dataMC(thevar_i);
    }
 }

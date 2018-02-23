@@ -49,7 +49,7 @@ void createStat(const char* fnom, var thevar=mass) {
    if (!tfnom) return;
 
    // get the histos
-   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_%s",varname(thevar)));
+   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_statonly_%s",varname(thevar)));
    if (!hnom) return;
 
    // get the uncert

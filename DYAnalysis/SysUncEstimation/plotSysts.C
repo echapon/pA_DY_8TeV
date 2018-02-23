@@ -83,7 +83,7 @@ void plotSysts(var thevar) {
       else {
          thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
          thegraph->SetMinimum(0);
-         if (thevar==var::phistar) thegraph->SetMaximum(6);
+         if (thevar==var::phistar) thegraph->SetMaximum(9.9);
       }
       thegraph->Sort();
       thegraph->SetFillStyle(0);
@@ -93,7 +93,8 @@ void plotSysts(var thevar) {
 
    MyCanvas c1(Form("systematics_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
-   if (thevar==var::phistar) c1.SetYRange(0,6);
+   if (thevar==var::phistar) c1.SetYRange(0,9.9);
+   c1.SetLegendPosition(0.25,0.60,0.65,0.90);
    c1.CanvasWithMultipleGraphs(graphs,tags, plotboxes ? "5" : "LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();

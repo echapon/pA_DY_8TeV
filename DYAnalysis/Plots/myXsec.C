@@ -81,9 +81,9 @@ TH1D *g2h(TGraphAsymmErrors *g) {
    return hans;
 }
 
-void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg histos
-      const char* accefffile="ROOTFile_AccEff.root",             // acceptance and efficiency
-      const char* outputfile="Plots/results/xsec.root",          // where to write the output xsec
+void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",                           // data and bkg histos
+      const char* accefffile="ROOTFile_Histogram_Acc_Eff_MomCorr_Powheg_PAL3Mu12_0_rewboth.root",// acceptance and efficiency
+      const char* outputfile="Plots/results/xsec_nom_detcor_FSRcor.root",                        // where to write the output xsec
       bool forsyst=false,                                        // if true, don't print canvases and tables
       bool doxsec=true) {                                        // if false, don't do dxsec/dxxx, just correct for acc eff
    TFile *fy = TFile::Open(datafile);
@@ -105,7 +105,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       TGraphAsymmErrors* gres_statonly = NULL;
       if (hy) {
          if (doxsec) {
-            hy->Scale(1./lumi_all);
+            hy->Scale(1.e-3/lumi_all); // pb -> nb
             Obtain_dSigma_dX(hy);
          }
          hy->SetName(Form("hy_%s",varname(thevar)));
@@ -167,9 +167,9 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          // cout << hy->GetBinContent(1) << endl;
 
          if (doxsec) {
-            hy->Scale(1./lumi_all);
+            hy->Scale(1.e-3/lumi_all); // pb -> nb
             Obtain_dSigma_dX(hy);
-            hy_statonly->Scale(1./lumi_all);
+            hy_statonly->Scale(1.e-3/lumi_all); // pb -> nb
             Obtain_dSigma_dX(hy_statonly);
          }
          // cout << hy->GetBinContent(1) << endl;
@@ -237,16 +237,16 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       vector<TH1D*> hth_EPPS16;
       int i=0;
       hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-      hth_EPPS16.back()->Scale(1./lumi_all);
+      hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
       Obtain_dSigma_dX(hth_EPPS16.back());
       for (i=285; i<=324; i++) {
          hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-         hth_EPPS16.back()->Scale(1./lumi_all);
+         hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_EPPS16.back());
       }
       for (i=112; i<=167; i++) {
          hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-         hth_EPPS16.back()->Scale(1./lumi_all);
+         hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_EPPS16.back());
       }
 
@@ -259,11 +259,11 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       vector<TH1D*> hth_CT14;
       i=0;
       hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-      hth_CT14.back()->Scale(1./lumi_all);
+      hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
       Obtain_dSigma_dX(hth_CT14.back());
       for (i=112; i<=167; i++) {
          hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-         hth_CT14.back()->Scale(1./lumi_all);
+         hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_CT14.back());
       }
 
@@ -273,7 +273,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
 
 
       if (!forsyst) {
-         if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14000,53000);
+         if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
                kBlue,kRed,kBlack,
