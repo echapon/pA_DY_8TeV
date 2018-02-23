@@ -9,6 +9,7 @@
 #include "TLine.h"
 #include "TLegend.h"
 #include "TLegendEntry.h"
+#include "THStack.h"
 
 #include "BkgEst/interface/defs.h"
 #include "Include/tdrstyle.C"
@@ -179,6 +180,9 @@ void dataMC(var thevar)
    }
    h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
+   if (thevar==var::pt) h_data->GetXaxis()->SetRangeUser(0.5,200);
+   if (thevar==var::phistar) h_data->GetXaxis()->SetRangeUser(0.005,3);
+   h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
    //
@@ -186,7 +190,7 @@ void dataMC(var thevar)
    grid_.SetLineColor(kGray+2);
    grid_.SetLineStyle(kSolid);
    const double *xAxis = hdata->GetXaxis()->GetXbins()->GetArray();
-   for( size_t ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
+   for( unsigned int ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
      grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
@@ -271,6 +275,9 @@ void dataMC(var thevar)
    hratio->GetZaxis()->SetTitleSize(0.035);
    hratio->GetZaxis()->SetTitleFont(42);
    hratio->Draw("E1PL");
+   if (thevar==var::pt) hratio->GetXaxis()->SetRangeUser(0.5,200);
+   if (thevar==var::phistar) hratio->GetXaxis()->SetRangeUser(0.005,3);
+   hratio->Draw("E1PL");
    
    TF1 *f_line1 = new TF1("f_line","1",-10000,10000);
    f_line1->SetFillColor(19);
@@ -298,7 +305,7 @@ void dataMC(var thevar)
    TLine gridRatio;
    gridRatio.SetLineColor(kGray+2);
    gridRatio.SetLineStyle(2);
-   for( size_t ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
+   for( unsigned int ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
      gridRatio.DrawLine(xAxis[ii],0.45,xAxis[ii],1.55);
    }
 

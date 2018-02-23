@@ -84,6 +84,7 @@ void plotSysts(var thevar) {
          thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
          thegraph->SetMinimum(0);
          if (thevar==var::phistar) thegraph->SetMaximum(9.9);
+         if (thevar==var::rap1560) thegraph->SetMaximum(19);
       }
       thegraph->Sort();
       thegraph->SetFillStyle(0);
