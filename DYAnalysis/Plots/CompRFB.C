@@ -40,36 +40,63 @@ void CompRFB (const char* infile="Plots/results/xsec_nom.root") {
    TGraphAsymmErrors *grfbp_rap60120 = RFB_60120(gaeres_rap60120);
 
    // for theory, need to account for correlations in the nPDF uncertainties, since we know how to do it
-   TFile *fth = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
-   vector<TH1D*> hth1560,hth60120;
+   // EPPS16
+   TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+   vector<TH1D*> hth1560_EPPS16,hth60120_EPPS16;
    int i=0;
-   hth1560.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal%d",i))));
-   hth60120.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal%d",i))));
+   hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i))));
+   hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i))));
    for (i=285; i<=324; i++) {
-      hth1560.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal%d",i))));
-      hth60120.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal%d",i))));
+      hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i))));
+      hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i))));
    }
    for (i=112; i<=167; i++) {
-      hth1560.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal%d",i))));
-      hth60120.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal%d",i))));
+      hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i))));
+      hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i))));
    }
 
-   TGraphAsymmErrors *grfbth_rap1560 = pdfuncert(hth1560, "EPPS16nlo_CT14nlo_Pb208");
-   TGraphAsymmErrors *grfbth_rap60120 = pdfuncert(hth60120, "EPPS16nlo_CT14nlo_Pb208");
+   TGraphAsymmErrors *gth1560_EPPS16 = pdfuncert(hth1560_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+   TGraphAsymmErrors *gth60120_EPPS16 = pdfuncert(hth60120_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+   gth1560_EPPS16->SetMarkerSize(0);
+   gth60120_EPPS16->SetMarkerSize(0);
+   gth1560_EPPS16->SetName("gth1560_EPPS16");
+   gth60120_EPPS16->SetName("gth60120_EPPS16");
 
-   // TGraphAsymmErrors *grfbth_rap1560 = RFB_1560(gth1560);
-   // TGraphAsymmErrors *grfbth_rap60120 = RFB_60120(gth60120);
+   // CT14
+   TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+   vector<TH1D*> hth1560_CT14,hth60120_CT14;
+   i=0;
+   hth1560_CT14.push_back(RFB_1560((TH1D*) fth_CT14->Get(Form("h_rap1560_AccTotal_pre%d",i))));
+   hth60120_CT14.push_back(RFB_60120((TH1D*) fth_CT14->Get(Form("h_rap60120_AccTotal_pre%d",i))));
+   for (i=112; i<=167; i++) {
+      hth1560_CT14.push_back(RFB_1560((TH1D*) fth_CT14->Get(Form("h_rap1560_AccTotal_pre%d",i))));
+      hth60120_CT14.push_back(RFB_60120((TH1D*) fth_CT14->Get(Form("h_rap60120_AccTotal_pre%d",i))));
+   }
+
+   TGraphAsymmErrors *gth1560_CT14 = pdfuncert(hth1560_CT14, "CT14nlo");
+   TGraphAsymmErrors *gth60120_CT14 = pdfuncert(hth60120_CT14, "CT14nlo");
+   gth1560_CT14->SetMarkerSize(0);
+   gth60120_CT14->SetMarkerSize(0);
+   gth1560_CT14->SetName("gth1560_CT14");
+   gth60120_CT14->SetName("gth60120_CT14");
+
 
    // do the plotting here
 
    MyCanvas c_1560("Plots/grfbp_rap1560","|y|","R_{FB}",800,800);
    c_1560.SetYRange(0.45,1.85);
-   c_1560.CanvasWithGraphRatioPlot(grfbp_rap1560,grfbth_rap1560,"Data","Powheg","Data/Powheg",kBlack,kRed,"EP","5");
+   c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
+         "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+         kBlue,kRed,kBlack,
+         "5","5","EP");
    c_1560.PrintCanvas();
 
    MyCanvas c_60120("Plots/grfbp_rap60120","|y|","R_{FB}",800,800);
    c_60120.SetYRange(0.65,1.35);
-   c_60120.CanvasWithGraphRatioPlot(grfbp_rap60120,grfbth_rap60120,"Data","Powheg","Data/Powheg",kBlack,kRed,"EP","5");
+   c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
+         "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+         kBlue,kRed,kBlack,
+         "5","5","EP");
    c_60120.PrintCanvas();
 }
 
@@ -81,7 +108,7 @@ TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g) {
    b_rap1560_temp->Sumw2();
 
    for (int i=2;i<2+rfb_rapbinnum_1560;i++) {
-      std::cout << "|y|: " << g->GetX()[13-i] << " / " << g->GetX()[i] << std::endl;
+      // std::cout << "|y|: " << g->GetX()[13-i] << " / " << g->GetX()[i] << std::endl;
       if (g->GetY()[13-i]<=0) {f_rap1560_temp->SetBinContent(7-i,0.0);f_rap1560_temp->SetBinError(7-i,0.0);}
       else {f_rap1560_temp->SetBinContent(7-i,g->GetY()[13-i]);f_rap1560_temp->SetBinError(7-i,g->GetErrorY(13-i));}
       if (g->GetY()[i]<=0) {b_rap1560_temp->SetBinContent(7-i,0.0);b_rap1560_temp->SetBinError(7-i,0.0);}
@@ -98,7 +125,7 @@ TGraphAsymmErrors *RFB_60120(TGraphAsymmErrors *g) {
    b_rap60120_temp->Sumw2();
 
    for (int i=4;i<4+rfb_rapbinnum_60120;i++) {
-      std::cout << "|y|: " << g->GetX()[27-i] << " / " << g->GetX()[i] << std::endl;
+      // std::cout << "|y|: " << g->GetX()[27-i] << " / " << g->GetX()[i] << std::endl;
       if (g->GetY()[27-i]<=0) {f_rap60120_temp->SetBinContent(14-i,0.0);f_rap60120_temp->SetBinError(14-i,0.0);}
       else {f_rap60120_temp->SetBinContent(14-i,g->GetY()[27-i]);f_rap60120_temp->SetBinError(14-i,g->GetErrorY(27-i));}
       if (g->GetY()[i]<=0) {b_rap60120_temp->SetBinContent(14-i,0.0);b_rap60120_temp->SetBinError(14-i,0.0);}

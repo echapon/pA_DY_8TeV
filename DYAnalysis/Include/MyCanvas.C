@@ -462,6 +462,147 @@ public:
 		h_ratio2->Draw("EPSAME");
 	}
 
+	void CanvasWithThreeGraphsRatioPlot(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TGraphAsymmErrors* g_ref, 
+											TString Name1, TString Name2, TString Name_ref, TString Name_Ratio,
+											Int_t color1 = kBlue, Int_t color2 = kGreen+1, Int_t color_ref = kRed,
+											TString DrawOp1 = "5", TString DrawOp2 = "5", TString DrawOp_ref = "EP")
+	{
+		c->cd();
+		// -- Top Pad -- //
+		TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
+		TopPad->Draw();
+		TopPad->cd();
+
+		if( isLogX == kTRUE ) gPad->SetLogx();
+		if( isLogY == kTRUE ) gPad->SetLogy();
+
+		gPad->SetGridx(0);
+		gPad->SetGridy(0);
+
+		// -- ensure additional space at the bottom side for ratio plot -- //
+		TopPad->SetBottomMargin(0.32);
+		TopPad->SetRightMargin(0.05);
+
+		g1->Draw("A" + DrawOp1);
+		g2->Draw(DrawOp2);
+		g_ref->Draw(DrawOp_ref);
+
+		// -- General Setting for both plots -- //
+      TH1F *haxes = g1->GetHistogram();
+		haxes->SetXTitle( TitleX );
+		haxes->SetYTitle( TitleY );
+
+		// -- Setting for g1 -- //
+		g1->SetLineColor(color1);
+		g1->SetLineWidth(1);
+		g1->SetMarkerColor(color1);
+		g1->SetMarkerSize(1);
+		g1->SetMarkerStyle(20);
+		g1->SetFillColorAlpha(kWhite, 0);
+
+		// -- Setting for g2 -- //
+		g2->SetLineColor(color2);
+		g2->SetLineWidth(1);
+		g2->SetMarkerColor(color2);
+		g2->SetMarkerSize(1);
+		g2->SetMarkerStyle(20);
+		g2->SetFillColorAlpha(kWhite, 0);
+
+		// -- Setting for g_ref -- //
+		g_ref->SetLineColor(color_ref);
+		g_ref->SetLineWidth(1);
+		g_ref->SetMarkerColor(color_ref);
+		g_ref->SetMarkerSize(1);
+		g_ref->SetMarkerStyle(20);
+		g_ref->SetFillColorAlpha(kWhite, 0);
+
+		// -- X-axis Setting -- //
+		haxes->GetXaxis()->SetLabelSize(0);
+		haxes->GetXaxis()->SetTitleSize(0);
+		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetNoExponent(); haxes->GetXaxis()->SetMoreLogLabels(); }
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+
+		// -- Y-axis Setting -- //
+		g1->GetYaxis()->SetTitleSize(0.06);
+		g1->GetYaxis()->SetTitleOffset(1.25);
+		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
+		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+
+		// -- Add Legend -- //
+		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
+		legend->SetFillStyle(0);
+		legend->SetBorderSize(0);
+		legend->AddEntry(g_ref, Name_ref);
+		legend->AddEntry(g1, Name1);
+		legend->AddEntry(g2, Name2);
+		legend->Draw();
+
+		// -- Bottom Pad -- //
+		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
+		BottomPad->Draw();
+		BottomPad->cd();
+
+		BottomPad->SetBottomMargin(0.4);
+		BottomPad->SetRightMargin(0.04);
+		BottomPad->SetLeftMargin(0.15);	
+
+		if( isLogX == kTRUE ) gPad->SetLogx();
+
+		// -- Make Ratio plot & Draw it -- //
+		TGraphAsymmErrors *g_ratio1 = (TGraphAsymmErrors*)g1->Clone();
+		MakeRatioGraph(g_ratio1, g1, g_ref);
+		g_ratio1->Draw("AEP");
+		g_ratio1->SetName("g_ratio1");
+
+		TGraphAsymmErrors *g_ratio2 = (TGraphAsymmErrors*)g2->Clone();
+		MakeRatioGraph(g_ratio2, g2, g_ref);
+		g_ratio2->Draw("EP");
+		g_ratio2->SetName("g_ratio2");
+
+		g_ratio1->Draw("EP");
+
+		// -- General Setting for 1st ratio plot -- //
+		g_ratio1->SetLineColor(color1);
+		g_ratio1->SetMarkerStyle(20);
+		g_ratio1->SetMarkerSize(1);
+		g_ratio1->SetMarkerColor(color1);
+
+		// -- General Setting for 2nd ratio plot -- //
+		g_ratio2->SetLineColor(color2);
+		g_ratio2->SetMarkerStyle(20);
+		g_ratio2->SetMarkerSize(1);
+		g_ratio2->SetMarkerColor(color2);
+
+		// -- X-axis Setting -- //		
+      haxes =g_ratio1->GetHistogram();
+		haxes->GetXaxis()->SetTitle( TitleX );
+		haxes->GetXaxis()->SetTitleOffset( 0.9 );
+		haxes->GetXaxis()->SetTitleSize( 0.2 );
+		haxes->GetXaxis()->SetLabelColor(1);
+		haxes->GetXaxis()->SetLabelFont(42);
+		haxes->GetXaxis()->SetLabelOffset(0.007);
+		haxes->GetXaxis()->SetLabelSize(0.15);
+		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetMoreLogLabels(); haxes->GetXaxis()->SetNoExponent(); }
+
+		// -- Y-axis Setting -- //
+		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
+		g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
+		g_ratio1->GetYaxis()->SetTitleSize( 0.1);
+		g_ratio1->GetYaxis()->SetLabelSize( 0.07 );
+		g_ratio1->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
+
+		// -- flat line = 1.00 -- //
+		TF1 *f_line = new TF1("f_line", "1", -10000, 10000);
+		f_line->SetLineColor(kRed);
+		f_line->SetLineWidth(1);
+		f_line->Draw("SAME");
+
+		g_ratio1->Draw("EP");
+		g_ratio2->Draw("EP");
+
+      CMS_lumi( TopPad, 111, 0 );
+	}
+
 	void CanvasWithMultipleHistograms(vector< TH1D* > Histos, vector< TString > Names, TString DrawOp = "EP")
 	{
 		Int_t nHist = (Int_t)Histos.size();

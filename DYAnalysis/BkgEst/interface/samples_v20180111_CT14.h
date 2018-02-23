@@ -48,8 +48,8 @@ namespace DYana_v20180111_CT14 {
    double Xsec(SampleTag s) {
       switch (s) {
          // MCFM NLO CT14 pPb
-         case DYMuMu1030_PbP:return 1180.94e3; break; // Powheg
-         case DYMuMu30_PbP:  return 266.271e3; break; // Powheg
+         case DYMuMu1030_PbP:return 6.361e3*208.; break; // Powheg
+         case DYMuMu30_PbP:  return 1.357e3*208.; break; // Powheg
          default:        return -1;
       }
    };

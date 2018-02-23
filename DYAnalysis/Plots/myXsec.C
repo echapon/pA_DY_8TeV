@@ -65,6 +65,22 @@ TGraphAsymmErrors *h2gae(TH1 *h) {
    return ans;
 }
 
+TH1D *g2h(TGraphAsymmErrors *g) {
+   const int nbins = g->GetN();
+   double bins[nbins+1];
+
+   for (int i=0; i<nbins; i++) bins[i] = g->GetX()[i]-g->GetEXlow()[i];
+   bins[nbins] = g->GetX()[nbins-1]+g->GetEXhigh()[nbins-1];
+
+   TH1D *hans = new TH1D("hans","",nbins,bins);
+   for (int i=0; i<nbins; i++) {
+      hans->SetBinContent(i+1,g->GetY()[i]);
+      hans->SetBinError(i+1,0.5*(g->GetEYlow()[i]+g->GetEYhigh()[i]));
+   }
+
+   return hans;
+}
+
 void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg histos
       const char* accefffile="ROOTFile_AccEff.root",             // acceptance and efficiency
       const char* outputfile="Plots/results/xsec.root",          // where to write the output xsec
@@ -148,7 +164,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
          // if we haven't found the histo... maybe we're looking at the output of the FSR unfolding, and then everything is ready! just get the result.
          hy = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_%s",varname(thevar)));
          hy_statonly = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_statonly_%s",varname(thevar)));
-         cout << hy->GetBinContent(1) << endl;
+         // cout << hy->GetBinContent(1) << endl;
 
          if (doxsec) {
             hy->Scale(1./lumi_all);
@@ -156,7 +172,7 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
             hy_statonly->Scale(1./lumi_all);
             Obtain_dSigma_dX(hy_statonly);
          }
-         cout << hy->GetBinContent(1) << endl;
+         // cout << hy->GetBinContent(1) << endl;
 
          if (!hy) {
             cout << "Error, can't find yield histo in input file." << endl;
@@ -215,32 +231,33 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       // TH1F *hth = rebin_theory(hth1,hth19,hth20);
       // hth->Scale(208*1e-3);
 
-      // // EPPS16
+      // EPPS16
       // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth_EPPS16.root");
-      // vector<TH1D*> hth_EPPS16;
-      // int i=0;
-      // hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-      // hth_EPPS16.back()->Scale(1./lumi_all);
-      // Obtain_dSigma_dX(hth_EPPS16.back());
-      // for (i=285; i<=324; i++) {
-      //    hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-      //    hth_EPPS16.back()->Scale(1./lumi_all);
-      //    Obtain_dSigma_dX(hth_EPPS16.back());
-      // }
-      // for (i=112; i<=167; i++) {
-      //    hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
-      //    hth_EPPS16.back()->Scale(1./lumi_all);
-      //    Obtain_dSigma_dX(hth_EPPS16.back());
-      // }
+      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      vector<TH1D*> hth_EPPS16;
+      int i=0;
+      hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      hth_EPPS16.back()->Scale(1./lumi_all);
+      Obtain_dSigma_dX(hth_EPPS16.back());
+      for (i=285; i<=324; i++) {
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_EPPS16.back()->Scale(1./lumi_all);
+         Obtain_dSigma_dX(hth_EPPS16.back());
+      }
+      for (i=112; i<=167; i++) {
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_EPPS16.back()->Scale(1./lumi_all);
+         Obtain_dSigma_dX(hth_EPPS16.back());
+      }
 
-      // TGraphAsymmErrors *gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-      // gth_EPPS16->SetMarkerSize(0);
-      // gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+      TGraphAsymmErrors *gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+      gth_EPPS16->SetMarkerSize(0);
+      gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
 
       // CT14
       TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
       vector<TH1D*> hth_CT14;
-      int i=0;
+      i=0;
       hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
       hth_CT14.back()->Scale(1./lumi_all);
       Obtain_dSigma_dX(hth_CT14.back());
@@ -256,10 +273,11 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
 
 
       if (!forsyst) {
-         c1.CanvasWithGraphRatioPlot(gres,gth_CT14,
-               "Data","Powheg (CT14)","Data/CT14",
-               kBlack,kRed,
-               "EP","5");
+         if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14000,53000);
+         c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
+               "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+               kBlue,kRed,kBlack,
+               "5","5","EP");
          c1.PrintCanvas();
          c1.PrintCanvas_C();
 
@@ -274,11 +292,12 @@ void myXsec(const char* datafile="ROOTFile_YieldHistogram.root", // data and bkg
       fout->cd();
       gres->Write();
       gth_CT14->Write();
+      gth_EPPS16->Write();
       hy->Write();
       hy_statonly->Write();
 
       fth_CT14->Close();
-      // fth_EPPS16->Close();
+      fth_EPPS16->Close();
    }
 
    // close file
