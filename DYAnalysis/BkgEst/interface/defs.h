@@ -85,11 +85,11 @@ namespace DYana {
    };
 
    var str2var(TString variable) {
-      if (variable=="mass") return mass;
-      else if (variable=="pt") return pt;
-      else if (variable=="phistar") return phistar;
-      else if (variable=="rap60120") return rap60120;
-      else if (variable=="rap1560") return rap1560;
+      if (variable.Contains("mass")) return mass;
+      else if (variable.Contains("pt")) return pt;
+      else if (variable.Contains("phistar")) return phistar;
+      else if (variable.Contains("rap60120")) return rap60120;
+      else if (variable.Contains("rap1560")) return rap1560;
       return mass;
    };
 

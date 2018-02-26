@@ -2,7 +2,10 @@
 #define syst_C
 
 #include "syst.h"
+#include "../Include/MyCanvas.C"
+#include "../BkgEst/interface/defs.h"
 #include "TString.h"
+#include "TGraphAsymmErrors.h"
 
 
 map<bin, syst> readSyst(const char* systfile) {
@@ -78,6 +81,7 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    tags.push_back("bkg_smooth");
    tags.push_back("AccEff_theory");
    tags.push_back("DetResUnfold_smooth");
+   tags.push_back("FSRUnfold_smooth");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin,syst> systmap;
@@ -213,6 +217,51 @@ void smooth(const char* systfile, const char* systsuffix, int ntimes) {
       of << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
    }
    of.close();
+}
+
+void smoothstudy(const char* systfile, int nmax, const char* cname) {
+   vector< map<bin,syst> > smoothedsysts;
+   for (int i=0; i<nmax; i++) smoothedsysts.push_back(smooth(readSyst(systfile),i));
+
+   vector<TGraphAsymmErrors*> graphs;
+   vector<TString> tags;
+   for (unsigned int i=0; i<smoothedsysts.size(); i++) {
+      map<bin, syst> thesyst = smoothedsysts[i];
+      vector<double> x, y, dx, dy;
+
+      double valmax=-1e99;
+
+      for (map<bin, syst>::const_iterator it=thesyst.begin(); it!=thesyst.end(); it++) {
+         bin it2 = it->first;
+
+         double low = it2.low(), high = it2.high();
+         x.push_back((low+high)/2.);
+         dx.push_back((high-low)/2.);
+         y.push_back(0);
+         dy.push_back(fabs(it->second.value*100.));
+         valmax = max(valmax,dy.back());
+      }
+
+      TGraphAsymmErrors *thegraph = new TGraphAsymmErrors(x.size(),x.data(),dy.data(),y.data(),y.data(),y.data(),y.data());
+      thegraph->Sort();
+      thegraph->SetFillStyle(0);
+      graphs.push_back(thegraph);
+      tags.push_back(Form("%d",i));
+   }
+
+   TString tcname(cname);
+   if (tcname=="") tcname="tmp";
+   MyCanvas c1(tcname,DYana::xaxistitle(systfile),"Rel. uncertainty (%)",800,800);
+   
+   TString tsystfile;
+   if (tsystfile.Contains("mass") || tsystfile.Contains("pt") || tsystfile.Contains("phistar")) c1.SetLogx();
+   c1.SetLegendPosition(0.25,0.60,0.65,0.90);
+   c1.CanvasWithMultipleGraphs(graphs,tags, "LP");
+   
+   if (tcname != "tmp") {
+      c1.PrintCanvas();
+      c1.PrintCanvas_C();
+   }
 }
 
 #endif // ifndef syst_C

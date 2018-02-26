@@ -129,7 +129,7 @@ void Sys_FSR(var thevar) {
    TString cname(Form("systematics_UnfoldFSR_%s",thevarname));
    MyCanvas c1(cname,xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
-   c1.SetYRange(-2.9,2.9);
+   c1.SetYRange(-1.9,1.9);
    c1.CanvasWithMultipleGraphs(graphs,ynames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();

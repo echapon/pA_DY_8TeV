@@ -705,13 +705,13 @@ public:
 
 				// -- X-axis Setting -- //
 				if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g->GetXaxis()->SetNoExponent(); g->GetXaxis()->SetMoreLogLabels(); }
-				if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+				if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 				// -- Y-axis Setting -- //
 				g->GetYaxis()->SetTitleSize(0.06);
 				g->GetYaxis()->SetTitleOffset(1.25);
 				if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g->GetYaxis()->SetNoExponent(); g->GetYaxis()->SetMoreLogLabels(); }
-				if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) g->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+				if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 			}
 
 			g->SetLineColor(color);
@@ -773,15 +773,15 @@ public:
 		g1->GetXaxis()->SetLabelSize(0);
 		g1->GetXaxis()->SetTitleSize(0);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g1->GetXaxis()->SetNoExponent(); g1->GetXaxis()->SetMoreLogLabels(); }
-		// if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g1->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
-		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g1->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
+		// if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g1->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g1->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g1->GetYaxis()->SetTitle( TitleY );
 		g1->GetYaxis()->SetTitleSize(0.06);
 		g1->GetYaxis()->SetTitleOffset(1.25);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
-		if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		// -- Add Legend -- //
 		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
@@ -823,8 +823,8 @@ public:
 		g_ratio->GetXaxis()->SetLabelOffset(0.007);
 		g_ratio->GetXaxis()->SetLabelSize(0.15);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g_ratio->GetXaxis()->SetMoreLogLabels(); g_ratio->GetXaxis()->SetNoExponent(); }
-		// if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g_ratio->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
-		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g_ratio->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
+		// if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g_ratio->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g_ratio->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g_ratio->GetYaxis()->SetTitle( Name_Ratio );
@@ -909,14 +909,14 @@ public:
 		h->GetXaxis()->SetTitleOffset(0.9);
 		h->GetXaxis()->SetLabelSize(0.06);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { h->GetXaxis()->SetNoExponent(); h->GetXaxis()->SetMoreLogLabels(); }
-		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) h->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) h->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		h->GetYaxis()->SetTitleSize(0.06);
 		h->GetYaxis()->SetTitleOffset(1.25);
 		h->GetYaxis()->SetLabelSize(0.06);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h->GetYaxis()->SetNoExponent(); h->GetYaxis()->SetMoreLogLabels(); }
-		if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		h->SetStats(kFALSE);
 		h->SetLineColor(color);

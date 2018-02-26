@@ -40,8 +40,8 @@ void Sys_DetRes(var thevar) {
    const char* thevarname = varname(thevar);
 
    // Powheg vs Pyquen
-   TFile *fnom = TFile::Open(Form("../ResponseMatrix/yields_detcor_Powheg_MomCorr_0_%s.root",thevarname));
-   TFile *fpyq = TFile::Open(Form("../ResponseMatrix/yields_detcor_Pyquen_MomCorr_0_%s.root",thevarname));
+   TFile *fnom = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_0.root");
+   TFile *fpyq = TFile::Open("../ResponseMatrix/yields_detcor_Pyquen_MomCorr_0.root");
    TH1D *hnom = (TH1D*) fnom->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpyq = (TH1D*) fpyq->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
@@ -64,8 +64,8 @@ void Sys_DetRes(var thevar) {
    }
 
    // pPb vs PbP
-   TFile *fPbP = TFile::Open(Form("../ResponseMatrix/yields_detcor_Powheg_MomCorr_1_%s.root",thevarname));
-   TFile *fpPb = TFile::Open(Form("../ResponseMatrix/yields_detcor_Powheg_MomCorr_2_%s.root",thevarname));
+   TFile *fPbP = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_1.root");
+   TFile *fpPb = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_2.root");
    TH1D *hPbP = (TH1D*) fPbP->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpPb = (TH1D*) fpPb->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
