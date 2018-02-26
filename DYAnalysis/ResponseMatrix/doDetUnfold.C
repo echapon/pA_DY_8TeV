@@ -37,12 +37,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
 	TString isApplyMomCorr = "";
 	if( isCorrected == kTRUE )
 	{
-		cout << "Apply Roochester Muon Momentum Correction..." << endl;
+		cout << "Apply Rochester Muon Momentum Correction..." << endl;
 		isApplyMomCorr = "MomCorr";
 	}
 	else
 	{
-		cout << "DO *NOT* Apply Roochester Muon Momentum Correction..." << endl;
+		cout << "DO *NOT* Apply Rochester Muon Momentum Correction..." << endl;
 		isApplyMomCorr = "MomUnCorr";
 	}
 
@@ -94,7 +94,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    }
 
    // output
-   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d_%s.root",Sample.Data(),isApplyMomCorr.Data(),run,thevarname),"RECREATE");
+   TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
    fout->cd();
 
    // output

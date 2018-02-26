@@ -29,10 +29,22 @@
 using namespace DYana;
 using unfold::gUnfold;
 
-void doDetUnfold( const char* datafile, const char* matrixfile, var thevar = var::mass ) 
+void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int run=0, var thevar = var::mass ) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
+
+	TString isApplyMomCorr = "";
+	if( isCorrected == kTRUE )
+	{
+		cout << "Apply Rochester Muon Momentum Correction..." << endl;
+		isApplyMomCorr = "MomCorr";
+	}
+	else
+	{
+		cout << "DO *NOT* Apply Rochester Muon Momentum Correction..." << endl;
+		isApplyMomCorr = "MomUnCorr";
+	}
 
 	TStopwatch totaltime;
 	totaltime.Start();
@@ -43,7 +55,7 @@ void doDetUnfold( const char* datafile, const char* matrixfile, var thevar = var
    double* binsv = binsvar(thevar);
 
 
-	TFile *f = new TFile(matrixfile);
+	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root");
    TH2D *h_postpreFSR_tot = (TH2D*) f->Get(Form("h_%s_postpreFSR_tot",thevarname));
    TH1D *h_preFSR = (TH1D*) f->Get(Form("h_%s_preFSR",thevarname));
    TH1D *h_postFSR = (TH1D*) f->Get(Form("h_%s_postFSR",thevarname));
@@ -69,20 +81,21 @@ void doDetUnfold( const char* datafile, const char* matrixfile, var thevar = var
    // errors larger or equal 10000 are fatal:
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
-   TFile *fdata = TFile::Open(datafile);
+   // TFile *fdata = new TFile(Form("Plots/results/xsec_%s_%s_%d_detcor.root",Sample.Data(),isApplyMomCorr.Data(),run));
+   TFile *fdata = new TFile("Plots/results/xsec_nom_detcor.root");
    if (!fdata || !fdata->IsOpen()) {
-      cout << "Error, file " << datafile << " not found" << endl;
+      cout << "Error, data file not found" << endl;
       return;
    }
    TH1D *histMdetData = (TH1D*) fdata->Get(Form("hy_%s",thevarname));
    TH1D *histMdetData_statonly = (TH1D*) fdata->Get(Form("hy_statonly_%s",thevarname));
    if (!histMdetData || !histMdetData_statonly) {
-      cout << "Error, histo " << Form("hy_%s",thevarname)<< "not found" << endl;
+      cout << "Error, histo " << Form("hy_%s",thevarname)<< " not found" << endl;
       return;
    }
 
    // output
-   TFile *fout = new TFile(Form("FSRCorrection/xsec_FSRcor_%s.root",thevarname),"RECREATE");
+   TFile *fout = new TFile(Form("FSRCorrection/xsec_FSRcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
    fout->cd();
 
    // output
@@ -402,3 +415,15 @@ void doDetUnfold( const char* datafile, const char* matrixfile, var thevar = var
    f->Close();
 }
 
+
+// do all variations at once
+void doDetUnfold_all() {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      doDetUnfold(kTRUE, "Powheg", 0, thevar_i);
+      doDetUnfold(kFALSE, "Powheg", 0, thevar_i);
+      doDetUnfold(kTRUE, "Pyquen", 0, thevar_i);
+      doDetUnfold(kTRUE, "Powheg", 1, thevar_i);
+      doDetUnfold(kTRUE, "Powheg", 2, thevar_i);
+   }
+}
