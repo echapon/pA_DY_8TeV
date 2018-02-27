@@ -488,12 +488,8 @@ protected:
 
 	void SetupHistogram_Unfolded()
 	{
-      // FIXME
-      // TFile *f_result = TFile::Open(FileLocation + "/ROOTFile_Results_DYAnalysis_76X.root");
-      // h_unfolded = (TH1D*)f_result->Get("h_yield_Unfolded")->Clone();
-
-      TFile *f_result = TFile::Open(FileLocation + "/ROOTFile_Histograms_" + TString(varname(thevar)) + "_MomUnCorr_rewboth_tnprew_All.root");
-      h_unfolded = (TH1D*)f_result->Get("h_data")->Clone();
+      TFile *f_result = TFile::Open(FileLocation + "/ResponseMatrix/yields_detcor_Powheg_MomCorr_0.root");
+      h_unfolded = (TH1D*)f_result->Get(Form("h_Measured_unfoldedMLE_%s",DYana::varname(thevar)))->Clone();
 	}
 
 	void SetupHistogram_DataDrivenBkg_All()
@@ -508,7 +504,7 @@ protected:
 
 	void SetupHistogram_DataDrivenBkg( TString Type, HistogramContainer* Hists )
 	{
-      TFile *f_input;
+      TFile *f_input, *f_input_up, *f_input_down;
       if (Type == "wjets") {
          f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",DYana::varname(thevar)));
       } else if (Type == "dijet") {
@@ -520,11 +516,29 @@ protected:
 		Hists->h_AbsUnc_Stat = (TH1D*)f_input->Get(Type+"_stat")->Clone();
 		Hists->h_AbsUnc_Syst = (TH1D*)f_input->Get(Type+"_systematic")->Clone();
 
+      // for emu, add the ttbar xsec uncertainty
+      TH1D *hup=NULL, *hdown=NULL;
+      if (Type == "ttbar" || Type == "DYtautau" || Type == "WW") {
+         f_input_up = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s_ttup.root",DYana::varname(thevar)));
+         hup = (TH1D*)f_input_up->Get(Type)->Clone();
+         f_input_down = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s_ttdown.root",DYana::varname(thevar)));
+         hdown = (TH1D*)f_input_down->Get(Type)->Clone();
+      }
+
+      // cout << DYana::varname(thevar) << endl;
 		for(Int_t i=0; i<nBin; i++)
 		{
 			Int_t i_bin = i+1;
 			Double_t AbsUnc_Stat = Hists->h_AbsUnc_Stat->GetBinContent(i_bin);
 			Double_t AbsUnc_Syst = Hists->h_AbsUnc_Syst->GetBinContent(i_bin);
+         double dup=0., ddown=0.;
+         if (hup || hdown) {
+            dup = hup ? fabs(Hists->h_nEvent->GetBinContent(i_bin)-hup->GetBinContent(i_bin)) : 0.;
+            ddown = hdown ? fabs(Hists->h_nEvent->GetBinContent(i_bin)-hdown->GetBinContent(i_bin)) : 0.;
+         }
+         // cout << AbsUnc_Syst << ", " << max(dup,ddown) << endl;
+         AbsUnc_Syst = sqrt(pow(AbsUnc_Syst,2) + pow(max(dup,ddown),2));
+         Hists->h_AbsUnc_Syst->SetBinContent(i_bin,AbsUnc_Syst);
 			Double_t AbsUnc_Tot = sqrt( AbsUnc_Stat*AbsUnc_Stat + AbsUnc_Syst*AbsUnc_Syst );
 
 			Hists->h_AbsUnc_Tot->SetBinContent(i_bin, AbsUnc_Tot);
@@ -568,8 +582,11 @@ protected:
       else if (thevar == DYana::var::rap1560) htag = "diRap2_M15to60";
       else if (thevar == DYana::var::rap60120) htag = "diRap2_M60to120";
 
-		TFile *f_MC = TFile::Open(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_MomUnCorr_rewboth_tnprew.root"); f_MC->cd();
-		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + htag + "_" + Type)->Clone();
+		TFile *f_MC = TFile::Open(FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr_rewboth_tnprew_All.root"); f_MC->cd();
+		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_FR");
+		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_emu");
+		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_MC");
+      Hists->h_nEvent = (TH1D*) Hists->h_nEvent->Clone();
 		Hists->h_nEvent = (TH1D*)Hists->h_nEvent->Rebin(nBin, Hists->h_nEvent->GetName(), BinEdges);
 		Hists->h_nEvent->Scale( normFactor );
 
