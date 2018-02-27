@@ -35,7 +35,9 @@ using namespace DYana;
 void fillSystematics( TH1D* data_driven, TH1D* stat, TH1D* systematic, TH1D* total );
 void removeNegativeBins( TH1D* hist );
 
-void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560 | rap60120
+void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 | rap60120
+      int syst_tt=0)                     // 0=nominal, 1/-1 = scale ttbar up/down for syst
+{
 
    setTDRStyle();
 
@@ -63,10 +65,14 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
        varbins = rapbin_60120;
     }
 
+    TString tt_str("");
+    if (syst_tt==1) tt_str="_ttup";
+    if (syst_tt==-1) tt_str="_ttdown";
+
     TFile* file[NSamples];
     for (int i=0; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
 
-    TFile* g = new TFile(Form("result/emu_%s.root",var),"RECREATE");
+    TFile* g = new TFile(Form("result/emu_%s%s.root",var,tt_str.Data()),"RECREATE");
 
     double norm[NSamples];
 
@@ -81,6 +87,11 @@ void estimateBkg(const char* var="mass") {// var = mass | pt | phistar | rap1560
            lumi = switcheta(tag) ? lumi_part1 : lumi_part2;
         }
         norm[i] = (Xsec(tag)*lumi)/Nevts(tag);
+        // special case of ttbar: scale it up or down for syst, by 18% (total uncertainty from HIN-17-002)
+        if (tag==TT) {
+           if (syst_tt==1) norm[i] *= 1.18;
+           if (syst_tt==-1) norm[i] /= 1.18;
+        }
 
         emu[i] = (TH1D*)file[i]->Get(Form("emu_%s",var))->Clone("emu"+TString(Name(tag)));
         emuSS[i] = (TH1D*)file[i]->Get(Form("emuSS_%s",var))->Clone("emuSS"+TString(Name(tag)));
