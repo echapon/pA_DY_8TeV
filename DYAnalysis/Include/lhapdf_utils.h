@@ -6,6 +6,7 @@
 #include "TGraphAsymmErrors.h"
 
 #include "LHAPDF/PDFSet.h"
+#include "LHAPDF/PDF.h"
 
 #include <iostream>
 
@@ -59,6 +60,43 @@ TGraphAsymmErrors* hist2graph(TH1 *hist, double syst=0) {
    }
 
    return ans;
+}
+
+// plot the pdf
+TH1D* hpdf(const char* pdfname, int imem, int pid, double q2, double xmin, double xmax, int npoints) {
+   // make a constant binning in log(x)
+   double *bins = new double[npoints+1];
+   xmin = max(xmin,1e-10);
+   xmax = min(xmax,1.);
+   double logx = log(xmin);
+   double dlogx = (log(xmax)-log(xmin))/npoints;
+   for (int i=0; i<=npoints; i++) {
+      bins[i] = exp(logx);
+      logx += dlogx;
+   }
+
+   TH1D *ans = new TH1D(Form("h_%s_%d_%d_%f",pdfname,imem,pid,q2),"",npoints,bins);
+   const PDF* pdf = mkPDF(pdfname, imem);
+
+   // fill the histo
+   for (int i=1; i<=npoints; i++) {
+      if (i==1) cout << pdf->xfxQ2(pid,ans->GetBinCenter(i),q2) << endl;
+      ans->SetBinContent(i,pdf->xfxQ2(pid,ans->GetBinCenter(i),q2));
+   }
+
+   delete[] bins;
+   return ans;
+}
+
+// plot the pdf with uncertainties
+TGraphAsymmErrors* gpdf(const char* pdfname, int pid, double q2, double xmin, double xmax, int npoints) {
+   PDFSet pdfset(pdfname);
+   size_t nm = pdfset.size();
+   vector<TH1D*> v;
+   for (size_t i=0; i<nm; i++) {
+      v.push_back(hpdf(pdfname,i,pid,q2,xmin,xmax,npoints));
+   }
+   return pdfuncert(v,pdfname);
 }
 
 #endif // #ifndef lhapdf_utils_h
