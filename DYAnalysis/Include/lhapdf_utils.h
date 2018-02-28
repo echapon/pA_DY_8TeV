@@ -80,7 +80,6 @@ TH1D* hpdf(const char* pdfname, int imem, int pid, double q2, double xmin, doubl
 
    // fill the histo
    for (int i=1; i<=npoints; i++) {
-      if (i==1) cout << pdf->xfxQ2(pid,ans->GetBinCenter(i),q2) << endl;
       ans->SetBinContent(i,pdf->xfxQ2(pid,ans->GetBinCenter(i),q2));
    }
 
@@ -89,14 +88,29 @@ TH1D* hpdf(const char* pdfname, int imem, int pid, double q2, double xmin, doubl
 }
 
 // plot the pdf with uncertainties
-TGraphAsymmErrors* gpdf(const char* pdfname, int pid, double q2, double xmin, double xmax, int npoints) {
+TGraphAsymmErrors* gpdf(const char* pdfname, int pid, double q2, double xmin, double xmax, int npoints, bool rel=false) {
    PDFSet pdfset(pdfname);
    size_t nm = pdfset.size();
    vector<TH1D*> v;
    for (size_t i=0; i<nm; i++) {
       v.push_back(hpdf(pdfname,i,pid,q2,xmin,xmax,npoints));
    }
-   return pdfuncert(v,pdfname);
+   TGraphAsymmErrors *ans = pdfuncert(v,pdfname);
+
+   if (rel) {
+      for (int i=0; i<ans->GetN(); i++) {
+         double x = ans->GetX()[i];
+         double y = ans->GetY()[i];
+         double exl = ans->GetEXlow()[i];
+         double exh = ans->GetEXhigh()[i];
+         double eyl = ans->GetEYlow()[i];
+         double eyh = ans->GetEYhigh()[i];
+         ans->SetPoint(i,x,1);
+         ans->SetPointError(i,exl,exh,eyl/y,eyh/y);
+      }
+   }
+
+   return ans;
 }
 
 #endif // #ifndef lhapdf_utils_h
