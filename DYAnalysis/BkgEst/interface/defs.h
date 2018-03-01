@@ -142,6 +142,16 @@ namespace DYana {
       else if (thevar==var::rap1560) return rapbin_1560;
       else return rapbin_60120;
    };
+
+   // Z pt rweighting
+   double zptWeight(double pt) {
+      double p0 = -0.37;
+      double p1 = -0.3703;
+      double p2 = 1.187;
+      double weight = (pt>0) ? p0*pow(pt,p1)+p2 : 0.5;
+      if (weight<0.5) weight = 0.5; // do not allow too large weights
+      return (1./weight); // we just computed the POWHEG/data ratio: return data/Powheg
+   }
 };
 
 #endif // ifndef def_h
