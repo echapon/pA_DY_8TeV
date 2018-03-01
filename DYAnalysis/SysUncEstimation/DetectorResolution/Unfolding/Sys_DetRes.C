@@ -1,6 +1,7 @@
 #include "../../../BkgEst/interface/defs.h"
 #include "../../../Include/MyCanvas.C"
 #include "../../../Include/texUtils.h"
+#include "../../../Include/PlotTools.h"
 #include "../../syst.C"
 
 #include "TFile.h"
@@ -11,30 +12,6 @@
 
 using namespace std;
 using DYana::var;
-
-TGraphAsymmErrors *h2gae(TH1 *h) {
-   const int n = h->GetNbinsX();
-   double *x = new double[n];
-   double *y = new double[n];
-   double *exl = new double[n];
-   double *exh = new double[n];
-   double *eyl = new double[n];
-   double *eyh = new double[n];
-
-   for (int i=0; i<n; i++) {
-      x[i] = h->GetBinCenter(i+1);
-      y[i] = h->GetBinContent(i+1);
-      exl[i] = h->GetBinWidth(i+1)/2.;
-      exh[i] = exl[i];
-      eyl[i] = h->GetBinError(i+1);
-      eyh[i] = eyl[i];
-   }
-
-   TGraphAsymmErrors *ans = new TGraphAsymmErrors(n,x,y,exl,exh,eyl,eyh);
-
-   delete[] x; delete[] y; delete[] exl; delete[] exh; delete[] eyl; delete[] eyh;
-   return ans;
-}
 
 void Sys_DetRes(var thevar) {
    const char* thevarname = varname(thevar);
@@ -49,7 +26,7 @@ void Sys_DetRes(var thevar) {
    hmod->Add(hpyq,-1); // take the difference
    hmod->Divide(hnom); // make it relative
    hmod->Scale(100.);  // make it in %
-   TGraphAsymmErrors *gmod = h2gae(hmod);
+   TGraphAsymmErrors *gmod = Convert_HistToGraph(hmod);
    map<bin,syst> systmod;
    for (int i=0; i<gmod->GetN(); i++) {
       syst thesyst;
@@ -74,7 +51,7 @@ void Sys_DetRes(var thevar) {
    hrun->Divide(hpPb); // make it relative
    hrun->Scale(0.5);   // take half of the difference (https://en.wikipedia.org/wiki/Variance#Sample_variance)
    hrun->Scale(100.);  // make it in %
-   TGraphAsymmErrors *grun = h2gae(hrun);
+   TGraphAsymmErrors *grun = Convert_HistToGraph(hrun);
    map<bin,syst> systrun;
    for (int i=0; i<grun->GetN(); i++) {
       syst thesyst;

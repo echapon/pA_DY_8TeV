@@ -11,6 +11,7 @@
 #include "Include/CMS_lumi.C"
 #include "Include/MyCanvas.C"
 #include "Include/lhapdf_utils.h"
+#include "Include/PlotTools.h"
 
 const int rfb_rapbinnum_1560 = 5;
 const double rfb_rapbin_1560[rfb_rapbinnum_1560+1] = {0.0,0.4,0.8,1.2,1.6,1.93};
@@ -22,8 +23,8 @@ TGraphAsymmErrors *RFB_60120(TGraphAsymmErrors *g);
 TH1D *RFB_1560(TH1D *h);
 TH1D *RFB_60120(TH1D *h);
 void Obtain_dSigma_dX(TH1D *h);
-TGraphAsymmErrors *h2g(TH1D* h);
-TH1D *g2h(TGraphAsymmErrors *g);
+TGraphAsymmErrors *Convert_HistToGraph(TH1D* h);
+TH1D *Convert_HistToGraph(TGraphAsymmErrors *g);
 
 using namespace std;
 
@@ -135,13 +136,13 @@ TGraphAsymmErrors *RFB_60120(TGraphAsymmErrors *g) {
 }
 
 TH1D *RFB_1560(TH1D *h) {
-   TGraphAsymmErrors *g = h2g(h);
-   return g2h(RFB_1560(g));
+   TGraphAsymmErrors *g = Convert_HistToGraph(h);
+   return Convert_HistToGraph(RFB_1560(g));
 }
 
 TH1D *RFB_60120(TH1D *h) {
-   TGraphAsymmErrors *g = h2g(h);
-   return g2h(RFB_60120(g));
+   TGraphAsymmErrors *g = Convert_HistToGraph(h);
+   return Convert_HistToGraph(RFB_60120(g));
 }
 
 void Obtain_dSigma_dX(TH1D *h){
@@ -168,32 +169,3 @@ void Obtain_dSigma_dX(TH1D *h){
 	}
 }
 
-TGraphAsymmErrors *h2g(TH1D* h) {
-   const int nbins = h->GetNbinsX();
-   TGraphAsymmErrors *g = new TGraphAsymmErrors(nbins);
-   for (int i=0; i<nbins; i++) {
-      double x = h->GetBinCenter(i+1);
-      double y = h->GetBinContent(i+1);
-      double ex = h->GetBinWidth(i+1)/2.;
-      double ey = h->GetBinError(i+1);
-      g->SetPoint(i,x,y);
-      g->SetPointError(i,ex,ex,ey,ey);
-   }
-   return g;
-}
-
-TH1D *g2h(TGraphAsymmErrors *g) {
-   const int nbins = g->GetN();
-   double bins[nbins+1];
-
-   for (int i=0; i<nbins; i++) bins[i] = g->GetX()[i]-g->GetEXlow()[i];
-   bins[nbins] = g->GetX()[nbins-1]+g->GetEXhigh()[nbins-1];
-
-   TH1D *hans = new TH1D("hans","",nbins,bins);
-   for (int i=0; i<nbins; i++) {
-      hans->SetBinContent(i+1,g->GetY()[i]);
-      hans->SetBinError(i+1,g->GetErrorY(i));
-   }
-
-   return hans;
-}

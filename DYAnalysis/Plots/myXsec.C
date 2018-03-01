@@ -13,6 +13,7 @@
 #include "../Include/MyCanvas.C"
 #include "../Include/texUtils.h"
 #include "../Include/lhapdf_utils.h"
+#include "../Include/PlotTools.h"
 
 using namespace DYana;
 using namespace std;
@@ -39,46 +40,6 @@ void Obtain_dSigma_dX(TH1D *h){
 		// printf("%2dth bin [%5.lf, %5.lf] (xSec, BinWidth, dSigma/dM) = (%15.9lf, %6.1lf, %15.9lf), (error_before, error_after) = (%8.5lf, %8.5lf)\n", 
 			// i_bin, low, high, xSec, BinWidth, xSec_dM, error_before, error_after );
 	}
-}
-
-TGraphAsymmErrors *h2gae(TH1 *h) {
-   const int n = h->GetNbinsX();
-   double *x = new double[n];
-   double *y = new double[n];
-   double *exl = new double[n];
-   double *exh = new double[n];
-   double *eyl = new double[n];
-   double *eyh = new double[n];
-
-   for (int i=0; i<n; i++) {
-      x[i] = h->GetBinCenter(i+1);
-      y[i] = h->GetBinContent(i+1);
-      exl[i] = h->GetBinWidth(i+1)/2.;
-      exh[i] = exl[i];
-      eyl[i] = h->GetBinError(i+1);
-      eyh[i] = eyl[i];
-   }
-
-   TGraphAsymmErrors *ans = new TGraphAsymmErrors(n,x,y,exl,exh,eyl,eyh);
-
-   delete[] x; delete[] y; delete[] exl; delete[] exh; delete[] eyl; delete[] eyh;
-   return ans;
-}
-
-TH1D *g2h(TGraphAsymmErrors *g) {
-   const int nbins = g->GetN();
-   double bins[nbins+1];
-
-   for (int i=0; i<nbins; i++) bins[i] = g->GetX()[i]-g->GetEXlow()[i];
-   bins[nbins] = g->GetX()[nbins-1]+g->GetEXhigh()[nbins-1];
-
-   TH1D *hans = new TH1D("hans","",nbins,bins);
-   for (int i=0; i<nbins; i++) {
-      hans->SetBinContent(i+1,g->GetY()[i]);
-      hans->SetBinError(i+1,0.5*(g->GetEYlow()[i]+g->GetEYhigh()[i]));
-   }
-
-   return hans;
 }
 
 void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",                           // data and bkg histos
@@ -182,9 +143,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
          hy->SetName(Form("hy_%s",varname(thevar)));
          hy_statonly->SetName(Form("hy_statonly_%s",varname(thevar)));
 
-         gres = h2gae(hy);
+         gres = Convert_HistToGraph(hy);
          gres->SetName(Form("gres_%s",varname(thevar)));
-         gres_statonly = h2gae(hy_statonly);
+         gres_statonly = Convert_HistToGraph(hy_statonly);
          gres_statonly->SetName(Form("gres_statonly_%s",varname(thevar)));
       }
 

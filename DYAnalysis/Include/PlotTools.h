@@ -827,6 +827,30 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 	return h_temp;
 }
 
+TGraphAsymmErrors* Convert_HistToGraph( TH1D *h ) {
+   const int n = h->GetNbinsX();
+   double *x = new double[n];
+   double *y = new double[n];
+   double *exl = new double[n];
+   double *exh = new double[n];
+   double *eyl = new double[n];
+   double *eyh = new double[n];
+
+   for (int i=0; i<n; i++) {
+      x[i] = h->GetBinCenter(i+1);
+      y[i] = h->GetBinContent(i+1);
+      exl[i] = h->GetBinWidth(i+1)/2.;
+      exh[i] = exl[i];
+      eyl[i] = h->GetBinError(i+1);
+      eyh[i] = eyl[i];
+   }
+
+   TGraphAsymmErrors *ans = new TGraphAsymmErrors(n,x,y,exl,exh,eyl,eyh);
+
+   delete[] x; delete[] y; delete[] exl; delete[] exh; delete[] eyl; delete[] eyh;
+   return ans;
+}
+
 TH1D* Extract_RelUnc( TH1D* h, TString HistName = "", Bool_t ConvertToPercent = kFALSE )
 {
 	TH1D* h_RelUnc = (TH1D*)h->Clone();
@@ -1085,3 +1109,27 @@ public:
 		this->c->SaveAs(".pdf");
 	}
 };
+
+// fix the binning for plots in logX scale
+void fixXaxis(TGraphAsymmErrors *g) {
+   if (g->GetX()[0]-g->GetEXlow()[0]<1e-10) {
+      double eyl = g->GetEYlow()[0];
+      double eyh = g->GetEYhigh()[0];
+      double exl = g->GetEXlow()[0]/2.;
+      double exh = g->GetEXhigh()[0];
+      g->SetPointError(0,exl,exh,eyl,eyh);
+   }
+}
+
+void fixXaxis(TH1 *h) {
+   if (h->GetBinLowEdge(1)<=1e-10) {
+      int nbins = h->GetNbinsX();
+      double *newbins = new double[nbins+1];
+      for (int i=1; i<nbins+1; i++) {
+         newbins[i] = h->GetBinLowEdge(i)+h->GetBinWidth(i);
+      }
+      newbins[0] = 0.5*newbins[1];
+      h->SetBins(nbins,newbins);
+      delete[] newbins;
+   }
+}
