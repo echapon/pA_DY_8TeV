@@ -8,6 +8,7 @@
 #include <TPad.h>
 #include <TF1.h>
 #include <TGraphAsymmErrors.h>
+#include <TVectorD.h>
 
 #include <vector>
 
@@ -1131,5 +1132,12 @@ void fixXaxis(TH1 *h) {
       newbins[0] = 0.5*newbins[1];
       h->SetBins(nbins,newbins);
       delete[] newbins;
+   }
+}
+
+void normBinWidth(TH1D *hist) {
+   for (int i=1; i<=hist->GetNbinsX(); i++) {
+      hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
+      hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
    }
 }

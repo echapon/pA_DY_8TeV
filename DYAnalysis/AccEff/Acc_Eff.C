@@ -244,6 +244,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
 				Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
+            // -- Z pt reweighting -- //
+            TotWeight *= zptWeight(gen_Pt);
+
 				// -- Flags -- //
 				Bool_t Flag_PassAcc = kFALSE;
 				Bool_t Flag_PassAccEff = kFALSE;

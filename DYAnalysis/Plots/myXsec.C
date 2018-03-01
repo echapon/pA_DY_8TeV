@@ -235,6 +235,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
 
       if (!forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
+         if (thevar==var::pt || thevar==var::phistar) {
+            fixXaxis(gth_CT14);
+            fixXaxis(gth_EPPS16);
+            fixXaxis(gres);
+         }
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
                kBlue,kRed,kBlack,

@@ -14,6 +14,7 @@
 #include "BkgEst/interface/defs.h"
 #include "Include/tdrstyle.C"
 #include "Include/CMS_lumi.C"
+#include "Include/PlotTools.h"
 
 using namespace DYana;
 
@@ -96,6 +97,21 @@ void dataMC(var thevar)
    normBinWidth(h_ZZ);
    normBinWidth(h_WJets_FR);
    normBinWidth(h_diJet_FR);
+
+   // if pt or phistar: need to fix the X axis so that we can see the first bin
+   if (TString(thevarname)=="pt" || TString(thevarname)=="phistar") {
+      fixXaxis(h_data);
+      fixXaxis(h_SignalMC);
+      fixXaxis(h_ttbar_emu);
+      fixXaxis(h_DYTauTau_emu);
+      fixXaxis(h_WW_emu);
+      fixXaxis(h_WZ);
+      fixXaxis(h_ZZ);
+      fixXaxis(h_WJets_FR);
+      fixXaxis(h_diJet_FR);
+      fixXaxis(htotal);
+      fixXaxis(hratio);
+   }
 
    TH1D *hdata = (TH1D*) h_data->Clone();
    TH1D *hDY = (TH1D*) h_SignalMC->Clone();
@@ -315,13 +331,6 @@ void dataMC(var thevar)
    c1->SetSelected(c1);
    c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
    c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
-}
-
-void normBinWidth(TH1D *hist) {
-   for (int i=1; i<=hist->GetNbinsX(); i++) {
-      hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
-      hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
-   }
 }
 
 void dataMC() {
