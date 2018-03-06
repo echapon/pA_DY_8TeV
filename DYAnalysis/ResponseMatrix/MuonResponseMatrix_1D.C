@@ -238,6 +238,9 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 				Bool_t isPassAcc_GenLepton = kFALSE;
 				isPassAcc_GenLepton = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
 
+            // -- Z pt reweighting -- //
+            TotWeight *= zptWeight(gen_Pt);
+
 				///////////////////////////////////////////
 				// -- Reconstruction level selection -- //
 				///////////////////////////////////////////

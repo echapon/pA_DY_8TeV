@@ -92,9 +92,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       else if (rewmode==HFweight::HFside::Ntracks) srew="rewNtracks";
    }
    TString srew2("");
-   if (!zptrew) srew2 = "noZptrew";
+   if (!zptrew) srew2 = "_noZptrew";
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + "_" + srew2 + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + srew2 + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 

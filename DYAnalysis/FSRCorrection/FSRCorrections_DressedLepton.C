@@ -256,6 +256,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				GenLepton genlep1 = GenLeptonCollection[0];
 				GenLepton genlep2 = GenLeptonCollection[1];
 				Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
+				Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
 
 				Double_t dRCut = 0.1;
 
@@ -277,6 +278,9 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
             // if neither of the pre- and post-FSR leptons pass acceptance cuts... why bother?
             // if (!Flag_PassAcc_preFSR && !Flag_PassAcc_postFSR) continue;
             if (!Flag_PassAcc_preFSR) continue;
+
+            // -- Z pt reweighting -- //
+            TotWeight *= zptWeight(gen_Pt);
 
 				// -- Fill the histograms for the photons near post-FSR muon1 -- //
 				Int_t nPhotons1 = (Int_t)GenPhotonCollection1.size();

@@ -212,6 +212,11 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 							break;
 					}
 				}
+
+            // -- Z pt reweighting -- //
+				Double_t gen_Pt = (GenLeptonCollection[0].Momentum + GenLeptonCollection[1].Momentum).Pt();
+            GenWeight *= zptWeight(gen_Pt);
+
 				Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
 			}
 
