@@ -60,7 +60,7 @@ int tnpregtrg(int ireg, float eta, int ivar) {
 }
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, int cor_s=0, int cor_m=0 ) // run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, int cor_s=0, int cor_m=0, bool zptrew = true ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -91,7 +91,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
       else if (rewmode==HFweight::HFside::Ntracks) srew="rewNtracks";
    }
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + ".root", "RECREATE");
+   TString srew2("");
+   if (!zptrew) srew2 = "noZptrew";
+
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + "_" + srew2 + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
@@ -245,7 +248,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 				Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // -- Z pt reweighting -- //
-            TotWeight *= zptWeight(gen_Pt);
+            if (zptrew) TotWeight *= zptWeight(gen_Pt);
 
 				// -- Flags -- //
 				Bool_t Flag_PassAcc = kFALSE;
