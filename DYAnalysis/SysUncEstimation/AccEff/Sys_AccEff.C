@@ -75,8 +75,17 @@ void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       for (int i=0; i<(*it)->GetN(); i++)
          (*it)->SetPoint(i,(*it)->GetX()[i],(*it)->GetY()[i]/gAccEffs[0]->GetY()[i]);
 
-   for (int i=0; i<gAccEffs[0]->GetN(); i++) 
+   for (int i=0; i<gAccEffs[0]->GetN(); i++) {
+      // rescale output
+      gAcc->SetPointEYlow(i,gAcc->GetEYlow()[i]/gAcc->GetY()[i]);
+      gAcc->SetPointEYhigh(i,gAcc->GetEYhigh()[i]/gAcc->GetY()[i]);
+      gEff->SetPointEYlow(i,gEff->GetEYlow()[i]/gEff->GetY()[i]);
+      gEff->SetPointEYhigh(i,gEff->GetEYhigh()[i]/gEff->GetY()[i]);
+      gAccEff->SetPointEYlow(i,gAccEff->GetEYlow()[i]/gAccEff->GetY()[i]);
+      gAccEff->SetPointEYhigh(i,gAccEff->GetEYhigh()[i]/gAccEff->GetY()[i]);
+
       gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
+   }
 
    c1.SetYRange(0.96,1.04);
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
@@ -142,8 +151,17 @@ void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       for (int i=0; i<(*it)->GetN(); i++)
          (*it)->SetPoint(i,(*it)->GetX()[i],(*it)->GetY()[i]/gAccEffs[0]->GetY()[i]);
 
-   for (int i=0; i<gAccEffs[0]->GetN(); i++) 
+   for (int i=0; i<gAccEffs[0]->GetN(); i++) {
+      // rescale output
+      gAcc->SetPointEYlow(i,gAcc->GetEYlow()[i]/gAcc->GetY()[i]);
+      gAcc->SetPointEYhigh(i,gAcc->GetEYhigh()[i]/gAcc->GetY()[i]);
+      gEff->SetPointEYlow(i,gEff->GetEYlow()[i]/gEff->GetY()[i]);
+      gEff->SetPointEYhigh(i,gEff->GetEYhigh()[i]/gEff->GetY()[i]);
+      gAccEff->SetPointEYlow(i,gAccEff->GetEYlow()[i]/gAccEff->GetY()[i]);
+      gAccEff->SetPointEYhigh(i,gAccEff->GetEYhigh()[i]/gAccEff->GetY()[i]);
+
       gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
+   }
 
    c1.SetYRange(0.99,1.01);
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
@@ -276,10 +294,20 @@ void Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGra
       for (int i=0; i<(*it)->GetN(); i++)
          (*it)->SetPoint(i,(*it)->GetX()[i],(*it)->GetY()[i]/gAccEffs[0]->GetY()[i]);
 
-   for (int i=0; i<gAccEffs[0]->GetN(); i++) 
-      gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
+   for (int i=0; i<gAccEffs[0]->GetN(); i++) {
+      // rescale output
+      gAcc->SetPointEYlow(i,gAcc->GetEYlow()[i]/gAcc->GetY()[i]);
+      gAcc->SetPointEYhigh(i,gAcc->GetEYhigh()[i]/gAcc->GetY()[i]);
+      gEff->SetPointEYlow(i,gEff->GetEYlow()[i]/gEff->GetY()[i]);
+      gEff->SetPointEYhigh(i,gEff->GetEYhigh()[i]/gEff->GetY()[i]);
+      gAccEff->SetPointEYlow(i,gAccEff->GetEYlow()[i]/gAccEff->GetY()[i]);
+      gAccEff->SetPointEYhigh(i,gAccEff->GetEYhigh()[i]/gAccEff->GetY()[i]);
 
-   c1.SetYRange(0.991,1.009);
+      gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
+   }
+
+   c1.SetYRange(0.98,1.07);
+   if (thevar==var::mass) c1.SetYRange(0.98,1.24);
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
@@ -318,8 +346,8 @@ void Sys_AccEff(const char* file, var thevar) {
       xmin = x-gAccEff4tex_scales->GetEXlow()[i];
       xmax = x+gAccEff4tex_scales->GetEXhigh()[i];
 
-      eyl = gAccEff4tex_scales->GetEYlow()[i]/gAccEff4tex_scales->GetY()[i];
-      eyh = gAccEff4tex_scales->GetEYhigh()[i]/gAccEff4tex_scales->GetY()[i];
+      eyl = gAccEff4tex_scales->GetEYlow()[i];
+      eyh = gAccEff4tex_scales->GetEYhigh()[i];
       syst tmpsyst; tmpsyst.name = "AccEff (scales)";
       tmpsyst.value = max(eyl,eyh);
       syst_scales[bin(xmin,xmax)] = tmpsyst;
@@ -327,8 +355,8 @@ void Sys_AccEff(const char* file, var thevar) {
       gAccEff4tex_scales->SetPointEYlow(i,eyl);
       gAccEff4tex_scales->SetPointEYhigh(i,eyh);
 
-      eyl = gAccEff4tex_alphas->GetEYlow()[i]/gAccEff4tex_alphas->GetY()[i];
-      eyh = gAccEff4tex_alphas->GetEYhigh()[i]/gAccEff4tex_alphas->GetY()[i];
+      eyl = gAccEff4tex_alphas->GetEYlow()[i];
+      eyh = gAccEff4tex_alphas->GetEYhigh()[i];
       tmpsyst.name = "AccEff (alphaS)";
       tmpsyst.value = max(eyl,eyh);
       syst_alphas[bin(xmin,xmax)] = tmpsyst;
@@ -345,8 +373,8 @@ void Sys_AccEff(const char* file, var thevar) {
       gAccEff4tex_EPPS16->SetPointEYlow(i,eyl);
       gAccEff4tex_EPPS16->SetPointEYhigh(i,eyh);
 
-      eyl = gAccEff4tex_Zpt->GetEYlow()[i]/gAccEff4tex_Zpt->GetY()[i];
-      eyh = gAccEff4tex_Zpt->GetEYhigh()[i]/gAccEff4tex_Zpt->GetY()[i];
+      eyl = gAccEff4tex_Zpt->GetEYlow()[i];
+      eyh = gAccEff4tex_Zpt->GetEYhigh()[i];
       tmpsyst.name = "AccEff (Zpt)";
       tmpsyst.value = max(eyl,eyh);
       syst_Zpt[bin(xmin,xmax)] = tmpsyst;
