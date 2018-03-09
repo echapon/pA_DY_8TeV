@@ -3,6 +3,7 @@
 
 
 #include "TH1.h"
+#include "TH2.h"
 #include "TGraphAsymmErrors.h"
 
 #include "LHAPDF/PDFSet.h"
@@ -44,6 +45,39 @@ TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname) {
    }
 
    return g;
+}
+
+TH2D* pdfcorr(vector<TH1D*> h, const char* pdfname) {
+   PDFSet pdfset(pdfname);
+   size_t nm = pdfset.size();
+   if (h.size() != nm) {
+      cout << "Error, expected " << nm << " histos for " << pdfname << ", but I got << " << h.size() << endl;
+      return NULL;
+   }
+
+   int n = h[0]->GetNbinsX();
+   TH2D *ans = new TH2D(TString(h[0]->GetName())+"_pdfcorr",TString(h[0]->GetTitle())+" (PDF corr)",
+         n,h[0]->GetXaxis()->GetXbins()->GetArray(),
+         n,h[0]->GetXaxis()->GetXbins()->GetArray());
+
+   for (int i=1; i<=n; i++) { // loop on the bins in X
+      for (int j=1; j<=n; j++) { // loop on the bins in Y
+         // loop on the members to get the PDF uncertainty
+         vector<double> y1,y2;
+         for (unsigned int k=0; k<nm; k++) {
+            y1.push_back(h[k]->GetBinContent(i));
+            y2.push_back(h[k]->GetBinContent(j));
+         }
+
+         double c = pdfset.correlation(y1,y2);
+
+         // set point
+         int b = ans->GetBin(i,j);
+         ans->SetBinContent(b,c);
+      }
+   }
+
+   return ans;
 }
 
 TGraphAsymmErrors* hist2graph(TH1 *hist, double syst=0) {
@@ -111,6 +145,17 @@ TGraphAsymmErrors* gpdf(const char* pdfname, int pid, double q2, double xmin, do
    }
 
    return ans;
+}
+
+// test
+TH2D *testpdfcorr(const char* pdfname, int pid, double q2, double xmin, double xmax, int npoints) {
+   PDFSet pdfset(pdfname);
+   size_t nm = pdfset.size();
+   vector<TH1D*> v;
+   for (size_t i=0; i<nm; i++) {
+      v.push_back(hpdf(pdfname,i,pid,q2,xmin,xmax,npoints));
+   }
+   return pdfcorr(v,pdfname);
 }
 
 #endif // #ifndef lhapdf_utils_h
