@@ -120,7 +120,7 @@ void Acc_weights_genonly(TString Sample)
 		
 		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_GenLepton();
-		ntuple->TurnOnBranches_GenOthers();
+      ntuple->TurnOnBranches_GenOthers();
 
       vector<float>   *ttbar_w = 0;
       TBranch        *b_ttbar_w;   //!
@@ -129,7 +129,7 @@ void Acc_weights_genonly(TString Sample)
       chainGen->SetBranchStatus("ttbar_w",1);
 
 		Bool_t isNLO = 0;
-		if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
+		if( !Sample.Contains("Pyquen") && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
 		{
 			isNLO = 1;
 			cout << "\t" << Tag[i_tup] << ": generated with NLO mode - Weights are applied" << endl;
@@ -152,7 +152,7 @@ void Acc_weights_genonly(TString Sample)
 
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
-      // NEvents = 1000;
+      // NEvents = 10000;
 		// -- Event loop starts -- //
 		for(Int_t i=0; i<NEvents; i++)
 		{
@@ -170,89 +170,90 @@ void Acc_weights_genonly(TString Sample)
 
 			SumWeights += GenWeight;
 
-			Int_t PU = ntuple->nPileUp;
+         Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
          Double_t PUWeight = 1.;
 
-			Double_t TotWeight = norm * GenWeight;
+         Double_t TotWeight = norm * GenWeight;
 
-			Bool_t GenFlag = kFALSE;
-			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
+         Bool_t GenFlag = kFALSE;
+         GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
-			if( GenFlag == kTRUE )
-			{
-				SumWeights_Separated += GenWeight;
+         if( GenFlag == kTRUE )
+         {
+            SumWeights_Separated += GenWeight;
 
-				// -- Collect gen-level information -- //
-				vector<GenLepton> GenLeptonCollection;
-				Int_t NGenLeptons = ntuple->gnpair; 
-				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
-				{
-					GenLepton genlep;
-					genlep.FillFromNtuple(ntuple, i_gen);
-					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
-						GenLeptonCollection.push_back( genlep );
-				}
-				GenLepton genlep1 = GenLeptonCollection[0];
-				GenLepton genlep2 = GenLeptonCollection[1];
-				Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
-				Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
-				Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
-				Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
+            // -- Collect gen-level information -- //
+            vector<GenLepton> GenLeptonCollection;
+            Int_t NGenLeptons = ntuple->gnpair; 
+            for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+            {
+               GenLepton genlep;
+               genlep.FillFromNtuple(ntuple, i_gen);
+               if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+                  GenLeptonCollection.push_back( genlep );
+            }
+            GenLepton genlep1 = GenLeptonCollection[0];
+            GenLepton genlep2 = GenLeptonCollection[1];
+            Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
+            Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
+            Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
+            Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // compute pre-FSR quantities 
-				vector<GenLepton> GenLeptonCollection_FinalState;
-				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
-				{
-					GenLepton genlep;
-					genlep.FillFromNtuple(ntuple, i_gen);
-					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
-					{
-						GenLeptonCollection_FinalState.push_back( genlep );
+            vector<GenLepton> GenLeptonCollection_FinalState;
+            for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+            {
+               GenLepton genlep;
+               genlep.FillFromNtuple(ntuple, i_gen);
+               if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+               {
+                  GenLeptonCollection_FinalState.push_back( genlep );
 
-						if( (Int_t)GenLeptonCollection_FinalState.size() == 2 )
-							break;
-					}
-				}
+                  if( (Int_t)GenLeptonCollection_FinalState.size() == 2 )
+                     break;
+               }
+            }
 
-				Double_t dRCut = 0.1;
+            Double_t dRCut = 0.1;
 
-				GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
-				GenLepton genlep_preFSR1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
-				vector< GenOthers > GenPhotonCollection1;
-				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+            GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
+            GenLepton genlep_preFSR1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
+            vector< GenOthers > GenPhotonCollection1;
+            analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
 
-				GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
-				GenLepton genlep_preFSR2 = genlep_postFSR2; // -- Copy the values of member variables -- // 
-				vector< GenOthers > GenPhotonCollection2;
-				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+            GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
+            GenLepton genlep_preFSR2 = genlep_postFSR2; // -- Copy the values of member variables -- // 
+            vector< GenOthers > GenPhotonCollection2;
+            analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
 
-				// -- Mass, Pt, Rapidity Calculation -- //
+            // -- Mass, Pt, Rapidity Calculation -- //
             TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
             TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
-				Double_t gen_M_pre = tlv_preFSR.M();
-				Double_t gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
-				Double_t gen_Pt_pre = tlv_preFSR.Pt();
-				Double_t gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
-				Double_t gen_M_post = tlv_postFSR.M();
-				Double_t gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
-				Double_t gen_Pt_post = tlv_postFSR.Pt();
-				Double_t gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
+            Double_t gen_M_pre = tlv_preFSR.M();
+            Double_t gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
+            Double_t gen_Pt_pre = tlv_preFSR.Pt();
+            Double_t gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
+            Double_t gen_M_post = tlv_postFSR.M();
+            Double_t gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
+            Double_t gen_Pt_post = tlv_postFSR.Pt();
+            Double_t gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
 
 
-				// -- Flags -- //
-				Bool_t Flag_PassAcc = kFALSE;
+            // -- Flags -- //
+            Bool_t Flag_PassAcc = kFALSE;
 
-				// -- Fill the mass histograms -- //
-				h_mass->Fill( gen_M, TotWeight );
-				h_mass_tot->Fill( gen_M, TotWeight );
+            // -- Fill the mass histograms -- //
+            h_mass->Fill( gen_M, TotWeight );
+            h_mass_tot->Fill( gen_M, TotWeight );
 
-				Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
+            Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
 
             // -- Acceptance Calculation -- //
             if (ttbar_w->size()!=nweights) cout << i << " -> " << ttbar_w->size() << " " << nweights << endl;
             for (unsigned int iwt=0; iwt<nweights; iwt++) {
-               double wt = 1;
+               // int iwt=0;
+               double wt = TotWeight;
                // sometimes the last weight is missing... protect against this
                if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
@@ -295,7 +296,7 @@ void Acc_weights_genonly(TString Sample)
                   h_rap1560_AccTotal_post[iwt]->Fill( gen_Rap_post, wt );
                }
             }
-			} // -- End of if( GenFlag == kTRUE )
+         } // -- End of if( GenFlag == kTRUE )
 
 		} //End of event iteration
 

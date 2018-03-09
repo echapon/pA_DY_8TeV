@@ -9,6 +9,8 @@
 #include "samples_v20180111.h"
 #include "samples_v20180111_Pyquen.h"
 #include "samples_v20180111_CT14.h"
+#include "samples_v20180111_noEWK.h"
+#include "samples_v20180111_negweights.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -90,6 +92,11 @@ namespace DYana {
       else if (variable.Contains("phistar")) return phistar;
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
+      else if (variable.Contains("Mass")) return mass;
+      else if (variable.Contains("Pt")) return pt;
+      else if (variable.Contains("Phistar")) return phistar;
+      else if (variable.Contains("Rap60120")) return rap60120;
+      else if (variable.Contains("Rap1560")) return rap1560;
       return mass;
    };
 
