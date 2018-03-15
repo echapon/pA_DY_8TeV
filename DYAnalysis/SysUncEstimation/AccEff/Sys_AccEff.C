@@ -6,6 +6,7 @@
 
 #include "TFile.h"
 #include "TH1.h"
+#include "TMatrixT.h"
 
 #include <vector>
 
@@ -17,10 +18,11 @@ using DYana::var;
 // [1] gSystem->Load("/dir/to/lhapdf/lib/libLHAPDF.so");
 // .L AccEff/Sys_AccEff.C+
 
-void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin = TFile::Open(file);
 
    vector<TH1D*> hAccTotal, hAccPass, hEffTotal, hEffPass_Corr_tnp;
+   vector<TMatrixT<double> > mcor;
    vector<TGraphAsymmErrors*> gAccEffs;
    vector<TString> graphNames;
 
@@ -45,6 +47,10 @@ void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
 
+   int nbins = gAcc->GetN();
+   // put a dummy empty matrix at i=0
+   mcor.push_back(TMatrixT<double>(nbins,nbins));
+
    for (int i=1; i<7; i++) {
       TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
@@ -52,7 +58,9 @@ void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
 
-      for (int j=0; j<gAccTmp->GetN(); j++) {
+      mcor.push_back(TMatrixT<double>(nbins,nbins));
+
+      for (int j=0; j<nbins; j++) {
          if (i==1) {
             gAcc->SetPointEYlow(j,0);
             gAcc->SetPointEYhigh(j,0);
@@ -67,7 +75,22 @@ void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
          gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
          gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
          gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+
+         double diffj = gAccTmp->GetY()[j]-gAcc->GetY()[j];
+         for (int k=0; k<nbins; k++) {
+            double diffk = gAccTmp->GetY()[k]-gAcc->GetY()[k];
+            mcor[i][j][k] = diffj*diffk;
+         }
       } // loop on bins
+
+      // turn the cov matrix into a correlation matrix
+      for (int j=0; j<nbins; j++) {
+         for (int k=0; k<nbins; k++) {
+            if (j==k) continue;
+            mcor[i][j][k] *= 1./sqrt(fabs(mcor[i][j][j]*mcor[i][k][k]));
+         }
+      }
+      for (int j=0; j<nbins; j++) mcor[i][j][j] = 1;
    } // loop on scales
 
    // compute ratio to first graph
@@ -87,16 +110,32 @@ void Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
    }
 
+   // produce the correlation matrix as the average of the individual correlation matrices
+   TH2D *ans = new TH2D(TString(hEffPass_Corr_tnp[0]->GetName())+"_scalecorr",TString(hEffPass_Corr_tnp[0]->GetTitle())+" (scales corr)",
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray(),
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray());
+   int nvars = mcor.size();
+   for (int j=0; j<nbins; j++) {
+      for (int k=0; k<nbins; k++) {
+         double val=0;
+         for (int i=1; i<nvars; i++) val += mcor[i][j][k];
+         ans->SetBinContent(j+1,k+1,val/(nvars-1));
+      }
+   }
+
    c1.SetYRange(0.96,1.04);
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+
+   return ans;
 }
 
-void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin = TFile::Open(file);
 
    vector<TH1D*> hAccTotal, hAccPass, hEffTotal, hEffPass_Corr_tnp;
+   vector<TMatrixT<double> > mcor;
    vector<TGraphAsymmErrors*> gAccEffs;
    vector<TString> graphNames;
 
@@ -121,12 +160,18 @@ void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
 
+   int nbins = gAcc->GetN();
+   // put a dummy empty matrix at i=0
+   mcor.push_back(TMatrixT<double>(nbins,nbins));
+
    for (int i=1; i<3; i++) {
       TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
       TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
+
+      mcor.push_back(TMatrixT<double>(nbins,nbins));
 
       for (int j=0; j<gAccTmp->GetN(); j++) {
          if (i==1) {
@@ -143,7 +188,22 @@ void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
          gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
          gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
          gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+
+         double diffj = gAccTmp->GetY()[j]-gAcc->GetY()[j];
+         for (int k=0; k<nbins; k++) {
+            double diffk = gAccTmp->GetY()[k]-gAcc->GetY()[k];
+            mcor[i][j][k] = diffj*diffk;
+         }
       } // loop on bins
+
+      // turn the cov matrix into a correlation matrix
+      for (int j=0; j<nbins; j++) {
+         for (int k=0; k<nbins; k++) {
+            if (j==k) continue;
+            mcor[i][j][k] *= 1./sqrt(fabs(mcor[i][j][j]*mcor[i][k][k]));
+         }
+      }
+      for (int j=0; j<nbins; j++) mcor[i][j][j] = 1;
    } // loop on scales
 
    // compute ratio to first graph
@@ -163,6 +223,19 @@ void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       gAccEffs[0]->SetPoint(i,gAccEffs[0]->GetX()[i],1);
    }
 
+   // produce the correlation matrix as the average of the individual correlation matrices
+   TH2D *ans = new TH2D(TString(hEffPass_Corr_tnp[0]->GetName())+"_alphascorr",TString(hEffPass_Corr_tnp[0]->GetTitle())+" (alphaS corr)",
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray(),
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray());
+   int nvars = mcor.size();
+   for (int j=0; j<nbins; j++) {
+      for (int k=0; k<nbins; k++) {
+         double val=0;
+         for (int i=1; i<nvars; i++) val += mcor[i][j][k];
+         ans->SetBinContent(j+1,k+1,val/(nvars-1));
+      }
+   }
+
    c1.SetYRange(0.99,1.01);
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
    c1.PrintCanvas();
@@ -177,9 +250,11 @@ void Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
       gAccEff->SetPointEYlow(j,1.5*gAccEff->GetEYlow()[j]);
       gAccEff->SetPointEYhigh(j,1.5*gAccEff->GetEYhigh()[j]);
    }
+
+   return ans;
 }
 
-void Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+TH2D* Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin = TFile::Open(file);
 
    vector<TH1D*> hAcc, hEff, hAccEff;
@@ -231,9 +306,11 @@ void Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, T
    c1.CanvasWithMultipleHistograms(hAccEff, histNames, "HIST LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+
+   return  pdfcorr(hAccEff, "EPPS16nlo_CT14nlo_Pb208");
 }
 
-void Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
+TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin[2] = {0};
    fin[0] = TFile::Open(file);
    TString file_nozpt("../ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth_noZptrew.root");
@@ -265,6 +342,11 @@ void Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGra
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
 
+   int nbins = gAcc->GetN();
+   TH2D *ans = new TH2D(TString(hEffPass_Corr_tnp[0]->GetName())+"_Zptcorr",TString(hEffPass_Corr_tnp[0]->GetTitle())+" (Zpt corr)",
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray(),
+         nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray());
+
    int i=1;
    TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
    TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
@@ -287,7 +369,22 @@ void Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGra
       gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
       gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
       gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+
+      double diffj = gAccTmp->GetY()[j]-gAcc->GetY()[j];
+      for (int k=0; k<nbins; k++) {
+         double diffk = gAccTmp->GetY()[k]-gAcc->GetY()[k];
+         ans->SetBinContent(j+1,k+1,diffj*diffk);
+      }
    } // loop on bins
+
+   // turn the cov matrix into a correlation matrix
+   for (int j=0; j<nbins; j++) {
+      for (int k=0; k<nbins; k++) {
+         if (j==k) continue;
+         ans->SetBinContent(j+1,k+1,ans->GetBinContent(j+1,k+1) / sqrt(fabs(ans->GetBinContent(j+1,j+1)*ans->GetBinContent(k+1,k+1))));
+      }
+   }
+   for (int j=0; j<nbins; j++) ans->SetBinContent(j+1,j+1,1);
 
    // compute ratio to first graph
    for (vector<TGraphAsymmErrors*>::iterator it=gAccEffs.begin()+1; it!=gAccEffs.end(); it++) 
@@ -311,17 +408,19 @@ void Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGra
    c1.CanvasWithMultipleGraphs(gAccEffs, graphNames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+
+   return ans;
 }
 
 void Sys_AccEff(const char* file, var thevar) {
    TGraphAsymmErrors *gAcc_scales=0, *gEff_scales=0, *gAccEff_scales=0;
-   Sys_AccEff_scales(file, thevar, gAcc_scales, gEff_scales, gAccEff_scales);
+   TH2D *hcormatrix_scales = Sys_AccEff_scales(file, thevar, gAcc_scales, gEff_scales, gAccEff_scales);
    TGraphAsymmErrors *gAcc_alphas=0, *gEff_alphas=0, *gAccEff_alphas=0;
-   Sys_AccEff_alphas(file, thevar, gAcc_alphas, gEff_alphas, gAccEff_alphas);
+   TH2D *hcormatrix_alphas = Sys_AccEff_alphas(file, thevar, gAcc_alphas, gEff_alphas, gAccEff_alphas);
    TGraphAsymmErrors *gAcc_EPPS16=0, *gEff_EPPS16=0, *gAccEff_EPPS16=0;
-   Sys_AccEff_EPPS16(file, thevar, gAcc_EPPS16, gEff_EPPS16, gAccEff_EPPS16);
+   TH2D *hcormatrix_EPPS16 = Sys_AccEff_EPPS16(file, thevar, gAcc_EPPS16, gEff_EPPS16, gAccEff_EPPS16);
    TGraphAsymmErrors *gAcc_Zpt=0, *gEff_Zpt=0, *gAccEff_Zpt=0;
-   Sys_AccEff_Zpt(file, thevar, gAcc_Zpt, gEff_Zpt, gAccEff_Zpt);
+   TH2D *hcormatrix_Zpt = Sys_AccEff_Zpt(file, thevar, gAcc_Zpt, gEff_Zpt, gAccEff_Zpt);
 
    // print to a TeX
    vector<string> ynames;
@@ -405,14 +504,54 @@ void Sys_AccEff(const char* file, var thevar) {
    theSysts.push_back(syst_EPPS16);
    theSysts.push_back(syst_Zpt);
    map<bin,syst> syst_tot = combineSyst(theSysts,"AccEff (theory)");
+
+   // compute the correlation matrix
+   // first, build covariance matrices
+   int nbins = gAccEff4tex_scales->GetN();
+   TMatrixT<double> cov_scales(nbins,nbins), cov_alphas(nbins,nbins), cov_EPPS16(nbins,nbins), cov_Zpt(nbins,nbins), cov_all(nbins,nbins), cor_all(nbins,nbins);
+   // TH2D *hcor = new TH2D("hcor","",nbins,0,nbins,nbins,0,nbins);
+   for (int i=0; i<nbins; i++) {
+      double xi, xmini, xmaxi;
+      xi = gAccEff4tex_scales->GetX()[i];
+      xmini = xi-gAccEff4tex_scales->GetEXlow()[i];
+      xmaxi = xi+gAccEff4tex_scales->GetEXhigh()[i];
+      bin bini(xmini,xmaxi);
+      for (int j=0; j<nbins; j++) {
+         double xj, xminj, xmaxj;
+         xj = gAccEff4tex_scales->GetX()[j];
+         xminj = xj-gAccEff4tex_scales->GetEXlow()[j];
+         xmaxj = xj+gAccEff4tex_scales->GetEXhigh()[j];
+         bin binj(xminj,xmaxj);
+
+         cov_scales[i][j] = syst_scales[bini].value * syst_scales[binj].value * hcormatrix_scales->GetBinContent(i+1,j+1); 
+         cov_alphas[i][j] = syst_alphas[bini].value * syst_alphas[binj].value * hcormatrix_alphas->GetBinContent(i+1,j+1); 
+         cov_EPPS16[i][j] = syst_EPPS16[bini].value * syst_EPPS16[binj].value * hcormatrix_EPPS16->GetBinContent(i+1,j+1);
+         cov_Zpt[i][j] = syst_Zpt[bini].value * syst_Zpt[binj].value * hcormatrix_Zpt->GetBinContent(i+1,j+1);
+
+         // sum all covariance matrices
+         cov_all[i][j] = cov_scales[i][j]+cov_alphas[i][j]+cov_EPPS16[i][j]+cov_Zpt[i][j];
+         // compute the correlation
+         cor_all[i][j] = cov_all[i][j] / (syst_tot[bini].value*syst_tot[binj].value);
+         // hcor->SetBinContent(i+1,j+1,cor_all[i][j]);
+      }
+   }
    
-   // print the csv
+   // print the csv... and the correlation matrix
    ofstream of_syst(Form("csv/AccEff_theory_%s.csv",varname(thevar)));
+   ofstream of_cor(Form("cor/AccEff_theory_%s.csv",varname(thevar)));
    of_syst << "AccEff (theory)" << endl;
+   of_cor << "AccEff (theory)" << endl;
+   int i=0;
    for (map<bin,syst>::const_iterator it=syst_tot.begin(); it!=syst_tot.end(); it++) {
       of_syst << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
+
+      of_cor << it->first.low() << ", " << it->first.high();
+      for (int j=0; j<nbins; j++) of_cor << ", " << cor_all[i][j];
+      of_cor << endl;
+      i++;
    }
    of_syst.close();
+   of_cor.close();
 
    // make the plot
    vector<TString> tags;
