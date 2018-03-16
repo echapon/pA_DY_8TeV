@@ -498,6 +498,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c42.isRatioPadAttached=kTRUE;
 		  c42.TitleX="#phi^{*} (rad)";
 		  c42.TitleY="d#sigma/d#phi^{*}";
+        c42.RatioStandard=1.0;
+		  c42.LowerEdge_Ratio=0.9;
+		  c42.UpperEdge_Ratio=1.1;
+		  c42.LowerEdge_Y=9.0;
+		  c42.UpperEdge_Y=90.0;
+	
 		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c42.PrintCanvas();
 
@@ -624,7 +630,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
+		  vhistnames.push_back("208#timesZ in pp, 8 TeV");
 	     c51.isLogX=kTRUE;
         c51.isLogY=kTRUE;
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
@@ -641,7 +647,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c52.UpperEdge_Y=50.0;
 		  c52.TitleX="p_{T} (GeV/c)";
 		  c52.TitleY="d#sigma/dp_{T}";
-		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c52.PrintCanvas();
 
 		  temph1->Clear();
@@ -683,7 +689,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
+		  vhistnames.push_back("208#timesZ in pp, 8 TeV");
 	     c61.isLogX=kFALSE;
         c61.isLogY=kTRUE;
 		  c61.LowerEdge_Y=0.08;
@@ -703,7 +709,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c62.UpperEdge_Ratio=100.0;
 		  c62.LowerEdge_Y=0.08;
 		  c62.UpperEdge_Y=90.0;
-		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c62.PrintCanvas();
 
 		  temph1->Clear();
