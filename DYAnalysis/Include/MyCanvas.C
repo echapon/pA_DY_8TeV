@@ -12,6 +12,7 @@
 #include <TH2D.h>
 #include <TCanvas.h>
 #include <TROOT.h>
+#include <TMath.h>
 
 #include <vector>
 
@@ -57,7 +58,8 @@ public:
 	TGraphAsymmErrors *g_ratio;
 	Double_t LowerEdge_Ratio;
 	Double_t UpperEdge_Ratio;
-
+   Bool_t isRatioPadAttached;//added
+	Double_t RatioStandard;
 	Bool_t DoTranspose; // -- for 2D histogram -- //
 
 	MyCanvas(TString CanvasName, TString XTitle, TString YTitle, Int_t length_x = 800, Int_t length_y = 800)
@@ -84,10 +86,13 @@ public:
 		Legend_x2 = 0.95;
 		Legend_y2 = 0.95;
 
-		LowerEdge_Ratio = 0.5;
-		UpperEdge_Ratio = 1.5;
+		LowerEdge_Ratio = 0.45;
+		UpperEdge_Ratio = 1.55;
 		isSetNoExpo_MoreLogLabels_X = kTRUE;
 		isSetNoExpo_MoreLogLabels_Y = kFALSE;
+		
+		isRatioPadAttached = kFALSE;//added
+		RatioStandard=1.0;
 
 		Colors.push_back( kBlack );
 		Colors.push_back( kRed+1 );
@@ -202,7 +207,8 @@ public:
 	{
 		c->cd();
 		// -- Top Pad -- //
-		TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
+		//###TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
+		TopPad = new TPad("TopPad", "TopPad", 0.01, 0.3, 0.99, 0.99);
 		TopPad->Draw();
 		TopPad->cd();
 
@@ -210,12 +216,15 @@ public:
 		if( isLogY == kTRUE ) gPad->SetLogy();
 
 		// -- ensure additional space at the bottom side for ratio plot -- //
-		TopPad->SetBottomMargin(0.32);
+		//TopPad->SetBottomMargin(0.00);//0.32, 0.00
 		TopPad->SetRightMargin(0.05);
+
+		if( isRatioPadAttached == kTRUE) TopPad->SetBottomMargin(0.00);
+		else TopPad->SetBottomMargin(0.32);
 
 		h1->Draw(DrawOp1);
 		h2->Draw(DrawOp2);
-		h1->Draw("AXISSAME");
+		//h1->Draw("AXISSAME");
 		h1->Draw(DrawOp1+"SAME");
 
 		// -- General Setting for both plots -- //
@@ -251,6 +260,7 @@ public:
 		// -- Y-axis Setting -- //
 		h1->GetYaxis()->SetTitleSize(0.06);
 		h1->GetYaxis()->SetTitleOffset(1.25);
+		h1->GetYaxis()->SetRangeUser( 0.1*TMath::Min(h1->GetMinimum(), h2->GetMinimum()), 3.0*TMath::Max(h1->GetMaximum(), h2->GetMaximum()) );
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h1->GetYaxis()->SetNoExponent(); h1->GetYaxis()->SetMoreLogLabels(); }
 		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
@@ -264,13 +274,15 @@ public:
 
 
 		// -- Bottom Pad -- //
+		c->cd();
 		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
 		BottomPad->Draw();
 		BottomPad->cd();
 
 		BottomPad->SetBottomMargin(0.4);
-		BottomPad->SetRightMargin(0.04);
-		BottomPad->SetLeftMargin(0.15);	
+		BottomPad->SetRightMargin(0.05);
+		//BottomPad->SetLeftMargin(0.15);	
+		if( isRatioPadAttached == kTRUE) BottomPad->SetTopMargin(0.00);
 
 		if( isLogX == kTRUE ) gPad->SetLogx();
 
@@ -302,13 +314,13 @@ public:
 
 		// -- Y-axis Setting -- //
 		h_ratio->GetYaxis()->SetTitle( Name_Ratio );
-		h_ratio->GetYaxis()->SetTitleOffset( 0.4 );
+		h_ratio->GetYaxis()->SetTitleOffset( 0.6 );//0.4
 		h_ratio->GetYaxis()->SetTitleSize( 0.1);
 		h_ratio->GetYaxis()->SetLabelSize( 0.07 );
-		h_ratio->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
+		h_ratio->GetYaxis()->SetRangeUser( RatioStandard-1+LowerEdge_Ratio, RatioStandard-1+UpperEdge_Ratio );
 
 		// -- flat line = 1.00 -- //
-		TF1 *f_line = new TF1("f_line", "1", -10000, 10000);
+		TF1 *f_line = new TF1("f_line", Form("%f",RatioStandard), -10000, 10000);//"1"
 		f_line->SetLineColor(kRed);
 		f_line->SetLineWidth(1);
 		f_line->Draw("SAME");
@@ -623,6 +635,15 @@ public:
 		legend->SetFillStyle(0);
 		legend->SetBorderSize(0);
 
+		//###
+		double maxval=0.0;
+		double minval=0.0;
+		for(Int_t i_hist=0; i_hist<nHist; i_hist++){
+			if (i_hist==0) {maxval=Histos[i_hist]->GetMaximum();minval=Histos[i_hist]->GetMinimum();}
+			else if (maxval<Histos[i_hist]->GetMaximum()) maxval=Histos[i_hist]->GetMaximum();
+			else if (minval>Histos[i_hist]->GetMaximum()) minval=Histos[i_hist]->GetMinimum();
+		}
+	
 		for(Int_t i_hist=0; i_hist<nHist; i_hist++)
 		{
 			TH1D *h = Histos[i_hist];
@@ -649,6 +670,7 @@ public:
 				h->GetYaxis()->SetLabelSize(0.04);
 				if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h->GetYaxis()->SetNoExponent(); h->GetYaxis()->SetMoreLogLabels(); }
 				if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+				else h->GetYaxis()->SetRangeUser( minval*0.5, maxval*1.2 );
 			}
 
 			h->SetStats(kFALSE);
@@ -705,13 +727,13 @@ public:
 
 				// -- X-axis Setting -- //
 				if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g->GetXaxis()->SetNoExponent(); g->GetXaxis()->SetMoreLogLabels(); }
-				if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+				if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 				// -- Y-axis Setting -- //
 				g->GetYaxis()->SetTitleSize(0.06);
 				g->GetYaxis()->SetTitleOffset(1.25);
 				if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g->GetYaxis()->SetNoExponent(); g->GetYaxis()->SetMoreLogLabels(); }
-				if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+				if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) g->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 			}
 
 			g->SetLineColor(color);
@@ -773,15 +795,15 @@ public:
 		g1->GetXaxis()->SetLabelSize(0);
 		g1->GetXaxis()->SetTitleSize(0);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g1->GetXaxis()->SetNoExponent(); g1->GetXaxis()->SetMoreLogLabels(); }
-		// if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g1->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g1->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
+		// if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g1->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g1->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g1->GetYaxis()->SetTitle( TitleY );
 		g1->GetYaxis()->SetTitleSize(0.06);
 		g1->GetYaxis()->SetTitleOffset(1.25);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		// -- Add Legend -- //
 		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
@@ -823,8 +845,8 @@ public:
 		g_ratio->GetXaxis()->SetLabelOffset(0.007);
 		g_ratio->GetXaxis()->SetLabelSize(0.15);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { g_ratio->GetXaxis()->SetMoreLogLabels(); g_ratio->GetXaxis()->SetNoExponent(); }
-		// if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g_ratio->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) g_ratio->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
+		// if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g_ratio->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) g_ratio->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g_ratio->GetYaxis()->SetTitle( Name_Ratio );
@@ -909,14 +931,14 @@ public:
 		h->GetXaxis()->SetTitleOffset(0.9);
 		h->GetXaxis()->SetLabelSize(0.06);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { h->GetXaxis()->SetNoExponent(); h->GetXaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) h->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( LowerEdge_X != 0 && UpperEdge_X != 0 ) h->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		h->GetYaxis()->SetTitleSize(0.06);
 		h->GetYaxis()->SetTitleOffset(1.25);
 		h->GetYaxis()->SetLabelSize(0.06);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h->GetYaxis()->SetNoExponent(); h->GetYaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( LowerEdge_Y != 0 && UpperEdge_Y != 0 ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		h->SetStats(kFALSE);
 		h->SetLineColor(color);
