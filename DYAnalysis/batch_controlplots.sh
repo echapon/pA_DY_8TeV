@@ -32,12 +32,16 @@ elif [ $1 -eq 7 ]; then
 elif [ $1 -eq 8 ]; then
    arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,7,6)'
 
-# Data
-elif [ $1 -eq 9 ]; then
-   arg='(kFALSE,"Data")'
+# no Zpt reweighting
 elif [ $1 -eq 10 ]; then
-   arg='(kTRUE,"Data","PAL3Mu12",false,HFweight::HFside::both,false,0,0)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,0,0,false)'
+
+# Data
+elif [ $1 -eq 10 ]; then
+   arg='(kFALSE,"Data")'
 elif [ $1 -eq 11 ]; then
+   arg='(kTRUE,"Data","PAL3Mu12",false,HFweight::HFside::both,false,0,0)'
+elif [ $1 -eq 12 ]; then
    arg='(kTRUE,"Data","PAL3Mu12",false,HFweight::HFside::both,false,7,6)'
 fi
 

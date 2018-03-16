@@ -82,7 +82,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
    // TFile *fdata = new TFile(Form("Plots/results/xsec_%s_%s_%d_detcor.root",Sample.Data(),isApplyMomCorr.Data(),run));
-   TFile *fdata = new TFile("Plots/results/xsec_nom_detcor.root");
+   TFile *fdata = TFile::Open("Plots/results/xsec_nom_detcor.root");
    if (!fdata || !fdata->IsOpen()) {
       cout << "Error, data file not found" << endl;
       return;
@@ -94,8 +94,20 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
       return;
    }
 
+   // get the covariance matrix of statistical uncertainties
+   TFile *fcovmat = TFile::Open(Form("ResponseMatrix/yields_detcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run));
+   if (!fcovmat || !fcovmat->IsOpen()) {
+      cout << "Error, covmat file not found" << endl;
+      return;
+   }
+   TH2D *hcovmat_in = (TH2D*) fcovmat->Get("h_Measured_unfoldedMLE_cov_"+TString(thevarname));
+   if (!hcovmat_in) {
+      cout << "Error, cov matrix not found" << endl;
+      return;
+   }
+
    // output
-   TFile *fout = new TFile(Form("FSRCorrection/xsec_FSRcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
+   TFile *fout = TFile::Open(Form("FSRCorrection/xsec_FSRcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
    fout->cd();
 
    // output

@@ -1,4 +1,5 @@
-#include <TH1D.h>
+#include <TH1.h>
+#include <TH2.h>
 #include <TColor.h>
 #include <TLegend.h>
 #include <TCanvas.h>

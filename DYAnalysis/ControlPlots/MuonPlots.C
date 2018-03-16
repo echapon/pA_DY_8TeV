@@ -35,7 +35,7 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       bool doHFrew = false, 
       HFweight::HFside rewmode = HFweight::HFside::both, 
       bool doTnPrew = false,
-      int cor_s=0, int cor_m=0)
+      int cor_s=0, int cor_m=0, bool zptrew = true)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -68,8 +68,10 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       else if (rewmode==HFweight::HFside::minus) srew="rewminus";
    }
    TString stnprew = doTnPrew ? "tnprew" : "notnprew";
+   TString srew2("");
+   if (!zptrew) srew2 = "_noZptrew";
 
-	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + "_" + stnprew + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_InvMass_" + HLTname + "_" + Type + "_" + isApplyMomCorr + "_" + srew + "_" + stnprew + srew2 + ".root", "RECREATE");
 
    // TString BaseLocation = gSystem->Getenv("KP_DATA_PATH");
    // TString BaseLocation = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/trees_20170518/";
@@ -214,8 +216,10 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 				}
 
             // -- Z pt reweighting -- //
-				Double_t gen_Pt = (GenLeptonCollection[0].Momentum + GenLeptonCollection[1].Momentum).Pt();
-            GenWeight *= zptWeight(gen_Pt);
+            if (zptrew) {
+               Double_t gen_Pt = (GenLeptonCollection[0].Momentum + GenLeptonCollection[1].Momentum).Pt();
+               GenWeight *= zptWeight(gen_Pt);
+            }
 
 				Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
 			}
