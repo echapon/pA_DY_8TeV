@@ -5,6 +5,7 @@
 
 #include "TFile.h"
 #include "TH1.h"
+#include "TMatrixT.h"
 
 #include <vector>
 
@@ -19,7 +20,7 @@ using DYana::var;
 const int   nmax[9]     = {1,100,1,1,5,5,0,7,1};
 const char* varnames[9] = {"Default","Stat","Zpt","Ewk","CorDm","FitDm","LHEw","Run","AMCNLO"};
 
-void Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int itype) {
+TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int itype) {
    // itype = 1 -> stat
    //         2 -> Zpt
    //         4 -> CorDm
@@ -34,6 +35,7 @@ void Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int
    else if (thevar==var::phistar) hname = "h_Phistar2_M60to120";
 
    vector<TGraphAsymmErrors*> graphs;
+   vector<TMatrixT<double> > mcor;
    vector<TString> graphNames;
    gErr = NULL;
 
@@ -49,8 +51,12 @@ void Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int
       gErr->SetPointEYlow(j,0);
       gErr->SetPointEYhigh(j,0);
    }
+   int nbins = gErr->GetN();
 
    for (int i=0; i<nmax[itype]; i++) {
+      // stat needs only 1 matrix
+      if (!(itype==1 && i>0)) mcor.push_back(TMatrixT<double>(nbins,nbins));
+
       if (itype==7 && i!=6) continue; // only do run H for run variations
       TString s = file;
       TFile *fi = TFile::Open(s.ReplaceAll("00",Form("%d%d",itype,i)));
@@ -64,14 +70,39 @@ void Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int
             // take the envelope, except for stat
             gErr->SetPointEYlow(j,-min(gtmp->GetY()[j]-gErr->GetY()[j],-gErr->GetEYlow()[j]));
             gErr->SetPointEYhigh(j,max(gtmp->GetY()[j]-gErr->GetY()[j],gErr->GetEYhigh()[j]));
+            
+            double diffj = gtmp->GetY()[j]-gErr->GetY()[j];
+            for (int k=0; k<nbins; k++) {
+               double diffk = gtmp->GetY()[k]-gErr->GetY()[k];
+               mcor[i][j][k] = diffj*diffk;
+            }
          } else {
             // for stat: take the RMS
             gErr->SetPointEYlow(j,pow(gErr->GetEYlow()[j],2)+pow(gtmp->GetY()[j]-1,2));
             gErr->SetPointEYhigh(j,pow(gErr->GetEYhigh()[j],2)+pow(gtmp->GetY()[j]-1,2));
+            
+            double diffj = gtmp->GetY()[j]-gErr->GetY()[j];
+            for (int k=0; k<nbins; k++) {
+               double diffk = gtmp->GetY()[k]-gErr->GetY()[k];
+               if (i==0) mcor[0][j][k] = 0;
+               mcor[0][j][k] += diffj*diffk / (nmax[itype]-1);
+            }
          }
       }
       graphs.push_back(gtmp);
       graphNames.push_back(Form("%s %d",varnames[itype],i));
+
+      // turn the cov matrix into a correlation matrix
+      if (itype != 1) {
+         for (int j=0; j<nbins; j++) {
+            for (int k=0; k<nbins; k++) {
+               if (j==k) continue;
+               if (mcor[i][j][j]==0 || mcor[i][k][k]==0) mcor[i][j][k] = 0;
+               else mcor[i][j][k] *= 1./sqrt(fabs(mcor[i][j][j]*mcor[i][k][k]));
+            }
+         }
+         for (int j=0; j<nbins; j++) mcor[i][j][j] = 1;
+      }
    }
 
    // for stat: need to take the square root for RMS
@@ -80,27 +111,58 @@ void Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, int
          gErr->SetPointEYlow(j,sqrt(gErr->GetEYlow()[j]));
          gErr->SetPointEYhigh(j,sqrt(gErr->GetEYhigh()[j]));
       }
+
+      // turn the cov matrix into a correlation matrix
+      for (int j=0; j<nbins; j++) {
+         for (int k=0; k<nbins; k++) {
+            if (j==k) continue;
+            if (mcor[0][j][j]==0 || mcor[0][k][k]==0) mcor[0][j][k] = 0;
+            else mcor[0][j][k] *= 1./sqrt(fabs(mcor[0][j][j]*mcor[0][k][k]));
+         }
+      }
+      for (int j=0; j<nbins; j++) mcor[0][j][j] = 1;
+   }
+
+   // produce the correlation matrix as the average of the individual correlation matrices
+   TH2D *ans = new TH2D(TString(hnom->GetName())+TString("_corr")+(Long_t)itype,TString(hnom->GetTitle())+TString(" (corr ")+(Long_t)itype+")",
+         nbins,hnom->GetXaxis()->GetXbins()->GetArray(),
+         nbins,hnom->GetXaxis()->GetXbins()->GetArray());
+   int nvars = mcor.size();
+   for (int j=0; j<nbins; j++) {
+      for (int k=0; k<nbins; k++) {
+         if (itype!=1) {
+            double val=0;
+            for (int i=0; i<nvars; i++) val += mcor[i][j][k];
+            ans->SetBinContent(j+1,k+1,itype==7 ? val : val/(nvars)); // for itype==7 (Run), there is only 1 variation
+         } else {
+            ans->SetBinContent(j+1,k+1,mcor[0][j][k]);
+         }
+      }
    }
 
    c1.SetYRange(0.96,1.04);
    c1.CanvasWithMultipleGraphs(graphs, graphNames, "LPX");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
+
+   return ans;
 }
 
 void Sys_MomCorr(const char* file, var thevar) {
    vector<TGraphAsymmErrors*> graphs;
+   vector<TH2D*> hcor;
    TGraphAsymmErrors *gErr = NULL;
+   hcor.push_back(NULL);
    graphs.push_back(gErr); // placeholder for the total
-   Sys_MomCorr_compute(file, thevar, gErr, 1);
+   hcor.push_back(Sys_MomCorr_compute(file, thevar, gErr, 1));
    graphs.push_back(gErr);
-   Sys_MomCorr_compute(file, thevar, gErr, 2);
+   hcor.push_back(Sys_MomCorr_compute(file, thevar, gErr, 2));
    graphs.push_back(gErr);
-   Sys_MomCorr_compute(file, thevar, gErr, 4);
+   hcor.push_back(Sys_MomCorr_compute(file, thevar, gErr, 4));
    graphs.push_back(gErr);
-   Sys_MomCorr_compute(file, thevar, gErr, 5);
+   hcor.push_back(Sys_MomCorr_compute(file, thevar, gErr, 5));
    graphs.push_back(gErr);
-   Sys_MomCorr_compute(file, thevar, gErr, 7);
+   hcor.push_back(Sys_MomCorr_compute(file, thevar, gErr, 7));
    graphs.push_back(gErr);
 
    // print to a TeX
@@ -138,14 +200,56 @@ void Sys_MomCorr(const char* file, var thevar) {
    }
 
    map<bin,syst> syst_tot = combineSyst(theSysts,"MomCorr");
+
+   // compute the correlation matrix
+   // first, build covariance matrices
+   int nbins = graphs[1]->GetN();
+   vector<TMatrixT<double> > covmat;
+   TMatrixT<double> cov_all(nbins,nbins), cor_all(nbins,nbins);
+   for (int j=0; j<nbins; j++) {
+      double xj, xminj, xmaxj;
+      xj = graphs[1]->GetX()[j];
+      xminj = xj-graphs[1]->GetEXlow()[j];
+      xmaxj = xj+graphs[1]->GetEXhigh()[j];
+      bin binj(xminj,xmaxj);
+      for (int k=0; k<nbins; k++) {
+         double xk, xmink, xmaxk;
+         xk = graphs[1]->GetX()[k];
+         xmink = xk-graphs[1]->GetEXlow()[k];
+         xmaxk = xk+graphs[1]->GetEXhigh()[k];
+         bin bink(xmink,xmaxk);
+
+         if (j==0 && k==0) covmat.push_back(TMatrixT<double>(nbins,nbins));
+         for (unsigned int i=1; i<graphs.size(); i++) {
+            if (j==0 && k==0) covmat.push_back(TMatrixT<double>(nbins,nbins));
+            covmat[i][j][k] = theSysts[i-1][binj].value * theSysts[i-1][bink].value * hcor[i]->GetBinContent(j+1,k+1); 
+            cov_all[j][k] += covmat[i][j][k];
+         }
+
+         // compute the correlation
+         if (j==k) cor_all[j][k] = 1;
+         else if (syst_tot[binj].value==0 || syst_tot[bink].value==0) cor_all[j][k] = 0;
+         else cor_all[j][k] = cov_all[j][k] / (syst_tot[binj].value*syst_tot[bink].value);
+      }
+   }
    
    // print the csv
    ofstream of_syst(Form("csv/MomCorr_%s.csv",varname(thevar)));
+   ofstream of_cor(Form("cor/MomCorr_%s.csv",varname(thevar)));
    of_syst << "MomCorr" << endl;
+   of_cor << "MomCorr" << endl;
+   int i=0;
    for (map<bin,syst>::const_iterator it=syst_tot.begin(); it!=syst_tot.end(); it++) {
       of_syst << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
+      for (int j=0; j<nbins; j++) {
+         if (j>0) of_cor << ", ";
+         of_cor << cor_all[i][j];
+      }
+      of_cor << endl;
+      i++;
    }
    of_syst.close();
+   of_cor.close();
 
    // make the graph for the total syst
    vector<double> x, y, dx, dy;

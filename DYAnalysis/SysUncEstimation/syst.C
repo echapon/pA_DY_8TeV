@@ -46,6 +46,83 @@ map<bin, syst> readSyst(const char* systfile) {
    return ans;
 };
 
+TMatrixT<double> readSyst_cor(const char* systfile) {
+   TString tsystfile(systfile);
+   tsystfile.ReplaceAll("csv/","cor/");
+
+   int nbins=0;
+   if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
+   else if (tsystfile.Contains("pt")) nbins = DYana::nbinsvar("pt");
+   else if (tsystfile.Contains("phistar")) nbins = DYana::nbinsvar("phistar");
+   else if (tsystfile.Contains("rap1560")) nbins = DYana::nbinsvar("rap1560");
+   else if (tsystfile.Contains("rap60120")) nbins = DYana::nbinsvar("rap60120");
+   else return TMatrixT<double>(1,1);
+   TMatrixT<double> ans = TMatrixT<double>(nbins,nbins);
+
+   ifstream file(tsystfile.Data());
+   if (!(file.good())) {
+      // maybe we can guess what the correlation matrix should be... let's see.
+      // by default: make it a diagonal matrix (no correlations)
+      for (int i=0; i<nbins; i++) ans[i][i] = 1;
+
+      // in some cases the syst is 100% correlated
+      if (tsystfile.Contains("rewNtracks") || tsystfile.Contains("Unfold")) {
+         for (int i=0; i<nbins; i++) {
+            for (int j=0; j<nbins; j++) {
+               ans[i][j] = 1;
+            }
+         }
+      }
+
+      return ans;
+   }
+
+   string systname; getline(file,systname);
+
+   string line;
+   double binmin=0, binmax=0, value=0;
+
+   int i=0;
+   while (file.good()) {
+      getline(file,line);
+      if (line.size()==0) break;
+      TString tline(line.c_str());
+      TString t; Int_t from = 0, j=0;
+      while (tline.Tokenize(t, from , ",")) {
+         t.Strip(TString::kBoth,' ');
+         value = atof(t.Data());
+         ans[i][j] = value;
+         j++;
+      }
+      i++;
+   }
+
+   file.close();
+  
+   return ans;
+}
+
+map<bin2, syst> readSyst_cov(const char* systfile) {
+   map<bin, syst> thesyst_val = readSyst(systfile);
+   TMatrixT<double> thesyst_cor = readSyst_cor(systfile);
+   map<bin2, syst> ans;
+
+   map<bin, syst>::const_iterator it1,it2;
+   int i1=0;
+   for (it1=thesyst_val.begin(); it1!=thesyst_val.end(); it1++) {
+      int i2=0;
+      for (it2=thesyst_val.begin(); it2!=thesyst_val.end(); it2++) {
+         syst tmpsyst; tmpsyst.name = it1->second.name;
+         tmpsyst.value = it1->second.value * it2->second.value * thesyst_cor[i1][i2];
+         ans[bin2(it1->first,it2->first)] = tmpsyst;
+         i2++;
+      }
+      i1++;
+   }
+
+   return ans;
+}
+
 map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
    map<bin, syst> ans;
 
@@ -69,6 +146,55 @@ map<bin, syst> combineSyst(vector< map<bin, syst> > theSysts, string name) {
 
    return ans;
 };
+
+map<bin2, syst> combineSyst_cov(vector< map<bin2, syst> > theSysts, string name) {
+   if (theSysts.size()==0) return map<bin2, syst>();
+   map<bin2, syst> ans;
+
+   vector<map<bin2, syst> >::const_iterator it;
+   map<bin2, syst>::const_iterator it2;
+   for (it=theSysts.begin(); it!=theSysts.end(); it++) {
+      for (it2=it->begin(); it2!=it->end(); it2++) {
+         if (ans.find(it2->first)!=ans.end()) ans[it2->first].value += it2->second.value;
+         else {
+            ans[it2->first] = it2->second;
+            ans[it2->first].name = name;
+         }
+      }
+   }
+
+   return ans;
+}
+
+TMatrixT<double> combineSyst_cor(vector< map<bin2, syst> > theSysts) {
+   map<bin2, syst> cov_tot = combineSyst_cov(theSysts);
+   
+   int nbins = sqrt(cov_tot.size());
+   TMatrixT<double> ans(nbins,nbins);
+
+   // convert the covariance matrix to a plain TMatrix
+   map<bin2, syst>::const_iterator it;
+   int i=0, j=0;
+   for (it=cov_tot.begin(); it!=cov_tot.end(); it++) {
+      ans[i][j] = it->second.value;
+      j++;
+      if (j==nbins) {
+         j=0;
+         i++;
+      }
+   }
+
+   // convert this covariance matrix into a correlation matrix
+   for (i=0; i<nbins; i++) {
+      for (j=0; j<nbins; j++) {
+         if (i==j) continue;
+         ans[i][j] *= 1./sqrt(fabs(ans[i][i]*ans[j][j]));
+      }
+   }
+   for (i=0; i<nbins; i++) ans[i][i] = 1;
+
+   return ans;
+}
 
 map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix) {
    vector< map<bin, syst> > systmap_all;
@@ -98,6 +224,56 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
 
    return ans;
 };
+
+TMatrixT<double> readSyst_all_cor(var thevar, TString prefix) {
+   vector< map<bin2, syst> > systmap_all;
+
+   vector<TString> tags;
+   tags.push_back("rewNtracks");
+   tags.push_back("MomCorr_smooth");
+   tags.push_back("tnp_tot");
+   tags.push_back("acceffstat_up");
+   tags.push_back("bkg_smooth");
+   tags.push_back("AccEff_theory");
+   tags.push_back("DetResUnfold_smooth");
+   tags.push_back("FSRUnfold_smooth");
+
+   for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
+      map<bin2,syst> systmap;
+      TString systfilename = prefix + "SysUncEstimation/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      cout << systfilename << endl;
+      systmap = readSyst_cov(systfilename.Data());
+      systmap_all.push_back(systmap);
+   }
+
+   TMatrixT<double> ans = combineSyst_cor(systmap_all);
+   return ans;
+}
+
+map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix) {
+   vector< map<bin2, syst> > systmap_all;
+
+   vector<TString> tags;
+   tags.push_back("rewNtracks");
+   tags.push_back("MomCorr_smooth");
+   tags.push_back("tnp_tot");
+   tags.push_back("acceffstat_up");
+   tags.push_back("bkg_smooth");
+   tags.push_back("AccEff_theory");
+   tags.push_back("DetResUnfold_smooth");
+   tags.push_back("FSRUnfold_smooth");
+
+   for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
+      map<bin2,syst> systmap;
+      TString systfilename = prefix + "SysUncEstimation/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      cout << systfilename << endl;
+      systmap = readSyst_cov(systfilename.Data());
+      systmap_all.push_back(systmap);
+   }
+
+   map<bin2, syst> ans = combineSyst_cov(systmap_all, "Total");
+   return ans;
+}
 
 void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    unsigned int nsyst = theSysts.size();

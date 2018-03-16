@@ -9,9 +9,11 @@
 #include <TF1.h>
 #include <TGraphAsymmErrors.h>
 #include <TVectorD.h>
+#include <TMatrixT.h>
 
 #include <vector>
 
+#include "../BkgEst/interface/defs.h"
 
 class BaseInfo
 {
@@ -788,8 +790,8 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 
 	for(Int_t i=0; i<nBin; i++)
 	{
-		Double_t x, y;
-		g->GetPoint(i, x, y);
+		Double_t x = g->GetX()[i];
+		Double_t y = g->GetY()[i];
 
 		// -- make BinEdges array -- //
 		Double_t ErrX_Low = g->GetErrorXlow(i);
@@ -822,7 +824,7 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 	{
 		Int_t i_bin = i+1;
 		h_temp->SetBinContent( i_bin, value[i] );
-		h_temp->SetBinContent( i_bin, error[i] );
+		h_temp->SetBinError( i_bin, error[i] );
 	}
 
 	return h_temp;
@@ -1140,4 +1142,26 @@ void normBinWidth(TH1D *hist) {
       hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
       hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
    }
+}
+
+TH2D* matrix2hist(TMatrixT<double> m, TString var="") {
+   int nbins = m.GetNcols();
+   double* bins;
+   if (var!="") bins = DYana::binsvar(var);
+   else {
+      bins = new double[nbins+1];
+      for (int i=0; i<=nbins; i++) bins[i]=i;
+   }
+   
+   TH2D *ans = new TH2D("matrix"+var, "cor. matrix for "+var, nbins, bins, nbins, bins);
+   if (var!="") {
+      ans->GetXaxis()->SetTitle(DYana::xaxistitle(var));
+      ans->GetYaxis()->SetTitle(DYana::xaxistitle(var));
+   }
+   
+   for (int i=0; i<nbins; i++)
+      for (int j=0; j<nbins; j++)
+         ans->SetBinContent(i+1,j+1,m[i][j]);
+
+   return ans;
 }

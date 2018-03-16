@@ -150,6 +150,9 @@ namespace DYana {
       else return rapbin_60120;
    };
 
+   int nbinsvar(TString variable) {return nbinsvar(str2var(variable));}
+   double* binsvar(TString variable) {return binsvar(str2var(variable));}
+
    // Z pt rweighting
    double zptWeight(double pt) {
       double p0 = -0.37;
