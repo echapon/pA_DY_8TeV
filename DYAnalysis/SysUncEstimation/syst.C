@@ -50,12 +50,13 @@ TMatrixT<double> readSyst_cor(const char* systfile) {
    TString tsystfile(systfile);
    tsystfile.ReplaceAll("csv/","cor/");
 
-   int nbins;
+   int nbins=0;
    if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
    else if (tsystfile.Contains("pt")) nbins = DYana::nbinsvar("pt");
    else if (tsystfile.Contains("phistar")) nbins = DYana::nbinsvar("phistar");
    else if (tsystfile.Contains("rap1560")) nbins = DYana::nbinsvar("rap1560");
    else if (tsystfile.Contains("rap60120")) nbins = DYana::nbinsvar("rap60120");
+   else return TMatrixT<double>(1,1);
    TMatrixT<double> ans = TMatrixT<double>(nbins,nbins);
 
    ifstream file(tsystfile.Data());
