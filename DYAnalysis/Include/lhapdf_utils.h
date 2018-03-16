@@ -14,7 +14,8 @@
 using namespace std;
 using namespace LHAPDF;
 
-TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname) {
+TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname, bool errnom=false) {
+   // if errnom = true, then we also include the uncertainty on the nominal
    PDFSet pdfset(pdfname);
    size_t nm = pdfset.size();
    if (h.size() != nm) {
@@ -41,7 +42,13 @@ TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname) {
       // set point
       g->SetPoint(i,x,y[0]);
       // set error
-      g->SetPointError(i,exl,exh,u.errminus,u.errplus);
+      double err_low = u.errminus;
+      double err_high = u.errplus;
+      if (errnom) {
+         err_low = sqrt(pow(err_low,2)+pow(h[0]->GetBinError(i+1),2));
+         err_high = sqrt(pow(err_high,2)+pow(h[0]->GetBinError(i+1),2));
+      }
+      g->SetPointError(i,exl,exh,err_low,err_high);
    }
 
    return g;
