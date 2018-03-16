@@ -617,7 +617,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       // compute the tnp syst uncertainty
       double tnptot = 0;
       double tnpstat1 = 0, tnpstat2 = 0, tnpstat3 = 0;
-      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = 0.34e-2, tnpsyst7 = 0.6e-2;
+      double tnpsyst1 = 0, tnpsyst2 = 0, tnpsyst3 = 0, tnpsyst4 = 0, tnpsyst5 = 0, tnpsyst6 = sqrt(2)*0.34e-2, tnpsyst7 = sqrt(2)*0.6e-2;
       double e0 = Eff_Mass_Corr_tnp[0]->GetEfficiency(ibin+1);
       TEfficiency** ee = Eff_Mass_Corr_tnp; // shortcut
 
