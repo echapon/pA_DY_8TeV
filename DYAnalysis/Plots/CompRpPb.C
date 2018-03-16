@@ -297,22 +297,36 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c11("Comp_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM",800,800);
+		  MyCanvas c11("Comp_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
 		  c11.isLogX=kTRUE;
 		  c11.isLogY=kTRUE;
+		  c11.TitleX="M [GeV/c^{2}]";
+		  c11.TitleY="d#sigma/dM [nb/(GeV/c^{2})]";
+		  c11.LowerEdge_Y=0.00003;
+		  c11.UpperEdge_Y=2000.0;
+		  c11.Legend_x1=0.50;
+		  c11.Legend_y1=0.80;
+		  c11.Legend_x2=0.95;
+		  c11.Legend_y2=0.90;
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
-		  MyCanvas c12("Comp_cross_mass_rebin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM",800,1000);
+		  MyCanvas c12("Comp_cross_mass_rebin_detcor_FSRcor","M [GeV/c^{2}]","d#sigma/dM",800,1000);
    	  c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
-		  c12.TitleX="M (GeV/c^{2})";
-		  c12.TitleY="d#sigma/dM";
+		  c12.TitleX="M [GeV/c^{2}]";
+		  c12.TitleY="d#sigma/dM [nb/(GeV/c^{2})]";
+		  c12.LowerEdge_Y=0.0007;
+		  c12.UpperEdge_Y=500.0;
+		  c12.Legend_x1=0.50;
+		  c12.Legend_y1=0.80;
+		  c12.Legend_x2=0.95;
+		  c12.Legend_y2=0.90;
 		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c12.PrintCanvas();
 
@@ -352,31 +366,37 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c21("Comp_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM}",800,800);
+		  MyCanvas c21("Comp_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
 	     c21.isLogX=kFALSE;
         c21.isLogY=kTRUE;
-		  c21.LowerEdge_Y=5.0;
-		  c21.UpperEdge_Y=100.0;
-
-
+		  c21.LowerEdge_Y=4.0;
+		  c21.UpperEdge_Y=200.0;
+		  c21.Legend_x1=0.50;
+		  c21.Legend_y1=0.80;
+		  c21.Legend_x2=0.95;
+		  c21.Legend_y2=0.90;
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c21.PrintCanvas();
 
-		  MyCanvas c22("Comp_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM}",800,1000);
+		  MyCanvas c22("Comp_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c22.isLogX=kFALSE;
         c22.isLogY=kTRUE;
 		  c22.isRatioPadAttached=kTRUE;
 		  c22.TitleX="y_{CM}";
-		  c22.TitleY="d#sigma/dy_{CM}";
+		  c22.TitleY="d#sigma/dy_{CM} [nb]";
         c22.RatioStandard=1.0;
 		  c22.LowerEdge_Ratio=0.0;
 		  c22.UpperEdge_Ratio=2.0;
-		  c22.LowerEdge_Y=5.0;
-		  c22.UpperEdge_Y=100.0;
+		  c22.LowerEdge_Y=4.0;
+		  c22.UpperEdge_Y=200.0;
+		  c22.Legend_x1=0.50;
+		  c22.Legend_y1=0.80;
+		  c22.Legend_x2=0.95;
+		  c22.Legend_y2=0.90;
 		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c22.PrintCanvas();
 
@@ -419,26 +439,38 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(1.0);
 
-		  MyCanvas c31("Comp_cross_pt_oribin_detcor_FSRcor","p_{T} (GeV/c)","d#sigma/dp_{T}",800,800);
+		  MyCanvas c31("Comp_cross_pt_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb 8.16 TeV");
 		  vhistnames.push_back("Z in pPb 5.02 TeV");
 	     c31.isLogX=kTRUE;
         c31.isLogY=kTRUE;
+		  c31.LowerEdge_Y=0.005;
+		  c31.UpperEdge_Y=90.0;
+		  c31.Legend_x1=0.50;
+		  c31.Legend_y1=0.80;
+		  c31.Legend_x2=0.95;
+		  c31.Legend_y2=0.90;
+
 	     c31.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c31.PrintCanvas();
 
-		  MyCanvas c32("Comp_cross_pt_rebin_detcor_FSRcor","p_{T} (GeV/c)","d#sigma/dp_{T}",800,1000);
+		  MyCanvas c32("Comp_cross_pt_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
         c32.RatioStandard=3.0;
 		  c32.LowerEdge_Ratio=-0.45;
 		  c32.UpperEdge_Ratio=2.55;
-
-		  c32.TitleX="p_{T} (GeV/c)";
-		  c32.TitleY="d#sigma/dp_{T}";
+		  c32.LowerEdge_Y=0.005;
+		  c32.UpperEdge_Y=90.0;
+		  c32.Legend_x1=0.50;
+		  c32.Legend_y1=0.80;
+		  c32.Legend_x2=0.95;
+		  c32.Legend_y2=0.90;
+		  c32.TitleX="p_{T} [GeV/c]";
+		  c32.TitleY="d#sigma/dp_{T} [nb/(GeV/c)]";
 		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "DY in pPb 8.16 TeV", "Z in pPb, 5.02 TeV", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c32.PrintCanvas();
 
@@ -482,28 +514,39 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("Comp_cross_phistar_oribin_detcor_FSRcor","#phi^{*} (rad)","d#sigma/d#phi^{*}",800,800);
+		  MyCanvas c41("Comp_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
 	     c41.isLogX=kTRUE;
         c41.isLogY=kTRUE;
+		  c41.LowerEdge_Y=0.2;
+		  c41.UpperEdge_Y=9000.0;
+		  c41.Legend_x1=0.50;
+		  c41.Legend_y1=0.80;
+		  c41.Legend_x2=0.95;
+		  c41.Legend_y2=0.90;
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c41.PrintCanvas();
 
-		  MyCanvas c42("Comp_cross_phistar_rebin_detcor_FSRcor","#phi^{*} (rad)","d#sigma/d#phi^{*}",800,1000);
+		  MyCanvas c42("Comp_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
 	     c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
-		  c42.TitleX="#phi^{*} (rad)";
-		  c42.TitleY="d#sigma/d#phi^{*}";
+		  c42.TitleX="#phi^{*}";
+		  c42.TitleY="d#sigma/d#phi^{*} [nb]";
         c42.RatioStandard=1.0;
 		  c42.LowerEdge_Ratio=0.9;
 		  c42.UpperEdge_Ratio=1.1;
 		  c42.LowerEdge_Y=9.0;
 		  c42.UpperEdge_Y=90.0;
-	
+		  c42.LowerEdge_Y=0.2;
+		  c42.UpperEdge_Y=9000.0;
+		  c42.Legend_x1=0.50;
+		  c42.Legend_y1=0.80;
+		  c42.Legend_x2=0.95;
+		  c42.Legend_y2=0.90;
 		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c42.PrintCanvas();
 
@@ -626,27 +669,39 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208*0.001);
 
-		  MyCanvas c51("Comp_cross_pt2_oribin_detcor_FSRcor","p_{T} (GeV/c)","d#sigma/dp_{T}",800,800);
+		  MyCanvas c51("Comp_cross_pt2_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
 		  vhistnames.push_back("208#timesZ in pp, 8 TeV");
 	     c51.isLogX=kTRUE;
         c51.isLogY=kTRUE;
+		  c51.LowerEdge_Y=0.005;
+		  c51.UpperEdge_Y=80.0;
+		  c51.Legend_x1=0.50;
+		  c51.Legend_y1=0.80;
+		  c51.Legend_x2=0.95;
+		  c51.Legend_y2=0.90;
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c51.PrintCanvas();
 
-		  MyCanvas c52("Comp_cross_pt2_rebin_detcor_FSRcor","p_{T} (GeV/c)","d#sigma/dp_{T}",800,1000);
+		  MyCanvas c52("Comp_cross_pt2_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
-        c52.RatioStandard=5.0;
-		  c52.LowerEdge_Ratio=-5.0;
-		  c52.UpperEdge_Ratio=5.0;
-		  c52.LowerEdge_Y=0.008;
-		  c52.UpperEdge_Y=50.0;
-		  c52.TitleX="p_{T} (GeV/c)";
-		  c52.TitleY="d#sigma/dp_{T}";
+        c52.RatioStandard=3.0;
+		  c52.LowerEdge_Ratio=-0.7;
+		  c52.UpperEdge_Ratio=2.2;
+		  c52.TitleX="p_{T} [GeV/c]";
+		  c52.TitleY="d#sigma/dp_{T} [nb/(GeV/c)]";
+		  c52.LowerEdge_X=0.5;
+		  c52.UpperEdge_X=200.0;
+		  c52.LowerEdge_Y=0.005;
+		  c52.UpperEdge_Y=80.0;
+		  c52.Legend_x1=0.50;
+		  c52.Legend_y1=0.80;
+		  c52.Legend_x2=0.95;
+		  c52.Legend_y2=0.90;
 		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c52.PrintCanvas();
 
@@ -685,7 +740,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c61("Comp_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM}",800,800);
+		  MyCanvas c61("Comp_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -693,22 +748,30 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c61.isLogX=kFALSE;
         c61.isLogY=kTRUE;
 		  c61.LowerEdge_Y=0.08;
-		  c61.UpperEdge_Y=90.0;
+		  c61.UpperEdge_Y=200.0;
+		  c61.Legend_x1=0.50;
+		  c61.Legend_y1=0.80;
+		  c61.Legend_x2=0.95;
+		  c61.Legend_y2=0.90;
 
 	     c61.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c61.PrintCanvas();
 
-		  MyCanvas c62("Comp_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM}",800,1000);
+		  MyCanvas c62("Comp_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c62.isLogX=kFALSE;
         c62.isLogY=kTRUE;
 		  c62.isRatioPadAttached=kTRUE;
 		  c62.TitleX="y_{CM}";
-		  c62.TitleY="d#sigma/dy_{CM}";
+		  c62.TitleY="d#sigma/dy_{CM} [nb]";
         c62.RatioStandard=200.0;
 		  c62.LowerEdge_Ratio=-100.0;
 		  c62.UpperEdge_Ratio=100.0;
 		  c62.LowerEdge_Y=0.08;
-		  c62.UpperEdge_Y=90.0;
+		  c62.UpperEdge_Y=200.0;
+		  c62.Legend_x1=0.50;
+		  c62.Legend_y1=0.80;
+		  c62.Legend_x2=0.95;
+		  c62.Legend_y2=0.90;
 		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c62.PrintCanvas();
 
