@@ -790,8 +790,8 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 
 	for(Int_t i=0; i<nBin; i++)
 	{
-		Double_t x, y;
-		g->GetPoint(i, x, y);
+		Double_t x = g->GetX()[i];
+		Double_t y = g->GetY()[i];
 
 		// -- make BinEdges array -- //
 		Double_t ErrX_Low = g->GetErrorXlow(i);
@@ -824,7 +824,7 @@ TH1D* Convert_GraphToHist( TGraphAsymmErrors *g )
 	{
 		Int_t i_bin = i+1;
 		h_temp->SetBinContent( i_bin, value[i] );
-		h_temp->SetBinContent( i_bin, error[i] );
+		h_temp->SetBinError( i_bin, error[i] );
 	}
 
 	return h_temp;
