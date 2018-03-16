@@ -545,8 +545,10 @@ void Sys_AccEff(const char* file, var thevar) {
    for (map<bin,syst>::const_iterator it=syst_tot.begin(); it!=syst_tot.end(); it++) {
       of_syst << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
 
-      of_cor << it->first.low() << ", " << it->first.high();
-      for (int j=0; j<nbins; j++) of_cor << ", " << cor_all[i][j];
+      for (int j=0; j<nbins; j++) {
+         if (j>0) of_cor << ", ";
+         of_cor << cor_all[i][j];
+      }
       of_cor << endl;
       i++;
    }

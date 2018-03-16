@@ -9,9 +9,11 @@
 #include <TF1.h>
 #include <TGraphAsymmErrors.h>
 #include <TVectorD.h>
+#include <TMatrixT.h>
 
 #include <vector>
 
+#include "../BkgEst/interface/defs.h"
 
 class BaseInfo
 {
@@ -1140,4 +1142,26 @@ void normBinWidth(TH1D *hist) {
       hist->SetBinContent(i,hist->GetBinContent(i)/hist->GetBinWidth(i));
       hist->SetBinError(i,hist->GetBinError(i)/hist->GetBinWidth(i));
    }
+}
+
+TH2D* matrix2hist(TMatrixT<double> m, TString var="") {
+   int nbins = m.GetNcols();
+   double* bins;
+   if (var!="") bins = DYana::binsvar(var);
+   else {
+      bins = new double[nbins+1];
+      for (int i=0; i<=nbins; i++) bins[i]=i;
+   }
+   
+   TH2D *ans = new TH2D("matrix"+var, "cor. matrix for "+var, nbins, bins, nbins, bins);
+   if (var!="") {
+      ans->GetXaxis()->SetTitle(DYana::xaxistitle(var));
+      ans->GetYaxis()->SetTitle(DYana::xaxistitle(var));
+   }
+   
+   for (int i=0; i<nbins; i++)
+      for (int j=0; j<nbins; j++)
+         ans->SetBinContent(i+1,j+1,m[i][j]);
+
+   return ans;
 }

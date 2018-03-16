@@ -131,8 +131,10 @@ void Sys_TnP(const char* file, var thevar) {
       double dx = htot->GetBinWidth(i+1)/2.;
       of_syst << x-dx << ", " << x+dx << ", " << sqrt(mcov_tot[i][i])/ee[0]->GetEfficiency(i+1) << endl;
 
-      of_cor << x-dx << ", " << x+dx;
-      for (int j=0; j<nbins; j++) of_cor << ", " << mcor_tot[i][j];
+      for (int j=0; j<nbins; j++) {
+         if (j>0) of_cor << ", ";
+         of_cor << mcor_tot[i][j];
+      }
       of_cor << endl;
    }
    of_syst.close();
