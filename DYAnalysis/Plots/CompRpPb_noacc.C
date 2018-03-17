@@ -172,8 +172,8 @@ void mergehist(int tempbinnum,double tempbin[],TH1D* tempbefh,TH1D* temphist, do
 }
 
 
-//void CompRpPb(const char* infile="results/xsec_nom.root") {
-void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
+//void CompRpPb_noacc(const char* infile="results/xsec_nom.root") {
+void CompRpPb_noacc(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  TFile* finacc = TFile::Open("../ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root");
 		  TEfficiency *TEff_Acc_Mass = (TEfficiency*)finacc->Get("TEff_Acc_Mass");
@@ -307,8 +307,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  // 1. pPb vs pp (whole mass)
 
-		  TH1D *temph1 = g2h(gaeres_mass);
-		  //TH1D *temph1 = g2hcor(gaeres_mass, TEff_Acc_Mass);
+		  //TH1D *temph1 = g2h(gaeres_mass);
+		  TH1D *temph1 = g2hcor(gaeres_mass, TEff_Acc_Mass);
 
 
 		  TH1D *temph2 = array2h(sizeof(DYpp_cross_mass_bin),DYpp_cross_mass_bin,DYpp_cross_mass_val,DYpp_cross_mass_err);
@@ -333,7 +333,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c11("Comp_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
+		  MyCanvas c11("Comp_cross_mass_oribin_detcor_FSRcor_noacc","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -351,7 +351,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
-		  MyCanvas c12("Comp_cross_mass_rebin_detcor_FSRcor","M [GeV/c^{2}]","d#sigma/dM",800,1000);
+		  MyCanvas c12("Comp_cross_mass_rebin_detcor_FSRcor_noacc","M [GeV/c^{2}]","d#sigma/dM",800,1000);
    	  c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
@@ -377,8 +377,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  // 2. pPb DY vs pp DY (rap60120)
 
-		  temph1 = g2h(gaeres_rap60120);
-		  //temph1 = g2hcor(gaeres_rap60120, TEff_Acc_Rap60120);
+		  //temph1 = g2h(gaeres_rap60120);
+		  temph1 = g2hcor(gaeres_rap60120, TEff_Acc_Rap60120);
 		  temph2 = array2h_yabs(sizeof(DYpp_cross_rap60120_bin),DYpp_cross_rap60120_bin,DYpp_cross_rap60120_val,DYpp_cross_rap60120_err);
 
 		  TH1D* h1DYpPb_cross_rap60120_rebin=new TH1D("h1DYpPb_cross_rap60120_rebin","",DYComp_cross_rap60120_binnum,DYComp_cross_rap60120_bin);
@@ -403,7 +403,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c21("Comp_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c21("Comp_cross_rap60120_oribin_detcor_FSRcor_noacc","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -419,7 +419,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c21.PrintCanvas();
 
-		  MyCanvas c22("Comp_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c22("Comp_cross_rap60120_rebin_detcor_FSRcor_noacc","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c22.isLogX=kFALSE;
         c22.isLogY=kTRUE;
 		  c22.isRatioPadAttached=kTRUE;
@@ -451,8 +451,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  TCanvas* c1= new TCanvas("c1","",800,800);
 
-		  temph1 = g2h(gaeres_pt);//
-		  //temph1 = g2hcor(gaeres_pt, TEff_Acc_Pt);
+		  //temph1 = g2h(gaeres_pt);//
+		  temph1 = g2hcor(gaeres_pt, TEff_Acc_Pt);
 		  temph2 = array2h(sizeof(ZpPb_cross_pt_bin),ZpPb_cross_pt_bin,ZpPb_cross_pt_val,ZpPb_cross_pt_staterr);//pb-1
 
 		  TH1D* h1DYpPb_cross_pt_rebin=new TH1D("h1DYpPb_cross_pt_rebin","",DYComp_cross_pt_binnum,DYComp_cross_pt_bin);
@@ -477,7 +477,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(1.0);
 
-		  MyCanvas c31("Comp_cross_pt_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c31("Comp_cross_pt_oribin_detcor_FSRcor_noacc","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb 8.16 TeV");
@@ -494,7 +494,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c31.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c31.PrintCanvas();
 
-		  MyCanvas c32("Comp_cross_pt_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c32("Comp_cross_pt_rebin_detcor_FSRcor_noacc","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
@@ -523,8 +523,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  // 4. pPb DY vs pp DY (phistar)
 
-		  temph1 = g2h(gaeres_phistar);//
-		  //temph1 = g2hcor(gaeres_phistar, TEff_Acc_Phistar);
+		  //temph1 = g2h(gaeres_phistar);//
+		  temph1 = g2hcor(gaeres_phistar, TEff_Acc_Phistar);
 		  temph2 = array2h(sizeof(DYpp_cross_phistar_bin),DYpp_cross_phistar_bin,DYpp_cross_phistar_val,DYpp_cross_phistar_staterr);//pb-1
 
 			std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
@@ -553,7 +553,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("Comp_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
+		  MyCanvas c41("Comp_cross_phistar_oribin_detcor_FSRcor_noacc","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -569,7 +569,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c41.PrintCanvas();
 
-		  MyCanvas c42("Comp_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
+		  MyCanvas c42("Comp_cross_phistar_rebin_detcor_FSRcor_noacc","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
 	     c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
@@ -676,8 +676,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  // 5. pPb DY vs pp DY (pt, 60<M<120)
 
-		  temph1 = g2h(gaeres_pt);//
-		  //temph1 = g2hcor(gaeres_pt, TEff_Acc_Pt);
+		  //temph1 = g2h(gaeres_pt);//
+		  temph1 = g2hcor(gaeres_pt, TEff_Acc_Pt);
 
 		  //temph2 = array2h(sizeof(ZpPb_cross_pt_bin),ZpPb_cross_pt_bin,ZpPb_cross_pt_val,ZpPb_cross_pt_staterr);//pb-1
 	
@@ -710,7 +710,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208*0.001);
 
-		  MyCanvas c51("Comp_cross_pt2_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c51("Comp_cross_pt2_oribin_detcor_FSRcor_noacc","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -726,7 +726,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c51.PrintCanvas();
 
-		  MyCanvas c52("Comp_cross_pt2_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c52("Comp_cross_pt2_rebin_detcor_FSRcor_noacc","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
@@ -757,8 +757,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  // 6. pPb DY vs pp DY (rap60120)
 
-		  temph1 = g2h(gaeres_rap60120);
-		  //temph1 = g2hcor(gaeres_rap60120, TEff_Acc_Rap60120);
+		  //temph1 = g2h(gaeres_rap60120);
+		  temph1 = g2hcor(gaeres_rap60120, TEff_Acc_Rap60120);
 		  //temph2 = array2h_yabs(sizeof(DYpp_cross_rap60120_bin),DYpp_cross_rap60120_bin,DYpp_cross_rap60120_val,DYpp_cross_rap60120_err);
 		  temph2=(TH1D*)temph2_absyrapinteg;	
 
@@ -782,7 +782,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c61("Comp_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c61("Comp_cross_2rap60120_oribin_detcor_FSRcor_noacc","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb, 8.16 TeV");
@@ -799,7 +799,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c61.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c61.PrintCanvas();
 
-		  MyCanvas c62("Comp_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c62("Comp_cross_2rap60120_rebin_detcor_FSRcor_noacc","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c62.isLogX=kFALSE;
         c62.isLogY=kTRUE;
 		  c62.isRatioPadAttached=kTRUE;
