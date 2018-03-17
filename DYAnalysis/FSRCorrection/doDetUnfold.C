@@ -38,7 +38,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Rochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomCorr";
+		isApplyMomCorr = "MomCorr00";
 	}
 	else
 	{

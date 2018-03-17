@@ -102,7 +102,7 @@ void plotSysts(var thevar) {
    c1.SetLegendPosition(0.25,0.60,0.65,0.90);
    c1.CanvasWithMultipleGraphs(graphs,tags, plotboxes ? "5" : "LP");
    c1.PrintCanvas();
-   c1.PrintCanvas_C();
+   // c1.PrintCanvas_C();
 }
 
 void plotSysts() {
