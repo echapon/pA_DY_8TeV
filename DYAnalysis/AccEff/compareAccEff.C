@@ -8,11 +8,11 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    TFile *fnom = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fmomcor = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr76_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fnorew = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_norew.root");
-   TFile *frewminus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewminus.root");
-   TFile *frewplus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewplus.root");
-   TFile *fpPb = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_1_rewboth.root");
-   TFile *fPbp = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_2_rewboth.root");
-   TFile *fPyquen = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Pyquen_PAL3Mu12_0_rewboth.root");
+   TFile *frewminus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewminus.root");
+   TFile *frewplus = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewplus.root");
+   TFile *fpPb = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_1_rewboth.root");
+   TFile *fPbp = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_2_rewboth.root");
+   TFile *fPyquen = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Pyquen_PAL3Mu12_0_rewboth.root");
 
    TEfficiency *acc_nom = (TEfficiency*) fnom->Get("TEff_Acc_" + variable);
    TEfficiency *eff_nom = (TEfficiency*) fnom->Get("TEff_Eff_" + variable);
@@ -30,17 +30,17 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    TEfficiency *eff_Pbp = (TEfficiency*) fPbp->Get("TEff_Eff_" + variable);
    TEfficiency *acc_Pyquen = (TEfficiency*) fPyquen->Get("TEff_Acc_" + variable);
    TEfficiency *eff_Pyquen = (TEfficiency*) fPyquen->Get("TEff_Eff_" + variable);
-   // we only have Pyquen for M>30: set lower masses to 0
-   TH1 *htmp = (TH1*) acc_Pyquen->GetPassedHistogram()->Clone();
-   for (int i=0; i<=htmp->GetNbinsX(); i++) 
-      if (htmp->GetBinCenter(i)<30)
-         htmp->SetBinContent(i,0);
-   acc_Pyquen->SetPassedHistogram(*htmp,"");
-   htmp = (TH1*) eff_Pyquen->GetPassedHistogram()->Clone();
-   for (int i=0; i<=htmp->GetNbinsX(); i++) 
-      if (htmp->GetBinCenter(i)<30)
-         htmp->SetBinContent(i,0);
-   eff_Pyquen->SetPassedHistogram(*htmp,"");
+   // // we only have Pyquen for M>30: set lower masses to 0
+   // TH1 *htmp = (TH1*) acc_Pyquen->GetPassedHistogram()->Clone();
+   // for (int i=0; i<=htmp->GetNbinsX(); i++) 
+   //    if (htmp->GetBinCenter(i)<30)
+   //       htmp->SetBinContent(i,0);
+   // acc_Pyquen->SetPassedHistogram(*htmp,"");
+   // htmp = (TH1*) eff_Pyquen->GetPassedHistogram()->Clone();
+   // for (int i=0; i<=htmp->GetNbinsX(); i++) 
+   //    if (htmp->GetBinCenter(i)<30)
+   //       htmp->SetBinContent(i,0);
+   // eff_Pyquen->SetPassedHistogram(*htmp,"");
 
    // axes
    TString xtitle; double xmin, xmax;
@@ -107,7 +107,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    tleg->AddEntry(eff_momcor,"Mom. corr. H","lp");
    tleg->Draw();
    c1->SaveAs("comp_eff_momcor_InclVsH_"+variable+".pdf");
-   return;
+   // return;
    
    // reweighting effect
    haxes_acc->Draw();
