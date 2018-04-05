@@ -146,7 +146,7 @@ namespace DYana_v20180111 {
          case WZ:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WZ_PbP-EmbEPOS_8p16_Pythia8/crab_WZ_20180117/180117_132905/0000/ntuple_skim*root"; break;
          case ZZ:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/ZZ_PbP-EmbEPOS_8p16_Pythia8/crab_ZZ_20180117/180117_132927/0000/ntuple_skim*root"; break;
          case TT:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/ntuple_skim*root"; break;
-         case WpMu:      return "eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/ntuple_skim*root"; break;
+         case WpMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/ntuple_skim*root"; break;
          case WmMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/ntuple_skim*root"; break;
          case WpTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/ntuple_skim*.root"; break;
          case WmTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToTauNu_PbP_Powheg_20170817/170817_152252/0000/ntuple_skim*.root"; break;

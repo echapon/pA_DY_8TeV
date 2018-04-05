@@ -41,6 +41,15 @@ public:
       //    return false;
       return isHighPtMuon;
 	}
+	// added for fake rate test
+	bool tightMuonIDSub() {
+	   // if( isGlobalMuon && nValidMuonHits>0 && nMatchedStations>1 && nValidPixelHits>0 && nTrackerLayers>5 && fabs(dxyVTX) < 0.2 && fabs(dzVTX) < 0.5 )
+		//   return true;
+		// else
+		//   return false;
+		return istightMuonSub;
+	}
+
 	bool isolation(double iso) {
       double theiso;
       theiso = PfChargedHadronIsoR03 + PfNeutralHadronIsoR03 + PfGammaIsoR03;

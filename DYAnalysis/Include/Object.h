@@ -875,6 +875,23 @@ public:
 		return 0;
 	}
 
+	// added for fake rate test
+	Bool_t isTightMuonSub()
+	{
+		if(   this->isGLB == 1
+			&& this->muonHits > 0
+			&& this->nMatches > 1
+			&& fabs(this->dxyVTX) < 0.2
+			&& fabs(this->dzVTX) < 0.5
+			&& this->pixelHits > 0
+			&& this->trackerLayers > 5 )
+		{
+			return 1;
+		}
+
+		return 0;
+	}
+
 };
 
 class Photon : public Object
