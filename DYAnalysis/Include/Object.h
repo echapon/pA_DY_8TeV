@@ -479,6 +479,13 @@ public:
 	// -- Isolations -- //
 	Double_t trkiso;
 	Double_t relPFiso;
+   // detailed iso info
+   Double_t PfChargedHadronIsoR04;
+   Double_t PfNeutralHadronIsoR04;
+   Double_t PfGammaIsoR04;
+   Double_t PfChargedHadronIsoR03;
+   Double_t PfNeutralHadronIsoR03;
+   Double_t PfGammaIsoR03;
 
 	// -- Various Track Information -- //
 	Double_t Best_pT;
@@ -545,7 +552,16 @@ public:
 		Double_t pfChargedIso = ntuple->Muon_PfChargedHadronIsoR03[index]; // was 04
 		Double_t pfNeutralIso = ntuple->Muon_PfNeutralHadronIsoR03[index]; // was 04
 		Double_t pfGammaIso = ntuple->Muon_PfGammaIsoR03[index]; // was 04
-		relPFiso = (pfChargedIso + pfNeutralIso + pfGammaIso) / ntuple->Muon_pT[index];
+      relPFiso = (pfChargedIso + pfNeutralIso + pfGammaIso) / ntuple->Muon_pT[index];
+      PfChargedHadronIsoR03 = pfChargedIso;
+      PfNeutralHadronIsoR03 = pfNeutralIso;
+      PfGammaIsoR03 = pfGammaIso;
+		pfChargedIso = ntuple->Muon_PfChargedHadronIsoR04[index]; 
+		pfNeutralIso = ntuple->Muon_PfNeutralHadronIsoR04[index]; 
+		pfGammaIso = ntuple->Muon_PfGammaIsoR04[index];
+      PfChargedHadronIsoR04 = pfChargedIso;
+      PfNeutralHadronIsoR04 = pfNeutralIso;
+      PfGammaIsoR04 = pfGammaIso;
 
 		Double_t px = ntuple->Muon_Px[index];
 		Double_t py = ntuple->Muon_Py[index];
