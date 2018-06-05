@@ -20,37 +20,21 @@
 
 #include <vector>
 
-// -- for Rochester Muon momentum correction -- //
-#include <Include/roccor.2016.v3/RoccoR.cc>
-
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <BkgEst/interface/defs.h>
-#include <HIstuff/HFweight.h>
+#include "../Include/DYAnalyzer.h"
+#include "../BkgEst/interface/defs.h"
+#include "../HIstuff/HFweight.h"
 
 using namespace DYana;
 
 const Double_t isoval[10] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, int cor_s=0, int cor_m=0, bool zptrew = true ) // run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, bool zptrew = true ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
 	cout << "Sample: " << Sample << endl;
-
-	TString isApplyMomCorr = "";
-	if( isCorrected == kTRUE )
-	{
-		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-      cout << "Using s = " << cor_s << ", m = " << cor_m << endl;
-		isApplyMomCorr = Form("MomCorr%d%d",cor_s,cor_m);
-	}
-	else
-	{
-		cout << "DO *NOT* Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomUnCorr";
-	}
 
 	TStopwatch totaltime;
 	totaltime.Start();
@@ -67,7 +51,11 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    TString srew2("");
    if (!zptrew) srew2 = "_noZptrew";
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_" + isApplyMomCorr + "_" + Sample + "_" + HLTname + "_" + Form("%d",run) + "_" + srew + srew2 + ".root", "RECREATE");
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_Eff_isostudy_" + Sample + "_" + HLTname + "_" + Form("%d",run) + ".root", "RECREATE");
+
+   // update HLTname to a standard name
+   if (HLTname.Contains("PAL3Mu12")) HLTname = "HLT_PAL3Mu12_v*";
+   else if (HLTname.Contains("L1DoubleMu0")) HLTname = "HLT_PAL1DoubleMu0_v*";
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
@@ -75,10 +63,12 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	TH1D *h_mass_AccPass = new TH1D("h_mass_AccPass", "", binnum, bins);
 
    TH1D *h_mass_EffTotal = new TH1D("h_mass_EffTotal", "", binnum, bins);
-   TH1D ***h_mass_EffPass = new TH1D*[12][10];
-   for (int i=0; i<12; i++) 
+   TH1D ***h_mass_EffPass = new TH1D**[12];
+   for (int i=0; i<12; i++) {
+      h_mass_EffPass[i] = new TH1D*[10];
       for (int j=0; j<10; j++)
          h_mass_EffPass[i][j] = new TH1D(Form("h_mass_EffPass_%d_%d",i,j), "", binnum, bins);	 
+   }
 
 
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
@@ -88,6 +78,12 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
    analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
+   // add also data and QCD
+   using DYana::SampleTag;
+   ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
+   ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
+   ntupleDirectory.push_back( "QCDtoMu_pThat-20_PbP-EmbEPOS_8p16_Pythia8/crab_QCDtoMu_20180117/180117_132953/0000/" ); Tag.push_back( "QCD" ); STags.push_back(SampleTag::QCD);
+
    // initialise the HF reweighting tool
    HFweight hftool;
 
@@ -95,8 +91,12 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	const Int_t Ntup = ntupleDirectory.size();
 	for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 	{
-      // loop only on DYMuMu!
-      if (!Tag[i_tup].Contains("DYMuMu")) continue;
+      // loop only on DYMuMu! but add QCD and data
+      bool isDYMuMu = (Tag[i_tup].Contains("DYMuMu"));
+      bool isData   = (Tag[i_tup].Contains("Data"));
+      bool isQCD    = (Tag[i_tup].Contains("QCD"));
+      // if (!(isDYMuMu || isData || isQCD)) continue;
+      if (!isData) continue;
 
       Bool_t doflip = (switcheta(STags[i_tup])<0);
       Int_t  flipsign = doflip ? -1 : 1;
@@ -109,7 +109,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
 		cout << "\t<" << Tag[i_tup] << ">" << endl;
 		cout << "\t" << ntupleDirectory[i_tup] << endl;
-		TH1D* h_mass = new TH1D("h_mass_"+Tag[i_tup], "", 600, 0, 600);
+		TH1D* h_massSS = new TH1D("h_massSS_"+Tag[i_tup], "", 600, 0, 600);
+		TH1D* h_massOS = new TH1D("h_massOS_"+Tag[i_tup], "", 600, 0, 600);
 
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
@@ -117,10 +118,9 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
-		ntuple->TurnOnBranches_GenLepton();
+		if (isDYMuMu) ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_HI();
 
-      RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
       // set the seed
       gRandom = new TRandom3(1);
 
@@ -166,109 +166,76 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 			Int_t PU = ntuple->nPileUp;
          // ADD HF weight !!
          Double_t PUWeight = 1.;
-         if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
+         if (doHFrew && !isData) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
-			Double_t TotWeight = norm * GenWeight;
+			Double_t TotWeight = (isDYMuMu) ? norm * GenWeight : 1;
 
 			Bool_t GenFlag = kFALSE;
-			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
+			GenFlag = !isDYMuMu || analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
 			if( GenFlag == kTRUE )
 			{
-				SumWeights_Separated += GenWeight;
+            Double_t gen_M=-1;
+            Bool_t Flag_PassAcc = kFALSE;
 
-				// -- Collect gen-level information -- //
-				vector<GenLepton> GenLeptonCollection;
-				Int_t NGenLeptons = ntuple->gnpair; 
-				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
-				{
-					GenLepton genlep;
-					genlep.FillFromNtuple(ntuple, i_gen);
-					if( genlep.isMuon() && genlep.fromHardProcessFinalState )
-						GenLeptonCollection.push_back( genlep );
-				}
-				GenLepton genlep1 = GenLeptonCollection[0];
-				GenLepton genlep2 = GenLeptonCollection[1];
-				Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
-				Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
-				Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
-				Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
+            if (isDYMuMu) {
+               SumWeights_Separated += GenWeight;
 
-            // -- Z pt reweighting -- //
-            if (zptrew) TotWeight *= zptWeight(gen_Pt);
+               // -- Collect gen-level information -- //
+               vector<GenLepton> GenLeptonCollection;
+               Int_t NGenLeptons = ntuple->gnpair; 
+               for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+               {
+                  GenLepton genlep;
+                  genlep.FillFromNtuple(ntuple, i_gen);
+                  if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+                     GenLeptonCollection.push_back( genlep );
+               }
+               GenLepton genlep1 = GenLeptonCollection[0];
+               GenLepton genlep2 = GenLeptonCollection[1];
+               gen_M = (genlep1.Momentum + genlep2.Momentum).M();
+               Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
+               Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
+               Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
-				// -- Flags -- //
-				Bool_t Flag_PassAcc = kFALSE;
+               // -- Z pt reweighting -- //
+               if (zptrew && isDYMuMu) TotWeight *= zptWeight(gen_Pt);
 
-				// -- Fill the mass histograms -- //
-				h_mass->Fill( gen_M, TotWeight );
-				h_mass_tot->Fill( gen_M, TotWeight );
+               // -- Flags -- //
+               Flag_PassAcc = kFALSE;
 
-				Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
+               // -- Fill the mass histograms -- //
+               h_mass_tot->Fill( gen_M, TotWeight );
 
-            // -- Acceptance Calculation -- //
-            h_mass_AccTotal->Fill( gen_M, TotWeight );
-				if( Flag_PassAcc == kTRUE ) 
-				{
-					h_mass_AccPass->Fill( gen_M, TotWeight );
-				}
+               Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
+
+               // -- Acceptance Calculation -- //
+               h_mass_AccTotal->Fill( gen_M, TotWeight );
+               if( Flag_PassAcc == kTRUE ) 
+               {
+                  h_mass_AccPass->Fill( gen_M, TotWeight );
+               }
+            } // end if (isDYMuMu)
+            else Flag_PassAcc = kTRUE;
 
 
 				// -- Calculate the efficiency among the events passing acceptance condition -- //
 				if( Flag_PassAcc == kTRUE )
 				{
 					Bool_t Flag_PassEff = kFALSE;
+					Bool_t Flag_OS = kFALSE;
+					Bool_t Flag_SS = kFALSE;
 
+               vector< Muon > MuonCollection;
                vector< Muon > SelectedMuonCollection;
 					if( ntuple->isTriggered( analyzer->HLT ) )
 					{
 						// -- Collect Reconstruction level information -- //
-						vector< Muon > MuonCollection;
 						Int_t NLeptons = ntuple->nMuon;
 						for(Int_t i_reco=0; i_reco<NLeptons; i_reco++)
 						{
 							Muon mu;
 							mu.FillFromNtuple(ntuple, i_reco);
-                     // -- Apply Rochester momentum scale correction -- //
-                     if( isCorrected == kTRUE )
-                     {
-                        float qter = 1.0;
-                        int s=cor_s, m=cor_m;
-
-                        if( Tag[i_tup] == "Data" )
-                           // careful, need to switch back eta to the lab frame
-                           qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, s, m);
-                        else{
-                           double u1 = gRandom->Rndm();
-                           int nl = ntuple->Muon_trackerLayers[i_reco];
-                           if (!GenFlag || GenLeptonCollection.size()<2) {
-                              double u2 = gRandom->Rndm();
-                              qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, s, m);
-                           } else {
-                              // gen-reco matching
-                              double drmin=999; double pt_drmin=0;
-                              for (unsigned int igen=0; igen<GenLeptonCollection.size(); igen++) {
-                                 double dr = mu.Momentum.DeltaR(GenLeptonCollection[igen].Momentum);
-                                 if (dr<drmin) {
-                                    drmin = dr;
-                                    pt_drmin = GenLeptonCollection[igen].Pt;
-                                 }
-                              } // for igen in GenLeptonCollection (gen-reco matching)
-                              if (drmin<0.1) qter = rmcor.kScaleFromGenMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, pt_drmin, u1, s, m);
-                              else  {
-                                 double u2 = gRandom->Rndm();
-                                 qter = rmcor.kScaleAndSmearMC(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, nl, u1, u2, s, m);
-                              } // if drmin<0.03
-                           } // if (!GenFlag || GenLeptonCollection.size()<2)
-                        } // if Tag[i_tup] == "Data"
-
-                        // -- Change Muon pT, eta and phi with updated(corrected) one -- //
-                        mu.Momentum.SetPtEtaPhiM(qter*mu.Pt,mu.eta,mu.phi,mu.Momentum.M());
-                        mu.Pt = mu.Momentum.Pt();
-                        // mu.eta = mu.Momentum.Eta();
-                        // mu.phi = mu.Momentum.Phi();
-                     }
-							
 							MuonCollection.push_back( mu );
 						}
 
@@ -276,22 +243,37 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 						Bool_t isPassEventSelection = kTRUE;
 
 						if( isPassEventSelection == kTRUE && 
-                        SelectedMuonCollection.size()>=2 && SelectedMuonCollection[0].charge != SelectedMuonCollection[1].charge )
-						{
+                        MuonCollection.size()>=2) {
+                     if (MuonCollection[0].charge != MuonCollection[1].charge) {
+                        if (!isData) Flag_PassEff = kTRUE;
+                        Flag_OS = kTRUE;
+                     } else {
+                        if (isData) Flag_PassEff = kTRUE;
+                        Flag_SS = kTRUE;
+                     }
 
-							Flag_PassEff = kTRUE;
-						}
+                     if (!isDYMuMu) {
+                        TLorentzVector dimu = MuonCollection[0].Momentum + MuonCollection[1].Momentum;
+                        gen_M = dimu.M();
+                     }
+                  }
 
 					} // -- End of if( ntuple->isTriggered( HLT ) ) -- //
 
 					// -- Efficiency Calculation -- //
-               h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
+               // if (isDYMuMu) {
+                  h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
+               // }
+
+               if (Flag_OS) h_massOS->Fill( gen_M, TotWeight * PUWeight );
+               else if (Flag_SS) h_massSS->Fill( gen_M, TotWeight * PUWeight );
+
 					if( Flag_PassEff == kTRUE)
 					{
                   for (int i=0; i<12; i++) {
                      for (int j=0; j<10; j++) {
                         bool isPassEventSelection2 = analyzer->EventSelection_generic(MuonCollection, ntuple, &SelectedMuonCollection, HLTname, i, isoval[j]);
-                        h_mass_EffPass[i][j]->Fill( gen_M, TotWeight * PUWeight );
+                        if (isPassEventSelection2) h_mass_EffPass[i][j]->Fill( gen_M, TotWeight * PUWeight );
                      }
                   }
 					}
@@ -303,7 +285,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		} //End of event iteration
 
 		f->cd();
-		h_mass->Write();
+		h_massOS->Write();
+		h_massSS->Write();
 
 		cout << "Total Sum of Weight: " << SumWeights << endl;
 		cout << "\tSum of Weights of Separated Events: " << SumWeights_Separated << endl;

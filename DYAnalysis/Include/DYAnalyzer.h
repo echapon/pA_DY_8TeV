@@ -1202,8 +1202,9 @@ Bool_t DYAnalyzer::EventSelection_generic(vector< Muon > MuonCollection, NtupleH
           else if (isotype==13)
              isoval = mu.trkiso*mu.Pt;
 
-             if (isoval<isocut)
+             if (isoval<isocut) {
 	        QMuonCollection.push_back( MuonCollection[j] );
+             }
        }
 	}
 
