@@ -11,8 +11,8 @@
 
 #include <vector>
 
-#include <Include/DYAnalyzer.h>
-#include <BkgEst/interface/defs.h>
+#include "DYAnalyzer.h"
+#include "../BkgEst/interface/defs.h"
 
 using namespace DYana;
 
@@ -125,6 +125,24 @@ public:
 	TH1D *h_trackerLayers;
 	TH1D *h_RelTrkIso;
 	TH1D *h_RelPFIso;
+
+   // // iso plots
+   // TH1D *h_maxRelTrkIso_OS;
+   // TH1D *h_maxRelTrkIso_OS_M1560;
+   // TH1D *h_maxRelTrkIso_OS_M60120;
+   // TH1D *h_maxRelTrkIso_OS_M120600;
+   // TH1D *h_maxRelTrkIso_SS;
+   // TH1D *h_maxRelTrkIso_SS_M1560;
+   // TH1D *h_maxRelTrkIso_SS_M60120;
+   // TH1D *h_maxRelTrkIso_SS_M120600;
+   // TH1D *h_maxRelPFIso_OS;
+   // TH1D *h_maxRelPFIso_OS_M1560;
+   // TH1D *h_maxRelPFIso_OS_M60120;
+   // TH1D *h_maxRelPFIso_OS_M120600;
+   // TH1D *h_maxRelPFIso_SS;
+   // TH1D *h_maxRelPFIso_SS_M1560;
+   // TH1D *h_maxRelPFIso_SS_M60120;
+   // TH1D *h_maxRelPFIso_SS_M120600;
 
 
 	ControlPlots(TString Type, DYAnalyzer *dyanalyzer)
@@ -241,6 +259,23 @@ public:
 		h_trackerLayers = new TH1D("h_trackerLayers_"+Type, "", 20, 0, 20); Histo.push_back( h_trackerLayers );
 		h_RelTrkIso = new TH1D("h_RelTrkIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelTrkIso ); 
 		h_RelPFIso = new TH1D("h_RelPFIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelPFIso ); 
+
+      // h_maxRelTrkIso_OS = new TH1D("h_maxRelTrkIso_OS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS );
+      // h_maxRelTrkIso_OS_M1560 = new TH1D("h_maxRelTrkIso_OS_M1560_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS_M1560 );
+      // h_maxRelTrkIso_OS_M60120 = new TH1D("h_maxRelTrkIso_OS_M60120_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS_M60120 );
+      // h_maxRelTrkIso_OS_M120600 = new TH1D("h_maxRelTrkIso_OS_M120600_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS_M120600 );
+      // h_maxRelTrkIso_SS = new TH1D("h_maxRelTrkIso_SS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_SS );
+      // h_maxRelTrkIso_SS_M1560 = new TH1D("h_maxRelTrkIso_SS_M1560_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_SS_M1560 );
+      // h_maxRelTrkIso_SS_M60120 = new TH1D("h_maxRelTrkIso_SS_M60120_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_SS_M60120 );
+      // h_maxRelTrkIso_SS_M120600 = new TH1D("h_maxRelTrkIso_SS_M120600_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_SS_M120600 );
+      // h_maxRelPFIso_OS = new TH1D("h_maxRelPFIso_OS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_OS );
+      // h_maxRelPFIso_OS_M1560 = new TH1D("h_maxRelPFIso_OS_M1560_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_OS_M1560 );
+      // h_maxRelPFIso_OS_M60120 = new TH1D("h_maxRelPFIso_OS_M60120_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_OS_M60120 );
+      // h_maxRelPFIso_OS_M120600 = new TH1D("h_maxRelPFIso_OS_M120600_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_OS_M120600 );
+      // h_maxRelPFIso_SS = new TH1D("h_maxRelPFIso_SS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_SS );
+      // h_maxRelPFIso_SS_M1560 = new TH1D("h_maxRelPFIso_SS_M1560_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_SS_M1560 );
+      // h_maxRelPFIso_SS_M60120 = new TH1D("h_maxRelPFIso_SS_M60120_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_SS_M60120 );
+      // h_maxRelPFIso_SS_M120600 = new TH1D("h_maxRelPFIso_SS_M120600_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelPFIso_SS_M120600 );
 	}
 
 	void FillHistograms_GenDoubleMu(NtupleHandle *ntuple, GenLepton genlep1, GenLepton genlep2, Double_t weight)
@@ -409,8 +444,25 @@ public:
 		Double_t reco_M = (reco_v1 + reco_v2).M();
       Bool_t isOS = ( recolep1.charge != recolep2.charge );
 
+      double maxtrkiso = max(recolep1.trkiso, recolep2.trkiso);
+      double maxrelPFiso = max(recolep1.relPFiso, recolep2.relPFiso);
+
       if (!isOS) {
 			h_mass_SS->Fill( reco_M, weight );
+
+         // h_maxRelTrkIso_SS->Fill(maxtrkiso, weight);
+         // h_maxRelPFIso_SS->Fill(maxrelPFiso, weight);
+         // if( reco_M >= 15 && reco_M < 60 ) {
+         //    h_maxRelTrkIso_SS_M1560->Fill(maxtrkiso, weight);
+         //    h_maxRelPFIso_SS_M1560->Fill(maxrelPFiso, weight);
+         // } else if( reco_M >= 60 && reco_M < 120 ) {
+         //    h_maxRelTrkIso_SS_M60120->Fill(maxtrkiso, weight);
+         //    h_maxRelPFIso_SS_M60120->Fill(maxrelPFiso, weight);
+         // } else if( reco_M >= 120 && reco_M < 600 ) {
+         //    h_maxRelTrkIso_SS_M120600->Fill(maxtrkiso, weight);
+         //    h_maxRelPFIso_SS_M120600->Fill(maxrelPFiso, weight);
+         // }
+
          return;
       }
 
@@ -510,6 +562,19 @@ public:
 
 		h_VtxProb->Fill( VtxProb, weight );
 		h_VtxNormChi2->Fill( VtxNormChi2, weight );
+
+      // h_maxRelTrkIso_OS->Fill(maxtrkiso, weight);
+      // h_maxRelPFIso_OS->Fill(maxrelPFiso, weight);
+      // if( reco_M >= 15 && reco_M < 60 ) {
+      //    h_maxRelTrkIso_OS_M1560->Fill(maxtrkiso, weight);
+      //    h_maxRelPFIso_OS_M1560->Fill(maxrelPFiso, weight);
+      // } else if( reco_M >= 60 && reco_M < 120 ) {
+      //    h_maxRelTrkIso_OS_M60120->Fill(maxtrkiso, weight);
+      //    h_maxRelPFIso_OS_M60120->Fill(maxrelPFiso, weight);
+      // } else if( reco_M >= 120 && reco_M < 600 ) {
+      //    h_maxRelTrkIso_OS_M120600->Fill(maxtrkiso, weight);
+      //    h_maxRelPFIso_OS_M120600->Fill(maxrelPFiso, weight);
+      // }
 		
 	}
 

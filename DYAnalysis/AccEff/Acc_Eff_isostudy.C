@@ -27,7 +27,7 @@
 
 using namespace DYana;
 
-const Double_t isoval[10] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
+const Double_t isoval[10] = { 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1e99};
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, bool zptrew = true ) // run: 0=all, 1=pPb, 2=PbP
@@ -80,8 +80,15 @@ void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0,
 
    // add also data and QCD
    using DYana::SampleTag;
-   ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
-   ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
+   if (HLTname.Contains("L3Mu12")) {
+            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); 
+            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); 
+   } else {
+            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_1stpart_2010604/180604_092521/0000/" ); 
+            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_2ndpart_2010604/180604_093537/0000/" ); 
+   }
+   Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
+   Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
    ntupleDirectory.push_back( "QCDtoMu_pThat-20_PbP-EmbEPOS_8p16_Pythia8/crab_QCDtoMu_20180117/180117_132953/0000/" ); Tag.push_back( "QCD" ); STags.push_back(SampleTag::QCD);
 
    // initialise the HF reweighting tool
@@ -246,9 +253,10 @@ void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0,
                         MuonCollection.size()>=2) {
                      if (MuonCollection[0].charge != MuonCollection[1].charge) {
                         if (!isData) Flag_PassEff = kTRUE;
+                        if (isData) Flag_PassEff = kTRUE;
                         Flag_OS = kTRUE;
                      } else {
-                        if (isData) Flag_PassEff = kTRUE;
+                        // if (isData) Flag_PassEff = kTRUE;
                         Flag_SS = kTRUE;
                      }
 

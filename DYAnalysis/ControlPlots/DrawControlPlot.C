@@ -12,7 +12,7 @@ void DrawControlPlot(TString version="None",
    if (PrintTex) tool->SetTexOptions(true);
    tool->GenLevelMassSpectrum();
    tool->SetupHistogramNames();
-   // tool->LoopForHistograms(-1);
-   tool->LoopForHistograms(15);
+   tool->LoopForHistograms(-1);
+   // tool->LoopForHistograms(15);
 }
 

@@ -21,13 +21,13 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include <Include/roccor.2016.v3/RoccoR.cc>
+#include "../Include/roccor.2016.v3/RoccoR.cc"
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <Include/tnp_weight.h>
-#include <BkgEst/interface/defs.h>
-#include <HIstuff/HFweight.h>
+#include "../Include/DYAnalyzer.h"
+#include "../Include/tnp_weight.h"
+#include "../BkgEst/interface/defs.h"
+#include "../HIstuff/HFweight.h"
 
 using namespace DYana;
 

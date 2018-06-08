@@ -42,6 +42,7 @@ public:
     bool isTightMuon;
     bool isSoftMuon;
     bool isHighPtMuon;
+    bool istightMuonSub;
     double px;
     double py;
     double pz;

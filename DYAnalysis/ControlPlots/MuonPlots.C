@@ -20,16 +20,16 @@
 #include <TMath.h>
 
 // -- for Rochester Muon momentum correction -- //
-#include <Include/roccor.2016.v3/RoccoR.cc>
+#include "Include/roccor.2016.v3/RoccoR.cc"
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <Include/ControlPlots.h>
-#include <HIstuff/HFweight.h>
-#include <Include/tnp_weight.h>
+#include "Include/DYAnalyzer.h"
+#include "Include/ControlPlots.h"
+#include "../HIstuff/HFweight.h"
+#include "Include/tnp_weight.h"
 
 static inline void loadBar(int x, int n, int r, int w);
-void MuonPlots(Bool_t isCorrected = kFALSE, 
+void MuonPlots(Bool_t isCorrected = kTRUE, 
       TString Type = "MC", 
       TString HLTname = "PAL3Mu12", 
       bool doHFrew = false, 
@@ -87,8 +87,15 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 	else
 	{
       using DYana::SampleTag;
-		ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
-      ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
+      if (HLTname.Contains("L3Mu12")) {
+            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); 
+            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); 
+      } else {
+            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_1stpart_2010604/180604_092521/0000/" ); 
+            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_2ndpart_2010604/180604_093537/0000/" ); 
+      }
+      Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
+      Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
 	}
 
    // initialise the HF reweighting tool
@@ -150,6 +157,8 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
 		TH1D *h_hiEEminus = new TH1D("h_hiEEminus_"+Tag[i_tup], "", 100, 0, 200);
 		TH1D *h_hiNpix = new TH1D("h_hiNpix_"+Tag[i_tup], "", 200, 0, 2000);
 		TH1D *h_hiNtracks = new TH1D("h_hiNtracks_"+Tag[i_tup], "", 150, 0, 300);
+		TH1D *h_hiNtracks_M1560 = new TH1D("h_hiNtracks_M1560_"+Tag[i_tup], "", 150, 0, 300);
+		TH1D *h_hiNtracks_M60120 = new TH1D("h_hiNtracks_M60120_"+Tag[i_tup], "", 150, 0, 300);
 		TH1D *h_hiNtracksPtCut = new TH1D("h_hiNtracksPtCut_"+Tag[i_tup], "", 150, 0, 300);
 
 
@@ -335,6 +344,9 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
                h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight*TnpWeight);
                h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
                h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight*TnpWeight);
+               double mass = (mu1.Momentum+mu2.Momentum).M();
+               if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
+               else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
 				}
 				
 			} //End of if( isTriggered )
@@ -361,6 +373,8 @@ void MuonPlots(Bool_t isCorrected = kFALSE,
       h_hiEEminus->Write();
       h_hiNpix->Write();
       h_hiNtracks->Write();
+      h_hiNtracks_M1560->Write();
+      h_hiNtracks_M60120->Write();
       h_hiNtracksPtCut->Write();
 
 		if(isNLO == 1)

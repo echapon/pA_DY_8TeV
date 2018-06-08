@@ -19,7 +19,7 @@
 #include "Include/tdrstyle.C"
 #include "Include/CMS_lumi.C"
 #include "Include/DYAnalyzer.h"
-#include "BkgEst/interface/defs.h"
+#include "../BkgEst/interface/defs.h"
 
 using namespace std;
 using DYana::binnum;
@@ -109,18 +109,18 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
    // FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
 	FileLocation = "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/"; 
 
-	if( version == "None" ) FileLocation = ".";
+   // if( version == "None" ) FileLocation = ".";
 
    TnpRew = "_notnprew";
    if (doTnpRew) TnpRew = "_tnprew";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_PAL3Mu12_Data_" + MomCor + "_noHFrew_notnprew.root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_MC_" + MomCor + "_" + Rew + TnpRew + ".root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_Data_" + MomCor + "_noHFrew_notnprew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
 
-	DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
+	DYAnalyzer *analyzer = new DYAnalyzer( version );
 	analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
@@ -256,7 +256,26 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_hiEEminus" );			Variables.push_back( "hiEEminus" );			XTitles.push_back( "E endcap (Pb-going) [GeV]");
 	HistNames.push_back( "h_hiNpix" );			Variables.push_back( "hiNpix" );			XTitles.push_back( "# pixel hits");
 	HistNames.push_back( "h_hiNtracks" );			Variables.push_back( "hiNtracks" );			XTitles.push_back( "# tracks");
+	HistNames.push_back( "h_hiNtracks_M1560" );			Variables.push_back( "hiNtracks_M1560" );			XTitles.push_back( "# tracks (15<M<60)");
+	HistNames.push_back( "h_hiNtracks_M60120" );			Variables.push_back( "hiNtracks_M60120" );			XTitles.push_back( "# tracks (60<M<120)");
 	HistNames.push_back( "h_hiNtracksPtCut" );			Variables.push_back( "hiNtracksPtCut" );			XTitles.push_back( "# tracks with p_{T} cut");
+
+   // HistNames.push_back( "h_maxRelTrkIso_OS" );			Variables.push_back( "maxRelTrkIso_OS" );			XTitles.push_back( "max rel trk iso (OS)");
+   // HistNames.push_back( "h_maxRelTrkIso_OS_M1560" );			Variables.push_back( "maxRelTrkIso_OS_M1560" );			XTitles.push_back( "max rel trk iso (OS_M1560)");
+   // HistNames.push_back( "h_maxRelTrkIso_OS_M60120" );			Variables.push_back( "maxRelTrkIso_OS_M60120" );			XTitles.push_back( "max rel trk iso (OS_M60120)");
+   // HistNames.push_back( "h_maxRelTrkIso_OS_M120600" );			Variables.push_back( "maxRelTrkIso_OS_M120600" );			XTitles.push_back( "max rel trk iso (OS_M120600)");
+   // HistNames.push_back( "h_maxRelTrkIso_SS" );			Variables.push_back( "maxRelTrkIso_SS" );			XTitles.push_back( "max rel trk iso (SS)");
+   // HistNames.push_back( "h_maxRelTrkIso_SS_M1560" );			Variables.push_back( "maxRelTrkIso_SS_M1560" );			XTitles.push_back( "max rel trk iso (SS_M1560)");
+   // HistNames.push_back( "h_maxRelTrkIso_SS_M60120" );			Variables.push_back( "maxRelTrkIso_SS_M60120" );			XTitles.push_back( "max rel trk iso (SS_M60120)");
+   // HistNames.push_back( "h_maxRelTrkIso_SS_M120600" );			Variables.push_back( "maxRelTrkIso_SS_M120600" );			XTitles.push_back( "max rel trk iso (SS_M120600)");
+   // HistNames.push_back( "h_maxRelPFIso_OS" );			Variables.push_back( "maxRelPFIso_OS" );			XTitles.push_back( "max rel PF iso (OS)");
+   // HistNames.push_back( "h_maxRelPFIso_OS_M1560" );			Variables.push_back( "maxRelPFIso_OS_M1560" );			XTitles.push_back( "max rel PF iso (OS_M1560)");
+   // HistNames.push_back( "h_maxRelPFIso_OS_M60120" );			Variables.push_back( "maxRelPFIso_OS_M60120" );			XTitles.push_back( "max rel PF iso (OS_M60120)");
+   // HistNames.push_back( "h_maxRelPFIso_OS_M120600" );			Variables.push_back( "maxRelPFIso_OS_M120600" );			XTitles.push_back( "max rel PF iso (OS_M120600)");
+   // HistNames.push_back( "h_maxRelPFIso_SS" );			Variables.push_back( "maxRelPFIso_SS" );			XTitles.push_back( "max rel PF iso (SS)");
+   // HistNames.push_back( "h_maxRelPFIso_SS_M1560" );			Variables.push_back( "maxRelPFIso_SS_M1560" );			XTitles.push_back( "max rel PF iso (SS_M1560)");
+   // HistNames.push_back( "h_maxRelPFIso_SS_M60120" );			Variables.push_back( "maxRelPFIso_SS_M60120" );			XTitles.push_back( "max rel PF iso (SS_M60120)");
+   // HistNames.push_back( "h_maxRelPFIso_SS_M120600" );			Variables.push_back( "maxRelPFIso_SS_M120600" );			XTitles.push_back( "max rel PF iso (SS_M120600)");
 }
 
 Double_t DrawControlPlotTool::Calc_NormFactor()
