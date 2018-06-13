@@ -16,7 +16,7 @@ Double_t Error_PropagatedAoverB(Double_t A, Double_t sigma_A, Double_t B, Double
 Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Double_t sigma_B);
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
-void DrawAccEffPlot(TString version = "None", 
+void DrawAccEffPlot(TString HLTname = "PAL3Mu12", 
       TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar
       TString MomCor = "MomCorr", // MomCorr or MomUnCorr
       TString Rew = "rewboth", // rewboth or norew or rewplus or rewminus
@@ -29,10 +29,7 @@ void DrawAccEffPlot(TString version = "None",
 
    const char* cvariable = variable.Data();
 
-	if( version == "None" )
-		FileLocation = ".";
-
-	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_" + MomCor + "_" + Generator + "_PAL3Mu12_0_" + Rew + ".root");
+	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_Acc_Eff_" + MomCor + "_" + Generator + "_" + HLTname + "_0_" + Rew + ".root");
 	TString FileName = f_input->GetName();
 
 	TString Sample = "";

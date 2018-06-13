@@ -473,7 +473,15 @@ public:
 	Int_t nMatches;
 	Int_t trackerLayers;
 	Int_t pixelHits;
+	Double_t dxy;
+	Double_t d0;
+	Double_t dsz;
+	Double_t dz;
+	Double_t dxyBS;
+	Double_t dszBS;
+	Double_t dzBS;
 	Double_t dxyVTX;
+	Double_t dszVTX;
 	Double_t dzVTX;
 
 	// -- Isolations -- //
@@ -545,7 +553,15 @@ public:
 		nMatches = ntuple->Muon_nMatches[index];
 		trackerLayers = ntuple->Muon_trackerLayers[index];
 		pixelHits = ntuple->Muon_pixelHits[index];
+		dxy = ntuple->Muon_dxy[index];
+		d0 = ntuple->Muon_d0[index];
+		dsz = ntuple->Muon_dsz[index];
+		dz = ntuple->Muon_dz[index];
+		dxyBS = ntuple->Muon_dxyBS[index];
+		dszBS = ntuple->Muon_dszBS[index];
+		dzBS = ntuple->Muon_dzBS[index];
 		dxyVTX = ntuple->Muon_dxyVTX[index];
+		dszVTX = ntuple->Muon_dszVTX[index];
 		dzVTX = ntuple->Muon_dzVTX[index];
 		trkiso = ntuple->Muon_trkiso[index] / ntuple->Muon_pT[index];
 

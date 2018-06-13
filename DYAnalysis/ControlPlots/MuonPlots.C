@@ -83,6 +83,14 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 	if( !doData )
 	{
 		analyzer->SetupMCsamples_v20180111(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+      // add QCD
+      SampleTag tag=QCD;
+      ntupleDirectory.push_back(NtupleDir(tag));
+      Tag.push_back(Name(tag));
+      Xsec.push_back(DYana_v20180111::Xsec(tag));
+      nEvents.push_back(Nevts(tag));
+      DYana_v20180111::SampleTag tag_Powheg = DYana_v20180111::SampleTag::QCD;
+      STags.push_back(tag_Powheg);
 	}
 	else
 	{
@@ -161,6 +169,43 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 		TH1D *h_hiNtracks_M60120 = new TH1D("h_hiNtracks_M60120_"+Tag[i_tup], "", 150, 0, 300);
 		TH1D *h_hiNtracksPtCut = new TH1D("h_hiNtracksPtCut_"+Tag[i_tup], "", 150, 0, 300);
 
+      // TTree
+      f->cd();
+      TTree *tr = new TTree("tr_" + Tag[i_tup],"tree " + Tag[i_tup]);
+      float diMass; tr->Branch("diMass",&diMass,"diMass/F");
+      float diRapidity; tr->Branch("diRapidity",&diRapidity,"diRapidity/F");
+      float diPt; tr->Branch("diPt",&diPt,"diPt/F");
+      float diPhistar; tr->Branch("diPhistar",&diPhistar,"diPhistar/F");
+      float deltaPhi; tr->Branch("deltaPhi",&deltaPhi,"deltaPhi/F");
+      float minpt; tr->Branch("minpt",&minpt,"minpt/F");
+      float maxabseta; tr->Branch("maxabseta",&maxabseta,"maxabseta/F");
+      float maxrelPFiso; tr->Branch("maxrelPFiso",&maxrelPFiso,"maxrelPFiso/F");
+      float maxabsdxy; tr->Branch("maxabsdxy",&maxabsdxy,"maxabsdxy/F");
+      float dxy1; tr->Branch("dxy1",&dxy1,"dxy1/F");
+      float dxy2; tr->Branch("dxy2",&dxy2,"dxy2/F");
+      float maxabsdz; tr->Branch("maxabsdz",&maxabsdz,"maxabsdz/F");
+      float d01; tr->Branch("d01",&d01,"d01/F");
+      float d02; tr->Branch("d02",&d02,"d02/F");
+      float dsz1; tr->Branch("dsz1",&dsz1,"dsz1/F");
+      float dsz2; tr->Branch("dsz2",&dsz2,"dsz2/F");
+      float dz1; tr->Branch("dz1",&dz1,"dz1/F");
+      float dz2; tr->Branch("dz2",&dz2,"dz2/F");
+      float dxyBS1; tr->Branch("dxyBS1",&dxyBS1,"dxyBS1/F");
+      float dxyBS2; tr->Branch("dxyBS2",&dxyBS2,"dxyBS2/F");
+      float dszBS1; tr->Branch("dszBS1",&dszBS1,"dszBS1/F");
+      float dszBS2; tr->Branch("dszBS2",&dszBS2,"dszBS2/F");
+      float dzBS1; tr->Branch("dzBS1",&dzBS1,"dzBS1/F");
+      float dzBS2; tr->Branch("dzBS2",&dzBS2,"dzBS2/F");
+      float dxyVTX1; tr->Branch("dxyVTX1",&dxyVTX1,"dxyVTX1/F");
+      float dxyVTX2; tr->Branch("dxyVTX2",&dxyVTX2,"dxyVTX2/F");
+      float dszVTX1; tr->Branch("dszVTX1",&dszVTX1,"dszVTX1/F");
+      float dszVTX2; tr->Branch("dszVTX2",&dszVTX2,"dszVTX2/F");
+      float dzVTX1; tr->Branch("dzVTX1",&dzVTX1,"dzVTX1/F");
+      float dzVTX2; tr->Branch("dzVTX2",&dzVTX2,"dzVTX2/F");
+      float vtxnormchi2; tr->Branch("vtxnormchi2",&vtxnormchi2,"vtxnormchi2/F");
+      float vtxprob; tr->Branch("vtxprob",&vtxprob,"vtxprob/F");
+      int sign; tr->Branch("sign",&sign,"sign/I");
+      float weight; tr->Branch("weight",&weight,"weight/F");
 
 		Bool_t isNLO = 0;
       if( Type=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets") )
@@ -171,6 +216,15 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 		Double_t SumWeight = 0;
 		Double_t SumWeight_Separated = 0;
+
+		Double_t Norm = doData ? 1 : (lumi_all * Xsec[i_tup]) / nEvents[i_tup];
+      if (IsDYMuMu(STags[i_tup])) {
+         // combine pPb and PbP for DYMuMu
+         if (doflip)
+            Norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+         else 
+            Norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+      }
 
 		Int_t NEvents = chain->GetEntries();
 		cout << "\t[Total Events: " << NEvents << "]" << endl;
@@ -287,18 +341,25 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 				}
 
 				// -- Event Selection -- //
+				vector< Muon > SelectedMuonCollection_noiso;
+				bool isPassEventSelection_noiso = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99);
 				vector< Muon > SelectedMuonCollection;
 				Bool_t isPassEventSelection = kFALSE;
-				isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+
+            Muon mu1;
+            Muon mu2;
+            TLorentzVector dimu; 
+            double pt1, pt2, eta1, eta2;
 
 				if( isPassEventSelection == kTRUE )
 				{
-					Muon mu1 = SelectedMuonCollection[0];
-					Muon mu2 = SelectedMuonCollection[1];
-               double pt1 = mu1.Pt;
-               double pt2 = mu2.Pt;
-               double eta1 = mu1.eta;
-               double eta2 = mu2.eta;
+					mu1 = SelectedMuonCollection[0];
+					mu2 = SelectedMuonCollection[1];
+               pt1 = mu1.Pt;
+               pt2 = mu2.Pt;
+               eta1 = mu1.eta;
+               eta2 = mu2.eta;
 
                // TnP
                if (doTnPrew) {
@@ -344,11 +405,57 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight*TnpWeight);
                h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
                h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight*TnpWeight);
-               double mass = (mu1.Momentum+mu2.Momentum).M();
+               TLorentzVector dimu = mu1.Momentum+mu2.Momentum; 
+               double mass = dimu.M();
                if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
                else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
-				}
-				
+            }
+            if (isPassEventSelection_noiso) {
+					mu1 = SelectedMuonCollection_noiso[0];
+					mu2 = SelectedMuonCollection_noiso[1];
+               pt1 = mu1.Pt;
+               pt2 = mu2.Pt;
+               eta1 = mu1.eta;
+               eta2 = mu2.eta;
+               dimu = mu1.Momentum+mu2.Momentum; 
+               // variables for the tree
+               diMass = dimu.M(); diRapidity = dimu.Rapidity(); diPt = dimu.Pt();
+               diPhistar = Object::phistar(mu1,mu2);
+               deltaPhi = mu1.Momentum.DeltaPhi(mu2.Momentum);
+               minpt = min(pt1,pt2);
+               maxabseta = max(fabs(eta1),fabs(eta2));
+               maxrelPFiso = max(mu1.relPFiso,mu2.relPFiso);
+               maxabsdxy = max(fabs(mu1.dxyVTX),fabs(mu2.dxyVTX));
+               dxy1 = mu1.dxy;
+               dxy2 = mu2.dxy;
+               d01 = mu1.d0;
+               d02 = mu2.d0;
+               dsz1 = mu1.dsz;
+               dsz2 = mu2.dsz;
+               dz1 = mu1.dz;
+               dz2 = mu2.dz;
+               dxyBS1 = mu1.dxyBS;
+               dxyBS2 = mu2.dxyBS;
+               dszBS1 = mu1.dszBS;
+               dszBS2 = mu2.dszBS;
+               dzBS1 = mu1.dzBS;
+               dzBS2 = mu2.dzBS;
+               dxyVTX1 = mu1.dxyVTX;
+               dxyVTX2 = mu2.dxyVTX;
+               dszVTX1 = mu1.dszVTX;
+               dszVTX2 = mu2.dszVTX;
+               dzVTX1 = mu1.dzVTX;
+               dzVTX2 = mu2.dzVTX;
+               maxabsdz = max(fabs(mu1.dzVTX),fabs(mu2.dzVTX));
+               double vtxprobD = -999;
+               double vtxnormchi2D = 999;
+               analyzer->DimuonVertexProbNormChi2(ntuple, mu1.Inner_pT, mu2.Inner_pT, &vtxprobD, &vtxnormchi2D);
+               vtxprob = vtxprobD;
+               vtxnormchi2 = vtxnormchi2D;
+               weight = GenWeight*PUWeight*TnpWeight*Norm;
+               sign = abs(mu1.charge+mu2.charge);
+               tr->Fill();
+            }
 			} //End of if( isTriggered )
 
 		} //End of event iteration
@@ -376,6 +483,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       h_hiNtracks_M1560->Write();
       h_hiNtracks_M60120->Write();
       h_hiNtracksPtCut->Write();
+      tr->Write();
 
 		if(isNLO == 1)
 		{

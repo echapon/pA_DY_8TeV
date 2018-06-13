@@ -93,7 +93,7 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
+	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=20.); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
@@ -732,7 +732,7 @@ Int_t DYAnalyzer::FindEtaBin(Double_t eta)
 }
 
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection) // -- output: 2 muons passing event selection conditions -- //
+						vector< Muon >* SelectedMuonCollection, bool noiso, double vtxChi2Cut) // -- output: 2 muons passing event selection conditions -- //
 {
    using namespace DYana;
 
@@ -744,10 +744,10 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	{
 	    if( MuonCollection[j].isTightMuon() ) {
           // for L1DoubleMu0 / low mass: use PF iso
-          if (HLT.Contains("L1DoubleMu0") && MuonCollection[j].relPFiso < 0.3)
+          if (HLT.Contains("L1DoubleMu0") && (noiso || MuonCollection[j].relPFiso < 0.3))
 	        QMuonCollection.push_back( MuonCollection[j] );
           // for L1DoubleMu0 / low mass: use trkiso
-          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
+          if (HLT.Contains("L3Mu12") && (noiso || MuonCollection[j].trkiso < 0.3))
 	        QMuonCollection.push_back( MuonCollection[j] );
        }
 	}
@@ -793,7 +793,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
 
 			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-         if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
+         if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
          // if( reco_M > 30 && reco_M < 600 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 			{
 				isPassEventSelection = kTRUE;
@@ -860,7 +860,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
             Bool_t isOS = kFALSE;
             if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
 
-            if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
+            if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
                // if( reco_M > 30 && reco_M < 600 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
             {
                isPassEventSelection = kTRUE;

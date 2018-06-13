@@ -114,7 +114,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
    TnpRew = "_notnprew";
    if (doTnpRew) TnpRew = "_tnprew";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_MC_" + MomCor + "_" + Rew + TnpRew + ".root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
 	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_Data_" + MomCor + "_noHFrew_notnprew.root");
 	
 	// -- output file -- //

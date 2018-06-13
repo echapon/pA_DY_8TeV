@@ -175,7 +175,15 @@ public:
     Int_t Muon_nMatches[MaxN];
     Int_t Muon_trackerLayers[MaxN];
     Int_t Muon_pixelHits[MaxN];
+    Double_t Muon_dxy[MaxN];
+    Double_t Muon_d0[MaxN];
+    Double_t Muon_dsz[MaxN];
+    Double_t Muon_dz[MaxN];
+    Double_t Muon_dxyBS[MaxN];
+    Double_t Muon_dszBS[MaxN];
+    Double_t Muon_dzBS[MaxN];
     Double_t Muon_dxyVTX[MaxN];
+    Double_t Muon_dszVTX[MaxN];
     Double_t Muon_dzVTX[MaxN];
     Double_t Muon_trkiso[MaxN];
     Int_t isGLBmuon[MaxN];
@@ -556,7 +564,15 @@ public:
         chain->SetBranchStatus("Muon_nMatches", 1);
         chain->SetBranchStatus("Muon_trackerLayers", 1);
         chain->SetBranchStatus("Muon_pixelHits", 1);
+        chain->SetBranchStatus("Muon_dxy", 1);
+        chain->SetBranchStatus("Muon_d0", 1);
+        chain->SetBranchStatus("Muon_dsz", 1);
+        chain->SetBranchStatus("Muon_dz", 1);
+        chain->SetBranchStatus("Muon_dxyBS", 1);
+        chain->SetBranchStatus("Muon_dszBS", 1);
+        chain->SetBranchStatus("Muon_dzBS", 1);
         chain->SetBranchStatus("Muon_dxyVTX", 1);
+        chain->SetBranchStatus("Muon_dszVTX", 1);
         chain->SetBranchStatus("Muon_dzVTX", 1);
         chain->SetBranchStatus("Muon_trkiso", 1);
         
@@ -625,7 +641,15 @@ public:
     	chain->SetBranchAddress("Muon_nMatches", Muon_nMatches);
     	chain->SetBranchAddress("Muon_trackerLayers", Muon_trackerLayers);
     	chain->SetBranchAddress("Muon_pixelHits", Muon_pixelHits);
+    	chain->SetBranchAddress("Muon_dxy", Muon_dxy);
+    	chain->SetBranchAddress("Muon_d0", Muon_d0);
+    	chain->SetBranchAddress("Muon_dsz", Muon_dsz);
+    	chain->SetBranchAddress("Muon_dz", Muon_dz);
+    	chain->SetBranchAddress("Muon_dxyBS", Muon_dxyBS);
+    	chain->SetBranchAddress("Muon_dszBS", Muon_dszBS);
+    	chain->SetBranchAddress("Muon_dzBS", Muon_dzBS);
     	chain->SetBranchAddress("Muon_dxyVTX", Muon_dxyVTX);
+    	chain->SetBranchAddress("Muon_dszVTX", Muon_dszVTX);
     	chain->SetBranchAddress("Muon_dzVTX", Muon_dzVTX);
     	chain->SetBranchAddress("Muon_trkiso", Muon_trkiso);
     	chain->SetBranchAddress("isPFmuon", isPFmuon);
