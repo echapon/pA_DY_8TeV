@@ -18,12 +18,12 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    TDirectory *tdir_mass = fout->mkdir("mass");
    tdir_mass->cd();
    for (int i=0; i<binnum; i++) {
-      TDirectory *tdir = tdir_mass->mkdir(Form("%.0f_%.0f",bins[i],bins[i+1]));
+      TDirectory *tdir = tdir_mass->mkdir(Form("%.2f_%.2f",bins[i],bins[i+1]));
       tdir->cd();
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #muḿu",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
       TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
@@ -40,6 +40,9 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    }
 
    // similar instructions will follow for rap1560, rap60120, pt, phistar
+
+   fout->Write();
+   fout->Close();
 }
 
 void fillHisto(TFile *fdata, TFile *fmc, 
