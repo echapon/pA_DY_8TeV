@@ -34,7 +34,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "mass, " << bins[i] << " -- " << bins[i+1] << endl;
-      fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[0], ptbin_meas[ptbinnum_meas], phistarbin[0], phistarbin[phistarnum]);
+      fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, -1, 1e99);
 
       tdir_mass->cd();
    }
@@ -59,12 +59,85 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
-      fillHisto(fdata, fmc, 15, 60, rapbin_60120[i], rapbin_60120[i+1], ptbin_meas[0], ptbin_meas[ptbinnum_meas], phistarbin[0], phistarbin[phistarnum]);
+      fillHisto(fdata, fmc, 15, 60, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99);
 
       tdir_rap1560->cd();
    }
 
-   // similar instructions will follow for rap1560, rap60120, pt, phistar
+   // rap60120
+   TDirectory *tdir_rap60120 = fout->mkdir("rap60120");
+   tdir_rap60120->cd();
+   for (int i=0; i<rapbinnum_60120; i++) {
+      TDirectory *tdir = tdir_rap60120->mkdir(Form("%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]));
+      tdir->cd();
+
+      // create histos
+      TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
+      TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
+      TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
+      TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+
+      // fill histos
+      cout << "rap60120, " << rapbin_60120[i] << " -- " << rapbin_60120[i+1] << endl;
+      fillHisto(fdata, fmc, 60, 120, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99);
+
+      tdir_rap60120->cd();
+   }
+
+   // pt
+   TDirectory *tdir_pt = fout->mkdir("pt");
+   tdir_pt->cd();
+   for (int i=0; i<ptbinnum_meas; i++) {
+      TDirectory *tdir = tdir_pt->mkdir(Form("%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]));
+      tdir->cd();
+
+      // create histos
+      TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
+      TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
+      TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
+      TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+
+      // fill histos
+      cout << "pt, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
+      fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[i], ptbin_meas[i+1], -1, 1e99);
+
+      tdir_pt->cd();
+   }
+
+   // phistar
+   TDirectory *tdir_phistar = fout->mkdir("phistar");
+   tdir_phistar->cd();
+   for (int i=0; i<phistarnum; i++) {
+      TDirectory *tdir = tdir_phistar->mkdir(Form("%.2f_%.2f",phistarbin[i],phistarbin[i+1]));
+      tdir->cd();
+
+      // create histos
+      TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
+      TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
+      TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
+      TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+
+      // fill histos
+      cout << "phistar, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
+      fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, phistarbin[i], phistarbin[i+1]);
+
+      tdir_phistar->cd();
+   }
 
    fout->Write();
    fout->Close();
