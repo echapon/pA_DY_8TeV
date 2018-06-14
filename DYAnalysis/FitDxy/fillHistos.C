@@ -7,6 +7,8 @@ void fillHisto(TFile *fdata, TFile *fmc,
       double rapbin1, double rapbin2,
       double ptbin1, double ptbin2,
       double phistarbin1, double phistarbin2);
+void printCombineDatacard(const char* filename, const char* histfilename, const char* dirname, 
+      TH1D *data_obs, TH1D *DYMuMu, TH1D *DYTauTau, TH1D *htt, TH1D *hww, TH1D *hwz, TH1D *hzz, TH1D *DataSS1, TH1D *DataSS2);
 
 void fillHistos(const char* datafile, const char* mcfile, const char* outputfile,
       const char* expr="log(vtxnormchi2)/log(10)", int nvarbins=80, double varmin=-4, double varmax=4) {
@@ -35,6 +37,8 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       // fill histos
       cout << "mass, " << bins[i] << " -- " << bins[i+1] << endl;
       fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, -1, 1e99);
+      printCombineDatacard(Form("datacard_mass_%.2f_%.2f.txt",bins[i],bins[i+1]), outputfile, Form("mass/%.2f_%.2f",bins[i],bins[i+1]), 
+            data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_mass->cd();
    }
@@ -60,6 +64,8 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
       fillHisto(fdata, fmc, 15, 60, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99);
+      printCombineDatacard(Form("datacard_rap1560_%.2f_%.2f.txt",rapbin_1560[i],rapbin_1560[i+1]), outputfile, Form("rap1560/%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]), 
+            data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_rap1560->cd();
    }
@@ -85,6 +91,8 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       // fill histos
       cout << "rap60120, " << rapbin_60120[i] << " -- " << rapbin_60120[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99);
+      printCombineDatacard(Form("datacard_rap60120_%.2f_%.2f.txt",rapbin_60120[i],rapbin_60120[i+1]), outputfile, Form("rap60120/%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]), 
+            data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_rap60120->cd();
    }
@@ -110,6 +118,8 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       // fill histos
       cout << "pt, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[i], ptbin_meas[i+1], -1, 1e99);
+      printCombineDatacard(Form("datacard_pt_%.2f_%.2f.txt",ptbin_meas[i],ptbin_meas[i+1]), outputfile, Form("pt/%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]), 
+            data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_pt->cd();
    }
@@ -135,6 +145,8 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       // fill histos
       cout << "phistar, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, phistarbin[i], phistarbin[i+1]);
+      printCombineDatacard(Form("datacard_phistar_%.2f_%.2f.txt",phistarbin[i],phistarbin[i+1]), outputfile, Form("phistar/%.2f_%.2f",phistarbin[i],phistarbin[i+1]), 
+            data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_phistar->cd();
    }
@@ -248,4 +260,28 @@ void fillHisto(TFile *fdata, TFile *fmc,
          Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)<=0",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
+}
+
+void printCombineDatacard(const char* filename, const char* histfilename, const char* dirname, 
+      TH1D *data_obs, TH1D *DYMuMu, TH1D *DYTauTau, TH1D *htt, TH1D *hww, TH1D *hwz, TH1D *hzz, TH1D *DataSS1, TH1D *DataSS2) {
+   ofstream of(filename);
+   of << "imax 1" << endl;
+   of << "jmax 7" << endl;
+   of << "kmax *" << endl;
+   of << "---------------" << endl;
+   of << "shapes * * " << histfilename << " " << dirname << "/$PROCESS " << dirname << "/$PROCESS_$SYSTEMATIC" << endl;
+   TString binname(dirname); binname.ReplaceAll("/","_");
+   of << "bin " << binname << endl;
+   of << "observation " << data_obs->Integral() << endl;
+   of << "------------------------------" << endl;
+   of << "bin\t" << binname << "\t" << binname << "\t" << binname << "\t" << binname << "\t" << binname << "\t" << binname << "\t" << binname << "\t" << binname << endl;
+   of << "process\tDYMuMu\tDYTauTau\tTT\tWW\tWZ\tZZ\tDataSS1\tDataSS2" << endl;
+   of << "process\t0\t1\t2\t3\t4\t5\t6\t7" << endl;
+   of << "rate\t" << DYMuMu->Integral() << "\t" << DYTauTau->Integral() << "\t" << htt->Integral() << "\t" << 
+      hww->Integral() << "\t" << hwz->Integral() << "\t" << hzz->Integral() << "\t" << DataSS1->Integral() << "\t" << DataSS2->Integral() << endl;
+   of << "------------------------------" << endl;
+   of << "nDataSS1 rateParam " << binname << " DataSS1 @0*@1/" << DataSS1->Integral() << " nDataSS,fracDataSS1" << endl;
+   of << "nDataSS2 rateParam " << binname << " DataSS2 @0*(1-@1)/" << DataSS2->Integral() << " nDataSS,fracDataSS1" << endl;
+   of << "nDataSS extArg " << DataSS1->Integral()+DataSS2->Integral() << " [0," << 100*(DataSS1->Integral()+DataSS2->Integral()) << "]" << endl;
+   of << "fracDataSS1 extArg 0.5 [0,1] " << endl;
 }
