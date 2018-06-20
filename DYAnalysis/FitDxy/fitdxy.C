@@ -6,7 +6,14 @@
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
 #include "RooRealVar.h"
+#include "RooKeysPdf.h"
+#include "RooDataSet.h"
+#include "RooAddPdf.h"
 #include "RooPlot.h"
+#include "TH2.h"
+#include "TLegend.h"
+#include "TStyle.h"
+#include "TChain.h"
 
 #include "../BkgEst/interface/defs.h"
 #include "../Include/bin.h"
@@ -21,7 +28,7 @@ RooKeysPdf *kernelpdf(TTree* tr, const char* name, RooRealVar *var,
       double isocut, double chi2cut);
 void fixhist(TH1D *hist);
 void fitdxy(const char* datafile, const char* mcfile, 
-//void fitdxy(const char* datafile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Data_MomCorr00_noHFrew_notnprew.root", const char    * mcfile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Powheg_MomCorr00_rewboth_tnprew.root",
+//void fitdxy_hckim(const char* datafile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Data_MomCorr00_noHFrew_notnprew.root", const char    * mcfile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Powheg_MomCorr00_rewboth_tnprew.root",
 
       double massbin1, double massbin2,
       double rapbin1, double rapbin2,
@@ -37,6 +44,9 @@ double ptbin2 =  1e99,
 double isocut =  1e99,
 double chi2cut=4000) {
 */
+	for (int i=0;i<binnum;i++) {
+	massbin1 = bins[i];
+	massbin2 = bins[i+1];
    TFile *fdata = TFile::Open(datafile);
    TFile *fmc = TFile::Open(mcfile);
 
@@ -248,10 +258,10 @@ double chi2cut=4000) {
 	leg->AddEntry(xframe->nameOf(3),Form("%s",xframe->nameOf(3)),"l");
 	leg->Draw();
 
-	c1->SaveAs("test1.pdf");
+	//c1->SaveAs(".pdf");
 
 	gStyle->SetOptStat(0);
-   TH2D *frame2 = new TH2D("frame2","Fit to logdxy;log_{10}(vtx #chi^{2}/ndf);Entries",100,-4,4,100,0.002,10000);
+   TH2D *frame2 = new TH2D("frame2","Fit to logdxy;log_{10}(vtx #chi^{2}/ndf);Entries",100,-4,4,100,0.002,50000);
 	frame2->Draw("");
    RooPlot* xframe2 = logdxy.frame(Title("Fit to logdxy")) ;
 //	xframe2->SetMinimum(0.005);
@@ -267,9 +277,12 @@ double chi2cut=4000) {
    rhdata.plotOn(xframe2);
    xframe2->Draw("axissame");
 
-	TLegend* leg2 = new TLegend(0.15,0.63,0.30,0.88);
+	TLegend* leg2 = new TLegend(0.13,0.60,0.35,0.88);
 	leg2->SetFillColor(kWhite);
+	leg2->SetFillStyle(4000);//window is transparent
 	leg2->SetLineColor(kWhite);
+	leg2->SetLineWidth(0);
+	leg2->AddEntry(frame2,Form("mass : %.1f - %.1f",bins[i],bins[i+1]),"");
 	leg2->AddEntry(xframe2->nameOf(0),Form("%s","Data"),"lp");
 	leg2->AddEntry(xframe2->nameOf(1),Form("%s","SS Data"),"f");
 	leg2->AddEntry(xframe2->nameOf(2),Form("%s","DYMuMu"),"f");
@@ -280,9 +293,9 @@ double chi2cut=4000) {
 
 	leg2->Draw();
 
-	c1->SaveAs("test2.pdf");
+	c1->SaveAs(Form("dxyfit_mass_%.1f_%.1f.pdf",bins[i],bins[i+1]));
 
-
+}
 }
 
 RooKeysPdf *kernelpdf(TTree* tr, const char* name, RooRealVar *var, double massbin1, double massbin2,
