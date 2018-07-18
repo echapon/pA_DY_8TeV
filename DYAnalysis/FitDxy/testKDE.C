@@ -2,7 +2,7 @@
 #include "TCanvas.h"
 
 void testKDE() {
-   double massmin=45;
+   double massmin=50;
    double massmax=60;
    double rapmin=-3;
    double rapmax=3;
@@ -12,7 +12,7 @@ void testKDE() {
    double phistarmax=1e99;
 
    int nvarbins=80;
-   double varmin=-6;
+   double varmin=-4;
    double varmax=4;
 
    TFile *fdata = TFile::Open("ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Data_MomCorr00_noHFrew_notnprew.root");
@@ -70,14 +70,16 @@ void testKDE() {
       DataSS1->DrawNormalized();
       gPad->SetLogy();
       DataSS1->DrawNormalized();
-      hAKDE_1_5_false->SetLineColor(kRed);
-      hAKDE_1_5_false->DrawNormalized("hist same");;
+      // variated KDEs
       hKDE_1_5_false->SetLineColor(kBlue);
-      hKDE_1_5_false->DrawNormalized("hist same");;
+      hKDE_1_5_false->DrawNormalized("hist same");
       hAKDE_1_no_false->SetLineColor(kGreen+1);
-      hAKDE_1_no_false->DrawNormalized("hist same");;
+      hAKDE_1_no_false->DrawNormalized("hist same");
       hAKDE_1_2_false->SetLineColor(kGreen+2);
-      hAKDE_1_2_false->DrawNormalized("hist same");;
+      hAKDE_1_2_false->DrawNormalized("hist same");
       hAKDE_1_10_false->SetLineColor(kGreen+3);
-      hAKDE_1_10_false->DrawNormalized("hist same");;
+      hAKDE_1_10_false->DrawNormalized("hist same");
+      // nominal KDE
+      hAKDE_1_5_false->SetLineColor(kRed);
+      hAKDE_1_5_false->DrawNormalized("hist same");
 }
