@@ -201,7 +201,7 @@ namespace RooFit {
                continue;
             }
 
-            if (mode==BCChi2) testStat += ff - dd + dd*log(dd/ff);
+            if (mode==BCChi2) testStat += (dd==0) ? ff : ff - dd + dd*log(dd/ff);
             else if (mode==PearsonChi2) testStat += pow(dd-ff,2)/ff;
             else if (mode==NeymanChi2) testStat += pow(dd-ff,2)/dd;
 

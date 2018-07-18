@@ -74,6 +74,7 @@ void fit(const char* histfile, const char* outputfile) {
    hndy->Write();
    hfracSS1->Write();
    hdataSS->Write();
+   return;
 
    // rap60120
    dir = f->mkdir("rap60120");
@@ -170,7 +171,10 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    TH1D *hdataSS2 = (TH1D*) gDirectory->Get("DataSS2"); hdataSS2->Rebin(nrebin);
 
    // create variables
-   RooRealVar var("var","log_{10}(vtx #chi^{2}/ndf)",-4,4,"");
+   int nxbins = hdata->GetNbinsX();
+   double xmin = hdata->GetBinCenter(1)-hdata->GetBinWidth(1)/2.;
+   double xmax = hdata->GetBinCenter(nxbins)+hdata->GetBinWidth(nxbins)/2.;
+   RooRealVar var("var","log_{10}(vtx #chi^{2}/ndf)",xmin,xmax,"");
    RooRealVar ndy("ndy","N(DYMuMu)",hdy->Integral(),0,2*hdy->Integral());
    RooRealVar ndytautau("ndytautau","N(DYTauTau)",hdytautau->Integral(),0.9*hdytautau->Integral(),1.1*hdytautau->Integral()); ndytautau.setConstant(true);
    RooRealVar ntt("ntt","N(TT)",htt->Integral(),0.9*htt->Integral(),1.1*htt->Integral()); ntt.setConstant(true);
@@ -178,7 +182,8 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooRealVar nwz("nwz","N(WZ)",hwz->Integral(),0.9*hwz->Integral(),1.1*hwz->Integral()); nwz.setConstant(true);
    RooRealVar nzz("nzz","N(ZZ)",hzz->Integral(),0.9*hzz->Integral(),1.1*hzz->Integral()); nzz.setConstant(true);
    RooRealVar ndataSS("ndataSS","N(HF)",hdataSS1->Integral()+hdataSS2->Integral(),0,10*hdataSS1->Integral()+10*hdataSS2->Integral()); 
-   RooRealVar fracSS1("fracSS1","frac(HF type1)",hdataSS1->Integral()/(hdataSS1->Integral()+hdataSS2->Integral()),0.01,0.99); 
+   RooRealVar fracSS1("fracSS1","frac(HF type1)",hdataSS1->Integral()/(hdataSS1->Integral()+hdataSS2->Integral()),0.001,0.999); 
+   fracSS1.setConstant(true);
    // avoid problem if not enough events
    if (hdataSS1->Integral()+hdataSS2->Integral()<50) {
       fracSS1.setVal(0.5);
@@ -222,18 +227,18 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
 
    // draw the results
    TCanvas c1;
-   c1.SetLogy();
+   // c1.SetLogy();
    RooPlot* xframe = var.frame(Title("Fit to var")) ;
    rhdata.plotOn(xframe);
-   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdy,pdataSS1,pdataSS2)),FillColor(kViolet),LineColor(kViolet),DrawOption("F"));
-   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdy)),FillColor(kRed),LineColor(kRed),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdy,pdataSS)),FillColor(kRed),LineColor(kRed),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdataSS)),FillColor(kViolet),LineColor(kViolet),DrawOption("F"));
    model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau)),FillColor(kOrange),LineColor(kOrange),DrawOption("F"));
    model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt)),FillColor(kGreen+2),LineColor(kGreen+2),DrawOption("F"));
    model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz)),FillColor(kBlue),LineColor(kBlue),DrawOption("F"));
    model.plotOn(xframe,LineColor(kBlack));
    rhdata.plotOn(xframe);
 
-   xframe->GetYaxis()->SetRangeUser(0.1,10.*xframe->GetMaximum());
+   // xframe->GetYaxis()->SetRangeUser(0.1,10.*xframe->GetMaximum());
    xframe->Draw();
 
 
@@ -249,12 +254,12 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    leg->SetFillStyle(4000);
    leg->AddEntry(xframe,Form("%s: %.2f - %.2f",varname,varmin,varmax),"");
    leg->AddEntry(xframe,Form("#chi^{2}/ndf = %.2f/%d (pval = %.1f%s)",chi2val,ndf,pvalue*100.,"%"),"");
-   leg->AddEntry(xframe->nameOf(0),Form("%s","Data"),"lp");
-   leg->AddEntry(xframe->nameOf(1),Form("%s","SS Data"),"f");
-   leg->AddEntry(xframe->nameOf(2),Form("%s","DYMuMu"),"f");
-   leg->AddEntry(xframe->nameOf(3),Form("%s","DYTauTau"),"f");
-   leg->AddEntry(xframe->nameOf(4),Form("%s","TT"),"f");
-   leg->AddEntry(xframe->nameOf(5),Form("%s","VV"),"f");
+   leg->AddEntry(xframe->nameOf(0),Form("%s (%.0f)","Data",rhdata.sumEntries()),"lp");
+   leg->AddEntry(xframe->nameOf(1),Form("%s (%.1f)","DYMuMu",ndy.getVal()),"f");
+   leg->AddEntry(xframe->nameOf(2),Form("%s (%.1f)","SS Data",ndataSS.getVal()),"f");
+   leg->AddEntry(xframe->nameOf(3),Form("%s (%.1f)","DYTauTau",ndytautau.getVal()),"f");
+   leg->AddEntry(xframe->nameOf(4),Form("%s (%.1f)","TT",ntt.getVal()),"f");
+   leg->AddEntry(xframe->nameOf(5),Form("%s (%.1f)","VV",nww.getVal()+nwz.getVal()+nzz.getVal()),"f");
    leg->AddEntry(xframe->nameOf(6),Form("%s","Fit"),"l");
    leg->Draw();
 

@@ -12,12 +12,20 @@
 using namespace DYana;
 using namespace std;
 
+// const double p0 = 0.295994;//0.448352;
+// const double p1 = -0.218507;//-0.126502;
+// const double p2 = -0.00233458;//0.0169816;
+// const double p3 = 0.00210635;//0.00356654;
+const double p0 = 0.329243;
+const double p1 = -0.565022;
+const double p2 = -0.104596;
+
 void fillHisto(TFile *fdata, TFile *fmc, 
       double massbin1, double massbin2,
       double rapbin1, double rapbin2,
       double ptbin1, double ptbin2,
       double phistarbin1, double phistarbin2,
-      bool doKDE, double hSF, double trimFactor, bool doSigmaScaling, bool doAdaptive);
+      bool doKDE=false, double hSF=1, double trimFactor=5, bool doSigmaScaling=false, bool doAdaptive=true);
 void printCombineDatacard(const char* filename, const char* histfilename, const char* dirname, 
       TH1D *data_obs, TH1D *DYMuMu, TH1D *DYTauTau, TH1D *htt, TH1D *hww, TH1D *hwz, TH1D *hzz, TH1D *DataSS1, TH1D *DataSS2);
 TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
@@ -400,6 +408,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       int sign;
       float diMass, diRapidity, diPt, diPhistar, vtxnormchi2;
       float dxyVTX1,dxyVTX2;
+      float dxyBS1,dxyBS2;
       float weight=1;
       tr->SetBranchStatus("*",0);
       tr->SetBranchStatus("sign",1); tr->SetBranchAddress("sign",&sign);
@@ -414,6 +423,9 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       }
       if (doweights) {
          tr->SetBranchStatus("weight",1); tr->SetBranchAddress("weight",&weight);
+      } else {
+         // tr->SetBranchStatus("dxyBS1",1); tr->SetBranchAddress("dxyBS1",&dxyBS1);
+         // tr->SetBranchStatus("dxyBS2",1); tr->SetBranchAddress("dxyBS2",&dxyBS2);
       }
 
       for (int i=0; i<tr->GetEntries(); i++) {
@@ -428,6 +440,13 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
          if (dxymode==2 && !(dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)<=0)) continue;
          double val = log(vtxnormchi2)/log(10);
          vals.push_back(val);
+         if (!doweights) {
+            // reweight SS data
+            // double x = log(max(abs(dxyBS1),abs(dxyBS2)));
+            // weight = p0 + p1*x + p2*x*x + p3*x*x*x;
+            double x = log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10);
+            weight = p0 + p1*x + p2*x*x;
+         }
          weights.push_back(weight);
          if (val>xMin&&val<xMax) nevts++;
       } // end event loop

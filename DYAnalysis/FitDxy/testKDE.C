@@ -2,8 +2,8 @@
 #include "TCanvas.h"
 
 void testKDE() {
-   double massmin=50;
-   double massmax=60;
+   double massmin=20;
+   double massmax=30;
    double rapmin=-3;
    double rapmax=3;
    double ptmin=-1;
