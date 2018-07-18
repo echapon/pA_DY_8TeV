@@ -1,4 +1,18 @@
 #include "../BkgEst/interface/defs.h"
+#include "RooGoF.C"
+
+#include "TH1.h"
+#include "TFile.h"
+#include "TDirectory.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "RooFitResult.h"
+#include "RooDataHist.h"
+#include "RooRealVar.h"
+#include "RooPlot.h"
+#include "RooArgSet.h"
+#include "RooHistPdf.h"
+#include "RooAddPdf.h"
 
 using namespace RooFit;
 using namespace DYana;
@@ -201,21 +215,51 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
 
    // make the model
    RooAddPdf model("model","Fit model",RooArgList(pdy,pdytautau,ptt,pww,pwz,pzz,pdataSS),RooArgList(ndy,ndytautau,ntt,nww,nwz,nzz,ndataSS));
+   RooAddPdf pvv("model","Fit model",RooArgList(pww,pwz,pzz),RooArgList(nww,nwz,nzz)); // for plotting
 
    // do the fit
    RooFitResult *result = model.fitTo(rhdata,Minos(),Extended(true),Save());
 
    // draw the results
    TCanvas c1;
+   c1.SetLogy();
    RooPlot* xframe = var.frame(Title("Fit to var")) ;
    rhdata.plotOn(xframe);
-   model.plotOn(xframe,Components(RooArgSet(pdataSS1,pdataSS2)),LineColor(kViolet),FillColor(kViolet),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdy,pdataSS1,pdataSS2)),FillColor(kViolet),LineColor(kViolet),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau,pdy)),FillColor(kRed),LineColor(kRed),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt,pdytautau)),FillColor(kOrange),LineColor(kOrange),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz,ptt)),FillColor(kGreen+2),LineColor(kGreen+2),DrawOption("F"));
+   model.plotOn(xframe,Components(RooArgSet(pww,pwz,pzz)),FillColor(kBlue),LineColor(kBlue),DrawOption("F"));
    model.plotOn(xframe,LineColor(kBlack));
-   model.plotOn(xframe,Components(pdy),LineColor(kRed));
    rhdata.plotOn(xframe);
+
+   xframe->GetYaxis()->SetRangeUser(0.1,10.*xframe->GetMaximum());
    xframe->Draw();
 
+
+   // compute the chi2
+   RooGoF roogof(xframe->getHist(xframe->nameOf(0)),xframe->getCurve(xframe->nameOf(6)));
+   double pvalue=0, chi2val=0;
+   int ndf=hdata->GetNbinsX();
+   int d_ndf=result->floatParsFinal().getSize();
+   roogof.BCChi2Test(pvalue,chi2val,ndf,d_ndf);
+
+   TLegend* leg = new TLegend(0.16,0.59,0.53,0.92);
+   leg->SetBorderSize(0);
+   leg->SetFillStyle(4000);
+   leg->AddEntry(xframe,Form("%s: %.2f - %.2f",varname,varmin,varmax),"");
+   leg->AddEntry(xframe,Form("#chi^{2}/ndf = %.2f/%d (pval = %.1f%s)",chi2val,ndf,pvalue*100.,"%"),"");
+   leg->AddEntry(xframe->nameOf(0),Form("%s","Data"),"lp");
+   leg->AddEntry(xframe->nameOf(1),Form("%s","SS Data"),"f");
+   leg->AddEntry(xframe->nameOf(2),Form("%s","DYMuMu"),"f");
+   leg->AddEntry(xframe->nameOf(3),Form("%s","DYTauTau"),"f");
+   leg->AddEntry(xframe->nameOf(4),Form("%s","TT"),"f");
+   leg->AddEntry(xframe->nameOf(5),Form("%s","VV"),"f");
+   leg->AddEntry(xframe->nameOf(6),Form("%s","Fit"),"l");
+   leg->Draw();
+
    c1.SaveAs(Form("fit_%s_%.2f_%.2f.pdf",varname,varmin,varmax));
+   c1.SaveAs(Form("fit_%s_%.2f_%.2f.root",varname,varmin,varmax));
    f->Close();
    return result;
 }
