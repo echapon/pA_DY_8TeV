@@ -200,12 +200,12 @@ void fillHisto(TFile *fdata, TFile *fmc,
    // cout << "Filling data histo" << endl;
    TTree *tr = (TTree*) fdata->Get("tr_Data1");
    tr->Draw("log(vtxnormchi2)/log(10)>>+data_obs",
-         Form("sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+         Form("sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fdata->Get("tr_Data2");
    tr->Draw("log(vtxnormchi2)/log(10)>>+data_obs",
-         Form("sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+         Form("sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
 
@@ -213,22 +213,22 @@ void fillHisto(TFile *fdata, TFile *fmc,
    // cout << "Filling DY histo" << endl;
    tr = (TTree*) fmc->Get("tr_DYMuMu1030");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_DYMuMu1030_PbP");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_DYMuMu30");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_DYMuMu30_PbP");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
 
@@ -236,12 +236,12 @@ void fillHisto(TFile *fdata, TFile *fmc,
    // cout << "Filling DYtautau histo" << endl;
    tr = (TTree*) fmc->Get("tr_DYTauTau1030");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYTauTau",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_DYTauTau1030");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYTauTau",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
 
@@ -249,7 +249,7 @@ void fillHisto(TFile *fdata, TFile *fmc,
    // cout << "Filling ttbar histo" << endl;
    tr = (TTree*) fmc->Get("tr_TT");
    tr->Draw("log(vtxnormchi2)/log(10)>>+TT",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
 
@@ -257,17 +257,17 @@ void fillHisto(TFile *fdata, TFile *fmc,
    // cout << "Filling diboson histo" << endl;
    tr = (TTree*) fmc->Get("tr_WW");
    tr->Draw("log(vtxnormchi2)/log(10)>>+WW",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_WZ");
    tr->Draw("log(vtxnormchi2)/log(10)>>+WZ",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
    tr = (TTree*) fmc->Get("tr_ZZ");
    tr->Draw("log(vtxnormchi2)/log(10)>>+ZZ",
-         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f)",
+         Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
          "goff");
 
@@ -278,12 +278,12 @@ void fillHisto(TFile *fdata, TFile *fmc,
       // cout << "Filling data SS histo" << endl;
       tr = (TTree*) fdata->Get("tr_Data1");
       tr->Draw("log(vtxnormchi2)/log(10)>>+DataSS1",
-            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)>0",
+            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2>0&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
       tr = (TTree*) fdata->Get("tr_Data2");
       tr->Draw("log(vtxnormchi2)/log(10)>>+DataSS1",
-            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)>0",
+            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2>0&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
 
@@ -291,12 +291,12 @@ void fillHisto(TFile *fdata, TFile *fmc,
       // cout << "Filling data SS histo" << endl;
       tr = (TTree*) fdata->Get("tr_Data1");
       tr->Draw("log(vtxnormchi2)/log(10)>>+DataSS2",
-            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)<=0",
+            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2<=0&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
       tr = (TTree*) fdata->Get("tr_Data2");
       tr->Draw("log(vtxnormchi2)/log(10)>>+DataSS2",
-            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)<=0",
+            Form("sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f&&dxyVTX1*dxyVTX2<=0&&log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2&&maxrelPFiso<1.5",
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
    } else {
@@ -409,6 +409,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       float diMass, diRapidity, diPt, diPhistar, vtxnormchi2;
       float dxyVTX1,dxyVTX2;
       float dxyBS1,dxyBS2;
+      float maxrelPFiso;
       float weight=1;
       tr->SetBranchStatus("*",0);
       tr->SetBranchStatus("sign",1); tr->SetBranchAddress("sign",&sign);
@@ -416,6 +417,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       tr->SetBranchStatus("diRapidity",1); tr->SetBranchAddress("diRapidity",&diRapidity);
       tr->SetBranchStatus("diPt",1); tr->SetBranchAddress("diPt",&diPt);
       tr->SetBranchStatus("diPhistar",1); tr->SetBranchAddress("diPhistar",&diPhistar);
+      tr->SetBranchStatus("maxrelPFiso",1); tr->SetBranchAddress("maxrelPFiso",&maxrelPFiso);
       tr->SetBranchStatus("vtxnormchi2",1); tr->SetBranchAddress("vtxnormchi2",&vtxnormchi2);
       if (dxymode>0) {
          tr->SetBranchStatus("dxyVTX1",1); tr->SetBranchAddress("dxyVTX1",&dxyVTX1);
@@ -436,14 +438,16 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
          if (!(diRapidity-0.47>rapbin1 && diRapidity-0.47<rapbin2)) continue;
          if (!(diPt>ptbin1 && diPt<ptbin2)) continue;
          if (!(diPhistar>phistarbin1 && diPhistar<phistarbin2)) continue;
-         if (dxymode==1 && !(dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)>0)) continue;
-         if (dxymode==2 && !(dxyVTX1*dxyVTX2/abs(dxyVTX1*dxyVTX2)<=0)) continue;
+         if (!(log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10)<-2)) continue;
+         if (!(maxrelPFiso<1.5)) continue;
+         if (dxymode==1 && !(dxyVTX1*dxyVTX2>0)) continue;
+         if (dxymode==2 && !(dxyVTX1*dxyVTX2<=0)) continue;
          double val = log(vtxnormchi2)/log(10);
          vals.push_back(val);
          if (!doweights) {
             // reweight SS data
-            // double x = log(max(abs(dxyBS1),abs(dxyBS2)));
-            // weight = p0 + p1*x + p2*x*x + p3*x*x*x;
+            // // double x = log(max(abs(dxyBS1),abs(dxyBS2)));
+            // // weight = p0 + p1*x + p2*x*x + p3*x*x*x;
             double x = log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10);
             weight = p0 + p1*x + p2*x*x;
          }
