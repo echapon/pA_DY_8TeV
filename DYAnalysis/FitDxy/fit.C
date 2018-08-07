@@ -18,8 +18,10 @@ using namespace RooFit;
 using namespace DYana;
 
 const int nrebin = 1;
+const double xmin = -7;
+const double xmax = 4;
 
-void fixhist(TH1D *hist);
+void fixhist(TH1D* &hist, bool dozero=true);
 RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax);
 
 void fit(const char* histfile, const char* outputfile) {
@@ -82,7 +84,7 @@ void fit(const char* histfile, const char* outputfile) {
    hndy->Write();
    hfracSS1->Write();
    hdataSS->Write();
-   // return;
+   return;
 
    // rap60120
    dir = f->mkdir("rap60120");
@@ -201,8 +203,9 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooRealVar nww("nww","N(WW)",hww->Integral(),0.9*hww->Integral(),1.1*hww->Integral()); nww.setConstant(true);
    RooRealVar nwz("nwz","N(WZ)",hwz->Integral(),0.9*hwz->Integral(),1.1*hwz->Integral()); nwz.setConstant(true);
    RooRealVar nzz("nzz","N(ZZ)",hzz->Integral(),0.9*hzz->Integral(),1.1*hzz->Integral()); nzz.setConstant(true);
-   RooRealVar ndataSS("ndataSS","N(HF)",hdataSS1->Integral()+hdataSS2->Integral(),0,10*hdataSS1->Integral()+10*hdataSS2->Integral()); 
-   RooRealVar fracSS1("fracSS1","frac(HF type1)",hdataSS1->Integral()/(hdataSS1->Integral()+hdataSS2->Integral()),0.001,0.999); 
+   RooRealVar ndataSS("ndataSS","N(bkg)",hdata->Integral()-ndy.getVal(),0,1.5*hdata->Integral()); 
+   RooRealVar fracSS1("fracSS1","frac(SS bkg)",0.5,0.001,0.999); 
+   // RooRealVar fracSS1("fracSS1","frac(HF type1)",1,0.001,1); 
    // fracSS1.setConstant(true);
    // avoid problem if not enough events
    if (hdataSS1->Integral()+hdataSS2->Integral()<50) {
@@ -211,6 +214,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    }
 
    // convert histos to RooFit objects
+   fixhist(hdata,false);
    RooDataHist rhdata("rhdata","Data",RooArgList(var),hdata);
    fixhist(hdy);
    RooDataHist rhdy("rhdy","DYMuMu",RooArgList(var),hdy);
@@ -289,8 +293,42 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    return result;
 }
 
-void fixhist(TH1D *hist) {
-   for (int i=1; i<=hist->GetNbinsX(); i++) {
-      if (hist->GetBinContent(i)<=0) hist->SetBinContent(i,1e-6);
+void fixhist(TH1D* &hist, bool dozero) {
+   // set empty bins to a tiny event content
+   if (dozero) {
+      for (int i=1; i<=hist->GetNbinsX(); i++) {
+         if (hist->GetBinContent(i)<=0) hist->SetBinContent(i,1e-7);
+      }
    }
+
+   // now, rebin between -6 and 2
+   const int nbins1 = hist->GetNbinsX();
+   vector<double> thebins2;
+   for (int i=1; i<=nbins1; i++) {
+      double xval = hist->GetBinLowEdge(i);
+      if (xval<xmin-1e-10) continue;
+      if (xval>xmax+1e-10) continue;
+      thebins2.push_back(xval);
+   }
+   // last bin
+   double xval = hist->GetBinLowEdge(nbins1) + hist->GetBinWidth(nbins1);
+   if (xval>=xmin-1e-10 && xval<=xmax+1e-10) thebins2.push_back(xval);
+
+   // rebinned histo
+   const char* histname = hist->GetName();
+   int nbins2 = thebins2.size()-1;
+   TH1D *hnew = (TH1D*) hist->Rebin(nbins2,"tmp",thebins2.data());
+   delete hist;
+   hist = hnew;
+   hist->SetName(histname);
+
+   // move under- and overflow to the first and last bins
+   hist->SetBinContent(1,hist->GetBinContent(0)+hist->GetBinContent(1));
+   hist->SetBinError(1,sqrt(pow(hist->GetBinError(0),2)+pow(hist->GetBinError(1),2)));
+   hist->SetBinContent(0,0);
+   hist->SetBinError(0,0);
+   hist->SetBinContent(nbins2,hist->GetBinContent(nbins2)+hist->GetBinContent(nbins2+1));
+   hist->SetBinError(nbins2,sqrt(pow(hist->GetBinError(nbins2),2)+pow(hist->GetBinError(nbins2+1),2)));
+   hist->SetBinContent(nbins2+1,0);
+   hist->SetBinError(nbins2+1,0);
 }
