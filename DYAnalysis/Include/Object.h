@@ -466,6 +466,10 @@ public:
 	Int_t isPF;
 	Int_t isTRK;
 	Int_t isSTA;
+	Int_t isLoose;
+	Int_t isMedium;
+	Int_t isTight;
+	Int_t isSoft;
 	Int_t charge;
 	Double_t chi2dof;
 	Int_t muonHits;
@@ -545,6 +549,10 @@ public:
 		isGLB = ntuple->isGLBmuon[index];
 		isPF = ntuple->isPFmuon[index];
 		isTRK = ntuple->isTRKmuon[index];
+		isLoose = ntuple->isLooseMuon[index];
+		isMedium = ntuple->isMediumMuon[index];
+		isTight = ntuple->isTightMuon[index];
+		isSoft = ntuple->isSoftMuon[index];
 		charge = ntuple->Muon_charge[index];
 
 		chi2dof = ntuple->Muon_chi2dof[index];

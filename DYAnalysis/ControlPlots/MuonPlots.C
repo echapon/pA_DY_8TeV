@@ -178,8 +178,24 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float diPhistar; tr->Branch("diPhistar",&diPhistar,"diPhistar/F");
       float deltaPhi; tr->Branch("deltaPhi",&deltaPhi,"deltaPhi/F");
       float minpt; tr->Branch("minpt",&minpt,"minpt/F");
+      float pt1; tr->Branch("pt1",&pt1,"pt1/F");
+      float pt2; tr->Branch("pt2",&pt2,"pt2/F");
       float maxabseta; tr->Branch("maxabseta",&maxabseta,"maxabseta/F");
       float maxrelPFiso; tr->Branch("maxrelPFiso",&maxrelPFiso,"maxrelPFiso/F");
+      float relPFiso1; tr->Branch("relPFiso1",&relPFiso1,"relPFiso1/F");
+      float relPFiso2; tr->Branch("relPFiso2",&relPFiso2,"relPFiso2/F");
+      float trkiso1; tr->Branch("trkiso1",&trkiso1,"trkiso1/F");
+      float trkiso2; tr->Branch("trkiso2",&trkiso2,"trkiso2/F");
+      int   isSoft1; tr->Branch("isSoft1",&isSoft1,"isSoft1/I");
+      int   isSoft2; tr->Branch("isSoft2",&isSoft2,"isSoft2/I");
+      int   isLoose1; tr->Branch("isLoose1",&isLoose1,"isLoose1/I");
+      int   isLoose2; tr->Branch("isLoose2",&isLoose2,"isLoose2/I");
+      int   isMedium1; tr->Branch("isMedium1",&isMedium1,"isMedium1/I");
+      int   isMedium2; tr->Branch("isMedium2",&isMedium2,"isMedium2/I");
+      int   isTight1; tr->Branch("isTight1",&isTight1,"isTight1/I");
+      int   isTight2; tr->Branch("isTight2",&isTight2,"isTight2/I");
+      int   isMyTight1; tr->Branch("isMyTight1",&isMyTight1,"isMyTight1/I");
+      int   isMyTight2; tr->Branch("isMyTight2",&isMyTight2,"isMyTight2/I");
       float maxabsdxy; tr->Branch("maxabsdxy",&maxabsdxy,"maxabsdxy/F");
       float dxy1; tr->Branch("dxy1",&dxy1,"dxy1/F");
       float dxy2; tr->Branch("dxy2",&dxy2,"dxy2/F");
@@ -342,7 +358,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 				// -- Event Selection -- //
 				vector< Muon > SelectedMuonCollection_noiso;
-				bool isPassEventSelection_noiso = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99);
+				bool isPassEventSelection_noiso = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
 				vector< Muon > SelectedMuonCollection;
 				Bool_t isPassEventSelection = kFALSE;
 				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
@@ -350,7 +366,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             Muon mu1;
             Muon mu2;
             TLorentzVector dimu; 
-            double pt1, pt2, eta1, eta2;
+            double eta1, eta2;
 
 				if( isPassEventSelection == kTRUE )
 				{
@@ -425,6 +441,20 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                minpt = min(pt1,pt2);
                maxabseta = max(fabs(eta1),fabs(eta2));
                maxrelPFiso = max(mu1.relPFiso,mu2.relPFiso);
+               relPFiso1 = mu1.relPFiso;
+               relPFiso2 = mu2.relPFiso;
+               trkiso1 = mu1.trkiso;
+               trkiso2 = mu2.trkiso;
+               isLoose1 = mu1.isLoose;
+               isLoose2 = mu2.isLoose;
+               isMedium1 = mu1.isMedium;
+               isMedium2 = mu2.isMedium;
+               isTight1 = mu1.isTight;
+               isTight2 = mu2.isTight;
+               isSoft1 = mu1.isSoft;
+               isSoft2 = mu2.isSoft;
+               isMyTight1 = mu1.isTightMuon();
+               isMyTight2 = mu2.isTightMuon();
                maxabsdxy = max(fabs(mu1.dxyVTX),fabs(mu2.dxyVTX));
                dxy1 = mu1.dxy;
                dxy2 = mu2.dxy;

@@ -189,6 +189,10 @@ public:
     Int_t isGLBmuon[MaxN];
     Int_t isPFmuon[MaxN];
     Int_t isTRKmuon[MaxN];
+    Int_t isLooseMuon[MaxN];
+    Int_t isMediumMuon[MaxN];
+    Int_t isTightMuon[MaxN];
+    Int_t isSoftMuon[MaxN];
     Int_t nMuon;
     
     // -- for invariant mass calculation -- //
@@ -534,8 +538,12 @@ public:
         // -- # branches to be turned on is critical to the speed of the code: 
         // -- Usage of * is strongly not recommended! ... It would be better to exactly write down all branches to be used -- //
     	chain->SetBranchStatus("isPFmuon", 1);
-    	chain->SetBranchStatus("isGLBmuon", 1);
-        chain->SetBranchStatus("isTRKmuon", 1);
+      chain->SetBranchStatus("isGLBmuon", 1);
+      chain->SetBranchStatus("isTRKmuon", 1);
+    	chain->SetBranchStatus("isLooseMuon", 1);
+    	chain->SetBranchStatus("isMediumMuon", 1);
+    	chain->SetBranchStatus("isTightMuon", 1);
+    	chain->SetBranchStatus("isSoftMuon", 1);
     	chain->SetBranchStatus("CosAngle", 1);
     	chain->SetBranchStatus("vtxTrkChi2", 1);
     	chain->SetBranchStatus("vtxTrkProb", 1);
@@ -653,8 +661,12 @@ public:
     	chain->SetBranchAddress("Muon_dzVTX", Muon_dzVTX);
     	chain->SetBranchAddress("Muon_trkiso", Muon_trkiso);
     	chain->SetBranchAddress("isPFmuon", isPFmuon);
-    	chain->SetBranchAddress("isGLBmuon", isGLBmuon);
-        chain->SetBranchAddress("isTRKmuon", isTRKmuon);    	
+      chain->SetBranchAddress("isGLBmuon", isGLBmuon);
+      chain->SetBranchAddress("isTRKmuon", isTRKmuon);    	
+    	chain->SetBranchAddress("isLooseMuon", isLooseMuon);
+    	chain->SetBranchAddress("isMediumMuon", isMediumMuon);
+    	chain->SetBranchAddress("isTightMuon", isTightMuon);
+    	chain->SetBranchAddress("isSoftMuon", isSoftMuon);
     	chain->SetBranchAddress("Muon_Px", Muon_Px );
     	chain->SetBranchAddress("Muon_Py", Muon_Py );
     	chain->SetBranchAddress("Muon_Pz", Muon_Pz );

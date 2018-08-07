@@ -93,7 +93,7 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=20.); // -- output: 2 muons passing event selection conditions -- //
+	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=20., bool dotight=true); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
@@ -732,7 +732,7 @@ Int_t DYAnalyzer::FindEtaBin(Double_t eta)
 }
 
 Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, // -- input: All muons in a event & NtupleHandle -- //
-						vector< Muon >* SelectedMuonCollection, bool noiso, double vtxChi2Cut) // -- output: 2 muons passing event selection conditions -- //
+						vector< Muon >* SelectedMuonCollection, bool noiso, double vtxChi2Cut, bool dotight) // -- output: 2 muons passing event selection conditions -- //
 {
    using namespace DYana;
 
@@ -742,12 +742,10 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
-	    if( MuonCollection[j].isTightMuon() ) {
+	    if( (dotight && MuonCollection[j].isTightMuon()) 
+             || (!dotight && MuonCollection[j].isLoose) ) {
           // for L1DoubleMu0 / low mass: use PF iso
-          if (HLT.Contains("L1DoubleMu0") && (noiso || MuonCollection[j].relPFiso < 0.3))
-	        QMuonCollection.push_back( MuonCollection[j] );
-          // for L1DoubleMu0 / low mass: use trkiso
-          if (HLT.Contains("L3Mu12") && (noiso || MuonCollection[j].trkiso < 0.3))
+          if (noiso || MuonCollection[j].relPFiso < 0.15)
 	        QMuonCollection.push_back( MuonCollection[j] );
        }
 	}
