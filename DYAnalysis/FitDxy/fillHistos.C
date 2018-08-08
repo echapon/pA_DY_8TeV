@@ -401,7 +401,7 @@ void printCombineDatacard(const char* filename, const char* histfilename, const 
    if (okDataSS1 && okDataSS2) {
       of << "nDataSS1 rateParam " << binname << " DataSS1 @0*@1/" << DataSS1->Integral() << " nDataSS,fracDataSS1" << endl;
       of << "nDataSS2 rateParam " << binname << " DataSS2 @0*(1-@1)/" << DataSS2->Integral() << " nDataSS,fracDataSS1" << endl;
-      of << "nDataSS extArg " << DataSS1->Integral()+DataSS2->Integral() << " [0," << 100*(DataSS1->Integral()+DataSS2->Integral()) << "]" << endl;
+      of << "nDataSS extArg " << 0.1*data_obs->Integral() << " [0," << 1.5*data_obs->Integral() << "]" << endl;
       of << "fracDataSS1 extArg 0.5 [0,1] " << endl;
    }
 }
