@@ -93,7 +93,7 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=20., bool dotight=true); // -- output: 2 muons passing event selection conditions -- //
+	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=1e99, bool dotight=true); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
@@ -744,9 +744,17 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	{
 	    if( (dotight && MuonCollection[j].isTightMuon()) 
              || (!dotight && MuonCollection[j].isLoose) ) {
-          // for L1DoubleMu0 / low mass: use PF iso
-          if (noiso || MuonCollection[j].relPFiso < 0.15)
-	        QMuonCollection.push_back( MuonCollection[j] );
+          bool passOK=false;
+          // for L3Mu12: no additional cut
+          if (noiso || HLT.Contains("L3Mu12")) 
+             passOK=true;
+          // for L1DoubleMu0: need also tk iso, dxy and dz cuts
+          if (!noiso && HLT.Contains("L1DoubleMu0") && 
+                   (MuonCollection[j].trkiso*MuonCollection[j].Pt < 5 && fabs(MuonCollection[j].dzVTX)<0.1 && fabs(MuonCollection[j].dxyVTX)<0.01))
+             passOK = true;
+
+          if (passOK)
+             QMuonCollection.push_back( MuonCollection[j] );
        }
 	}
 
@@ -829,7 +837,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
                      if( isPassAcc == kTRUE ) // -- Find best pair ONLY for the pairs within acceptance -- //
                      {
                         Double_t VtxProb_temp = -999;
-                        Double_t VtxNormChi2_temp = 999;
+                        Double_t VtxNormChi2_temp = 2.*vtxChi2Cut;
                         DimuonVertexProbNormChi2(ntuple, Mu.Inner_pT, Mu_jth.Inner_pT, &VtxProb_temp, &VtxNormChi2_temp);
 
                         // -- Find best pair by selecting smallest Chi2/dnof(VTX) value -- // 
@@ -845,7 +853,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
             }
          } // -- end of the loop for i_mu (finding for the first muon matched with HLT matching)
 
-         if( VtxNormChi2_BestPair < 999 ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
+         if( VtxNormChi2_BestPair < 2.*vtxChi2Cut ) // -- If at least one pair within acceptance & with at least one muon matched with HLT object exists -- //
          {
             TLorentzVector reco_v1 = mu1_BestPair.Momentum;
             TLorentzVector reco_v2 = mu2_BestPair.Momentum;
