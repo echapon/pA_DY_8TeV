@@ -84,7 +84,6 @@ void fit(const char* histfile, const char* outputfile) {
    hndy->Write();
    hfracSS1->Write();
    hdataSS->Write();
-   return;
 
    // rap60120
    dir = f->mkdir("rap60120");
@@ -203,7 +202,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooRealVar nww("nww","N(WW)",hww->Integral(),0.9*hww->Integral(),1.1*hww->Integral()); nww.setConstant(true);
    RooRealVar nwz("nwz","N(WZ)",hwz->Integral(),0.9*hwz->Integral(),1.1*hwz->Integral()); nwz.setConstant(true);
    RooRealVar nzz("nzz","N(ZZ)",hzz->Integral(),0.9*hzz->Integral(),1.1*hzz->Integral()); nzz.setConstant(true);
-   RooRealVar ndataSS("ndataSS","N(bkg)",hdata->Integral()-ndy.getVal(),0,1.5*hdata->Integral()); 
+   RooRealVar ndataSS("ndataSS","N(bkg)",0.1*hdata->Integral(),0,1.5*hdata->Integral()); 
    RooRealVar fracSS1("fracSS1","frac(SS bkg)",0.5,0.001,0.999); 
    // RooRealVar fracSS1("fracSS1","frac(HF type1)",1,0.001,1); 
    // fracSS1.setConstant(true);
