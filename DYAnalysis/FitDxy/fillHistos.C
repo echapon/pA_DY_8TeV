@@ -13,9 +13,12 @@ using namespace DYana;
 using namespace std;
 
 // flag to apply tkiso, dxy, dz cuts
-bool docuts = false;
-bool mergeSStemplates = true;
-TString addlcuts = (docuts) ? "&&pt1*trkiso1<5&&pt2*trkiso2<5&&abs(dxyVTX1)<0.01&&abs(dxyVTX2)<0.01&&abs(dzVTX1)<0.1&&abs(dzVTX2)<0.1" : "";
+const bool docuts = true;
+const bool mergeSStemplates = true;
+const double dxycut = 0.01;
+const double dzcut = 0.1;
+const double tkisocut = 5;
+const TString addlcuts = (docuts) ? Form("&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f",tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut) : "";
 
 // declarations
 void fillHisto(TFile *fdata, TFile *fmc, 
@@ -62,6 +65,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
       TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "mass, " << bins[i] << " -- " << bins[i+1] << endl;
@@ -90,6 +94,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
       TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
@@ -118,6 +123,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
       TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "rap60120, " << rapbin_60120[i] << " -- " << rapbin_60120[i+1] << endl;
@@ -146,6 +152,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
       TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "pt, " << ptbin_meas[i] << " -- " << ptbin_meas[i+1] << endl;
@@ -174,6 +181,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
       TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
+      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "phistar, " << phistarbin[i] << " -- " << phistarbin[i+1] << endl;
@@ -322,25 +330,19 @@ void fillHisto(TFile *fdata, TFile *fmc,
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
    } else {
-      TH1D *DataSS1 = (TH1D*) gDirectory->Get("DataSS1");
-      int nvarbins = DataSS1->GetNbinsX();
-      double varmin = DataSS1->GetBinCenter(1)-DataSS1->GetBinWidth(1)/2.;
-      double varmax = DataSS1->GetBinCenter(nvarbins)+DataSS1->GetBinWidth(nvarbins)/2.;
+      for (int iss=1; iss<=10; iss++) {
+         TH1D *DataSS = (TH1D*) gDirectory->Get(Form("DataSS%d",iss));
+         int nvarbins = DataSS->GetNbinsX();
+         double varmin = DataSS->GetBinCenter(1)-DataSS->GetBinWidth(1)/2.;
+         double varmax = DataSS->GetBinCenter(nvarbins)+DataSS->GetBinWidth(nvarbins)/2.;
 
-      TH1D *tmp = fillHistoKDE(fdata,"tr_Data1,tr_Data2","tmp",false,
-            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2,1,
-            false,hSF,nvarbins,varmin,varmax,trimFactor,doSigmaScaling,doAdaptive);
-      DataSS1->Add(tmp);
-      // DataSS1->Write();
-      delete tmp;
-
-      TH1D *DataSS2 = (TH1D*) gDirectory->Get("DataSS2");
-      tmp = fillHistoKDE(fdata,"tr_Data1,tr_Data2","tmp",false,
-            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2,2,
-            false,hSF,nvarbins,varmin,varmax,trimFactor,doSigmaScaling,doAdaptive);
-      DataSS2->Add(tmp);
-      // DataSS2->Write();
-      delete tmp;
+         TH1D *tmp = fillHistoKDE(fdata,"tr_Data1,tr_Data2","tmp",false,
+               massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2,iss,
+               false,hSF,nvarbins,varmin,varmax,trimFactor,doSigmaScaling,doAdaptive);
+         DataSS->Add(tmp);
+         // DataSS1->Write();
+         delete tmp;
+      }
    }
 }
 
@@ -454,69 +456,84 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       tr->SetBranchStatus("dzVTX2",1); tr->SetBranchAddress("dzVTX2",&dzVTX2);
       if (doweights) {
          tr->SetBranchStatus("weight",1); tr->SetBranchAddress("weight",&weight);
-      } else {
-         // tr->SetBranchStatus("dxyBS1",1); tr->SetBranchAddress("dxyBS1",&dxyBS1);
-         // tr->SetBranchStatus("dxyBS2",1); tr->SetBranchAddress("dxyBS2",&dxyBS2);
-      }
+      } 
 
       for (int i=0; i<tr->GetEntries(); i++) {
          tr->GetEntry(i);
-         // tight cuts: |dxy|<0.2, |dz|<0.5
-         if (docuts) {
-            if (fabs(dxyVTX1)>0.01 || fabs(dxyVTX2)>0.01) continue;
-            if (fabs(dzVTX1)>0.1 || fabs(dzVTX2)>0.1) continue;
-         }
-
-         if (doOS) { // OS, TT, iso
-            if (sign!=0) continue;
-            if (isTight1+isTight2<2) continue;
-            if (docuts && !(pt1*trkiso1<5&&pt2*trkiso2<5)) continue; 
-         }
-
-         if (!doOS) {
-            if (dxymode==1) { // SS, TT, iso
-               if (sign==0) continue;
-               if (isTight1+isTight2<2) continue;
-               if (docuts && !(pt1*trkiso1<5&&pt2*trkiso2<5)) continue; 
-               if (dxyVTX1*dxyVTX2<0) continue;
-            }
-            // if (dxymode==2) { // SS, MT, iso
-            //    if (sign==0) continue;
-            //    if (isTight1+isTight2==2) continue;
-            //    if (!((isMedium1==1&&isTight2==1) || (isMedium2==1&&isTight1==1))) continue;
-            //    if (!(pt1*trkiso1<5&&pt2*trkiso2<5)) continue; 
-            // }
-            if (dxymode==2) { // SS, TT, iso
-               if (sign==0) continue;
-               if (isTight1+isTight2<2) continue;
-               if (docuts && !(pt1*trkiso1<5&&pt2*trkiso2<5)) continue; 
-               if (dxyVTX1*dxyVTX2>0) continue;
-            }
-         }
 
          if (!(diMass>massbin1 && diMass<massbin2)) continue;
          if (!(diRapidity-0.47>rapbin1 && diRapidity-0.47<rapbin2)) continue;
          if (!(diPt>ptbin1 && diPt<ptbin2)) continue;
          if (!(diPhistar>phistarbin1 && diPhistar<phistarbin2)) continue;
-         // if (max(abs(dxyVTX1),abs(dxyVTX2))>0.01) continue;
-         // if (dxymode==1 && !(dxyVTX1*dxyVTX2>0)) continue;
-         // if (dxymode==2 && !(dxyVTX1*dxyVTX2<=0)) continue;
+
+         // tight cuts: |dxy|<0.2, |dz|<0.5
+         if (docuts) {
+            if (fabs(dxyVTX1)>dxycut || fabs(dxyVTX2)>dxycut) continue;
+            if (fabs(dzVTX1)>dzcut || fabs(dzVTX2)>dzcut) continue;
+         }
+
+         if (doOS) { // OS, TT, iso
+            if (sign!=0) continue;
+            if (isTight1+isTight2<2) continue;
+            if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+         }
+
+         if (!doOS) {
+            if (dxymode==1) { // SS, TT, iso, dxy1*dxy2>0
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2<=0) continue;
+            } else if (dxymode==2) { // SS, TT, iso, dxy1*dxy2<=0
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2>0) continue;
+            } else if (dxymode==3) { // SS, TT, iso, no dxy1*dxy2 cut
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+            } else if (dxymode==4) { // SS, TT, non iso, no dxy1*dxy2 cut
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+            } else if (dxymode==5) { // SS, TT, dxy1*dxy2>0
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (dxyVTX1*dxyVTX2<=0) continue;
+            } else if (dxymode==6) { // SS, TT, dxy1*dxy2<=0
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (dxyVTX1*dxyVTX2>0) continue;
+            } else if (dxymode==7) { // SS, TT, no dxy1*dxy2 cut
+               if (sign==0) continue;
+               if (isTight1+isTight2<2) continue;
+            } else if (dxymode==8) { // OS, TT, non iso, dxy1*dxy2>0
+               if (sign!=0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2<=0) continue;
+            } else if (dxymode==9) { // OS, TT, non iso, dxy1*dxy2<=0
+               if (sign!=0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2>0) continue;
+            } else if (dxymode==10) { // OS, TT, non iso, no dxy1*dxy2 cut
+               if (sign!=0) continue;
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+            }
+         }
+
          double val = log(vtxnormchi2)/log(10);
          vals.push_back(val);
-         if (!doweights) {
-            // reweight SS data
-            // // double x = log(max(abs(dxyBS1),abs(dxyBS2)));
-            // // weight = p0 + p1*x + p2*x*x + p3*x*x*x;
-            // double x = log(max(abs(dxyVTX1),abs(dxyVTX2)))/log(10);
-            // weight = p0 + p1*x + p2*x*x;
-         }
          weights.push_back(weight);
          if (val>xMin&&val<xMax) nevts++;
       } // end event loop
    } // end tokenize
 
    if (nevts==0) {
-      // no events: makes no sense to do KDE
+      // too few events: makes no sense to do KDE
       return new TH1D(histname,histname,nXBins,xMin,xMax);
    }
 
