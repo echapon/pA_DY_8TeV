@@ -479,6 +479,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
          }
 
          if (!doOS) {
+            // SS TT iso
             if (dxymode==1) { // SS, TT, iso, dxy1*dxy2>0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
@@ -493,10 +494,14 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
                if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+
+            // SS TT non iso
             } else if (dxymode==4) { // SS, TT, non iso, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
                if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+
+            // SS TT iso+noniso
             } else if (dxymode==5) { // SS, TT, dxy1*dxy2>0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
@@ -508,6 +513,8 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             } else if (dxymode==7) { // SS, TT, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
+
+            // OS TT noniso
             } else if (dxymode==8) { // OS, TT, non iso, dxy1*dxy2>0
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
@@ -522,6 +529,29 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
                if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+
+            // OS+SS TT noniso
+            } else if (dxymode==11) { // OS+SS, TT, non iso, dxy1*dxy2>0
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2<=0) continue;
+            } else if (dxymode==12) { // OS+SS, TT, non iso, dxy1*dxy2<=0
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2>0) continue;
+            } else if (dxymode==13) { // OS+SS, TT, non iso, no dxy1*dxy2 cut
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+
+            // TT, (SS) + (OS noniso)
+            } else if (dxymode==14) { // (SS) + (OS noniso), dxy1*dxy2>0
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2<=0) continue;
+            } else if (dxymode==15) { // (SS) + (OS noniso), dxy1*dxy2<=0
+               if (isTight1+isTight2<2) continue;
+               if (docuts && (sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (dxyVTX1*dxyVTX2>0) continue;
             }
          }
 

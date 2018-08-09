@@ -22,9 +22,9 @@ const double xmin = -7;
 const double xmax = 4;
 
 void fixhist(TH1D* &hist, bool dozero=true);
-RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax);
+RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax, int idxbkg1=1, int idxbkg2=2);
 
-void fit(const char* histfile, const char* outputfile) {
+void fit(const char* histfile, const char* outputfile, int idxbkg1=1, int idxbkg2=2) {
    TFile *f = TFile::Open(outputfile,"RECREATE");
 
    // mass
@@ -35,7 +35,7 @@ void fit(const char* histfile, const char* outputfile) {
    TH1D *hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",binnum,bins);
    TH1D *hdataSS = new TH1D("hdataSS","N(HF)",binnum,bins);
    for (int i=0; i<binnum; i++) {
-      RooFitResult *result = fit(histfile,"mass",bins[i],bins[i+1]);
+      RooFitResult *result = fit(histfile,"mass",bins[i],bins[i+1],idxbkg1,idxbkg2);
       if (!result) continue;
       hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
       hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
@@ -64,7 +64,7 @@ void fit(const char* histfile, const char* outputfile) {
    hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",rapbinnum_1560,rapbin_1560);
    hdataSS = new TH1D("hdataSS","N(HF)",rapbinnum_1560,rapbin_1560);
    for (int i=0; i<rapbinnum_1560; i++) {
-      RooFitResult *result = fit(histfile,"rap1560",rapbin_1560[i],rapbin_1560[i+1]);
+      RooFitResult *result = fit(histfile,"rap1560",rapbin_1560[i],rapbin_1560[i+1],idxbkg1,idxbkg2);
       if (!result) continue;
       hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
       hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
@@ -93,7 +93,7 @@ void fit(const char* histfile, const char* outputfile) {
    hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",rapbinnum_60120,rapbin_60120);
    hdataSS = new TH1D("hdataSS","N(HF)",rapbinnum_60120,rapbin_60120);
    for (int i=0; i<rapbinnum_60120; i++) {
-      RooFitResult *result = fit(histfile,"rap60120",rapbin_60120[i],rapbin_60120[i+1]);
+      RooFitResult *result = fit(histfile,"rap60120",rapbin_60120[i],rapbin_60120[i+1],idxbkg1,idxbkg2);
       if (!result) continue;
       hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
       hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
@@ -122,7 +122,7 @@ void fit(const char* histfile, const char* outputfile) {
    hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",ptbinnum_meas,ptbin_meas);
    hdataSS = new TH1D("hdataSS","N(HF)",ptbinnum_meas,ptbin_meas);
    for (int i=0; i<ptbinnum_meas; i++) {
-      RooFitResult *result = fit(histfile,"pt",ptbin_meas[i],ptbin_meas[i+1]);
+      RooFitResult *result = fit(histfile,"pt",ptbin_meas[i],ptbin_meas[i+1],idxbkg1,idxbkg2);
       if (!result) continue;
       hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
       hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
@@ -151,7 +151,7 @@ void fit(const char* histfile, const char* outputfile) {
    hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",phistarnum,phistarbin);
    hdataSS = new TH1D("hdataSS","N(HF)",phistarnum,phistarbin);
    for (int i=0; i<phistarnum; i++) {
-      RooFitResult *result = fit(histfile,"phistar",phistarbin[i],phistarbin[i+1]);
+      RooFitResult *result = fit(histfile,"phistar",phistarbin[i],phistarbin[i+1],idxbkg1,idxbkg2);
       if (!result) continue;
       hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
       hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
@@ -175,7 +175,7 @@ void fit(const char* histfile, const char* outputfile) {
    f->Close();
 }
 
-RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax) {
+RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax, int idxbkg1, int idxbkg2) {
    TFile *f = TFile::Open(histfile);
    f->cd(Form("%s/%.2f_%.2f",varname,varmin,varmax));
 
@@ -188,8 +188,8 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    TH1D *hww = (TH1D*) gDirectory->Get("WW"); hww->Rebin(nrebin);
    TH1D *hwz = (TH1D*) gDirectory->Get("WZ"); hwz->Rebin(nrebin);
    TH1D *hzz = (TH1D*) gDirectory->Get("ZZ"); hzz->Rebin(nrebin);
-   TH1D *hdataSS1 = (TH1D*) gDirectory->Get("DataSS1"); hdataSS1->Rebin(nrebin);
-   TH1D *hdataSS2 = (TH1D*) gDirectory->Get("DataSS2"); hdataSS2->Rebin(nrebin);
+   TH1D *hdataSS1 = (TH1D*) gDirectory->Get(Form("DataSS%d",idxbkg1)); hdataSS1->Rebin(nrebin);
+   TH1D *hdataSS2 = (TH1D*) gDirectory->Get(Form("DataSS%d",idxbkg2)); hdataSS2->Rebin(nrebin);
 
    // create variables
    int nxbins = hdata->GetNbinsX();
