@@ -17,8 +17,11 @@ const bool docuts = true;
 const bool mergeSStemplates = true;
 const double dxycut = 0.01;
 const double dzcut = 0.1;
-const double tkisocut = 5;
-const TString addlcuts = (docuts) ? Form("&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f",tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut) : "";
+const double tkisocut = 2.5;
+const double pt1cut = 7;
+const double pt2cut = 7;
+const TString addlcuts = (docuts) ? Form("&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f&&pt1>%f&&pt2>%f",tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut,pt1cut,pt2cut) : "";
+const bool printCombine = false;
 
 // declarations
 void fillHisto(TFile *fdata, TFile *fmc, 
@@ -57,21 +60,27 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
-      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tau#tau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
       TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
-      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI0 = new TH1D("DYMuMuNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI1 = new TH1D("DYMuMuNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI2 = new TH1D("DYMuMuNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI0 = new TH1D("hotherNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI1 = new TH1D("hotherNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI2 = new TH1D("hotherNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS2",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
-      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
+      for (int i=3; i<=15; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "mass, " << bins[i] << " -- " << bins[i+1] << endl;
       fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, -1, 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
-      printCombineDatacard(Form("datacard_mass_%.2f_%.2f.txt",bins[i],bins[i+1]), outputfile, Form("mass/%.2f_%.2f",bins[i],bins[i+1]), 
+      if (printCombine) printCombineDatacard(Form("datacard_mass_%.2f_%.2f.txt",bins[i],bins[i+1]), outputfile, Form("mass/%.2f_%.2f",bins[i],bins[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_mass->cd();
@@ -86,21 +95,27 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
-      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tau#tau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
       TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
-      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI0 = new TH1D("DYMuMuNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI1 = new TH1D("DYMuMuNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI2 = new TH1D("DYMuMuNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI0 = new TH1D("hotherNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI1 = new TH1D("hotherNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI2 = new TH1D("hotherNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS2",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
-      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
+      for (int i=3; i<=15; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
       fillHisto(fdata, fmc, 11, 60, rapbin_1560[i], rapbin_1560[i+1], -1, 1e99, -1, 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
-      printCombineDatacard(Form("datacard_rap1560_%.2f_%.2f.txt",rapbin_1560[i],rapbin_1560[i+1]), outputfile, Form("rap1560/%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]), 
+      if (printCombine) printCombineDatacard(Form("datacard_rap1560_%.2f_%.2f.txt",rapbin_1560[i],rapbin_1560[i+1]), outputfile, Form("rap1560/%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_rap1560->cd();
@@ -115,21 +130,27 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
-      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tau#tau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
       TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
-      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI0 = new TH1D("DYMuMuNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI1 = new TH1D("DYMuMuNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI2 = new TH1D("DYMuMuNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI0 = new TH1D("hotherNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI1 = new TH1D("hotherNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI2 = new TH1D("hotherNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS2",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
-      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
+      for (int i=3; i<=15; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "rap60120, " << rapbin_60120[i] << " -- " << rapbin_60120[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
-      printCombineDatacard(Form("datacard_rap60120_%.2f_%.2f.txt",rapbin_60120[i],rapbin_60120[i+1]), outputfile, Form("rap60120/%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]), 
+      if (printCombine) printCombineDatacard(Form("datacard_rap60120_%.2f_%.2f.txt",rapbin_60120[i],rapbin_60120[i+1]), outputfile, Form("rap60120/%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_rap60120->cd();
@@ -144,21 +165,27 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
-      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tau#tau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
       TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
-      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI0 = new TH1D("DYMuMuNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI1 = new TH1D("DYMuMuNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI2 = new TH1D("DYMuMuNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI0 = new TH1D("hotherNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI1 = new TH1D("hotherNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI2 = new TH1D("hotherNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS2",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
-      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
+      for (int i=3; i<=15; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "pt, " << ptbin_meas[i] << " -- " << ptbin_meas[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[i], ptbin_meas[i+1], -1, 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
-      printCombineDatacard(Form("datacard_pt_%.2f_%.2f.txt",ptbin_meas[i],ptbin_meas[i+1]), outputfile, Form("pt/%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]), 
+      if (printCombine) printCombineDatacard(Form("datacard_pt_%.2f_%.2f.txt",ptbin_meas[i],ptbin_meas[i+1]), outputfile, Form("pt/%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_pt->cd();
@@ -173,21 +200,27 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // create histos
       TH1D *data_obs = new TH1D("data_obs","Data",nvarbins,varmin,varmax);
-      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mumu",nvarbins,varmin,varmax);
-      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tautau",nvarbins,varmin,varmax);
+      TH1D *DYMuMu = new TH1D("DYMuMu","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYTauTau = new TH1D("DYTauTau","DY #tau#tau",nvarbins,varmin,varmax);
       TH1D *htt = new TH1D("TT","t#bar{t}",nvarbins,varmin,varmax);
       TH1D *hww = new TH1D("WW","WW",nvarbins,varmin,varmax);
       TH1D *hwz = new TH1D("WZ","WZ",nvarbins,varmin,varmax);
       TH1D *hzz = new TH1D("ZZ","ZZ",nvarbins,varmin,varmax);
-      TH1D *DataSS1 = new TH1D("DataSS1","DataSS1",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI0 = new TH1D("DYMuMuNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI1 = new TH1D("DYMuMuNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DYMuMuNI2 = new TH1D("DYMuMuNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI0 = new TH1D("hotherNI0","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI1 = new TH1D("hotherNI1","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *hotherNI2 = new TH1D("hotherNI2","DY #mu#mu",nvarbins,varmin,varmax);
+      TH1D *DataSS1 = new TH1D("DataSS1","DataSS2",nvarbins,varmin,varmax);
       TH1D *DataSS2 = new TH1D("DataSS2","DataSS2",nvarbins,varmin,varmax);
-      for (int i=3; i<=10; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
+      for (int i=3; i<=15; i++) new TH1D(Form("DataSS%d",i),Form("DataSS%d",i),nvarbins,varmin,varmax);
 
       // fill histos
       cout << "phistar, " << phistarbin[i] << " -- " << phistarbin[i+1] << endl;
       fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, phistarbin[i], phistarbin[i+1],
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
-      printCombineDatacard(Form("datacard_phistar_%.2f_%.2f.txt",phistarbin[i],phistarbin[i+1]), outputfile, Form("phistar/%.2f_%.2f",phistarbin[i],phistarbin[i+1]), 
+      if (printCombine) printCombineDatacard(Form("datacard_phistar_%.2f_%.2f.txt",phistarbin[i],phistarbin[i+1]), outputfile, Form("phistar/%.2f_%.2f",phistarbin[i],phistarbin[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
 
       tdir_phistar->cd();
@@ -203,6 +236,13 @@ void fillHisto(TFile *fdata, TFile *fmc,
       double ptbin1, double ptbin2,
       double phistarbin1, double phistarbin2,
       bool doKDE, double hSF, double trimFactor, bool doSigmaScaling, bool doAdaptive) {
+   // bulid the cut strings for non iso
+   TString addlcutsNI0(addlcuts);
+   addlcutsNI0.ReplaceAll("pt1*trkiso1<","!(pt1*trkiso1<");
+   addlcutsNI0.ReplaceAll("&&abs(dxyVTX1)<",")&&abs(dxyVTX1)<");
+   TString addlcutsNI1 = addlcutsNI0 + "&&dxyVTX1*dxyVTX2>0";
+   TString addlcutsNI2 = addlcutsNI0 + "&&dxyVTX1*dxyVTX2<=0";
+
    // data
    // cout << "Filling data histo" << endl;
    TTree *tr = (TTree*) fdata->Get("tr_Data1");
@@ -223,20 +263,71 @@ void fillHisto(TFile *fdata, TFile *fmc,
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_DYMuMu1030_PbP");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_DYMuMu30");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_DYMuMu30_PbP");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMu",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+DYMuMuNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
          "goff");
 
    // DYtautau
@@ -246,10 +337,35 @@ void fillHisto(TFile *fdata, TFile *fmc,
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_DYTauTau1030");
    tr->Draw("log(vtxnormchi2)/log(10)>>+DYTauTau",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
          "goff");
 
    // ttbar
@@ -259,6 +375,18 @@ void fillHisto(TFile *fdata, TFile *fmc,
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
 
    // diboson
    // cout << "Filling diboson histo" << endl;
@@ -267,15 +395,53 @@ void fillHisto(TFile *fdata, TFile *fmc,
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_WZ");
    tr->Draw("log(vtxnormchi2)/log(10)>>+WZ",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
          "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
+         "goff");
+
    tr = (TTree*) fmc->Get("tr_ZZ");
    tr->Draw("log(vtxnormchi2)/log(10)>>+ZZ",
          Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcuts + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI0",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI0 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI1",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI1 + ")",
+         "goff");
+   tr->Draw("log(vtxnormchi2)/log(10)>>+hotherNI2",
+         Form("weight*(isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2) + addlcutsNI2 + ")",
          "goff");
 
 
@@ -330,7 +496,7 @@ void fillHisto(TFile *fdata, TFile *fmc,
                massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,phistarbin1,phistarbin2),
             "goff");
    } else {
-      for (int iss=1; iss<=10; iss++) {
+      for (int iss=1; iss<=15; iss++) {
          TH1D *DataSS = (TH1D*) gDirectory->Get(Form("DataSS%d",iss));
          int nvarbins = DataSS->GetNbinsX();
          double varmin = DataSS->GetBinCenter(1)-DataSS->GetBinWidth(1)/2.;
@@ -472,6 +638,9 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             if (fabs(dzVTX1)>dzcut || fabs(dzVTX2)>dzcut) continue;
          }
 
+         if (pt1<pt1cut) continue;
+         if (pt2<pt2cut) continue;
+
          if (doOS) { // OS, TT, iso
             if (sign!=0) continue;
             if (isTight1+isTight2<2) continue;
@@ -483,23 +652,23 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             if (dxymode==1) { // SS, TT, iso, dxy1*dxy2>0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==2) { // SS, TT, iso, dxy1*dxy2<=0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==3) { // SS, TT, iso, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
 
             // SS TT non iso
             } else if (dxymode==4) { // SS, TT, non iso, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
 
             // SS TT iso+noniso
             } else if (dxymode==5) { // SS, TT, dxy1*dxy2>0
@@ -518,39 +687,39 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             } else if (dxymode==8) { // OS, TT, non iso, dxy1*dxy2>0
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==9) { // OS, TT, non iso, dxy1*dxy2<=0
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==10) { // OS, TT, non iso, no dxy1*dxy2 cut
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
 
             // OS+SS TT noniso
             } else if (dxymode==11) { // OS+SS, TT, non iso, dxy1*dxy2>0
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==12) { // OS+SS, TT, non iso, dxy1*dxy2<=0
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==13) { // OS+SS, TT, non iso, no dxy1*dxy2 cut
                if (isTight1+isTight2<2) continue;
-               if (docuts && (pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
 
             // TT, (SS) + (OS noniso)
             } else if (dxymode==14) { // (SS) + (OS noniso), dxy1*dxy2>0
                if (isTight1+isTight2<2) continue;
-               if (docuts && (sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==15) { // (SS) + (OS noniso), dxy1*dxy2<=0
                if (isTight1+isTight2<2) continue;
-               if (docuts && (sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             }
          }
