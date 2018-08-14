@@ -29,6 +29,8 @@ const int nrebin = 1;
 const double xmin = -7;
 const double xmax = 4;
 
+const bool dofullnonisosub = false;
+
 void fixhist(TH1D* &hist, bool dozero=true);
 RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax, int idxbkg1, int idxbkg2, float &chi2, int &ndf);
 void fillvals(RooFitResult *r, map<TString,float> &vals);
@@ -285,10 +287,13 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    TH1D *hdataSS2 = (TH1D*) gDirectory->Get(Form("DataSS%d",idxbkg2)); hdataSS2->Rebin(nrebin);
 
    // // estimate of the bkg yield
-   // double NbkgA = ((TH1D*) gDirectory->Get("DataSS3"))->Integral();
-   // double NbkgB = ((TH1D*) gDirectory->Get("DataSS4"))->Integral();
-   // double NbkgD = ((TH1D*) gDirectory->Get("DataSS10"))->Integral();
-   // double NbkgC = NbkgA*NbkgD/NbkgB;
+   TH1D *hdataSSiso = (TH1D*) f->Get(TString(varname)+"/hdataSSiso");
+   double NbkgA = hdataSSiso->GetBinContent(hdataSSiso->FindBin((varmin+varmax)/2.));
+   TH1D *hdataSSnoniso = (TH1D*) f->Get(TString(varname)+"/hdataSSnoniso");
+   double NbkgB = hdataSSnoniso->GetBinContent(hdataSSnoniso->FindBin((varmin+varmax)/2.));
+   TH1D *hdataOSnoniso = (TH1D*) f->Get(TString(varname)+"/hdataOSnoniso");
+   double NbkgD = hdataOSnoniso->GetBinContent(hdataOSnoniso->FindBin((varmin+varmax)/2.));
+   double NbkgC = NbkgB>0 ? NbkgA*NbkgD/NbkgB : 0.1;
 
    // create variables
    int nxbins = hdata->GetNbinsX();
@@ -301,7 +306,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooRealVar nww("nww","N(WW)",hww->Integral(),0.9*hww->Integral(),1.1*hww->Integral()); nww.setConstant(true);
    RooRealVar nwz("nwz","N(WZ)",hwz->Integral(),0.9*hwz->Integral(),1.1*hwz->Integral()); nwz.setConstant(true);
    RooRealVar nzz("nzz","N(ZZ)",hzz->Integral(),0.9*hzz->Integral(),1.1*hzz->Integral()); nzz.setConstant(true);
-   RooRealVar ndataSS("ndataSS","N(bkg)",0.1*hdata->Integral(),0,1.5*hdata->Integral()); 
+   RooRealVar ndataSS("ndataSS","N(bkg)",NbkgC,0,1.5*hdata->Integral()); 
    RooRealVar fracSS1("fracSS1","frac(SS bkg)",0.5,0.001,0.999); 
    // RooRealVar fracSS1("fracSS1","frac(HF type1)",1,0.001,1); 
    // fracSS1.setConstant(true);
@@ -357,6 +362,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
 
    // for SS/noniso background: need to subtract the OS non iso part
    RooAbsPdf *pdataSS1=NULL, *pdataSS2=NULL;
+   RooDataHist *rhdataSS1_sub=NULL, *rhdataSS2_sub=NULL;
    RooHistPdf pdataSS1_0 ("pdataSS1_0","HF1",RooArgList(var),rhdataSS1);
    RooHistPdf pdataSS2_0 ("pdataSS2_0","HF2",RooArgList(var),rhdataSS2);
    RooFormulaVar ndyNI0("ndyNI0","ndyNI0",Form("-@0*%f",hdyNI0->Integral()/hdy->Integral()),ndy);
@@ -366,38 +372,69 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooFormulaVar nother1("nother1","nother1",Form("-(ndytautau+ntt+nww+nwz+nzz)*%f",hotherNI1->Integral()/(hdytautau->Integral()+htt->Integral()+hww->Integral()+hwz->Integral()+hzz->Integral())),RooArgList(ndytautau,ntt,nww,nwz,nzz));
    RooFormulaVar nother2("nother2","nother2",Form("-(ndytautau+ntt+nww+nwz+nzz)*%f",hotherNI2->Integral()/(hdytautau->Integral()+htt->Integral()+hww->Integral()+hwz->Integral()+hzz->Integral())),RooArgList(ndytautau,ntt,nww,nwz,nzz));
 
-   // dataSS1
-   if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
-      pdataSS1 = new RooAddPdf("pdataSS1","HF1",
-            RooArgList(pdataSS1_0,pdyNI1,potherNI1),
-            RooArgList(RooConst(hdataSS1->Integral()),ndyNI1,nother1));
-   } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
-      pdataSS1 = new RooAddPdf("pdataSS1","HF1",
-            RooArgList(pdataSS1_0,pdyNI2,potherNI2),
-            RooArgList(RooConst(hdataSS1->Integral()),ndyNI2,nother2));
-   } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
-      pdataSS1 = new RooAddPdf("pdataSS1","HF1",
-            RooArgList(pdataSS1_0,pdyNI0,potherNI0),
-            RooArgList(RooConst(hdataSS1->Integral()),ndyNI0,nother0));
-   } else { // no OS data
-      pdataSS1 = new RooHistPdf(pdataSS1_0,"pdataSS1");
-   }
+   if (dofullnonisosub) {
+      // method 1: implement correctly the floating Ndy in the bkg PDF, at the risk that the PDF can become negative
+      // dataSS1
+      if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
+         pdataSS1 = new RooAddPdf("pdataSS1","HF1",
+               RooArgList(pdataSS1_0,pdyNI1,potherNI1),
+               RooArgList(RooConst(hdataSS1->Integral()),ndyNI1,nother1));
+      } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
+         pdataSS1 = new RooAddPdf("pdataSS1","HF1",
+               RooArgList(pdataSS1_0,pdyNI2,potherNI2),
+               RooArgList(RooConst(hdataSS1->Integral()),ndyNI2,nother2));
+      } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
+         pdataSS1 = new RooAddPdf("pdataSS1","HF1",
+               RooArgList(pdataSS1_0,pdyNI0,potherNI0),
+               RooArgList(RooConst(hdataSS1->Integral()),ndyNI0,nother0));
+      } else { // no OS data
+         pdataSS1 = new RooHistPdf(pdataSS1_0,"pdataSS1");
+      }
 
-   // dataSS2
-   if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
-      pdataSS2 = new RooAddPdf("pdataSS2","HF1",
-            RooArgList(pdataSS2_0,pdyNI1,potherNI1),
-            RooArgList(RooConst(hdataSS2->Integral()),ndyNI1,nother1));
-   } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
-      pdataSS2 = new RooAddPdf("pdataSS2","HF1",
-            RooArgList(pdataSS2_0,pdyNI2,potherNI2),
-            RooArgList(RooConst(hdataSS2->Integral()),ndyNI2,nother2));
-   } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
-      pdataSS2 = new RooAddPdf("pdataSS2","HF1",
-            RooArgList(pdataSS2_0,pdyNI0,potherNI0),
-            RooArgList(RooConst(hdataSS2->Integral()),ndyNI0,nother0));
-   } else { // no OS data
-      pdataSS2 = new RooHistPdf(pdataSS2_0,"pdataSS2");
+      // dataSS2
+      if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
+         pdataSS2 = new RooAddPdf("pdataSS2","HF2",
+               RooArgList(pdataSS2_0,pdyNI1,potherNI1),
+               RooArgList(RooConst(hdataSS2->Integral()),ndyNI1,nother1));
+      } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
+         pdataSS2 = new RooAddPdf("pdataSS2","HF2",
+               RooArgList(pdataSS2_0,pdyNI2,potherNI2),
+               RooArgList(RooConst(hdataSS2->Integral()),ndyNI2,nother2));
+      } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
+         pdataSS2 = new RooAddPdf("pdataSS2","HF2",
+               RooArgList(pdataSS2_0,pdyNI0,potherNI0),
+               RooArgList(RooConst(hdataSS2->Integral()),ndyNI0,nother0));
+      } else { // no OS data
+         pdataSS2 = new RooHistPdf(pdataSS2_0,"pdataSS2");
+      }
+   } else {
+      // method 2: subtract noniso at histogram level
+      for (int i=0; i<=hdataSS1->GetNbinsX()+1; i++) {
+         double val1 = hdataSS1->GetBinContent(i);
+         if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
+            val1 += -hdyNI1->GetBinContent(i)-hotherNI1->GetBinContent(i);
+         } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
+            val1 += -hdyNI2->GetBinContent(i)-hotherNI2->GetBinContent(i);
+         } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
+            val1 += -hdyNI0->GetBinContent(i)-hotherNI0->GetBinContent(i);
+         }
+         hdataSS1->SetBinContent(i,max(0.,val1));
+      }
+      for (int i=0; i<=hdataSS2->GetNbinsX()+1; i++) {
+         double val2 = hdataSS2->GetBinContent(i);
+         if (idxbkg1==8 || idxbkg1==11 || idxbkg1==14) { // dxy1*dxy2>0
+            val2 += -hdyNI1->GetBinContent(i)-hotherNI1->GetBinContent(i);
+         } else if (idxbkg1==9 || idxbkg1==12 || idxbkg1==15) { // dxy1*dxy2<=0
+            val2 += -hdyNI2->GetBinContent(i)-hotherNI2->GetBinContent(i);
+         } else if (idxbkg1==10 || idxbkg1==13) { // dxy1*dxy2>0 and <=0
+            val2 += -hdyNI0->GetBinContent(i)-hotherNI0->GetBinContent(i);
+         }
+         hdataSS2->SetBinContent(i,max(0.,val2));
+      }
+      rhdataSS1_sub = new RooDataHist("rhdataSS1_sub","HF1",RooArgList(var),hdataSS1);
+      pdataSS1 = new RooHistPdf("pdataSS1","HF1",RooArgList(var),*rhdataSS1_sub);
+      rhdataSS2_sub = new RooDataHist("rhdataSS2_sub","HF2",RooArgList(var),hdataSS2);
+      pdataSS2 = new RooHistPdf("pdataSS2","HF2",RooArgList(var),*rhdataSS2_sub);
    }
 
    RooAddPdf pdataSS("pdataSS","HF",RooArgSet(*pdataSS1,*pdataSS2),fracSS1);
@@ -407,7 +444,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooAddPdf pvv("pvv","diboson",RooArgList(pww,pwz,pzz),RooArgList(nww,nwz,nzz)); // for plotting
 
    // // constrain the number of background events according to what we have found
-   // RooGaussian fconstraint("fconstraint","fconstraint",ndataSS,RooConst(NbkgC),RooConst(0.2*NbkgC)) ;
+   // RooGaussian fconstraint("fconstraint","fconstraint",ndataSS,RooConst(NbkgC),RooConst(max(20.,sqrt(NbkgC)))) ;
    // RooProdPdf modelc("modelc","model with constraint",RooArgSet(model,fconstraint)) ;
 
    // do the fit
@@ -459,6 +496,8 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
 
    delete pdataSS1;
    delete pdataSS2;
+   delete rhdataSS1_sub;
+   delete rhdataSS2_sub;
 
    return result;
 }

@@ -51,9 +51,47 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    TFile *fmc = TFile::Open(mcfile);
    TFile *fout = TFile::Open(outputfile,"RECREATE");
 
+   // cut string for non iso
+   TString addlcutsNI0(addlcuts);
+   addlcutsNI0.ReplaceAll("pt1*trkiso1<","!(pt1*trkiso1<");
+   addlcutsNI0.ReplaceAll("&&abs(dxyVTX1)<",")&&abs(dxyVTX1)<");
+
    // mass
    TDirectory *tdir_mass = fout->mkdir("mass");
    tdir_mass->cd();
+
+   // histos for ABCD method
+   TH1D *hdataA = new TH1D("hdataSSiso","hdataSSiso",binnum,bins);
+   TH1D *hdataB = new TH1D("hdataSSnoniso","hdataSSnoniso",binnum,bins);
+   TH1D *hdataD = new TH1D("hdataOSnoniso","hdataOSnoniso",binnum,bins);
+   TTree *tr = (TTree*) fdata->Get("tr_Data1");
+   tr->Draw("diMass>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diMass>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diMass>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr = (TTree*) fdata->Get("tr_Data2");
+   tr->Draw("diMass>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diMass>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diMass>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            bins[0], bins[binnum], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+
+   // fill all histos
    for (int i=0; i<binnum; i++) {
       TDirectory *tdir = tdir_mass->mkdir(Form("%.2f_%.2f",bins[i],bins[i+1]));
       tdir->cd();
@@ -78,7 +116,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "mass, " << bins[i] << " -- " << bins[i+1] << endl;
-      fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, -1, 1e99,
+      fillHisto(fdata, fmc, bins[i], bins[i+1], rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_mass_%.2f_%.2f.txt",bins[i],bins[i+1]), outputfile, Form("mass/%.2f_%.2f",bins[i],bins[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -89,6 +127,39 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    // rap1560
    TDirectory *tdir_rap1560 = fout->mkdir("rap1560");
    tdir_rap1560->cd();
+
+   // histos for ABCD method
+   hdataA = new TH1D("hdataSSiso","hdataSSiso",rapbinnum_1560,rapbin_1560);
+   hdataB = new TH1D("hdataSSnoniso","hdataSSnoniso",rapbinnum_1560,rapbin_1560);
+   hdataD = new TH1D("hdataOSnoniso","hdataOSnoniso",rapbinnum_1560,rapbin_1560);
+   tr = (TTree*) fdata->Get("tr_Data1");
+   tr->Draw("diRapidity>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diRapidity>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diRapidity>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr = (TTree*) fdata->Get("tr_Data2");
+   tr->Draw("diRapidity>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diRapidity>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diRapidity>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+
+   // fill all histos
    for (int i=0; i<rapbinnum_1560; i++) {
       TDirectory *tdir = tdir_rap1560->mkdir(Form("%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]));
       tdir->cd();
@@ -113,7 +184,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
-      fillHisto(fdata, fmc, 11, 60, rapbin_1560[i], rapbin_1560[i+1], -1, 1e99, -1, 1e99,
+      fillHisto(fdata, fmc, 11., 60., rapbin_1560[i], rapbin_1560[i+1], -1., 1e99, -1., 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_rap1560_%.2f_%.2f.txt",rapbin_1560[i],rapbin_1560[i+1]), outputfile, Form("rap1560/%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -124,6 +195,39 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    // rap60120
    TDirectory *tdir_rap60120 = fout->mkdir("rap60120");
    tdir_rap60120->cd();
+
+   // histos for ABCD method
+   hdataA = new TH1D("hdataSSiso","hdataSSiso",rapbinnum_60120,rapbin_60120);
+   hdataB = new TH1D("hdataSSnoniso","hdataSSnoniso",rapbinnum_60120,rapbin_60120);
+   hdataD = new TH1D("hdataOSnoniso","hdataOSnoniso",rapbinnum_60120,rapbin_60120);
+   tr = (TTree*) fdata->Get("tr_Data1");
+   tr->Draw("diRapidity>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diRapidity>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diRapidity>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr = (TTree*) fdata->Get("tr_Data2");
+   tr->Draw("diRapidity>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diRapidity>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diRapidity>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+
+   // fill all histos
    for (int i=0; i<rapbinnum_60120; i++) {
       TDirectory *tdir = tdir_rap60120->mkdir(Form("%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]));
       tdir->cd();
@@ -148,7 +252,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "rap60120, " << rapbin_60120[i] << " -- " << rapbin_60120[i+1] << endl;
-      fillHisto(fdata, fmc, 60, 120, rapbin_60120[i], rapbin_60120[i+1], -1, 1e99, -1, 1e99,
+      fillHisto(fdata, fmc, 60., 120., rapbin_60120[i], rapbin_60120[i+1], -1., 1e99, -1., 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_rap60120_%.2f_%.2f.txt",rapbin_60120[i],rapbin_60120[i+1]), outputfile, Form("rap60120/%.2f_%.2f",rapbin_60120[i],rapbin_60120[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -159,6 +263,39 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    // pt
    TDirectory *tdir_pt = fout->mkdir("pt");
    tdir_pt->cd();
+
+   // histos for ABCD method
+   hdataA = new TH1D("hdataSSiso","hdataSSiso",ptbinnum_meas,ptbin_meas);
+   hdataB = new TH1D("hdataSSnoniso","hdataSSnoniso",ptbinnum_meas,ptbin_meas);
+   hdataD = new TH1D("hdataOSnoniso","hdataOSnoniso",ptbinnum_meas,ptbin_meas);
+   tr = (TTree*) fdata->Get("tr_Data1");
+   tr->Draw("diPt>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diPt>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diPt>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr = (TTree*) fdata->Get("tr_Data2");
+   tr->Draw("diPt>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diPt>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diPt>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+
+   // fill all histos
    for (int i=0; i<ptbinnum_meas; i++) {
       TDirectory *tdir = tdir_pt->mkdir(Form("%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]));
       tdir->cd();
@@ -183,7 +320,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "pt, " << ptbin_meas[i] << " -- " << ptbin_meas[i+1] << endl;
-      fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[i], ptbin_meas[i+1], -1, 1e99,
+      fillHisto(fdata, fmc, 60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], ptbin_meas[i], ptbin_meas[i+1], -1., 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_pt_%.2f_%.2f.txt",ptbin_meas[i],ptbin_meas[i+1]), outputfile, Form("pt/%.2f_%.2f",ptbin_meas[i],ptbin_meas[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -194,6 +331,39 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    // phistar
    TDirectory *tdir_phistar = fout->mkdir("phistar");
    tdir_phistar->cd();
+
+   // histos for ABCD method
+   hdataA = new TH1D("hdataSSiso","hdataSSiso",phistarnum,phistarbin);
+   hdataB = new TH1D("hdataSSnoniso","hdataSSnoniso",phistarnum,phistarbin);
+   hdataD = new TH1D("hdataOSnoniso","hdataOSnoniso",phistarnum,phistarbin);
+   tr = (TTree*) fdata->Get("tr_Data1");
+   tr->Draw("diPhistar>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diPhistar>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diPhistar>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr = (TTree*) fdata->Get("tr_Data2");
+   tr->Draw("diPhistar>>+hdataSSiso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+         "goff");
+   tr->Draw("diPhistar>>+hdataSSnoniso",
+         Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+   tr->Draw("diPhistar>>+hdataOSnoniso",
+         Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
+            60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+         "goff");
+
+   // fill all histos
    for (int i=0; i<phistarnum; i++) {
       TDirectory *tdir = tdir_phistar->mkdir(Form("%.2f_%.2f",phistarbin[i],phistarbin[i+1]));
       tdir->cd();
@@ -218,7 +388,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "phistar, " << phistarbin[i] << " -- " << phistarbin[i+1] << endl;
-      fillHisto(fdata, fmc, 60, 120, rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1, 1e99, phistarbin[i], phistarbin[i+1],
+      fillHisto(fdata, fmc, 60., 120., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, phistarbin[i], phistarbin[i+1],
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_phistar_%.2f_%.2f.txt",phistarbin[i],phistarbin[i+1]), outputfile, Form("phistar/%.2f_%.2f",phistarbin[i],phistarbin[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -731,7 +901,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       } // end event loop
    } // end tokenize
 
-   if (nevts==0) {
+   if (nevts<=1) {
       // too few events: makes no sense to do KDE
       return new TH1D(histname,histname,nXBins,xMin,xMax);
    }
