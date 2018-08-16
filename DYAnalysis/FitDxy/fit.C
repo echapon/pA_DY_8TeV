@@ -292,7 +292,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    TH1D *hdataSSnoniso = (TH1D*) f->Get(TString(varname)+"/hdataSSnoniso");
    double NbkgB = hdataSSnoniso->GetBinContent(hdataSSnoniso->FindBin((varmin+varmax)/2.));
    TH1D *hdataOSnoniso = (TH1D*) f->Get(TString(varname)+"/hdataOSnoniso");
-   double NbkgD = hdataOSnoniso->GetBinContent(hdataOSnoniso->FindBin((varmin+varmax)/2.));
+   double NbkgD = hdataOSnoniso->GetBinContent(hdataOSnoniso->FindBin((varmin+varmax)/2.))-hdyNI0->Integral()-hotherNI0->Integral();
    double NbkgC = NbkgB>0 ? NbkgA*NbkgD/NbkgB : 0.1;
 
    // create variables
@@ -306,7 +306,8 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooRealVar nww("nww","N(WW)",hww->Integral(),0.9*hww->Integral(),1.1*hww->Integral()); nww.setConstant(true);
    RooRealVar nwz("nwz","N(WZ)",hwz->Integral(),0.9*hwz->Integral(),1.1*hwz->Integral()); nwz.setConstant(true);
    RooRealVar nzz("nzz","N(ZZ)",hzz->Integral(),0.9*hzz->Integral(),1.1*hzz->Integral()); nzz.setConstant(true);
-   RooRealVar ndataSS("ndataSS","N(bkg)",NbkgC,0,1.5*hdata->Integral()); 
+   // RooRealVar ndataSS("ndataSS","N(bkg)",NbkgC,0,1.5*hdata->Integral()); 
+   RooRealVar ndataSS("ndataSS","N(bkg)",0.1*hdata->Integral(),0,1.5*hdata->Integral()); 
    RooRealVar fracSS1("fracSS1","frac(SS bkg)",0.5,0.001,0.999); 
    // RooRealVar fracSS1("fracSS1","frac(HF type1)",1,0.001,1); 
    // fracSS1.setConstant(true);
@@ -444,7 +445,7 @@ RooFitResult* fit(const char* histfile, const char* varname, double varmin, doub
    RooAddPdf pvv("pvv","diboson",RooArgList(pww,pwz,pzz),RooArgList(nww,nwz,nzz)); // for plotting
 
    // // constrain the number of background events according to what we have found
-   // RooGaussian fconstraint("fconstraint","fconstraint",ndataSS,RooConst(NbkgC),RooConst(max(20.,sqrt(NbkgC)))) ;
+   // RooGaussian fconstraint("fconstraint","fconstraint",ndataSS,RooConst(NbkgC),RooConst(max(40.,sqrt(NbkgC)))) ;
    // RooProdPdf modelc("modelc","model with constraint",RooArgSet(model,fconstraint)) ;
 
    // do the fit

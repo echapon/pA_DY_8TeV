@@ -13,12 +13,12 @@ using namespace DYana;
 using namespace std;
 
 // flag to apply tkiso, dxy, dz cuts
-const bool docuts = true;
+const bool docuts = false;
 const bool mergeSStemplates = true;
 const double dxycut = 0.01;
 const double dzcut = 0.1;
 const double tkisocut = 2.5;
-const double pt1cut = 7;
+const double pt1cut = 15;
 const double pt2cut = 7;
 const TString addlcuts = (docuts) ? Form("&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f&&pt1>%f&&pt2>%f",tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut,pt1cut,pt2cut) : "";
 const bool printCombine = false;
@@ -135,28 +135,28 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
    tr = (TTree*) fdata->Get("tr_Data1");
    tr->Draw("diRapidity>>+hdataSSiso",
          Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
          "goff");
    tr->Draw("diRapidity>>+hdataSSnoniso",
          Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
          "goff");
    tr->Draw("diRapidity>>+hdataOSnoniso",
          Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
          "goff");
    tr = (TTree*) fdata->Get("tr_Data2");
    tr->Draw("diRapidity>>+hdataSSiso",
          Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcuts,
          "goff");
    tr->Draw("diRapidity>>+hdataSSnoniso",
          Form("isTight1+isTight2==2&&sign!=0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
          "goff");
    tr->Draw("diRapidity>>+hdataOSnoniso",
          Form("isTight1+isTight2==2&&sign==0&&diMass>%f&&diMass<%f&&diRapidity-0.47>%f&&diRapidity-0.47<%f&&diPt>%f&&diPt<%f&&diPhistar>%f&&diPhistar<%f",
-            11., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
+            15., 60., rapbin_60120[0], rapbin_60120[rapbinnum_60120], -1., 1e99, -1., 1e99) + addlcutsNI0,
          "goff");
 
    // fill all histos
@@ -184,7 +184,7 @@ void fillHistos(const char* datafile, const char* mcfile, const char* outputfile
 
       // fill histos
       cout << "rap1560, " << rapbin_1560[i] << " -- " << rapbin_1560[i+1] << endl;
-      fillHisto(fdata, fmc, 11., 60., rapbin_1560[i], rapbin_1560[i+1], -1., 1e99, -1., 1e99,
+      fillHisto(fdata, fmc, 15., 60., rapbin_1560[i], rapbin_1560[i+1], -1., 1e99, -1., 1e99,
             doKDE,hSF,trimFactor,doSigmaScaling,doAdaptive);
       if (printCombine) printCombineDatacard(Form("datacard_rap1560_%.2f_%.2f.txt",rapbin_1560[i],rapbin_1560[i+1]), outputfile, Form("rap1560/%.2f_%.2f",rapbin_1560[i],rapbin_1560[i+1]), 
             data_obs, DYMuMu, DYTauTau, htt, hww, hwz, hzz, DataSS1, DataSS2);
@@ -617,26 +617,26 @@ void fillHisto(TFile *fdata, TFile *fmc,
 
    if (mergeSStemplates) {
       // merge some bins for SS templates, due to lack of statistics
-      if (!docuts && massbin1==60 && massbin2==120) {
-         if (ptbin1>-0.5) {
-            if (ptbin1<13) {ptbin1 = 0; ptbin2 = 12;}
-            else if (ptbin1<41) {ptbin1 = 12; ptbin2 = 40;}
-            else {ptbin1 = 40; ptbin2 = 200;}
-         } else if (phistarbin1>0-0.5) {
-            if (phistarbin1<0.06) {phistarbin1 = 0; phistarbin2 = 0.05;}
-            else if (phistarbin1<0.16) {phistarbin1 = 0.05; phistarbin2 = 0.15;}
-            else {phistarbin1 = 0.15; phistarbin2 = 3;}
-         } else {
-            if (rapbin1<-1.15) {rapbin1 = -2.87; rapbin2 = -1.2;}
-            else if (rapbin1<0.45) {rapbin1 = -1.2; rapbin2 = 0.4;}
-            else {rapbin1 = 0.4; rapbin2 = 1.93;}
-         }
-      } else if (docuts) {
+      // if (!docuts && massbin1==60 && massbin2==120) {
+      //    if (ptbin1>-0.5) {
+      //       if (ptbin1<13) {ptbin1 = 0; ptbin2 = 12;}
+      //       else if (ptbin1<41) {ptbin1 = 12; ptbin2 = 40;}
+      //       else {ptbin1 = 40; ptbin2 = 200;}
+      //    } else if (phistarbin1>0-0.5) {
+      //       if (phistarbin1<0.06) {phistarbin1 = 0; phistarbin2 = 0.05;}
+      //       else if (phistarbin1<0.16) {phistarbin1 = 0.05; phistarbin2 = 0.15;}
+      //       else {phistarbin1 = 0.15; phistarbin2 = 3;}
+      //    } else {
+      //       if (rapbin1<-1.15) {rapbin1 = -2.87; rapbin2 = -1.2;}
+      //       else if (rapbin1<0.45) {rapbin1 = -1.2; rapbin2 = 0.4;}
+      //       else {rapbin1 = 0.4; rapbin2 = 1.93;}
+      //    }
+      // } else if (docuts) {
          if (massbin1>85) {massbin1=86; massbin2=600;}
          else if (phistarbin1>-0.5) {phistarbin1=-1; phistarbin2=1e9;}
          else if (ptbin1>-0.5) {ptbin1=-1; ptbin2=1e9;}
          else if (massbin1>55 && rapbin2-rapbin1<4) {rapbin1=rapbin_60120[0]; rapbin2=rapbin_60120[rapbinnum_60120];}
-      }
+      // }
    }
 
    if (!doKDE) { // no KDE, use data templates directly
