@@ -35,7 +35,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       bool doHFrew = false, 
       HFweight::HFside rewmode = HFweight::HFside::both, 
       bool doTnPrew = false,
-      int cor_s=0, int cor_m=0, bool zptrew = true)
+      int cor_s=0, int cor_m=0, bool zptrew = true, bool filltree = false)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -82,14 +82,14 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 	if( !doData )
 	{
-		analyzer->SetupMCsamples_v20180111(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+		analyzer->SetupMCsamples_v20180814(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
       // add QCD
       SampleTag tag=QCD;
       ntupleDirectory.push_back(NtupleDir(tag));
       Tag.push_back(Name(tag));
-      Xsec.push_back(DYana_v20180111::Xsec(tag));
+      Xsec.push_back(DYana_v20180814::Xsec(tag));
       nEvents.push_back(Nevts(tag));
-      DYana_v20180111::SampleTag tag_Powheg = DYana_v20180111::SampleTag::QCD;
+      DYana_v20180814::SampleTag tag_Powheg = DYana_v20180814::SampleTag::QCD;
       STags.push_back(tag_Powheg);
 	}
 	else
@@ -358,10 +358,10 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 				// -- Event Selection -- //
 				vector< Muon > SelectedMuonCollection_noiso;
-				bool isPassEventSelection_noiso = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
+				bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
 				vector< Muon > SelectedMuonCollection;
 				Bool_t isPassEventSelection = kFALSE;
-				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,false,20);
 
             Muon mu1;
             Muon mu2;
@@ -382,7 +382,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                   TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,eta1,0)
                      *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,eta2,0);
                   // add trg... careful!
-                  double sf_trg;
+                  double sf_trg=1.;
                   if (pt2>=15. && pt1>=15.) { // both muons could trigger
                      double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)) * (1 - tnp_weight_trg_ppb(eta2,200)) );
                      double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
@@ -426,7 +426,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
                else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
             }
-            if (isPassEventSelection_noiso) {
+            if (filltree && isPassEventSelection_noiso) {
 					mu1 = SelectedMuonCollection_noiso[0];
 					mu2 = SelectedMuonCollection_noiso[1];
                pt1 = mu1.Pt;
@@ -513,7 +513,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       h_hiNtracks_M1560->Write();
       h_hiNtracks_M60120->Write();
       h_hiNtracksPtCut->Write();
-      tr->Write();
+      if (filltree) tr->Write();
 
 		if(isNLO == 1)
 		{

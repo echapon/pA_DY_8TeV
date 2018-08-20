@@ -946,6 +946,8 @@ public:
     }
 
     void TurnOnBranches_HI() {
+       chain->SetBranchStatus("hi*", 1);
+
        chain->SetBranchAddress("hiBin", &hiBin);
        chain->SetBranchAddress("hiHF", &hiHF);
        chain->SetBranchAddress("hiHFplus", &hiHFplus);

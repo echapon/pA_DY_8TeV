@@ -41,6 +41,7 @@ public:
 	Double_t SubPtCut;
 	Double_t LeadEtaCut;
 	Double_t SubEtaCut;
+   bool gNoIso;
 
    Int_t sign; // 1 for pPb, -1 for Pbp
 
@@ -70,6 +71,7 @@ public:
 	void SetupMCsamples_v20170519( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *Xsec, vector<Double_t> *nEvents );
    void SetupMCsamples_v20170830( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20170830::SampleTag> *STags );
    void SetupMCsamples_v20180111( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180111::SampleTag> *STags );
+   void SetupMCsamples_v20180814( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180814::SampleTag> *STags );
 	Bool_t SeparateDYLLSample_isHardProcess(TString Tag, NtupleHandle *ntuple);
 	Bool_t SeparateDYLLSample_LHEInfo(TString Tag, NtupleHandle *ntuple);
 
@@ -146,15 +148,19 @@ DYAnalyzer::DYAnalyzer(TString HLTname) : sign(1)
 	}
 	else
 	{
-		this->AssignAccThreshold(HLTname, &HLT, &LeadPtCut, &SubPtCut, &LeadEtaCut, &SubEtaCut);
+      this->AssignAccThreshold(HLTname, &HLT, &LeadPtCut, &SubPtCut, &LeadEtaCut, &SubEtaCut);
+      gNoIso = HLTname.Contains("noiso");
 		cout << "===========================================================" << endl;
 		cout << "Trigger: " << HLT << endl;
 		cout << "leading lepton pT Cut: " << LeadPtCut << endl;
 		cout << "Sub-leading lepton pT Cut: " << SubPtCut << endl;
 		cout << "leading lepton Eta Cut: " << LeadEtaCut << endl;
 		cout << "sub-leading lepton Eta Cut: " << SubEtaCut << endl;
+      if (gNoIso) cout << "NOT ";
+      cout << "using isolation" << endl;
 		cout << "===========================================================" << endl;
 	}
+
 
 	this->Path_CommonCodes = GetBasePath() + TString::Format("%s", "Include/");
 	printf("[Path_CommonCodes = %s]\n", Path_CommonCodes.Data() );
@@ -184,19 +190,19 @@ void DYAnalyzer::MakeTChain_fromTextFile( TChain *chain, TString FileName)
 
 void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *LeadPtCut, Double_t *SubPtCut, Double_t *LeadEtaCut, Double_t *SubEtaCut)
 {
-	if( HLTname.Contains("PAL3Mu12") )
+	if( HLTname.Contains("L3Mu12") )
 	{
 		*HLT = "HLT_PAL3Mu12_v*"; 
 		*LeadPtCut = 15;
-		*SubPtCut = 10;//15;
+		*SubPtCut = 10;//10;//15;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
    else if( HLTname.Contains("L1DoubleMu0") )
 	{
 		*HLT = "HLT_PAL1DoubleMu0_v*"; 
-		*LeadPtCut = 5;
-		*SubPtCut = 5;//15;
+		*LeadPtCut = 7;
+		*SubPtCut = 7;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
@@ -328,6 +334,21 @@ void DYAnalyzer::SetupMCsamples_v20180111( TString Type, vector<TString> *ntuple
          nEvents->push_back(Nevts(tag));
          STags->push_back(tag);
       }
+   }
+}
+
+void DYAnalyzer::SetupMCsamples_v20180814( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180814::SampleTag> *STags )
+{
+   using namespace DYana_v20180814;
+   cout << "Using samples from v20180814 for Type " << Type.Data() << endl;
+   for (int i=0; i<DataFirst; i++) {
+      SampleTag tag = static_cast<SampleTag>(i);
+      // if (!IsDYMuMu(tag)) continue;
+      ntupleDirectory->push_back(NtupleDir(tag));
+      Tag->push_back(Name(tag));
+      xsec->push_back(Xsec(tag));
+      nEvents->push_back(Nevts(tag));
+      STags->push_back(tag);
    }
 }
 
@@ -745,12 +766,13 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	    if( (dotight && MuonCollection[j].isTightMuon()) 
              || (!dotight && MuonCollection[j].isLoose) ) {
           bool passOK=false;
-          // for L3Mu12: no additional cut
-          if (noiso || HLT.Contains("L3Mu12")) 
+          // for noiso or L3Mu12: no additional cut
+          if (noiso || gNoIso) 
              passOK=true;
           // for L1DoubleMu0: need also tk iso, dxy and dz cuts
-          if (!noiso && HLT.Contains("L1DoubleMu0") && 
-                   (MuonCollection[j].trkiso*MuonCollection[j].Pt < 5 && fabs(MuonCollection[j].dzVTX)<0.1 && fabs(MuonCollection[j].dxyVTX)<0.01))
+          if (!noiso && // HLT.Contains("L1DoubleMu0") && 
+                   // (MuonCollection[j].trkiso*MuonCollection[j].Pt < 2.5 && fabs(MuonCollection[j].dzVTX)<0.1 && fabs(MuonCollection[j].dxyVTX)<0.01))
+                   (MuonCollection[j].trkiso < 0.3))
              passOK = true;
 
           if (passOK)

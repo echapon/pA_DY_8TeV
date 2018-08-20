@@ -121,7 +121,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( version );
-	analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+	analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )
@@ -136,6 +136,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 			color.push_back( kOrange );
 		else if( Tag[i].Contains("TT") )
 			color.push_back( kRed );
+		else if( Tag[i].Contains("TW") )
+			color.push_back( kRed+1 );
 	}
 
 	Nfactor_overall = 1;

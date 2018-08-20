@@ -139,7 +139,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -407,7 +407,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_iso_ppb(pt1,eta1,iiso1)
                         *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_iso_ppb(pt2,eta2,iiso2);
                      // add trg... careful!
-                     double sf_trg;
+                     double sf_trg=1.;
                      if (pt2>=15. && pt1>=15.) { // both muons could trigger
                         double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)*tnp_weight_trg_ppb(eta1,itrg1)/tnp_weight_trg_ppb(eta1,0)) * (1 - tnp_weight_trg_ppb(eta2,200)*tnp_weight_trg_ppb(eta2,itrg2)/tnp_weight_trg_ppb(eta2,0)) );
                         double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
