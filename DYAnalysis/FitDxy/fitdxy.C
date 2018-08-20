@@ -6,11 +6,20 @@
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
 #include "RooRealVar.h"
+#include "RooKeysPdf.h"
+#include "RooDataSet.h"
+#include "RooAddPdf.h"
 #include "RooPlot.h"
+#include "TH2.h"
+#include "TLegend.h"
+#include "TStyle.h"
+#include "TChain.h"
 
+#include "../BkgEst/interface/defs.h"
 #include "../Include/bin.h"
 
 using namespace RooFit;
+using namespace DYana;
 
 RooKeysPdf *kernelpdf(TTree* tr, const char* name, RooRealVar *var,
       double massbin1, double massbin2,
@@ -19,10 +28,25 @@ RooKeysPdf *kernelpdf(TTree* tr, const char* name, RooRealVar *var,
       double isocut, double chi2cut);
 void fixhist(TH1D *hist);
 void fitdxy(const char* datafile, const char* mcfile, 
+//void fitdxy_hckim(const char* datafile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Data_MomCorr00_noHFrew_notnprew.root", const char    * mcfile="smalltrees/ROOTFile_Histogram_InvMass_PAL1DoubleMu0_Powheg_MomCorr00_rewboth_tnprew.root",
+
       double massbin1, double massbin2,
       double rapbin1, double rapbin2,
       double ptbin1, double ptbin2,
       double isocut=1e99, double chi2cut=20) {
+/*
+double massbin1 = 60.0,//bins[0],
+double massbin2 = 76.0,//bins[0+1],
+double rapbin1 = rapbin_60120[0],
+double rapbin2 =  rapbin_60120[rapbinnum_60120],
+double ptbin1 = -1,
+double ptbin2 =  1e99,
+double isocut =  1e99,
+double chi2cut=4000) {
+*/
+	for (int i=0;i<binnum;i++) {
+	massbin1 = bins[i];
+	massbin2 = bins[i+1];
    TFile *fdata = TFile::Open(datafile);
    TFile *fmc = TFile::Open(mcfile);
 
@@ -77,7 +101,7 @@ void fitdxy(const char* datafile, const char* mcfile,
          Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity>%f&&diRapidity<%f&&diPt>%f&&diPt<%f&&maxrelPFiso<%f&&vtxnormchi2<%f)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,isocut,chi2cut),
          "goff");
-   tr = (TTree*) fmc->Get("tr_DYTauTau1030");
+   tr = (TTree*) fmc->Get("tr_DYTauTau30");
    tr->Draw("log(vtxnormchi2)/log(10)>>+hdytautau",
          Form("weight*(sign==0&&diMass>%f&&diMass<%f&&diRapidity>%f&&diRapidity<%f&&diPt>%f&&diPt<%f&&maxrelPFiso<%f&&vtxnormchi2<%f)",
             massbin1,massbin2,rapbin1,rapbin2,ptbin1,ptbin2,isocut,chi2cut),
@@ -149,6 +173,7 @@ void fitdxy(const char* datafile, const char* mcfile,
    RooRealVar ndataSS1("ndataSS1","N(HF)",hdataSS1->Integral(),0,1000*hdataSS1->Integral()); 
    RooRealVar ndataSS2("ndataSS2","N(HF)",hdataSS2->Integral(),0,1000*hdataSS2->Integral()); 
 
+
    // convert histos to RooFit objects
    RooDataHist rhdata("rhdata","Data",RooArgList(logdxy),hdata);
    fixhist(hdy);
@@ -207,8 +232,10 @@ void fitdxy(const char* datafile, const char* mcfile,
    model.fitTo(rhdata,Minos(),Extended(true));
 
    // draw the results
-   TCanvas *c1 = new TCanvas();
+   TCanvas *c1 = new TCanvas("c1","",800,800);
+	c1->SetLogy(1);
    RooPlot* xframe = logdxy.frame(Title("Fit to logdxy")) ;
+   //xframe->SetAxisRange(0.01,1000,"Y");	
    rhdata.plotOn(xframe);
    // model.plotOn(xframe,Components(RooArgSet(pdataSS,pvv,ptt,pdytautau)),LineColor(kGreen+1),FillColor(kGreen+1),DrawOption("F"));
    // model.plotOn(xframe,Components(RooArgSet(pdataSS,pvv,ptt)),LineColor(kRed+3),FillColor(kRed+3),DrawOption("F"));
@@ -216,9 +243,59 @@ void fitdxy(const char* datafile, const char* mcfile,
    model.plotOn(xframe,Components(RooArgSet(pdataSS1,pdataSS2)),LineColor(kViolet),FillColor(kViolet),DrawOption("F"));
    model.plotOn(xframe,LineColor(kBlack));
    model.plotOn(xframe,Components(pdy),LineColor(kRed));
+   model.plotOn(xframe,Components(pdytautau),LineColor(kOrange));
+   model.plotOn(xframe,Components(ptt),LineColor(kGreen+2));
+   model.plotOn(xframe,Components(pvv),LineColor(kBlue));
    rhdata.plotOn(xframe);
    xframe->Draw();
 
+	TLegend* leg = new TLegend(0.7,0.65,0.95,0.90);
+	leg->SetFillColor(kWhite);
+	leg->SetLineColor(kWhite);
+	leg->AddEntry(xframe->nameOf(0),Form("%s",xframe->nameOf(0)),"lp");
+	leg->AddEntry(xframe->nameOf(1),Form("%s",xframe->nameOf(1)),"lf");
+	leg->AddEntry(xframe->nameOf(2),Form("%s",xframe->nameOf(2)),"l");//what?
+	leg->AddEntry(xframe->nameOf(3),Form("%s",xframe->nameOf(3)),"l");
+	leg->Draw();
+
+	//c1->SaveAs(".pdf");
+
+	gStyle->SetOptStat(0);
+   TH2D *frame2 = new TH2D("frame2","Fit to logdxy;log_{10}(vtx #chi^{2}/ndf);Entries",100,-4,4,100,0.002,50000);
+	frame2->Draw("");
+   RooPlot* xframe2 = logdxy.frame(Title("Fit to logdxy")) ;
+//	xframe2->SetMinimum(0.005);
+//	xframe2->SetMaximum(1000);
+//	xframe2->SetAxisRange(0.005,1000,"y");
+   rhdata.plotOn(xframe2);
+   model.plotOn(xframe2,Components(RooArgSet(pvv,ptt,pdytautau,pdy,pdataSS1,pdataSS2)),FillColor(kViolet),LineColor(kViolet),DrawOption("F"));
+   model.plotOn(xframe2,Components(RooArgSet(pvv,ptt,pdytautau,pdy)),FillColor(kRed),LineColor(kRed),DrawOption("F"));
+   model.plotOn(xframe2,Components(RooArgSet(pvv,ptt,pdytautau)),FillColor(kOrange),LineColor(kOrange),DrawOption("F"));
+   model.plotOn(xframe2,Components(RooArgSet(pvv,ptt)),FillColor(kGreen+2),LineColor(kGreen+2),DrawOption("F"));
+   model.plotOn(xframe2,Components(RooArgSet(pvv)),FillColor(kBlue),LineColor(kBlue),DrawOption("F"));
+   model.plotOn(xframe2,LineColor(kBlack));
+   rhdata.plotOn(xframe2);
+   xframe2->Draw("axissame");
+
+	TLegend* leg2 = new TLegend(0.13,0.60,0.35,0.88);
+	leg2->SetFillColor(kWhite);
+	leg2->SetFillStyle(4000);//window is transparent
+	leg2->SetLineColor(kWhite);
+	leg2->SetLineWidth(0);
+	leg2->AddEntry(frame2,Form("mass : %.1f - %.1f",bins[i],bins[i+1]),"");
+	leg2->AddEntry(xframe2->nameOf(0),Form("%s","Data"),"lp");
+	leg2->AddEntry(xframe2->nameOf(1),Form("%s","SS Data"),"f");
+	leg2->AddEntry(xframe2->nameOf(2),Form("%s","DYMuMu"),"f");
+	leg2->AddEntry(xframe2->nameOf(3),Form("%s","DYTauTau"),"f");
+	leg2->AddEntry(xframe2->nameOf(4),Form("%s","TT"),"f");
+	leg2->AddEntry(xframe2->nameOf(5),Form("%s","VV"),"f");
+	leg2->AddEntry(xframe2->nameOf(6),Form("%s","Fit"),"l");
+
+	leg2->Draw();
+
+	c1->SaveAs(Form("dxyfit_mass_%.1f_%.1f.pdf",bins[i],bins[i+1]));
+
+}
 }
 
 RooKeysPdf *kernelpdf(TTree* tr, const char* name, RooRealVar *var, double massbin1, double massbin2,
