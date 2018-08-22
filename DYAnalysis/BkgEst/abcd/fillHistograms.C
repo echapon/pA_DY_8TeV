@@ -82,15 +82,16 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
          tr->SetBranchStatus("isTight2",1); tr->SetBranchAddress("isTight2",&isTight2);
 
          int nentries = tr->GetEntries();
+         cout << nentries << endl;
          for (int i=0; i<nentries; i++) {
             tr->GetEntry(i);
             if (isTight1+isTight2!=2) continue;
-            if (vtxnormchi2>vtxnormchi2cut) continue;
+            if (sign!=0) continue; // if (vtxnormchi2>vtxnormchi2cut) continue;
             if (pt1<pt1cut) continue;
             if (pt2<pt2cut) continue;
 
             int niso = (trkiso1<0.3) + (trkiso2<0.3);
-            int sign2 = (sign!=0);
+            int sign2 = (vtxnormchi2>vtxnormchi2cut); // (sign!=0);
 
             if (diMass>15 && diMass<600) {
                hMass[niso][sign2]->Fill(diMass,weight);

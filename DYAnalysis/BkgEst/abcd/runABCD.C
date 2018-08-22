@@ -8,10 +8,10 @@
 // class MyFuncE;
 // class MyFuncF;
 
-void runABCD(TString trigger="PAL3Mu12") { 
+void runABCD(TString trigger="PAL3Mu12", TString tag="DataMinusMC") { // tag can be DataMinusMC (nominal), Wjets, QCD (for closure on MCs)
    TFile *fdata = TFile::Open("histos_ABCD_Data_" + trigger + ".root");
    TFile *fmc = TFile::Open("histos_ABCD_Powheg_" + trigger + ".root");
-   TFile *fout = TFile::Open("output_ABCD_" + trigger + ".root","RECREATE");
+   TFile *fout = TFile::Open("output_ABCD_" + trigger + + "_" + tag + ".root","RECREATE");
    TDirectory *tdir_inputs = fout->mkdir("inputs");
 
    TDirectory *tdir_Data1 = (TDirectory*) fdata->Get("Data1");
@@ -45,6 +45,8 @@ void runABCD(TString trigger="PAL3Mu12") {
          if (htmp) hMC->Add(htmp);
          htmp = (TH1D*) fmc->Get("DYMuMu1030_PbP/" + hname);
          if (htmp) hMC->Add(htmp);
+         htmp = (TH1D*) fmc->Get("DYMuMu30_PbP/" + hname);
+         if (htmp) hMC->Add(htmp);
          htmp = (TH1D*) fmc->Get("DYTauTau1030/" + hname);
          if (htmp) hMC->Add(htmp);
          htmp = (TH1D*) fmc->Get("DYTauTau30/" + hname);
@@ -53,6 +55,18 @@ void runABCD(TString trigger="PAL3Mu12") {
          // subtract MC from data
          TH1D *hdatasub = (TH1D*) hdata->Clone(hname + "_DataMinusMC");
          hdatasub->Add(hMC,-1);
+
+         // Wj histo
+         TH1D *hWj = (TH1D*) ((TH1D*) fmc->Get("WpMu/" + hname))->Clone(hname + "_Wjets");
+         htmp = (TH1D*) fmc->Get("WmMu/" + hname);
+         if (htmp) hWj->Add(htmp);
+         htmp = (TH1D*) fmc->Get("WpTau/" + hname);
+         if (htmp) hWj->Add(htmp);
+         htmp = (TH1D*) fmc->Get("WmTau/" + hname);
+         if (htmp) hWj->Add(htmp);
+
+         // QCD histo
+         TH1D *hQCD = (TH1D*) ((TH1D*) fmc->Get("QCD/" + hname))->Clone(hname + "_QCD");
       } // object is histo
    } // loop on objects
 
@@ -61,7 +75,7 @@ void runABCD(TString trigger="PAL3Mu12") {
 
    for (int niso=0; niso<=3; niso++) {
       TString methtag;
-      if (niso==2) methtag="1and2isoTo2iso";
+      if (niso==2) methtag="0and1isoTo2iso";
       else if (niso==1) methtag="1isoTo2iso";
       else if (niso==0) methtag="0isoTo2iso";
       else methtag="0isoTo1iso";
@@ -70,12 +84,12 @@ void runABCD(TString trigger="PAL3Mu12") {
       tdir_outputs->cd();
 
       for (int i=0; i<5; i++) {
-         TH1D *h_0iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_0iso_SS_DataMinusMC");
-         TH1D *h_0iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_0iso_OS_DataMinusMC");
-         TH1D *h_1iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_1iso_SS_DataMinusMC");
-         TH1D *h_1iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_1iso_OS_DataMinusMC");
-         TH1D *h_2iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_2iso_SS_DataMinusMC");
-         TH1D *h_2iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_2iso_OS_DataMinusMC");
+         TH1D *h_0iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_0iso_SS_" + tag);
+         TH1D *h_0iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_0iso_OS_" + tag);
+         TH1D *h_1iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_1iso_SS_" + tag);
+         TH1D *h_1iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_1iso_OS_" + tag);
+         TH1D *h_2iso_SS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_2iso_SS_" + tag);
+         TH1D *h_2iso_OS = (TH1D*) tdir_inputs->Get("h_" + varnames[i] + "_2iso_OS_" + tag);
 
          TH1D *houtput = (TH1D*) h_0iso_SS->Clone("hbkg_OS_2iso_" + varnames[i]);
          if (niso==3) houtput->SetName("hbkg_OS_1iso_" + varnames[i]);

@@ -220,7 +220,7 @@ public:
 		TopPad->SetRightMargin(0.05);
 
 		if( isRatioPadAttached == kTRUE) TopPad->SetBottomMargin(0.00);
-		else TopPad->SetBottomMargin(0.32);
+      // else TopPad->SetBottomMargin(0.05);
 
 		h1->Draw(DrawOp1);
 		h2->Draw(DrawOp2);
