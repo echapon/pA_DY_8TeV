@@ -40,8 +40,8 @@ namespace DYana {
 
    // kinematic bins
    // mass
-   const int binnum = 14;
-   double bins[15] = {11,15,20,30,40,50,60,76,86,96,106,120,150,200,600};
+   const int binnum = 13;
+   double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
    // pt
    const int ptbinnum_endcap = 10;
    double ptbin_endcap[ptbinnum_endcap+1] = {15,20,25,30,35,40,50,70,100,200,500};
@@ -49,17 +49,24 @@ namespace DYana {
    double ptbin[ptbinnum+1] = {15,17,20,22,25,30,35,40,45,50,70,100,200,500};
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
+   
    // pt for measurement 60-120
    const int ptbinnum_meas = 21;
    double ptbin_meas[ptbinnum_meas+1] = {0,2,4,6,8,10,12,14,16,18,20,25,30,40,45,50,60,70,85,100,125,200};
+   const int ptbinnum_meas_1560 = 10;
+   double ptbin_meas_1560[ptbinnum_meas_1560+1] = {0,4,8,12,16,20,30,45,60,100,200};
+   
    // rapidity binning
    const int rapbinnum_1560 = 12;
    double rapbin_1560[rapbinnum_1560+1] = {-2.87,-2.4,-1.93,-1.6,-1.2,-0.8,-0.4,0,0.4,0.8,1.2,1.6,1.93};
    const int rapbinnum_60120 = 24;
    double rapbin_60120[rapbinnum_60120+1] = {-2.87,-2.6,-2.4,-2.2,-1.93,-1.8,-1.6,-1.4,-1.2,-1.,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.,1.2,1.4,1.6,1.8,1.93};
+
    // phi* binning
    const int phistarnum = 10;
    double phistarbin[phistarnum+1] = {0, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 3.};
+   const int phistarnum_1560 = 10;
+   double phistarbin_1560[phistarnum_1560+1] = {0, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 3.};
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
