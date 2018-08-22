@@ -35,7 +35,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       bool doHFrew = false, 
       HFweight::HFside rewmode = HFweight::HFside::both, 
       bool doTnPrew = false,
-      int cor_s=0, int cor_m=0, bool zptrew = true)
+      int cor_s=0, int cor_m=0, bool zptrew = true, bool filltree = false)
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -82,14 +82,14 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 	if( !doData )
 	{
-		analyzer->SetupMCsamples_v20180111(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+		analyzer->SetupMCsamples_v20180814(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
       // add QCD
       SampleTag tag=QCD;
       ntupleDirectory.push_back(NtupleDir(tag));
       Tag.push_back(Name(tag));
-      Xsec.push_back(DYana_v20180111::Xsec(tag));
+      Xsec.push_back(DYana_v20180814::Xsec(tag));
       nEvents.push_back(Nevts(tag));
-      DYana_v20180111::SampleTag tag_Powheg = DYana_v20180111::SampleTag::QCD;
+      DYana_v20180814::SampleTag tag_Powheg = DYana_v20180814::SampleTag::QCD;
       STags.push_back(tag_Powheg);
 	}
 	else
@@ -178,8 +178,24 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float diPhistar; tr->Branch("diPhistar",&diPhistar,"diPhistar/F");
       float deltaPhi; tr->Branch("deltaPhi",&deltaPhi,"deltaPhi/F");
       float minpt; tr->Branch("minpt",&minpt,"minpt/F");
+      float pt1; tr->Branch("pt1",&pt1,"pt1/F");
+      float pt2; tr->Branch("pt2",&pt2,"pt2/F");
       float maxabseta; tr->Branch("maxabseta",&maxabseta,"maxabseta/F");
       float maxrelPFiso; tr->Branch("maxrelPFiso",&maxrelPFiso,"maxrelPFiso/F");
+      float relPFiso1; tr->Branch("relPFiso1",&relPFiso1,"relPFiso1/F");
+      float relPFiso2; tr->Branch("relPFiso2",&relPFiso2,"relPFiso2/F");
+      float trkiso1; tr->Branch("trkiso1",&trkiso1,"trkiso1/F");
+      float trkiso2; tr->Branch("trkiso2",&trkiso2,"trkiso2/F");
+      int   isSoft1; tr->Branch("isSoft1",&isSoft1,"isSoft1/I");
+      int   isSoft2; tr->Branch("isSoft2",&isSoft2,"isSoft2/I");
+      int   isLoose1; tr->Branch("isLoose1",&isLoose1,"isLoose1/I");
+      int   isLoose2; tr->Branch("isLoose2",&isLoose2,"isLoose2/I");
+      int   isMedium1; tr->Branch("isMedium1",&isMedium1,"isMedium1/I");
+      int   isMedium2; tr->Branch("isMedium2",&isMedium2,"isMedium2/I");
+      int   isTight1; tr->Branch("isTight1",&isTight1,"isTight1/I");
+      int   isTight2; tr->Branch("isTight2",&isTight2,"isTight2/I");
+      int   isMyTight1; tr->Branch("isMyTight1",&isMyTight1,"isMyTight1/I");
+      int   isMyTight2; tr->Branch("isMyTight2",&isMyTight2,"isMyTight2/I");
       float maxabsdxy; tr->Branch("maxabsdxy",&maxabsdxy,"maxabsdxy/F");
       float dxy1; tr->Branch("dxy1",&dxy1,"dxy1/F");
       float dxy2; tr->Branch("dxy2",&dxy2,"dxy2/F");
@@ -342,15 +358,15 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 
 				// -- Event Selection -- //
 				vector< Muon > SelectedMuonCollection_noiso;
-				bool isPassEventSelection_noiso = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99);
+				bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
 				vector< Muon > SelectedMuonCollection;
 				Bool_t isPassEventSelection = kFALSE;
-				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,false,20);
 
             Muon mu1;
             Muon mu2;
             TLorentzVector dimu; 
-            double pt1, pt2, eta1, eta2;
+            double eta1, eta2;
 
 				if( isPassEventSelection == kTRUE )
 				{
@@ -366,7 +382,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                   TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,eta1,0)
                      *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,eta2,0);
                   // add trg... careful!
-                  double sf_trg;
+                  double sf_trg=1.;
                   if (pt2>=15. && pt1>=15.) { // both muons could trigger
                      double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)) * (1 - tnp_weight_trg_ppb(eta2,200)) );
                      double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
@@ -410,7 +426,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
                else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
             }
-            if (isPassEventSelection_noiso) {
+            if (filltree && isPassEventSelection_noiso) {
 					mu1 = SelectedMuonCollection_noiso[0];
 					mu2 = SelectedMuonCollection_noiso[1];
                pt1 = mu1.Pt;
@@ -425,6 +441,20 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                minpt = min(pt1,pt2);
                maxabseta = max(fabs(eta1),fabs(eta2));
                maxrelPFiso = max(mu1.relPFiso,mu2.relPFiso);
+               relPFiso1 = mu1.relPFiso;
+               relPFiso2 = mu2.relPFiso;
+               trkiso1 = mu1.trkiso;
+               trkiso2 = mu2.trkiso;
+               isLoose1 = mu1.isLoose;
+               isLoose2 = mu2.isLoose;
+               isMedium1 = mu1.isMedium;
+               isMedium2 = mu2.isMedium;
+               isTight1 = mu1.isTight;
+               isTight2 = mu2.isTight;
+               isSoft1 = mu1.isSoft;
+               isSoft2 = mu2.isSoft;
+               isMyTight1 = mu1.isTightMuon();
+               isMyTight2 = mu2.isTightMuon();
                maxabsdxy = max(fabs(mu1.dxyVTX),fabs(mu2.dxyVTX));
                dxy1 = mu1.dxy;
                dxy2 = mu2.dxy;
@@ -483,7 +513,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       h_hiNtracks_M1560->Write();
       h_hiNtracks_M60120->Write();
       h_hiNtracksPtCut->Write();
-      tr->Write();
+      if (filltree) tr->Write();
 
 		if(isNLO == 1)
 		{

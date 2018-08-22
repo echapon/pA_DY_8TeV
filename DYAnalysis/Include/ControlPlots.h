@@ -156,10 +156,10 @@ public:
 		h_Pt = new TH1D("h_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt );
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
-		h_mass = new TH1D("h_mass_"+Type, "", 600, 0, 600); Histo.push_back( h_mass );
+		h_mass = new TH1D("h_mass_"+Type, "", 60, 0, 600); Histo.push_back( h_mass );
 		h_mass2 = new TH1D("h_mass2_"+Type, "", binnum, bins); Histo.push_back( h_mass2 );
 		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
-		h_diPt = new TH1D("h_diPt_"+Type, "", 500, 0, 500); Histo.push_back( h_diPt );
+		h_diPt = new TH1D("h_diPt_"+Type, "", 100, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
 		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 300,0,3.); Histo.push_back( h_Phistar_M60to120 );
 		h_Phistar2_M60to120 = new TH1D("h_Phistar2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_M60to120 );

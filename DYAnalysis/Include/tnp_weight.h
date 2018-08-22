@@ -119,6 +119,12 @@ double tnp_weight_trg_ppb(double eta, int idx)
 //                 I S O    P P b                //
 ///////////////////////////////////////////////////
 double tnp_weight_iso_ppb(double pt, double eta, int idx) {
+   // // new tnp for abs trk iso < 2.5
+   // if (fabs(eta)<1.2) return 0.8824 / 0.9119;
+   // else if (fabs(eta)<2.1) return 0.9006 / 0.9248;
+   // else return 0.9186 / 0.9449;
+   
+   // original tnp for relPFiso<0.15
    double x = pt;
 
    if (idx == -10) {
