@@ -8,6 +8,10 @@
 using namespace std;
 using namespace DYana;
 
+// useOSSS = false -> use low / high dimuon vtx chi2
+// useOSSS = true  -> use OS / SS
+const bool useOSSS = false;
+
 void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
    TFile *f;
    if (trigger=="PAL3Mu12") {
@@ -86,12 +90,15 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
          for (int i=0; i<nentries; i++) {
             tr->GetEntry(i);
             if (isTight1+isTight2!=2) continue;
-            if (sign!=0) continue; // if (vtxnormchi2>vtxnormchi2cut) continue;
+            if (!useOSSS && sign!=0) continue; 
+            if (useOSSS && vtxnormchi2>vtxnormchi2cut) continue;
             if (pt1<pt1cut) continue;
             if (pt2<pt2cut) continue;
 
             int niso = (trkiso1<0.3) + (trkiso2<0.3);
-            int sign2 = (vtxnormchi2>vtxnormchi2cut); // (sign!=0);
+            int sign2;
+            if (!useOSSS) sign2 = (vtxnormchi2>vtxnormchi2cut); 
+            else sign2 = (sign!=0);
 
             if (diMass>15 && diMass<600) {
                hMass[niso][sign2]->Fill(diMass,weight);
