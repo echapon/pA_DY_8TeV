@@ -11,6 +11,7 @@
 #include "samples_v20180111_CT14.h"
 #include "samples_v20180111_noEWK.h"
 #include "samples_v20180111_negweights.h"
+#include "samples_v20180814.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -31,7 +32,7 @@ const double rapshift = 0.465;
 namespace DYana {
    // put the default samples here
 #ifndef CT14_GENONLY
-   using namespace DYana_v20180111;
+   using namespace DYana_v20180814;
 #else
    using namespace DYana_CT14;
 #endif
@@ -39,8 +40,8 @@ namespace DYana {
 
    // kinematic bins
    // mass
-   const int binnum = 13;
-   double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
+   const int binnum = 16;
+   double bins[17] = {4,8,11,15,20,30,40,50,60,76,86,96,106,120,150,200,600};
    // pt
    const int ptbinnum_endcap = 10;
    double ptbin_endcap[ptbinnum_endcap+1] = {15,20,25,30,35,40,50,70,100,200,500};
