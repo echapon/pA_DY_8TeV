@@ -32,10 +32,11 @@
 
 using namespace std;
 using namespace DYana;
+//using namespace DYana_v20180814;
 
 double isomax_;
 
-void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
+void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal", TString MuonIDopt="")
 {
 
 	// Event & muon
@@ -49,7 +50,9 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 	HFweight hfTool;
 
 	//TFile* f = new TFile("histograms/histFRiso0p10"+TString(Name(index))+".root","RECREATE");
-	TFile* f = new TFile(Form("histograms_test/histFR_%s_%s.root",opt.Data(),Name(index)),"RECREATE");
+	//TFile* f = new TFile(Form("histograms_test/histFR_%s_%s%s.root",opt.Data(),Name(index),MuonIDopt.Data()),"RECREATE");
+	TFile* f = new TFile(Form("histograms_20180814/histFR_%s_%s%s.root",opt.Data(),Name(index),MuonIDopt.Data()),"RECREATE");
+
 
 
 	TH1D* denominator_pt = new TH1D("denominator_pt","",ptbinnum,ptbin); 
@@ -113,6 +116,7 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 	else if (opt=="iso0p20") isomax_=0.20;
 	else isomax_=cuts::isomax; //0.15
 	std::cout << "---------- option 1 - isomax : " << isomax_ << std::endl;
+
 	if (opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10" || opt=="ZVETO_SMUwJET_MuPtlt15") {
 
 		std::cout << "---------- option 2 - (Z Veto related) apply HLT_PAL3Mu12_v trigger" << std::endl;
@@ -123,6 +127,7 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 		std::cout << "---------- option 4 - (Z Veto related) apply MET.pt < 20.0 GeV" << std::endl;
 		std::cout << "---------- option 5 - (Z Veto related) only one muon in one event" << std::endl;
 	}
+
 	if (opt=="nominal" || opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10" || opt=="ZVETO_SMUwJET_MuPtlt15" || opt=="iso0p10" || opt=="iso0p20") {
 		std::cout << "---------- option 00 - (Z Veto related) Nominal conditions ###############" << std::endl;
 		if (opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10"){
@@ -137,6 +142,12 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 		std::cout << "---------- option 7 - collect same sign (SS) single muons" << std::endl;
 	}	
 
+	if (opt=="new") std::cout << "NEW selection" << std::endl;
+	if (MuonIDopt=="_highPtMuonID") std::cout << "MuonIDopt(1) : " << MuonIDopt.Data() << std::endl;
+	else if (MuonIDopt=="_tightMuonIDSub") std::cout << "MuonIDopt(2) : " << MuonIDopt.Data() << std::endl;
+	else if (MuonIDopt=="_noMuonID") std::cout << "MuonIDopt(3) : " << MuonIDopt.Data() << std::endl;
+	else if (MuonIDopt=="") std::cout << "MuonIDopt(0) : " << MuonIDopt.Data() << std::endl;
+	else if (MuonIDopt=="_tighthighPtMuonIDCommon") std::cout << "MuonIDopt(4) : " << MuonIDopt.Data() << std::endl;
 
 	// Chain
 	cout<<"Chain"<<endl;
@@ -150,6 +161,7 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 	double pt = 0;
 	double eta = 0;
 	double iso = 0;
+	double trkiso = 0.0;
 	int charge = -9;
 	double wt = 1.0;
 	double wtsum = 0;
@@ -175,7 +187,7 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 		for(unsigned j=0; j!=event->muons.size(); j++) {
 
 			PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
-
+			//if (cnt[1]%10000==0) std::cout << "pt : " << mu_->pt << " , eta : " << mu_->eta <<std::endl;
 			if( mu_->acceptance(cuts::ptmin1,cuts::etamax) ) {
 				passingMuons->push_back(*mu_);
 			}
@@ -215,9 +227,10 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 			//std::cout << "---------- option 5 - (Z Veto related) only one muon in one event" << std::endl;
 			if (passingMuons->size()>1) continue;
 		}
-		if (opt=="nominal" || opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10" || opt=="ZVETO_SMUwJET_MuPtlt15" || opt=="iso0p10" || opt=="iso0p20") {
+		if (opt=="nominal" || opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10" || opt=="ZVETO_SMUwJET_MuPtlt15" || opt=="iso0p10" || opt=="iso0p20" || opt=="new") {
 			//std::cout << "---------- option 00 - (Z Veto related) Nominal conditions ###############" << std::endl;
 
+			//if (cnt[1]%10000==0) std::cout << "########### PASSING MUON : " << passingMuons->size() << std::endl;
 			for(unsigned j=0; j!=passingMuons->size(); j++) {
 				cnt[2]++;
 
@@ -225,9 +238,23 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 				pt = mu.pt;
 				eta = runsgn(event->run) * mu.eta;
 				iso = (mu.PfChargedHadronIsoR03 + mu.PfNeutralHadronIsoR03 + mu.PfGammaIsoR03)/mu.pt;
+				trkiso = mu.isolationR03_sumpt/mu.pt;
 				charge = mu.charge;
 
-				if( !mu.highPtMuonID() ) continue;
+				//if( !mu.highPtMuonID() ) continue;
+
+				if (MuonIDopt=="_highPtMuonID") {
+					if (!mu.highPtMuonID()) continue;
+				}
+				else if (MuonIDopt=="_tightMuonIDSub") {
+					if (!mu.tightMuonIDSub()) continue;
+				}
+				else if (MuonIDopt=="") {
+					if (!mu.tightMuonID()) continue;
+				}
+				else if (MuonIDopt=="_tighthighPtMuonIDCommon") {
+					if (!(mu.tightMuonID() && mu.highPtMuonID())) continue;
+				}               
 
 				if (opt=="ZVETO_SMUwJET_MuPtlt10" || opt=="ZVETO_SMUwoJET_MuPtlt10"){ 
 					//std::cout << "---------- option 6 - (Z Veto related) single muon p_{T} > 10 GeV" << std::endl;
@@ -239,41 +266,82 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 				}
 
 				cnt[3]++;
+				if (opt=="new") {
+					denominator_pt->Fill(pt,wt);
+					denominator_eta->Fill(eta,wt);
+					denominator->Fill(trkiso,wt); 
+					denominator_ptunibin->Fill(pt,wt);
 
-				denominator_pt->Fill(pt,wt);
-				denominator_eta->Fill(eta,wt);
-				denominator->Fill(iso,wt); 
-				denominator_ptunibin->Fill(pt,wt);
+					if( fabs(eta)<1.2 ) {
+						denominator_barrel->Fill(trkiso,wt); 
+						denominator_pt_barrel->Fill(pt,wt);
+						denominator_ptunibin_barrel->Fill(pt,wt);
+					} 
+					else if (fabs(eta)>1.2 && fabs(eta)<2.4){
+						denominator_endcap->Fill(trkiso,wt); 
+						denominator_pt_endcap->Fill(pt,wt);
+						denominator_ptunibin_endcap->Fill(pt,wt);
+					} 
+				}
 
-				if( fabs(eta)<1.2 ) {
-					denominator_barrel->Fill(iso,wt); 
-					denominator_pt_barrel->Fill(pt,wt);
-					denominator_ptunibin_barrel->Fill(pt,wt);
-				} 
-				else if (fabs(eta)>1.2 && fabs(eta)<2.4){
-					denominator_endcap->Fill(iso,wt); 
-					denominator_pt_endcap->Fill(pt,wt);
-					denominator_ptunibin_endcap->Fill(pt,wt);
-				} 
+				else {
+					denominator_pt->Fill(pt,wt);
+					denominator_eta->Fill(eta,wt);
+					denominator->Fill(iso,wt); 
+					denominator_ptunibin->Fill(pt,wt);
 
+					if( fabs(eta)<1.2 ) {
+						denominator_barrel->Fill(iso,wt); 
+						denominator_pt_barrel->Fill(pt,wt);
+						denominator_ptunibin_barrel->Fill(pt,wt);
+					} 
+					else if (fabs(eta)>1.2 && fabs(eta)<2.4){
+						denominator_endcap->Fill(iso,wt); 
+						denominator_pt_endcap->Fill(pt,wt);
+						denominator_ptunibin_endcap->Fill(pt,wt);
+					} 
+
+				}
 				//###if( !mu.isolation(cuts::isomax) ) continue; 
-				if( !mu.isolation(isomax_) ) continue; 
+				if (opt=="new") {if(!(trkiso<0.3)) continue;}
+				else if( !mu.isolation(isomax_) ) continue; 
+				if (!mu.tightMuonID()) continue;
 				cnt[4]++;
+				if (opt=="new") {
 
-				numerator_pt->Fill(pt,wt);
-				numerator_eta->Fill(eta,wt);
-				numerator->Fill(iso,wt); 
-				numerator_ptunibin->Fill(pt,wt);
+					numerator_pt->Fill(pt,wt);
+					numerator_eta->Fill(eta,wt);
+					numerator->Fill(iso,wt); 
+					numerator_ptunibin->Fill(pt,wt);
 
-				if( fabs(eta)<1.2 ) {
-					numerator_barrel->Fill(iso,wt); 
-					numerator_pt_barrel->Fill(pt,wt);
-					numerator_ptunibin_barrel->Fill(pt,wt);
-				} 
-				else if (fabs(eta)>1.2 && fabs(eta)<2.4){
-					numerator_endcap->Fill(iso,wt); 
-					numerator_pt_endcap->Fill(pt,wt);
-					numerator_ptunibin_endcap->Fill(pt,wt);
+					if( fabs(eta)<1.2 ) {
+						numerator_barrel->Fill(iso,wt); 
+						numerator_pt_barrel->Fill(pt,wt);
+						numerator_ptunibin_barrel->Fill(pt,wt);
+					} 
+					else if (fabs(eta)>1.2 && fabs(eta)<2.4){
+						numerator_endcap->Fill(iso,wt); 
+						numerator_pt_endcap->Fill(pt,wt);
+						numerator_ptunibin_endcap->Fill(pt,wt);
+					}
+				}
+				else {
+					numerator_pt->Fill(pt,wt);
+					numerator_eta->Fill(eta,wt);
+					numerator->Fill(trkiso,wt); 
+					numerator_ptunibin->Fill(pt,wt);
+
+					if( fabs(eta)<1.2 ) {
+						numerator_barrel->Fill(trkiso,wt); 
+						numerator_pt_barrel->Fill(pt,wt);
+						numerator_ptunibin_barrel->Fill(pt,wt);
+					} 
+					else if (fabs(eta)>1.2 && fabs(eta)<2.4){
+						numerator_endcap->Fill(trkiso,wt); 
+						numerator_pt_endcap->Fill(pt,wt);
+						numerator_ptunibin_endcap->Fill(pt,wt);
+					}
+
 				}
 			}
 		}// nominal
@@ -298,7 +366,21 @@ void selectDenAndNumForFR_opttest(SampleTag index=TT, TString opt="nominal")
 				iso = (mu.PfChargedHadronIsoR03 + mu.PfNeutralHadronIsoR03 + mu.PfGammaIsoR03)/mu.pt;
 				charge = mu.charge;
 
-				if( !mu.highPtMuonID() ) continue;
+				//				if( !mu.highPtMuonID() ) continue;
+
+				if (MuonIDopt=="_highPtMuonID") {
+					if (!mu.highPtMuonID()) continue;
+				}
+				else if (MuonIDopt=="_tightMuonIDSub") {
+					if (!mu.tightMuonIDSub()) continue;
+				}
+				else if (MuonIDopt=="") {
+					if (!mu.tightMuonID()) continue;
+				}
+				else if (MuonIDopt=="_tighthighPtMuonIDCommon") {
+					if (!(mu.tightMuonID() && mu.highPtMuonID())) continue;
+				}               
+
 
 				cnt[3]++;
 				if (isStored==0) {

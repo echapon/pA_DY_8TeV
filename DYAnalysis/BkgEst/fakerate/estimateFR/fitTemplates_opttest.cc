@@ -17,7 +17,9 @@ using namespace RooFit;
 using namespace DYana;
 
 
-void fitTemplates_opttest(const TString& category, const TString& xtitle, double xmin, double xmax, int opt, int QCDopt, TString opttest)
+//void fitTemplates_opttest(const TString& category, const TString& xtitle, double xmin, double xmax, int opt, int QCDopt, TString opttest)
+//###void fitTemplates_opttest(const TString& category, const TString& xtitle, double xmin, double xmax, int opt, int QCDopt, TString opttest, TString MuonIDopt)
+void fitTemplates_opttest(const TString& category="", const TString& xtitle="PFIso/p_{T}", double xmin=0.0, double xmax=1.0, int opt=16, int QCDopt=1, TString opttest="ZVETO_SMUwJET_MuPtlt10", TString MuonIDopt="")
 {
    //Get ROOT Files
    TFile* file[NSamples+2];
@@ -35,8 +37,16 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 		file[i] = new TFile(Form("histograms/histZVETO_%s%s.root",opttest.Data(),Name(tag)),"READ");
 		std::cout << TString(Name(tag)) << " - " << Form("histograms/histZVETO_%s%s.root",opttest.Data(),Name(tag)) << std::endl;
 */
-		file[i] = new TFile(Form("histograms/hist%s%s.root",opttest.Data(),Name(tag)),"READ");
-		std::cout << TString(Name(tag)) << " - " << Form("histograms/hist%s%s.root",opttest.Data(),Name(tag)) << std::endl;
+//		file[i] = new TFile(Form("histograms/hist%s%s.root",opttest.Data(),Name(tag)),"READ");
+//		std::cout << TString(Name(tag)) << " - " << Form("histograms/hist%s%s.root",opttest.Data(),Name(tag)) << std::endl;
+
+/*
+		file[i] = new TFile(Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(tag),MuonIDopt.Data()),"READ");
+		std::cout << TString(Name(tag)) << " - " << Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(tag),MuonIDopt.Data()) << std::endl;
+*/
+
+		file[i] = new TFile(Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(tag),MuonIDopt.Data()),"READ");
+		std::cout << TString(Name(tag)) << " - " << Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(tag),MuonIDopt.Data()) << std::endl;
 
 	}
 
@@ -77,12 +87,26 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	std::cout << Form("histograms/histZVETO_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1))) << std::endl;
 	std::cout << Form("histograms/histZVETO_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2))) << std::endl;
 */
-
+/*
 	TFile* fileQCDSS1= new TFile(Form("histograms/hist%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1))),"READ");
 	TFile* fileQCDSS2= new TFile(Form("histograms/hist%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2))),"READ");
 
 	std::cout << Form("histograms/hist%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1))) << std::endl;
 	std::cout << Form("histograms/hist%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2))) << std::endl;
+*/
+/*
+	TFile* fileQCDSS1= new TFile(Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1)),MuonIDopt.Data()),"READ");
+	TFile* fileQCDSS2= new TFile(Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2)),MuonIDopt.Data()),"READ");
+
+	std::cout << Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1)),MuonIDopt.Data()) << std::endl;
+	std::cout << Form("histograms_test/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2)),MuonIDopt.Data()) << std::endl;
+*/
+
+	TFile* fileQCDSS1= new TFile(Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1)),MuonIDopt.Data()),"READ");
+	TFile* fileQCDSS2= new TFile(Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2)),MuonIDopt.Data()),"READ");
+
+	std::cout << Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data1)),MuonIDopt.Data()) << std::endl;
+	std::cout << Form("histograms_20180814/histFR_%s_%s%s.root",opttest.Data(),Name(static_cast<SampleTag>(Data2)),MuonIDopt.Data()) << std::endl;
 
 
 	Double_t Lumi = lumi_all;
@@ -103,6 +127,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 		h_QCD->Add((TH1D*)fileQCDSS2->Get( "denominator" + category ));
 	}
 
+	TH1D *h_TW = (TH1D*)file[TW]->Get( "denominator" + category );
 	TH1D *h_WW = (TH1D*)file[WW]->Get( "denominator" + category );
 	TH1D *h_WZ = (TH1D*)file[WZ]->Get( "denominator" + category );
 	TH1D *h_ZZ = (TH1D*)file[ZZ]->Get( "denominator" + category );
@@ -125,6 +150,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	h_DYTauTau30->Scale((Xsec(DYTauTau30)*Lumi)/Nevts(DYTauTau30));
 
 	h_ttbar->Scale((Xsec(TT)*Lumi)/Nevts(TT));
+	h_TW->Scale((Xsec(TW)*Lumi)/Nevts(TW));
 	h_WW->Scale((Xsec(WW)*Lumi)/Nevts(WW));
 	h_WZ->Scale((Xsec(WZ)*Lumi)/Nevts(WZ));
 	h_ZZ->Scale((Xsec(ZZ)*Lumi)/Nevts(ZZ));
@@ -190,6 +216,10 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	Double_t NN_WJets = Npass_WJets;
 	cout << "N_WJets: "<< NN_WJets << endl;
 
+	Double_t Npass_TW = h_TW->Integral();
+	Double_t NN_TW = Npass_TW;
+	cout << "N_TW: "<< NN_TW << endl;
+
 	Double_t Npass_WW = h_WW->Integral();
 	Double_t NN_WW = Npass_WW;
 	cout << "N_WW: "<< NN_WW << endl;
@@ -214,12 +244,13 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 */	
 	cout << "#############################" << endl;
 	
-	double N_total = NN_ttbar + NN_DYJets + NN_WJets + NN_QCD + NN_WW + NN_WZ + NN_ZZ;
+	double N_total = NN_ttbar + NN_DYJets + NN_WJets + NN_QCD + NN_TW + NN_WW + NN_WZ + NN_ZZ;
 	double h_data_int = h_data->Integral();
 	double N_ttbar = h_data->Integral()*NN_ttbar/N_total;
 	double N_DYJets = h_data->Integral()*NN_DYJets/N_total;
 	double N_WJets = h_data->Integral()*NN_WJets/N_total;
 	double N_QCD = h_data->Integral()*NN_QCD/N_total;
+	double N_TW = h_data->Integral()*NN_TW/N_total;
 	double N_WW = h_data->Integral()*NN_WW/N_total;
 	double N_WZ = h_data->Integral()*NN_WZ/N_total;
 	double N_ZZ = h_data->Integral()*NN_ZZ/N_total;
@@ -240,6 +271,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	RooDataHist *RooHist_DYJets = new RooDataHist("RooHist_DYJets", "RooHistogram_DYJets", obs, h_DYJets);
 	RooDataHist *RooHist_QCD = new RooDataHist("RooHist_QCD", "RooHistogram_QCD", obs, h_QCD);
 	RooDataHist *RooHist_data = new RooDataHist("RooHist_data", "RooHistogram_data", obs, h_data);
+	RooDataHist *RooHist_TW = new RooDataHist("RooHist_TW", "RooHistogram_TW", obs, h_TW);
 	RooDataHist *RooHist_WW = new RooDataHist("RooHist_WW", "RooHistogram_WW", obs, h_WW);
 	RooDataHist *RooHist_WZ = new RooDataHist("RooHist_WZ", "RooHistogram_WZ", obs, h_WZ);
 	RooDataHist *RooHist_ZZ = new RooDataHist("RooHist_ZZ", "RooHistogram_ZZ", obs, h_ZZ);
@@ -249,6 +281,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	RooHistPdf *pdf_WJets = new RooHistPdf("pdf_WJets", "Template from WJets MC", obs, *RooHist_WJets, 0);
 	RooHistPdf *pdf_DYJets = new RooHistPdf("pdf_DYJets", "Template from DYJets MC", obs, *RooHist_DYJets, 0);
 	RooHistPdf *pdf_QCD = new RooHistPdf("pdf_QCD", "Template from QCD MC", obs, *RooHist_QCD, 0);
+	RooHistPdf *pdf_TW = new RooHistPdf("pdf_TW", "Template from TW MC", obs, *RooHist_TW, 0);
 	RooHistPdf *pdf_WW = new RooHistPdf("pdf_WW", "Template from WW MC", obs, *RooHist_WW, 0);
 	RooHistPdf *pdf_WZ = new RooHistPdf("pdf_WZ", "Template from WZ MC", obs, *RooHist_WZ, 0);
 	RooHistPdf *pdf_ZZ = new RooHistPdf("pdf_ZZ", "Template from ZZ MC", obs, *RooHist_ZZ, 0);
@@ -291,8 +324,11 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 
  	RooRealVar n_ttbar("n_ttbar", "n_ttbar", NN_ttbar, NN_ttbar*0.1, NN_ttbar*100.0);
 	RooRealVar n_WJets("n_WJets", "n_WJets", NN_WJets, N_WJets*0.01, N_WJets*1000.00);
-	RooRealVar n_DYJets("n_DYJets", "n_DYJets", NN_DYJets, N_DYJets*0.01, N_DYJets*1000.0);
+//###	RooRealVar n_DYJets("n_DYJets", "n_DYJets", NN_DYJets, N_DYJets*0.01, N_DYJets*1000.0);
+	RooRealVar n_DYJets("n_DYJets", "n_DYJets", 0.1*NN_DYJets, NN_DYJets*0.00005, 10.0*h_data->Integral());
+	std::cout << "******BABO******** " << NN_DYJets*0.00005 << " --- " << NN_DYJets << " --- " << 10.0*h_data->Integral() << std::endl;
 	RooRealVar n_QCD("n_QCD", "n_QCD", 0.875*h_data->Integral(), 10, h_data->Integral());
+	RooRealVar n_TW("n_TW", "n_TW", NN_TW, 0.1*NN_TW, NN_TW*100.0);
 	RooRealVar n_WW("n_WW", "n_WW", NN_WW, 0.1*NN_WW, NN_WW*100.0);
 	RooRealVar n_WZ("n_WZ", "n_WZ", NN_WZ, 0.1*NN_WZ, NN_WZ*100.0);
 	RooRealVar n_ZZ("n_ZZ", "n_ZZ", NN_ZZ, 0.1*NN_ZZ, NN_ZZ*100.0);
@@ -311,6 +347,9 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	std::cout << "############################################" << std::endl;
 	std::cout << "    N_ttbar   : " << N_ttbar << std::endl;
 	std::cout << "    NN_ttbar  : " << NN_ttbar << std::endl;
+	std::cout << "############################################" << std::endl;
+	std::cout << "    N_TW      : " << N_TW << std::endl;
+	std::cout << "    NN_TW     : " << NN_TW << std::endl;
 	std::cout << "############################################" << std::endl;
 	std::cout << "    N_WW      : " << N_WW << std::endl;
 	std::cout << "    NN_WW     : " << NN_WW << std::endl;
@@ -542,6 +581,21 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	n_ZZ.setRange(0.9*NN_ZZ, NN_ZZ*1.1);
 	break;
 
+		case 20:
+//
+	std::cout << "##### opt 20 #####" << std::endl;
+ 	n_ttbar.setRange(NN_ttbar*0.9, NN_ttbar*1.1);
+	n_WJets.setRange(NN_WJets*0.9, NN_WJets*1.1);
+	//###n_DYJets.setRange(NN_DYJets*0.00005, 10.0*h_data->Integral());
+	n_DYJets.setRange(NN_DYJets*0.00005, 10.0*h_data->Integral());
+	n_QCD.setRange(1, h_data->Integral());
+	n_TW.setRange(0.9*NN_TW, NN_TW*1.1);
+	n_WW.setRange(0.9*NN_WW, NN_WW*1.1);
+	n_WZ.setRange(0.9*NN_WZ, NN_WZ*1.1);
+	n_ZZ.setRange(0.9*NN_ZZ, NN_ZZ*1.1);
+	std::cout << "******BABO2******** " << NN_DYJets*0.00005 << " --- " << NN_DYJets << " --- " << 0.1*h_data->Integral() << std::endl;
+	break;
+
 /*
 		case 0:
 //opt0
@@ -757,7 +811,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	
 	}
 */
-	RooAddPdf model( "model","model",RooArgList(*pdf_QCD, *pdf_WJets, *pdf_DYJets, *pdf_ttbar, *pdf_WW, *pdf_WZ, *pdf_ZZ), RooArgList(n_QCD, n_WJets, n_DYJets, n_ttbar, n_WW, n_WZ, n_ZZ) );
+	RooAddPdf model( "model","model",RooArgList(*pdf_QCD, *pdf_WJets, *pdf_DYJets, *pdf_ttbar, *pdf_TW, *pdf_WW, *pdf_WZ, *pdf_ZZ), RooArgList(n_QCD, n_WJets, n_DYJets, n_ttbar, n_TW, n_WW, n_WZ, n_ZZ) );
    // RooAddPdf model( "model","model", RooArgList(*pdf_ttbar, *pdf_WJets, *pdf_QCD), RooArgList(n_ttbar, n_WJets, n_QCD) );
 
    // RooFitResult* r = pdf_WJets->fitTo( *RooHist_data, Save() );
@@ -770,6 +824,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
    std::cout << "n_DYJets/N_DYJets: " << n_DYJets.getVal()/N_DYJets << std::endl;
    std::cout << "n_WJets/N_WJets: " << n_WJets.getVal()/N_WJets << std::endl;
    std::cout << "n_QCD/N_QCD: " << n_QCD.getVal()/N_QCD << std::endl;
+	std::cout << "n_TW/N_TW: " << n_TW.getVal()/N_TW << std::endl;
    std::cout << "n_WW/N_WW: " << n_WW.getVal()/N_WW << std::endl;
    std::cout << "n_WZ/N_WZ: " << n_WZ.getVal()/N_WZ << std::endl;
    std::cout << "n_ZZ/N_ZZ: " << n_ZZ.getVal()/N_ZZ << std::endl;
@@ -792,11 +847,12 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	// pdf_ttbar->plotOn( frame1, LineColor(kOrange) );
 	// pdf_WJets->plotOn(frame1, LineColor(kGreen) );
 	RooHist_data->plotOn(frame1, DataError(RooAbsData::SumW2));
-	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_WW,pdf_ttbar,pdf_DYJets,pdf_WJets,pdf_QCD"), LineColor(0), FillColor(7), DrawOption("F") );
-	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_WW,pdf_ttbar,pdf_DYJets,pdf_WJets"), LineColor(0), FillColor(4), DrawOption("F") );
-	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_WW,pdf_ttbar,pdf_DYJets"), LineColor(0), FillColor(2), DrawOption("F") );
-	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_WW,pdf_ttbar"), LineColor(0), FillColor(3), DrawOption("F") );
-	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_WW"), LineColor(0), FillColor(13), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW,pdf_WW,pdf_ttbar,pdf_DYJets,pdf_WJets,pdf_QCD"), LineColor(0), FillColor(7), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW,pdf_WW,pdf_ttbar,pdf_DYJets,pdf_WJets"), LineColor(0), FillColor(4), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW,pdf_WW,pdf_ttbar,pdf_DYJets"), LineColor(0), FillColor(2), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW,pdf_WW,pdf_ttbar"), LineColor(0), FillColor(3), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW,pdf_WW"), LineColor(0), FillColor(13), DrawOption("F") );
+	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ,pdf_TW"), LineColor(0), FillColor(15), DrawOption("F") );
 	model.plotOn(frame1, Components("pdf_ZZ,pdf_WZ"), LineColor(0), FillColor(14), DrawOption("F") );
 	model.plotOn(frame1, Components("pdf_ZZ"), LineColor(0), FillColor(15), DrawOption("F") );
 	//model.plotOn(frame1, Components("pdf_WJets"), LineColor(0), FillColor(kGreen), DrawOption("F") );
@@ -829,6 +885,7 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	leg1->AddEntry(frame1->nameOf(2),Form("WJets : %.2f (%.2f)",n_WJets.getVal(),n_WJets.getVal()/h_data->Integral()),"F");
 	leg1->AddEntry(frame1->nameOf(3),Form("DYJets : %.2f (%.2f)",n_DYJets.getVal(),n_DYJets.getVal()/h_data->Integral()),"F");
 	leg1->AddEntry(frame1->nameOf(4),Form("ttbar : %.2f (%.2f)",n_ttbar.getVal(),n_ttbar.getVal()/h_data->Integral()),"F");
+	leg1->AddEntry(frame1->nameOf(5),Form("TW : %.2f (%.2f)",n_TW.getVal(),n_TW.getVal()/h_data->Integral()),"F");
 	leg1->AddEntry(frame1->nameOf(5),Form("WW : %.2f (%.2f)",n_WW.getVal(),n_WW.getVal()/h_data->Integral()),"F");
 	leg1->AddEntry(frame1->nameOf(6),Form("WZ : %.2f (%.2f)",n_WZ.getVal(),n_WZ.getVal()/h_data->Integral()),"F");
 	leg1->AddEntry(frame1->nameOf(7),Form("ZZ : %.2f (%.2f)",n_ZZ.getVal(),n_ZZ.getVal()/h_data->Integral()),"F");
@@ -921,29 +978,33 @@ void fitTemplates_opttest(const TString& category, const TString& xtitle, double
 	//###c_fit->SaveAs("print/fit_v2"+category+"_"+optst+"_"+QCDoptst+"_QCDDATASS2_woPbPDYJets.pdf");
 	//######c_fit->SaveAs("print/fit_v2"+category+"_"+optst+"_"+QCDoptst+"_QCDDATASS2_QCDin0p875Data.pdf");
 	//##########c_fit->SaveAs("print/fit_v2"+category+"_"+optst+"_"+QCDoptst+"_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf");
-	c_fit->SaveAs("print_opttest/Fit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+"_QCDin0p875Data.pdf");
+	//############c_fit->SaveAs("print_opttest/Fit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+MuonIDopt.Data()+"_QCDin0p875Data.pdf");
+	c_fit->SaveAs("print_20180814/Fit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+MuonIDopt.Data()+"_QCDin0p875Data.pdf");
+
 
 	//c_fit->SaveAs("print/fit"+category+"_opt0_woPbPDYJets_nology.pdf");
 	c_fit->Close();
 	//###TFile* fout = new TFile("histograms/histFRFit_v2_"+category+"_"+optst+"_"+QCDoptst+"_QCDDATASS2_woPbPDYJets.root","recreate");
 	//#########TFile* fout = new TFile("histograms/histFRFit_v2_"+category+"_"+optst+"_"+QCDoptst+"_QCDDATASS2_QCDin0p875Data.root","recreate");
 	//##############TFile* fout = new TFile("histograms/histFRFit_v2_"+category+"_"+optst+"_"+QCDoptst+"_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.root","recreate");
-	TFile* fout = new TFile("histograms_opttest/histFRFit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+"_QCDin0p875Data.root","recreate");
+	//##################TFile* fout = new TFile("histograms_opttest/histFRFit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+MuonIDopt.Data()+"_QCDin0p875Data.root","recreate");
 
+	TFile* fout = new TFile("histograms_20180814/histFRFit"+category+"_"+optst+"_"+QCDoptst+"_hist"+opttest.Data()+MuonIDopt.Data()+"_QCDin0p875Data.root","recreate");
 	fout->cd();	
-	TH1D* h_fitNch = new TH1D("h_fitNch","",11,0,11);
+	TH1D* h_fitNch = new TH1D("h_fitNch","",12,0,12);
 	h_fitNch->SetBinContent(1,n_DYJets.getVal());
  	h_fitNch->SetBinContent(2,n_QCD.getVal());
   	h_fitNch->SetBinContent(3,n_WJets.getVal());
-   h_fitNch->SetBinContent(4,n_WW.getVal());
-	h_fitNch->SetBinContent(5,n_WZ.getVal());
-	h_fitNch->SetBinContent(6,n_ZZ.getVal());
-	h_fitNch->SetBinContent(7,n_ttbar.getVal());
-	h_fitNch->SetBinContent(8,h_data->Integral());
-	h_fitNch->SetBinContent(9,chi2->getVal());
-	h_fitNch->SetBinContent(10,h_data->GetNbinsX());
-	h_fitNch->SetBinContent(11,chi2->getVal() / ((Double_t)h_data->GetNbinsX()));
-	for (int g=1;g<12;g++) std::cout << h_fitNch->GetBinContent(g) << " ";
+	h_fitNch->SetBinContent(4,n_TW.getVal());
+   h_fitNch->SetBinContent(5,n_WW.getVal());
+	h_fitNch->SetBinContent(6,n_WZ.getVal());
+	h_fitNch->SetBinContent(7,n_ZZ.getVal());
+	h_fitNch->SetBinContent(8,n_ttbar.getVal());
+	h_fitNch->SetBinContent(9,h_data->Integral());
+	h_fitNch->SetBinContent(10,chi2->getVal());
+	h_fitNch->SetBinContent(11,h_data->GetNbinsX());
+	h_fitNch->SetBinContent(12,chi2->getVal() / ((Double_t)h_data->GetNbinsX()));
+	for (int g=1;g<13;g++) std::cout << h_fitNch->GetBinContent(g) << " ";
 	std::cout << std::endl;
 	h_fitNch->Write();
 	std::cout << "##### CLOSE #####" << std::endl;
