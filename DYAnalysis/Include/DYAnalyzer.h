@@ -95,7 +95,7 @@ public:
 	////////////////////////////
 	// -- Event Selections -- //
 	////////////////////////////
-	Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=1e99, bool dotight=true); // -- output: 2 muons passing event selection conditions -- //
+   Bool_t EventSelection(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection, bool noiso=false, double vtxChi2Cut=20, bool dotight=true); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
 	Bool_t EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection); // -- output: 2 muons passing event selection conditions -- //
@@ -194,7 +194,7 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 	{
 		*HLT = "HLT_PAL3Mu12_v*"; 
 		*LeadPtCut = 15;
-		*SubPtCut = 10;//10;//15;
+		*SubPtCut = 7;//10;//15;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
@@ -772,7 +772,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
           // for L1DoubleMu0: need also tk iso, dxy and dz cuts
           if (!noiso && // HLT.Contains("L1DoubleMu0") && 
                    // (MuonCollection[j].trkiso*MuonCollection[j].Pt < 2.5 && fabs(MuonCollection[j].dzVTX)<0.1 && fabs(MuonCollection[j].dxyVTX)<0.01))
-                   (MuonCollection[j].trkiso < 0.3))
+                   (MuonCollection[j].trkiso < 0.2))
              passOK = true;
 
           if (passOK)
