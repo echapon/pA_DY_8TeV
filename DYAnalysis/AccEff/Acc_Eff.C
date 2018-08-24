@@ -404,8 +404,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      else if (iwt==644) {iiso2 = -10;} // iso syst
 
                      // weights for MuID and iso
-                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_iso_ppb(pt1,eta1,iiso1)
-                        *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_iso_ppb(pt2,eta2,iiso2);
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_isotk_ppb(pt1,eta1,iiso1)
+                        *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_isotk_ppb(pt2,eta2,iiso2);
                      // add trg... careful!
                      double sf_trg=1.;
                      if (pt2>=15. && pt1>=15.) { // both muons could trigger
