@@ -24,15 +24,17 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
 
    TFile *fout = TFile::Open("histos_ABCD_" + sample + "_" + trigger + ".root","RECREATE");
 
-   double vtxnormchi2cut, pt1cut, pt2cut;
+   double vtxnormchi2cut, pt1cut, pt2cut, isocut;
    if (trigger=="PAL3Mu12") {
       vtxnormchi2cut = 20;
       pt1cut = 15;
       pt2cut = 7;
+      isocut = 0.2;
    } else {
-      vtxnormchi2cut = 4;
+      vtxnormchi2cut = 20;
       pt1cut = 7;
       pt2cut = 7;
+      isocut = 0.15;
    }
 
    TIter next(f->GetListOfKeys()); TObject *obj;
@@ -68,7 +70,7 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
          }
 
          // book the branches
-         float pt1, pt2, diMass, diPt, diRapidity, diPhistar, vtxnormchi2, trkiso1, trkiso2, weight=1;
+         float pt1, pt2, diMass, diPt, diRapidity, diPhistar, vtxnormchi2, trkiso1, trkiso2, relPFiso1, relPFiso2, weight=1;
          int sign, isTight1, isTight2;
          tr->SetBranchStatus("*",0);
          tr->SetBranchStatus("pt1",1); tr->SetBranchAddress("pt1",&pt1);
@@ -80,6 +82,8 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
          tr->SetBranchStatus("vtxnormchi2",1); tr->SetBranchAddress("vtxnormchi2",&vtxnormchi2);
          tr->SetBranchStatus("trkiso1",1); tr->SetBranchAddress("trkiso1",&trkiso1);
          tr->SetBranchStatus("trkiso2",1); tr->SetBranchAddress("trkiso2",&trkiso2);
+         tr->SetBranchStatus("relPFiso1",1); tr->SetBranchAddress("relPFiso1",&relPFiso1);
+         tr->SetBranchStatus("relPFiso2",1); tr->SetBranchAddress("relPFiso2",&relPFiso2);
          if (sample!="Data") {tr->SetBranchStatus("weight",1); tr->SetBranchAddress("weight",&weight);}
          tr->SetBranchStatus("sign",1); tr->SetBranchAddress("sign",&sign);
          tr->SetBranchStatus("isTight1",1); tr->SetBranchAddress("isTight1",&isTight1);
@@ -95,7 +99,9 @@ void fillHistograms(TString sample="Data", TString trigger="PAL3Mu12") {
             if (pt1<pt1cut) continue;
             if (pt2<pt2cut) continue;
 
-            int niso = (trkiso1<0.3) + (trkiso2<0.3);
+            int niso=0;
+            if (trigger=="PAL3Mu12") niso = (trkiso1<isocut) + (trkiso2<isocut);
+            else niso = (relPFiso1<isocut) + (relPFiso2<isocut);
             int sign2;
             if (!useOSSS) sign2 = (vtxnormchi2>vtxnormchi2cut); 
             else sign2 = (sign!=0);
