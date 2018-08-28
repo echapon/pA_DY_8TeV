@@ -10,6 +10,7 @@ namespace DYana_v20180814 {
    enum SampleTag : int {
       TT=0,
       TW,
+      TbarW,
       WW,
       WZ,
       ZZ,
@@ -42,6 +43,7 @@ namespace DYana_v20180814 {
       std::vector<SampleTag> v;
       v.push_back(TT);
       v.push_back(TW);
+      v.push_back(TbarW);
       v.push_back(WW);
       v.push_back(WZ);
       v.push_back(ZZ);
@@ -75,7 +77,8 @@ namespace DYana_v20180814 {
          case WZ:        return 208.*24.09; break; // CMS pp 8TeV: SMP-14-014
          case ZZ:        return 208.*7.7; break; // CMS pp 8TeV: SMP-13-005
          case TT:        return 45e3; break; // CMS pPb 8.16TeV: HIN-17-002
-         case TW:        return 12.2704*208; break;
+         case TW:        return 12.2704*208; break; // Powheg NLO
+         case TbarW:     return 12.20*208; break; // Powheg NLO
          // // PYTHIA
          // case WW:        return 208.*3.728; break;
          // case WZ:        return 208.*1.339; break;
@@ -104,6 +107,7 @@ namespace DYana_v20180814 {
          case ZZ:          return 100000; break;
          case TT:          return 100e3; break;
          case TW:          return 98400; break;
+         case TbarW:       return 48400; break;
          case WpMu:        return 981874; break;
          case WmMu:        return 998908; break;
          case WpTau:       return 498212; break;
@@ -129,6 +133,7 @@ namespace DYana_v20180814 {
          case ZZ:          return -1; break;
          case TT:          return -1; break;
          case TW:          return -1; break;
+         case TbarW:       return -1; break;
          case WpMu:        return -1; break;
          case WmMu:        return -1; break;
          case WpTau:       return -1; break;
@@ -152,6 +157,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/ZZ_PbP-EmbEPOS_8p16_Pythia8/crab_ZZ_20180117/180117_132927/0000/ntuple_skim*root"; break;
          case TT:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/ntuple_skim*root"; break;
          case TW:        return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/TW_PbP-EmbEPOS_8p16_Powheg/crab_TW_PbP-EmbEPOS_8p16_Powheg_moretrees_20180727/180727_131747/0000/ntuple_skim*root"; break;
+         case TbarW:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/TbarW_PbP-EmbEPOS_8p16_Powheg/crab_TbarW_PbP-EmbEPOS_8p16_Powheg_moretrees_20180827/180827_150711/0000/ntuple_skim*root"; break;
          case WpMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/ntuple_skim*root"; break;
          case WmMu:      return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/ntuple_skim*root"; break;
          case WpTau:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/ntuple_skim*.root"; break;
@@ -177,6 +183,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histZZ.root"; break;
          case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histTT.root"; break;
          case TW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histTW.root"; break;
+         case TbarW:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histTW.root"; break;
          case WpMu:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWpMu.root"; break;
          case WmMu:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWmMu.root"; break;
          case WpTau:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histWpTau.root"; break;
@@ -202,6 +209,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRZZ.root"; break;
          case TT:        return "FIXME"; break;
          case TW:        return "FIXME"; break;
+         case TbarW:     return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFRQCD.root"; break;
          case WpMu:      return "FIXME"; break;
          case WmMu:      return "FIXME"; break;
@@ -225,6 +233,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeZZ.root"; break;
          case TT:        return "FIXME"; break;
          case TW:        return "FIXME"; break;
+         case TbarW:     return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeQCD.root"; break;
          case WpMu:      return "FIXME"; break;
          case WmMu:      return "FIXME"; break;
@@ -248,6 +257,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiZZ.root"; break;
          case TT:        return "FIXME"; break;
          case TW:        return "FIXME"; break;
+         case TbarW:     return "FIXME"; break;
          case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/histFREmiQCD.root"; break;
          case WpMu:      return "FIXME"; break;
          case WmMu:      return "FIXME"; break;
@@ -273,6 +283,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "ZZ_PbP-EmbEPOS_8p16_Pythia8/crab_ZZ_20180117/180117_132927/0000/"; break;
          case TT:        return "Ttbar_PbP-EmbEPOS_8p16_Powheg/crab_Ttbar_PbP_Powheg_20170817/170817_152112/0000/"; break;
          case TW:        return "TW_PbP-EmbEPOS_8p16_Powheg/crab_TW_PbP-EmbEPOS_8p16_Powheg_moretrees_20180727/180727_131747/0000/"; break;
+         case TbarW:     return "TbarW_PbP-EmbEPOS_8p16_Powheg/crab_TbarW_PbP-EmbEPOS_8p16_Powheg_moretrees_20180827/180827_150711/0000/"; break;
          case WpMu:      return "WpToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToMuNu_PbP_Powheg_20170831/170831_093747/0000/"; break;
          case WmMu:      return "WmToMuNu_PbP-EmbEPOS_8p16_Powheg/crab_WmToMuNu_PbP_Powheg_20170817/170817_151834/0000/"; break;
          case WpTau:     return "WpToTauNu_PbP-EmbEPOS_8p16_Powheg/crab_WpToTauNu_PbP_Powheg_20170817/170817_152338/0000/"; break;
@@ -296,6 +307,7 @@ namespace DYana_v20180814 {
          case ZZ:        return "ZZ"; break;   
          case TT:        return "TT"; break;   
          case TW:        return "TW"; break;   
+         case TbarW:     return "TbarW"; break;   
          case WpMu:      return "WpMu"; break;
          case WmMu:      return "WmMu"; break;
          case WpTau:     return "WpTau"; break;
