@@ -786,15 +786,27 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	// -- Check the existence of at least one muon matched with HLT-object -- //
 	// -- It has to be above 15GeV -- //
 	Bool_t isExistHLTMatchedMuon = kFALSE;
+   int nHLTMatchedMuons = 0;
+   int nPassLeadPtCut = 0;
 	for(Int_t i_mu=0; i_mu<(Int_t)QMuonCollection.size(); i_mu++)
 	{
 		Muon mu = QMuonCollection[i_mu];
-		if( mu.isTrigMatched(ntuple, HLT) && mu.Pt > LeadPtCut )
+		if( HLT.Contains("L3Mu12") && mu.isTrigMatched(ntuple, HLT) && mu.Pt > LeadPtCut )
 		{
 			isExistHLTMatchedMuon = kTRUE;
 			break;
 		}
-	}
+      if( HLT.Contains("L1DoubleMu0")) {
+         if (mu.isTrigMatched(ntuple, HLT)) {
+            if (mu.Pt > LeadPtCut) nPassLeadPtCut++;
+            if (mu.Pt > SubPtCut) nHLTMatchedMuons++;
+         }
+         if (nPassLeadPtCut>=1 && nHLTMatchedMuons>=2) {
+            isExistHLTMatchedMuon = kTRUE;
+            break;
+         }
+      } // if L1DoubleMu0
+	} // loop on muons for trigger matching
 
 	if( isExistHLTMatchedMuon == kTRUE )
 	{
