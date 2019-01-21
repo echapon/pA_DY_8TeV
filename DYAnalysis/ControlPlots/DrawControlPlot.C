@@ -1,7 +1,7 @@
 #include "DrawControlPlotTool.h"
 
 void DrawControlPlot(TString version="None", 
-      Bool_t DrawDataDriven = kFALSE, 
+      Int_t DrawDataDriven = 0,      // 0 -> no data-driven, 1 -> fakerate, 2 -> ABCD
       TString NormType = "Lumi",     // Lumi or Zpeak
       TString MomCor = "MomCorr00",    // MomCorr or MomCorrH or MomUnCorr
       TString Rew = "rewboth",       // rewboth or norew or rewplus or rewminus

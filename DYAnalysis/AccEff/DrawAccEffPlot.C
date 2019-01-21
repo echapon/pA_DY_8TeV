@@ -4,9 +4,13 @@
 #include "TCanvas.h"
 #include "TFrame.h"
 
+#include <fstream>
+
 #include "../Include/MyCanvas.C"
 #include "../Include/tdrstyle.C"
 #include "../Include/CMS_lumi.C"
+
+using namespace std;
 
 void MakeAccEffGraph(TGraphAsymmErrors *g_AccEff, TGraphAsymmErrors *g_Acc, TGraphAsymmErrors *g_Eff);
 void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmErrors* g_Acc, TGraphAsymmErrors* g_Eff_Corr, TGraphAsymmErrors* g_AccEff_Corr);

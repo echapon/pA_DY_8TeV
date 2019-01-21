@@ -769,10 +769,13 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
           // for noiso or L3Mu12: no additional cut
           if (noiso || gNoIso) 
              passOK=true;
-          // for L1DoubleMu0: need also tk iso, dxy and dz cuts
-          if (!noiso && // HLT.Contains("L1DoubleMu0") && 
-                   // (MuonCollection[j].trkiso*MuonCollection[j].Pt < 2.5 && fabs(MuonCollection[j].dzVTX)<0.1 && fabs(MuonCollection[j].dxyVTX)<0.01))
+          // for L3Mu12: rel tk iso
+          if (!noiso && HLT.Contains("L3Mu12") && 
                    (MuonCollection[j].trkiso < 0.2))
+             passOK = true;
+          // for L1DoubleMu0: rel PF iso
+          if (!noiso && HLT.Contains("L1DoubleMu0") && 
+                   (MuonCollection[j].relPFiso < 0.15))
              passOK = true;
 
           if (passOK)

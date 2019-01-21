@@ -32,8 +32,10 @@ public:
 	TH1D *h_massZ;
 	TH1D *h_diPt;
 	TH1D *h_diPt2_M60to120;
+	TH1D *h_diPt2_M15to60;
 	TH1D *h_Phistar_M60to120;
 	TH1D *h_Phistar2_M60to120;
+	TH1D *h_Phistar2_M15to60;
 	TH1D *h_diRap;
 
 	TH1D *h_diRap_M15to60;
@@ -153,16 +155,18 @@ public:
 
 		analyzer = dyanalyzer;
 
-		h_Pt = new TH1D("h_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt );
+		h_Pt = new TH1D("h_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt );
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
-		h_mass = new TH1D("h_mass_"+Type, "", 60, 0, 600); Histo.push_back( h_mass );
+		h_mass = new TH1D("h_mass_"+Type, "", 120, 0, 600); Histo.push_back( h_mass );
 		h_mass2 = new TH1D("h_mass2_"+Type, "", binnum, bins); Histo.push_back( h_mass2 );
 		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 100, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
-		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 300,0,3.); Histo.push_back( h_Phistar_M60to120 );
+		h_diPt2_M15to60 = new TH1D("h_diPt2_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_M15to60 );
+		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 100,0,3.); Histo.push_back( h_Phistar_M60to120 );
 		h_Phistar2_M60to120 = new TH1D("h_Phistar2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_M60to120 );
+		h_Phistar2_M15to60 = new TH1D("h_Phistar2_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_M15to60 );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
 		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
@@ -171,8 +175,8 @@ public:
 		h_diRap2_M15to60 = new TH1D("h_diRap2_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_M15to60 );
 		h_diRap2_M60to120 = new TH1D("h_diRap2_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_M60to120 );
 
-		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_lead_Pt );
-		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_sub_Pt );
+		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_lead_Pt );
+		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_sub_Pt );
 		
 		h_lead_eta = new TH1D("h_lead_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_lead_eta );
 		h_sub_eta = new TH1D("h_sub_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_sub_eta );
@@ -180,71 +184,71 @@ public:
 		h_lead_phi = new TH1D("h_lead_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_lead_phi );
 		h_sub_phi = new TH1D("h_sub_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_sub_phi );
 
-		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_barrel_Pt );
+		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_barrel_Pt );
 		h_barrel_eta = new TH1D("h_barrel_eta_"+Type, "",  60, -3, 3); Histo.push_back( h_barrel_eta );
 		h_barrel_phi = new TH1D("h_barrel_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_barrel_phi );
 
-		h_endcap_Pt = new TH1D("h_endcap_Pt_"+Type, "", 250, 0, 250); Histo.push_back( h_endcap_Pt );
+		h_endcap_Pt = new TH1D("h_endcap_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_endcap_Pt );
 		h_endcap_eta = new TH1D("h_endcap_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_endcap_eta );
 		h_endcap_phi = new TH1D("h_endcap_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_endcap_phi );
 
-		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS );
-		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_SS );
+		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS );
+		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_SS );
 
-		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt_minusCharge );
+		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_minusCharge );
 		h_eta_minusCharge = new TH1D("h_eta_minusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_minusCharge );
 		h_phi_minusCharge = new TH1D("h_phi_minusCharge_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_minusCharge );
-		h_Pt_plusCharge = new TH1D("h_Pt_plusCharge_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt_plusCharge );
+		h_Pt_plusCharge = new TH1D("h_Pt_plusCharge_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_plusCharge );
 		h_eta_plusCharge = new TH1D("h_eta_plusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_plusCharge );
 		h_phi_plusCharge = new TH1D("h_phi_plusCharge_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_plusCharge );
 
-		h_Pt_M15to60 = new TH1D("h_Pt_M15to60_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt_M15to60 );
-		h_Pt_M60to120 = new TH1D("h_Pt_M60to120_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt_M60to120 );
-		h_Pt_M120to600 = new TH1D("h_Pt_M120to600_"+Type, "", 250, 0, 250); Histo.push_back( h_Pt_M120to600 );
+		h_Pt_M15to60 = new TH1D("h_Pt_M15to60_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_M15to60 );
+		h_Pt_M60to120 = new TH1D("h_Pt_M60to120_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_M60to120 );
+		h_Pt_M120to600 = new TH1D("h_Pt_M120to600_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_M120to600 );
 
 		h_Angle = new TH1D("h_Angle_"+Type, "", 80, -4, 4); Histo.push_back( h_Angle );
 
-		h_Pt_TrigLeg = new TH1D("h_Pt_TrigLeg_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_TrigLeg );
+		h_Pt_TrigLeg = new TH1D("h_Pt_TrigLeg_"+Type, "", 100, 0, 500); Histo.push_back( h_Pt_TrigLeg );
 		h_eta_TrigLeg = new TH1D("h_eta_TrigLeg_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_TrigLeg );
 		h_phi_TrigLeg = new TH1D("h_phi_TrigLeg_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_TrigLeg );
 
-		h_Pt_OtherLeg = new TH1D("h_Pt_OtherLeg_"+Type, "", 500, 0, 500); Histo.push_back( h_Pt_OtherLeg );
+		h_Pt_OtherLeg = new TH1D("h_Pt_OtherLeg_"+Type, "", 100, 0, 500); Histo.push_back( h_Pt_OtherLeg );
 		h_eta_OtherLeg = new TH1D("h_eta_OtherLeg_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_OtherLeg );
 		h_phi_OtherLeg = new TH1D("h_phi_OtherLeg_"+Type, "", 80, -4, 4); Histo.push_back( h_phi_OtherLeg );
 
-      h_GenMass = new  TH1D("h_GenMass_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass );
+      h_GenMass = new  TH1D("h_GenMass_"+Type, "", 120, 0, 600); Histo.push_back( h_GenMass );
       // h_GenMass = new  TH1D("h_GenMass_"+Type, "", 60, 0, 600); Histo.push_back( h_GenMass );
       // h_GenMass2 = new  TH1D("h_GenMass2_"+Type, "", 60, 60, 120); Histo.push_back( h_GenMass2 );
-      h_GenMass_preFSR = new  TH1D("h_GenMass_preFSR_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass_preFSR );
-      h_GenMass_postFSR = new  TH1D("h_GenMass_postFSR_"+Type, "", 600, 0, 600); Histo.push_back( h_GenMass_postFSR );
-		h_GenPt = new  TH1D("h_GenPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt );
+      h_GenMass_preFSR = new  TH1D("h_GenMass_preFSR_"+Type, "", 120, 0, 600); Histo.push_back( h_GenMass_preFSR );
+      h_GenMass_postFSR = new  TH1D("h_GenMass_postFSR_"+Type, "", 120, 0, 600); Histo.push_back( h_GenMass_postFSR );
+		h_GenPt = new  TH1D("h_GenPt_"+Type, "", 100, 0, 500); Histo.push_back( h_GenPt );
 		h_GenEta = new  TH1D("h_GenEta_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta );
 		h_GenPhi = new  TH1D("h_GenPhi_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi );
 
-		h_GenPt_Lead = new  TH1D("h_GenPt_Lead_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt_Lead );
+		h_GenPt_Lead = new  TH1D("h_GenPt_Lead_"+Type, "", 100, 0, 500); Histo.push_back( h_GenPt_Lead );
 		h_GenEta_Lead = new  TH1D("h_GenEta_Lead_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta_Lead );
 		h_GenPhi_Lead = new  TH1D("h_GenPhi_Lead_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi_Lead );
 
-		h_GenPt_Sub = new  TH1D("h_GenPt_Sub_"+Type, "", 500, 0, 500); Histo.push_back( h_GenPt_Sub );
+		h_GenPt_Sub = new  TH1D("h_GenPt_Sub_"+Type, "", 100, 0, 500); Histo.push_back( h_GenPt_Sub );
 		h_GenEta_Sub = new  TH1D("h_GenEta_Sub_"+Type, "", 200, -10, 10); Histo.push_back( h_GenEta_Sub );
 		h_GenPhi_Sub = new  TH1D("h_GenPhi_Sub_"+Type, "", 80, -4, 4); Histo.push_back( h_GenPhi_Sub );
 
-      h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 500, 0, 500); Histo.push_back( h_GenDiPt );
+      h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 100, 0, 500); Histo.push_back( h_GenDiPt );
       h_GenDiRap = new TH1D("h_GenDiRap_"+Type, "", 200, -10, 10); Histo.push_back( h_GenDiRap );
       // h_GenDiPt = new TH1D("h_GenDiPt_"+Type, "", 25, 0, 50); Histo.push_back( h_GenDiPt );
       // h_GenDiRap = new TH1D("h_GenDiRap_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap );
       // h_GenDiRap1 = new TH1D("h_GenDiRap1_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap1 );
       // h_GenDiRap2 = new TH1D("h_GenDiRap2_"+Type, "", 60, -6, 6); Histo.push_back( h_GenDiRap2 );
 
-		h_VtxProb = new TH1D("h_VtxProb_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb );
-		h_VtxProb_belowM600 = new TH1D("h_VtxProb_belowM600_"+Type, "", 500, 0, 1); Histo.push_back( h_VtxProb_belowM600 );
+		h_VtxProb = new TH1D("h_VtxProb_"+Type, "", 100, 0, 1); Histo.push_back( h_VtxProb );
+		h_VtxProb_belowM600 = new TH1D("h_VtxProb_belowM600_"+Type, "", 100, 0, 1); Histo.push_back( h_VtxProb_belowM600 );
 		
-		h_VtxNormChi2 = new TH1D("h_VtxNormChi2_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2 );
-		h_VtxNormChi2_belowM600 = new TH1D("h_VtxNormChi2_belowM600_"+Type, "", 500, 0, 100); Histo.push_back( h_VtxNormChi2_belowM600 );
+		h_VtxNormChi2 = new TH1D("h_VtxNormChi2_"+Type, "", 20, 0, 20); Histo.push_back( h_VtxNormChi2 );
+		h_VtxNormChi2_belowM600 = new TH1D("h_VtxNormChi2_belowM600_"+Type, "", 20, 0, 20); Histo.push_back( h_VtxNormChi2_belowM600 );
 
-		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BB );
-		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_BE );
-		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 600, 0, 600); Histo.push_back( h_mass_OS_EE );
+		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS_BB );
+		h_mass_OS_BE = new TH1D("h_mass_OS_BE_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS_BE );
+		h_mass_OS_EE = new TH1D("h_mass_OS_EE_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS_EE );
 
       h_PtoM = new TH1D("h_PtoM_"+Type, "", 50, 1, 10); Histo.push_back( h_PtoM );
       h_PtoM_2060 = new TH1D("h_PtoM_2060_"+Type, "", 50, 1, 10); Histo.push_back( h_PtoM_2060 );
@@ -481,6 +485,8 @@ public:
 		if( reco_M >= 15 && reco_M < 60 ) {
 			h_diRap_M15to60->Fill( reco_Rap, weight);
 			h_diRap2_M15to60->Fill( reco_Rap-rapshift, weight);
+         h_diPt2_M15to60->Fill( reco_Pt, weight );
+         h_Phistar2_M15to60->Fill( Object::phistar(reco_v1,reco_v2), weight );
       } else if( reco_M >= 60 && reco_M < 120 ) {
 			h_diRap_M60to120->Fill( reco_Rap, weight);
          h_diRap2_M60to120->Fill( reco_Rap-rapshift, weight);
@@ -678,45 +684,45 @@ public:
 		ntuple = ntuplehandle;
 
 
-		h_Pt = new TH1D("h_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_Pt );
+		h_Pt = new TH1D("h_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt );
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
-		h_mass = new TH1D("h_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_mass );
-		h_diPt = new TH1D("h_diPt_"+Type, "", 250, 0, 500); Histo.push_back( h_diPt );
+		h_mass = new TH1D("h_mass_"+Type, "", 100, 0, 500); Histo.push_back( h_mass );
+		h_diPt = new TH1D("h_diPt_"+Type, "", 125, 0, 250); Histo.push_back( h_diPt );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
-		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_lead_Pt );
+		h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_lead_Pt );
 		h_lead_eta = new TH1D("h_lead_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_lead_eta );
 		h_lead_phi = new TH1D("h_lead_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_lead_phi );
 
-		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_sub_Pt );
+		h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_sub_Pt );
 		h_sub_eta = new TH1D("h_sub_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_sub_eta );
 		h_sub_phi = new TH1D("h_sub_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_sub_phi );
 
-		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_barrel_Pt );
+		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_barrel_Pt );
 		h_barrel_eta = new TH1D("h_barrel_eta_"+Type, "",  60, -3, 3); Histo.push_back( h_barrel_eta );
 		h_barrel_phi = new TH1D("h_barrel_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_barrel_phi );
-		h_barrel_mass = new TH1D("h_barrel_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_barrel_mass );
+		h_barrel_mass = new TH1D("h_barrel_mass_"+Type, "", 100, 0, 500); Histo.push_back( h_barrel_mass );
 
-		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS );
-		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_SS );
+		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_OS );
+		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_SS );
 
-		h_minusCharge_Pt = new TH1D("h_minusCharge_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_minusCharge_Pt );
+		h_minusCharge_Pt = new TH1D("h_minusCharge_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_minusCharge_Pt );
 		h_minusCharge_eta = new TH1D("h_minusCharge_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_minusCharge_eta );
 		h_minusCharge_phi = new TH1D("h_phi_minusCharge_"+Type, "", 80, -4, 4); Histo.push_back( h_minusCharge_phi );
-		h_plusCharge_Pt = new TH1D("h_plusCharge_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_plusCharge_Pt );
+		h_plusCharge_Pt = new TH1D("h_plusCharge_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_plusCharge_Pt );
 		h_plusCharge_eta = new TH1D("h_plusCharge_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_plusCharge_eta );
 		h_plusCharge_phi = new TH1D("h_plusCharge_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_plusCharge_phi );
 
-		h_TrigLeg_Pt = new TH1D("h_TrigLeg_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_TrigLeg_Pt );
+		h_TrigLeg_Pt = new TH1D("h_TrigLeg_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_TrigLeg_Pt );
 		h_TrigLeg_eta = new TH1D("h_TrigLeg_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_TrigLeg_eta );
 		h_TrigLeg_phi = new TH1D("h_TrigLeg_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_TrigLeg_phi );
 
-		h_OtherLeg_Pt = new TH1D("h_OtherLeg_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_OtherLeg_Pt );
+		h_OtherLeg_Pt = new TH1D("h_OtherLeg_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_OtherLeg_Pt );
 		h_OtherLeg_eta = new TH1D("h_OtherLeg_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_OtherLeg_eta );
 		h_OtherLeg_phi = new TH1D("h_OtherLeg_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_OtherLeg_phi );
 
-		h_GenMass = new  TH1D("h_GenMass_"+Type, "", 500, 0, 500); Histo.push_back( h_GenMass );
+		h_GenMass = new  TH1D("h_GenMass_"+Type, "", 100, 0, 500); Histo.push_back( h_GenMass );
 
 	}
 
@@ -898,42 +904,42 @@ public:
 		analyzer = dyanalyzer;
 		ntuple = ntuplehandle;
 
-		h_Pt = new TH1D("h_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_Pt );
+		h_Pt = new TH1D("h_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt );
 		h_eta = new TH1D("h_eta_"+Type, "", 80, -4, 4); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
-		// h_mass = new TH1D("h_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_mass );
-		// h_diPt = new TH1D("h_diPt_"+Type, "", 250, 0, 500); Histo.push_back( h_diPt );
+		// h_mass = new TH1D("h_mass_"+Type, "", 100, 0, 500); Histo.push_back( h_mass );
+		// h_diPt = new TH1D("h_diPt_"+Type, "", 125, 0, 250); Histo.push_back( h_diPt );
 		// h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
 
-		// h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_lead_Pt );
+		// h_lead_Pt = new TH1D("h_lead_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_lead_Pt );
 		// h_lead_eta = new TH1D("h_lead_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_lead_eta );
 		// h_lead_phi = new TH1D("h_lead_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_lead_phi );
 
-		// h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_sub_Pt );
+		// h_sub_Pt = new TH1D("h_sub_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_sub_Pt );
 		// h_sub_eta = new TH1D("h_sub_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_sub_eta );
 		// h_sub_phi = new TH1D("h_sub_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_sub_phi );
 
-		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_barrel_Pt );
+		h_barrel_Pt = new TH1D("h_barrel_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_barrel_Pt );
 		h_barrel_eta = new TH1D("h_barrel_eta_"+Type, "",  80, -4, 4); Histo.push_back( h_barrel_eta );
 		h_barrel_phi = new TH1D("h_barrel_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_barrel_phi );
-		// h_barrel_mass = new TH1D("h_barrel_mass_"+Type, "", 500, 0, 500); Histo.push_back( h_barrel_mass );
+		// h_barrel_mass = new TH1D("h_barrel_mass_"+Type, "", 100, 0, 500); Histo.push_back( h_barrel_mass );
 
-		h_endcap_Pt = new TH1D("h_endcap_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_endcap_Pt );
+		h_endcap_Pt = new TH1D("h_endcap_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_endcap_Pt );
 		h_endcap_eta = new TH1D("h_endcap_eta_"+Type, "",  80, -4, 4); Histo.push_back( h_endcap_eta );
 		h_endcap_phi = new TH1D("h_endcap_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_endcap_phi );
 
-		// h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_OS );
-		// h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 500, 0, 500); Histo.push_back( h_mass_SS );
+		// h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_OS );
+		// h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_SS );
 
-		// h_TrigLeg_Pt = new TH1D("h_TrigLeg_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_TrigLeg_Pt );
+		// h_TrigLeg_Pt = new TH1D("h_TrigLeg_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_TrigLeg_Pt );
 		// h_TrigLeg_eta = new TH1D("h_TrigLeg_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_TrigLeg_eta );
 		// h_TrigLeg_phi = new TH1D("h_TrigLeg_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_TrigLeg_phi );
 
-		// h_OtherLeg_Pt = new TH1D("h_OtherLeg_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_OtherLeg_Pt );
+		// h_OtherLeg_Pt = new TH1D("h_OtherLeg_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_OtherLeg_Pt );
 		// h_OtherLeg_eta = new TH1D("h_OtherLeg_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_OtherLeg_eta );
 		// h_OtherLeg_phi = new TH1D("h_OtherLeg_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_OtherLeg_phi );
 
-		// h_GenMass = new  TH1D("h_GenMass_"+Type, "", 500, 0, 500); Histo.push_back( h_GenMass );
+		// h_GenMass = new  TH1D("h_GenMass_"+Type, "", 100, 0, 500); Histo.push_back( h_GenMass );
 
 		h_hasPixelSeed = new TH1D("h_hasPixelSeed_"+Type, "", 2, 0, 2); Histo.push_back( h_hasPixelSeed );
 		h_etaSC = new TH1D("h_etaSC_"+Type, "", 80, -4, 4); Histo.push_back( h_etaSC );
@@ -1135,16 +1141,16 @@ public:
 		analyzer = dyanalyzer;
 		ntuple = ntuplehandle;
 
-		h_Jet_Pt = new TH1D("h_Jet_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_Jet_Pt );
+		h_Jet_Pt = new TH1D("h_Jet_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Jet_Pt );
 		h_Jet_eta = new TH1D("h_Jet_eta_"+Type, "", 120, -6, 6); Histo.push_back( h_Jet_eta );
 		h_Jet_phi = new TH1D("h_Jet_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_Jet_phi );
 		h_Jet_nJets = new TH1D("h_Jet_nJets_"+Type, "", 100, 0, 100); Histo.push_back( h_Jet_nJets );
 
-		// h_Jet_barrel_Pt = new TH1D("h_Jet_barrel_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_Jet_barrel_Pt );
+		// h_Jet_barrel_Pt = new TH1D("h_Jet_barrel_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Jet_barrel_Pt );
 		// h_Jet_barrel_eta = new TH1D("h_Jet_barrel_eta_"+Type, "",  60, -3, 3); Histo.push_back( h_Jet_barrel_eta );
 		// h_Jet_barrel_phi = new TH1D("h_Jet_barrel_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_Jet_barrel_phi );
 
-		// h_Jet_endcap_Pt = new TH1D("h_Jet_endcap_Pt_"+Type, "", 250, 0, 500); Histo.push_back( h_Jet_endcap_Pt );
+		// h_Jet_endcap_Pt = new TH1D("h_Jet_endcap_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_Jet_endcap_Pt );
 		// h_Jet_endcap_eta = new TH1D("h_Jet_endcap_eta_"+Type, "",  60, -3, 3); Histo.push_back( h_Jet_endcap_eta );
 		// h_Jet_endcap_phi = new TH1D("h_Jet_endcap_phi_"+Type, "",  80, -4, 4); Histo.push_back( h_Jet_endcap_phi );
 

@@ -29,11 +29,12 @@ class DrawControlPlotTool
 {
 public:
 	Double_t MassBinEdges[nMassBin+1];
-	Bool_t DrawDataDriven;
+	Int_t DrawDataDriven;
 	TString NormType;
    TString Rew;
    TString TnpRew;
    TString MomCor;
+   TString HLTname;
 
    // TeX options
 	Bool_t doTex;
@@ -45,6 +46,7 @@ public:
 	TFile *f_input_bkg_emu;
 	TFile *f_input_bkg_dijet;
 	TFile *f_input_bkg_wjets;
+	TFile *f_input_bkg_abcd;
 	TFile *f_output;
 
 	vector< TString > HistNames; vector< TString> Variables; vector< TString > XTitles;
@@ -53,7 +55,7 @@ public:
 
 	double Nfactor_overall;
 	
-	DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew);
+	DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew);
 	virtual void SetupHistogramNames();
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
@@ -76,7 +78,7 @@ public:
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
-DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew)
+DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew)
 {
 	if( !(NormType_arg == "Lumi" || NormType_arg == "Zpeak") )
 	{
@@ -88,6 +90,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 	NormType = NormType_arg;
 	MomCor = MomCor_arg;
    Rew = Rew_arg;
+   HLTname = HLTname_arg;
    doTex = false;
 
 	setTDRStyle();
@@ -105,22 +108,22 @@ DrawControlPlotTool::DrawControlPlotTool(TString version, Bool_t DrawDataDriven_
 		MassBinEdges[i] = DYana::bins[i]; // MassBinEdges_temp[i];
 
 	// -- Get root file containing the histograms -- //
-	// FileLocation = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/Results_ROOTFiles/" + version; // -- 74X -- //
-   // FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version; // -- 76X -- //
+	// FileLocation = "/Users/KyeongPil_Lee/Research/ntupleMaking/13TeV/Results_ROOTFiles/" + HLTname; // -- 74X -- //
+   // FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + HLTname; // -- 76X -- //
 	FileLocation = "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/"; 
 
-   // if( version == "None" ) FileLocation = ".";
+   // if( HLTname == "None" ) FileLocation = ".";
 
    TnpRew = "_notnprew";
    if (doTnpRew) TnpRew = "_tnprew";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + version + "_Data_" + MomCor + "_noHFrew_notnprew.root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew.root");
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
 
-	DYAnalyzer *analyzer = new DYAnalyzer( version );
+	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
 	analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
@@ -156,9 +159,11 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) [GeV]");
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120_part1" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) (PbP) [GeV]");
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120_part2" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) (pPb) [GeV]");
+   HistNames.push_back( "h_diPt2_M15to60" );			Variables.push_back( "diPtM1560" );				XTitles.push_back( "dimuon P_{T} (15<M_{#mu#mu}<60 GeV) [GeV]");
 	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV)");
 	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins_part1" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV) (PbP)");
 	HistNames.push_back( "h_Phistar2_M60to120" );			Variables.push_back( "PhistarAnaBins_part2" );		XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV) (pPb)");
+   HistNames.push_back( "h_Phistar2_M15to60" );			Variables.push_back( "PhistarAnaBins1560" );		XTitles.push_back( "#phi^{*} (15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins_part1" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV) (PbP)");
 	HistNames.push_back( "h_diRap2_M15to60" );			Variables.push_back( "diRapidityM1560AnaBins_part2" );		XTitles.push_back( "dimuon Rapidity (CM) (15<M_{#mu#mu}<60 GeV) (pPb)");
@@ -412,7 +417,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		if( Variables[i_hist].Contains("MassAnaBins") 
             || Variables[i_hist].Contains("diPtM60120")
             || Variables[i_hist].Contains("diRapidityM1560AnaBins") || Variables[i_hist].Contains("diRapidityM60120AnaBins")
-            || Variables[i_hist].Contains("PhistarAnaBins"))
+            || (Variables[i_hist].Contains("PhistarAnaBins") && !Variables[i_hist].Contains("1560")))
 		{
 			vector< TH1D* > h_bkgs;
 			for(Int_t i_tag=0; i_tag<nTag; i_tag++)
@@ -422,7 +427,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 			}
 			this->StoreYieldHistogram( h_data, h_bkgs, "MCBasedBkg" );
 
-			if( DrawDataDriven == kTRUE )
+			if( DrawDataDriven >0 )
          {
             TString Type = "All";
             if( Variables[i_hist].Contains("part1") ) Type = "part1";
@@ -527,18 +532,18 @@ void DrawControlPlotTool::RebinHistograms( TH1D& h_data, vector< TH1D* > &h_MC, 
 		for(Int_t i=0; i<nMC; i++)
 			h_MC[i] = (TH1D*)h_MC[i]->Rebin(nMassBin, h_MC[i]->GetName(), MassBinEdges);
 	}
-	else if( Variable.Contains("Pt") && !Variable.Contains("M60120") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
-	{
-		h_data.Rebin(2);
-		for(Int_t i=0; i<nMC; i++)
-			h_MC[i]->Rebin(2);
-	}
-	else if( Variable == "VtxNormChi2" )
-	{
-		h_data.Rebin(5);
-		for(Int_t i=0; i<nMC; i++)
-			h_MC[i]->Rebin(5);
-	}
+   // else if( Variable.Contains("Pt") && !Variable.Contains("M60120") ) // -- Mass Bin: Follow DY Mass binning @ 13TeV -- //
+   // {
+   //    h_data.Rebin(2);
+   //    for(Int_t i=0; i<nMC; i++)
+   //       h_MC[i]->Rebin(2);
+   // }
+   // else if( Variable == "VtxNormChi2" )
+   // {
+   //    h_data.Rebin(5);
+   //    for(Int_t i=0; i<nMC; i++)
+   //       h_MC[i]->Rebin(5);
+   // }
 }
 
 void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable )
@@ -565,7 +570,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets" )
+		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets" || Names[i_bkg] == "ABCD"  )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -574,7 +579,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 		}
 
 		// -- ttbar-like bkg -- //
-		else if( Names[i_bkg] == "TT" || Names[i_bkg] == "tW" || Names[i_bkg] == "WW" || Names[i_bkg] == "ttbar" )
+		else if( Names[i_bkg] == "TT" || Names[i_bkg] == "TW" || Names[i_bkg] == "WW" || Names[i_bkg] == "ttbar" )
 		{
 			if( h_ttbarlike == NULL )
 				h_ttbarlike = (TH1D*)h_temp->Clone();
@@ -802,11 +807,15 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	// -- Bring the histograms estimated by data-driven method -- //
 	////////////////////////////////////////////////////////////////
 	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
-	f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
-	f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+   // f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
+   // f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+	f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/dijet_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
+	f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/wjets_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
+	f_input_bkg_abcd = new TFile(FileLocation + "/BkgEst/abcd/output_ABCD_" + HLTname + "_DataMinusMC.root");
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet")->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets")->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
+   TH1D *h_abcd = (TH1D*) f_input_bkg_abcd->Get("outputs_0and1isoTo2iso/hbkg_OS_2iso_" + TString(DYana::Varname(DYana::str2var(variable))));
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -839,16 +848,18 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 		h_WW_emu->Scale( NormFactor );
 		h_WZ_emu->Scale( NormFactor );
 		h_ZZ_emu->Scale( NormFactor );
+      h_abcd->Scale( NormFactor );
 	}
 
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
-	StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);
 	StackHistos.push_back( h_WW_emu ); LegendNames.push_back( "WW (e#mu)" ); colors.push_back(kGreen);
 	StackHistos.push_back( h_WZ_emu ); LegendNames.push_back( "WZ" ); colors.push_back(kGreen+2);
 	StackHistos.push_back( h_ZZ_emu ); LegendNames.push_back( "ZZ" ); colors.push_back(kGreen+4);
-	StackHistos.push_back( h_WJets_FR ); LegendNames.push_back( "WJets (FR)" ); colors.push_back(kBlue);
 	StackHistos.push_back( h_DYTauTau_emu ); LegendNames.push_back( "DYTauTau (e#mu)" ); colors.push_back(kBlue-9);
 	StackHistos.push_back( h_ttbar_emu ); LegendNames.push_back( "ttbar (e#mu)" ); colors.push_back(kRed);
+   if (DrawDataDriven==1) {StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);}
+	if (DrawDataDriven==1) {StackHistos.push_back( h_WJets_FR ); LegendNames.push_back( "WJets (FR)" ); colors.push_back(kBlue);}
+	if (DrawDataDriven==2) {StackHistos.push_back( h_abcd ); LegendNames.push_back( "Fakes (ABCD)" ); colors.push_back(kBlue);}
 	StackHistos.push_back( h_SignalMC ); LegendNames.push_back( "DYMuMu" ); colors.push_back(kOrange);
 
 	//////////////////////////////////////////
@@ -906,13 +917,17 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	// -- Store yield histogram -- //
 	vector< TH1D* > h_bkgs; vector< TString > Names;
 
-	h_bkgs.push_back( h_diJet_FR ); Names.push_back("DiJet");
 	h_bkgs.push_back( h_WW_emu ); Names.push_back("WW");
 	h_bkgs.push_back( h_WZ_emu ); Names.push_back("WZ");
 	h_bkgs.push_back( h_ZZ_emu ); Names.push_back("ZZ");
-	h_bkgs.push_back( h_WJets_FR ); Names.push_back("WJets");
 	h_bkgs.push_back( h_DYTauTau_emu ); Names.push_back("DYTauTau");
 	h_bkgs.push_back( h_ttbar_emu ); Names.push_back("ttbar");
+   if (DrawDataDriven==1) {
+      h_bkgs.push_back( h_diJet_FR ); Names.push_back("DiJet");
+      h_bkgs.push_back( h_WJets_FR ); Names.push_back("WJets");
+   } else if (DrawDataDriven==2) {
+      h_bkgs.push_back( h_abcd ); Names.push_back("ABCD");
+   }
 	
 	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
 	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names, variable );
@@ -934,6 +949,9 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 
 	h_WJets_FR->SetName("h_WJets_FR");
 	h_WJets_FR->Write();
+
+	h_abcd->SetName("h_abcd");
+	h_abcd->Write();
 
 	h_WZ_emu->SetName("h_WZ_MC");
 	h_WZ_emu->Write();

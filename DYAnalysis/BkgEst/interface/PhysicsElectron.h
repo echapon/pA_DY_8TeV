@@ -110,6 +110,13 @@ public:
 		}
 		return flag;
 	} 
+
+	bool trkisolation(double iso) {
+      double theiso;
+      theiso = dr03tkSumPt;
+		if( theiso/pt < iso) return true;
+		else return false;
+	}
    // bool miniIsolation(double iso) {
    //    if( miniIso < iso ) return true;
    //    else return false;
