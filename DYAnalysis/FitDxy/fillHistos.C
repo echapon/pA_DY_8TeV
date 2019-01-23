@@ -13,14 +13,17 @@ using namespace DYana;
 using namespace std;
 
 // flag to apply tkiso, dxy, dz cuts
-const bool docuts = false;
+// !! REMEMBER TO ALSO CHANGE THE DEFINITION OF bothiso !!
+const bool docuts = true;
 const bool mergeSStemplates = true;
-const double dxycut = 0.01;
-const double dzcut = 0.1;
-const double tkisocut = 2.5;
-const double pt1cut = 15;
+const double dxycut = 1e99;//0.01;
+const double dzcut = 1e99;//0.1;
+const double relPFisocut = 0.15;//1e99;
+const double reltkisocut = 1e99;//0.2
+const double tkisocut = 1e99;//2.5;
+const double pt1cut = 7;//15;
 const double pt2cut = 7;
-const TString addlcuts = (docuts) ? Form("&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f&&pt1>%f&&pt2>%f",tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut,pt1cut,pt2cut) : "";
+const TString addlcuts = (docuts) ? Form("&&relPFiso1<%f&&relPFiso2<%f&&trkiso1<%f&&trkiso2<%f&&pt1*trkiso1<%f&&pt2*trkiso2<%f&&abs(dxyVTX1)<%f&&abs(dxyVTX2)<%f&&abs(dzVTX1)<%f&&abs(dzVTX2)<%f&&pt1>%f&&pt2>%f",relPFisocut,relPFisocut,reltkisocut,reltkisocut,tkisocut,tkisocut,dxycut,dxycut,dzcut,dzcut,pt1cut,pt2cut) : "";
 const bool printCombine = false;
 
 // declarations
@@ -770,6 +773,7 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       float dxyVTX1,dxyVTX2,dzVTX1,dzVTX2;
       float dxyBS1,dxyBS2;
       float trkiso1,trkiso2;
+      float relPFiso1,relPFiso2;
       float weight=1;
       tr->SetBranchStatus("*",0);
       tr->SetBranchStatus("sign",1); tr->SetBranchAddress("sign",&sign);
@@ -785,6 +789,8 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
       tr->SetBranchStatus("pt2",1); tr->SetBranchAddress("pt2",&pt2);
       tr->SetBranchStatus("trkiso1",1); tr->SetBranchAddress("trkiso1",&trkiso1);
       tr->SetBranchStatus("trkiso2",1); tr->SetBranchAddress("trkiso2",&trkiso2);
+      tr->SetBranchStatus("relPFiso1",1); tr->SetBranchAddress("relPFiso1",&relPFiso1);
+      tr->SetBranchStatus("relPFiso2",1); tr->SetBranchAddress("relPFiso2",&relPFiso2);
       tr->SetBranchStatus("vtxnormchi2",1); tr->SetBranchAddress("vtxnormchi2",&vtxnormchi2);
       tr->SetBranchStatus("dxyVTX1",1); tr->SetBranchAddress("dxyVTX1",&dxyVTX1);
       tr->SetBranchStatus("dxyVTX2",1); tr->SetBranchAddress("dxyVTX2",&dxyVTX2);
@@ -811,10 +817,14 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
          if (pt1<pt1cut) continue;
          if (pt2<pt2cut) continue;
 
+         // bool bothiso = (pt1*trkiso1<tkisocut && pt2*trkiso2<tkisocut);
+         // bool bothiso = (trkiso1<reltkisocut && trkiso2<reltkisocut);
+         bool bothiso = (relPFiso1<relPFisocut && relPFiso2<relPFisocut);
+
          if (doOS) { // OS, TT, iso
             if (sign!=0) continue;
             if (isTight1+isTight2<2) continue;
-            if (docuts && !(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+            if (docuts && !bothiso) continue; 
          }
 
          if (!doOS) {
@@ -822,23 +832,23 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             if (dxymode==1) { // SS, TT, iso, dxy1*dxy2>0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!bothiso) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==2) { // SS, TT, iso, dxy1*dxy2<=0
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!bothiso) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==3) { // SS, TT, iso, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if (!(pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (!bothiso) continue; 
 
             // SS TT non iso
             } else if (dxymode==4) { // SS, TT, non iso, no dxy1*dxy2 cut
                if (sign==0) continue;
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
 
             // SS TT iso+noniso
             } else if (dxymode==5) { // SS, TT, dxy1*dxy2>0
@@ -857,39 +867,39 @@ TH1D* fillHistoKDE(TFile *file, TString treename, TString histname,
             } else if (dxymode==8) { // OS, TT, non iso, dxy1*dxy2>0
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==9) { // OS, TT, non iso, dxy1*dxy2<=0
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==10) { // OS, TT, non iso, no dxy1*dxy2 cut
                if (sign!=0) continue;
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
 
             // OS+SS TT noniso
             } else if (dxymode==11) { // OS+SS, TT, non iso, dxy1*dxy2>0
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==12) { // OS+SS, TT, non iso, dxy1*dxy2<=0
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             } else if (dxymode==13) { // OS+SS, TT, non iso, no dxy1*dxy2 cut
                if (isTight1+isTight2<2) continue;
-               if ((pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if (bothiso) continue; 
 
             // TT, (SS) + (OS noniso)
             } else if (dxymode==14) { // (SS) + (OS noniso), dxy1*dxy2>0
                if (isTight1+isTight2<2) continue;
-               if ((sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((sign==0 && bothiso)) continue; 
                if (dxyVTX1*dxyVTX2<=0) continue;
             } else if (dxymode==15) { // (SS) + (OS noniso), dxy1*dxy2<=0
                if (isTight1+isTight2<2) continue;
-               if ((sign==0 && pt1*trkiso1<tkisocut&&pt2*trkiso2<tkisocut)) continue; 
+               if ((sign==0 && bothiso)) continue; 
                if (dxyVTX1*dxyVTX2>0) continue;
             }
          }

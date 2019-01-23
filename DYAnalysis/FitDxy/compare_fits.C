@@ -11,9 +11,9 @@ void compare_fits(TString basename, TString var) {
    bool do34 = true; // for L3Mu12
    bool do56 = true; // for L3Mu12
    bool do89 = false; // OS noniso only, ignore
-   bool do710 = false;
-   bool do313 = false;
-   bool do1415 = false;
+   bool do710 = true;
+   bool do313 = true;
+   bool do1415 = true;
 
    TCanvas *c1 = new TCanvas("c1","c1",800,600);
    TCanvas *c2 = new TCanvas("c2","c2",800,600);
