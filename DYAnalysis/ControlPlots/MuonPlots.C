@@ -220,6 +220,9 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float dzVTX2; tr->Branch("dzVTX2",&dzVTX2,"dzVTX2/F");
       float vtxnormchi2; tr->Branch("vtxnormchi2",&vtxnormchi2,"vtxnormchi2/F");
       float vtxprob; tr->Branch("vtxprob",&vtxprob,"vtxprob/F");
+      float hiHF; tr->Branch("hiHF",&hiHF,"hiHF/F");
+      float pfMET; tr->Branch("pfMET",&pfMET,"pfMET/F");
+      float pfMETtype1; tr->Branch("pfMETtype1",&pfMETtype1,"pfMETtype1/F");
       int sign; tr->Branch("sign",&sign,"sign/I");
       float weight; tr->Branch("weight",&weight,"weight/F");
 
@@ -361,7 +364,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 				bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
 				vector< Muon > SelectedMuonCollection;
 				Bool_t isPassEventSelection = kFALSE;
-				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,false,20);
+				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
 
             Muon mu1;
             Muon mu2;
@@ -427,6 +430,9 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
             }
             if (filltree && isPassEventSelection_noiso) {
+               hiHF = ntuple->hiHF;
+               pfMET = ntuple->pfMET_pT;
+               pfMETtype1 = ntuple->pfMET_Type1_pT;
 					mu1 = SelectedMuonCollection_noiso[0];
 					mu2 = SelectedMuonCollection_noiso[1];
                pt1 = mu1.Pt;

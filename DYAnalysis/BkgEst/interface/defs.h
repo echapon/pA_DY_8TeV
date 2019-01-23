@@ -70,11 +70,12 @@ namespace DYana {
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
-      // cout << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->isolation(cuts::isomax) << endl;
-      return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
+      // cout << mu->pt << " " << mu->eta << " " << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->trkisolation(cuts::isomax) << endl;
+      // return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
+      return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->trkisolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {
-      return el->acceptance(20,2.4) && el->WPMedium();
+      return el->acceptance(20,2.4) && el->WPMedium() && el->trkisolation(cuts::isomax);
    };
 
    // sgn switch pA vs Ap

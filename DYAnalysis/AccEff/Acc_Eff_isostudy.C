@@ -76,7 +76,7 @@ void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0,
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // add also data and QCD
    using DYana::SampleTag;
@@ -102,8 +102,8 @@ void Acc_Eff(TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0,
       bool isDYMuMu = (Tag[i_tup].Contains("DYMuMu"));
       bool isData   = (Tag[i_tup].Contains("Data"));
       bool isQCD    = (Tag[i_tup].Contains("QCD"));
-      // if (!(isDYMuMu || isData || isQCD)) continue;
-      if (!isData) continue;
+      if (Sample=="Powheg" && !(isDYMuMu || isQCD)) continue;
+      if (Sample=="Data" && !isData) continue;
 
       Bool_t doflip = (switcheta(STags[i_tup])<0);
       Int_t  flipsign = doflip ? -1 : 1;

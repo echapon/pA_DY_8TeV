@@ -1,6 +1,6 @@
 const Double_t isoval[10] = { 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1e99};
-const int binnum = 16;
-const double bins[17] = {4,8,11,15,20,30,40,50,60,76,86,96,106,120,150,200,600};
+const int binnum = 13;
+const double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
 
 const int colors[12] = {kBlack,kRed+1,kBlue+2,kGreen+2,kMagenta+2,kCyan+2,kYellow+2,kViolet+2,kTeal+2,kOrange+2,kSpring+2,kGray};
 const int styles[12] = {20,21,22,23,24,25,26,27,28,29,30,31};
@@ -46,7 +46,8 @@ void optimise(const char* dyfile="ROOTFile_Histogram_Acc_Eff_isostudy_Powheg_PAL
           for (int j=0; j<9; j++) {
              double S = hdy[i][j]->GetBinContent(imass+1);
              double B = hdSS[i][j]->GetBinContent(imass+1)*k;
-             y[j] = S / sqrt(S+B);
+             // y[j] = S / sqrt(S+B);
+             y[j] = S / sqrt(S+B+pow(0.15*B,2));
           }
 
           TGraph *g = new TGraph(9,isoval,y);
