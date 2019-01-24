@@ -113,6 +113,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 	const Int_t Ntup = ntupleDirectory.size();
 	for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 	{
+      // if (!(Tag[i_tup].Contains("DYMuMu30"))) continue;
 		TStopwatch looptime;
 		looptime.Start();
 
@@ -225,6 +226,17 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float pfMETtype1; tr->Branch("pfMETtype1",&pfMETtype1,"pfMETtype1/F");
       int sign; tr->Branch("sign",&sign,"sign/I");
       float weight; tr->Branch("weight",&weight,"weight/F");
+      // gen stuff (only muons)
+      float genpt1, geneta1, genphi1;
+      float genpt2, geneta2, genphi2;
+      if (isMC) {
+         tr->Branch("genpt1",&genpt1,"genpt1/F");
+         tr->Branch("geneta1",&geneta1,"geneta1/F");
+         tr->Branch("genphi1",&genphi1,"genphi1/F");
+         tr->Branch("genpt2",&genpt2,"genpt2/F");
+         tr->Branch("geneta2",&geneta2,"geneta2/F");
+         tr->Branch("genphi2",&genphi2,"genphi2/F");
+      }
 
 		Bool_t isNLO = 0;
       if( Type=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "WJets") )
@@ -304,7 +316,16 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             }
 
 				Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
-			}
+            genpt1 = GenLeptonCollection[0].Pt;
+            geneta1 = GenLeptonCollection[0].eta;
+            genphi1 = GenLeptonCollection[0].phi;
+            genpt2 = GenLeptonCollection[1].Pt;
+            geneta2 = GenLeptonCollection[1].eta;
+            genphi2 = GenLeptonCollection[1].phi;
+			} else {
+            genpt1=-1; geneta1=999; genphi1=999;
+            genpt2=-2; geneta2=999; genphi2=999;
+         }
 
 			if( ntuple->isTriggered( analyzer->HLT )  && GenFlag) 
 			{
