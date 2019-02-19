@@ -21,7 +21,7 @@ Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Doubl
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
 void DrawAccEffPlot(TString HLTname = "PAL3Mu12", 
-      TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar
+      TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar | Pt1560 | Phistar1560
       TString MomCor = "MomCorr", // MomCorr or MomUnCorr
       TString Rew = "rewboth", // rewboth or norew or rewplus or rewminus
       TString Generator = "Powheg") 
@@ -97,13 +97,11 @@ void DrawAccEffPlot(TString HLTname = "PAL3Mu12",
 
    if (variable=="Mass") {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
-   } else if (variable=="Pt") {
+   } else if (variable.Contains("Pt")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
-   } else if (variable=="Rap1560") {
+   } else if (variable.Contains("Rap")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
-   } else if (variable=="Rap60120") {
-      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
-   } else if (variable=="Phistar") {
+   } else if (variable.Contains("Phistar")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon #phi^{*} (post-FSR)");
    }
 	g_Acc->GetXaxis()->SetNoExponent();
@@ -168,10 +166,10 @@ void DrawAccEffPlot(TString HLTname = "PAL3Mu12",
 
 
 	MyCanvas *myc_tnp = new MyCanvas("c_UnCorr_vs_Corr_tnp", g_Acc->GetXaxis()->GetTitle(), "Values");
-	myc_tnp->LowerEdge_Y = 0.5;
+	myc_tnp->LowerEdge_Y = HLTname.Contains("L1DoubleMu") ? 0. : 0.5;
 	myc_tnp->UpperEdge_Y = 1.05;
 
-	myc_tnp->LowerEdge_Ratio = 0.9;
+	myc_tnp->LowerEdge_Ratio = HLTname.Contains("L1DoubleMu") ? 0.8 : 0.9;
 	myc_tnp->UpperEdge_Ratio = 1.02;
 	if (!variable.Contains("Rap")) myc_tnp->isLogX = kTRUE;
 
@@ -251,13 +249,11 @@ void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmE
 
    if (variable=="Mass") {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
-   } else if (variable=="Pt") {
+   } else if (variable.Contains("Pt")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
-   } else if (variable=="Rap1560") {
+   } else if (variable.Contains("Rap")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
-   } else if (variable=="Rap60120") {
-      g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon y_{CM} (post-FSR)");
-   } else if (variable=="Phistar") {
+   } else if (variable.Contains("Phistar")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon #phi^{*} (post-FSR)");
    }
 	g_Acc->GetXaxis()->SetNoExponent();
