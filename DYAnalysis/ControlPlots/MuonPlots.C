@@ -181,6 +181,10 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float minpt; tr->Branch("minpt",&minpt,"minpt/F");
       float pt1; tr->Branch("pt1",&pt1,"pt1/F");
       float pt2; tr->Branch("pt2",&pt2,"pt2/F");
+      float eta1; tr->Branch("eta1",&eta1,"eta1/F");
+      float eta2; tr->Branch("eta2",&eta2,"eta2/F");
+      float phi1; tr->Branch("phi1",&phi1,"phi1/F");
+      float phi2; tr->Branch("phi2",&phi2,"phi2/F");
       float maxabseta; tr->Branch("maxabseta",&maxabseta,"maxabseta/F");
       float maxrelPFiso; tr->Branch("maxrelPFiso",&maxrelPFiso,"maxrelPFiso/F");
       float relPFiso1; tr->Branch("relPFiso1",&relPFiso1,"relPFiso1/F");
@@ -390,7 +394,6 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             Muon mu1;
             Muon mu2;
             TLorentzVector dimu; 
-            double eta1, eta2;
 
 				if( isPassEventSelection == kTRUE )
 				{
@@ -460,6 +463,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                pt2 = mu2.Pt;
                eta1 = mu1.eta;
                eta2 = mu2.eta;
+               phi1 = mu1.phi;
+               phi2 = mu2.phi;
                dimu = mu1.Momentum+mu2.Momentum; 
                // variables for the tree
                diMass = dimu.M(); diRapidity = dimu.Rapidity(); diPt = dimu.Pt();
