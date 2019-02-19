@@ -1,8 +1,12 @@
 executable            = batch_acceff.sh
-arguments             = $(ProcId)
+arguments             = $(ProcId) PAL3Mu12
 output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
 +JobFlavour           = "workday"
 # RequestCpus           = 8
+#queue 11
+
+
+arguments             = $(ProcId) PAL1DoubleMuOpen
 queue 11
