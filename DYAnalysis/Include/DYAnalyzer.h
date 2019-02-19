@@ -206,6 +206,14 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
+   else if( HLTname.Contains("L1DoubleMuOpen") )
+	{
+		*HLT = "HLT_PAL1DoubleMuOpen_v*"; 
+		*LeadPtCut = 7;
+		*SubPtCut = 7;
+		*LeadEtaCut = 2.4;
+		*SubEtaCut = 2.4;
+	}
 	else
 	{ 
 		cout << "Wrong HLT name!: " << HLTname << endl;
@@ -773,8 +781,8 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
           if (!noiso && HLT.Contains("L3Mu12") && 
                    (MuonCollection[j].trkiso < 0.2))
              passOK = true;
-          // for L1DoubleMu0: rel PF iso
-          if (!noiso && HLT.Contains("L1DoubleMu0") && 
+          // for L1DoubleMu: rel PF iso
+          if (!noiso && HLT.Contains("L1DoubleMu") && 
                    (MuonCollection[j].relPFiso < 0.15))
              passOK = true;
 
@@ -796,7 +804,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 			isExistHLTMatchedMuon = kTRUE;
 			break;
 		}
-      if( HLT.Contains("L1DoubleMu0")) {
+      if( HLT.Contains("L1DoubleMu")) {
          if (mu.isTrigMatched(ntuple, HLT)) {
             if (mu.Pt > LeadPtCut) nPassLeadPtCut++;
             if (mu.Pt > SubPtCut) nHLTMatchedMuons++;
@@ -805,7 +813,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
             isExistHLTMatchedMuon = kTRUE;
             break;
          }
-      } // if L1DoubleMu0
+      } // if L1DoubleMu
 	} // loop on muons for trigger matching
 
 	if( isExistHLTMatchedMuon == kTRUE )
@@ -931,10 +939,10 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
 	    if( MuonCollection[j].isTightMuon() ) {
-          // for L1DoubleMu0 / low mass: use PF iso
-          if (HLT.Contains("L1DoubleMu0") && MuonCollection[j].relPFiso < 0.3)
+          // for L1DoubleMu / low mass: use PF iso
+          if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
 	        QMuonCollection.push_back( MuonCollection[j] );
-          // for L1DoubleMu0 / low mass: use trkiso
+          // for L3Mu12 / high mass: use trkiso
           if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
 	        QMuonCollection.push_back( MuonCollection[j] );
        }
@@ -1762,12 +1770,12 @@ Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHan
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
       if( MuonCollection[j].isTightMuon() ) {
-         // for L1DoubleMu0 / low mass: use PF iso
-         if (HLT.Contains("L1DoubleMu0") && MuonCollection[j].relPFiso < 0.3)
+         // for L1DoubleMu / low mass: use PF iso
+         if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
-         // for L1DoubleMu0 / low mass: use trkiso
+         // for L3Mu12 / high mass: use trkiso
          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
@@ -1891,12 +1899,12 @@ Bool_t DYAnalyzer::EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHand
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
       if( MuonCollection[j].isTightMuon() ) {
-         // for L1DoubleMu0 / low mass: use PF iso
-         if (HLT.Contains("L1DoubleMu0") && MuonCollection[j].relPFiso < 0.3)
+         // for L1DoubleMu / low mass: use PF iso
+         if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
-         // for L1DoubleMu0 / low mass: use trkiso
+         // for L3Mu12 / high mass: use trkiso
          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
@@ -1954,10 +1962,10 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
 	{
       if( MuonCollection[j].isTightMuon() ) {
-         // for L1DoubleMu0 / low mass: use PF iso
-         if (HLT.Contains("L1DoubleMu0") && MuonCollection[j].relPFiso < 0.3)
+         // for L1DoubleMu / low mass: use PF iso
+         if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
             QMuonCollection.push_back( MuonCollection[j] );
-         // for L1DoubleMu0 / low mass: use trkiso
+         // for L3Mu12 / high mass: use trkiso
          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
             QMuonCollection.push_back( MuonCollection[j] );
       }
