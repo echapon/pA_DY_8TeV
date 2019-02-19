@@ -10,35 +10,35 @@
 #include <RooWorkspace.h>
 #include "../FitDxy/KDEProducer.cc"
 
-const int nbins = 46;
+const int nbins = 58;
 const double ael[nbins] = {0  ,
-   0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,
-   0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,
-   1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,
+   0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,
+   0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,
+   1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,
    2.1,2.1,2.1,2.1,2.1,2.1,
    0  ,1.2,2.1,
    0  ,0.3,0.6,0.9,1.2,1.6
 };
 const double aeh[nbins] = {2.4,
-   2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,
-   1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,
-   2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,
+   2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,
+   1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2,
+   2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,2.1,
    2.4,2.4,2.4,2.4,2.4,2.4,
    1.2,2.1,2.4,
    0.3,0.6,0.9,1.2,1.6,2.1
 };
 const double ptl[nbins] = {7  ,
-   7  ,12 ,15 ,30 ,40 ,50, 60 ,70 ,80 ,100,
-   7  ,12 ,15 ,25 ,30 ,35 ,40 ,45 ,50 ,80 ,
-   7  ,12 ,15 ,25 ,30 ,35 ,40 ,45 ,50 ,80 ,
+   7  ,12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,
+   7  ,12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,
+   7  ,12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,
    7  ,12 ,15 ,25 ,40 ,80 ,
    7  ,7  ,7  ,
    7  ,7  ,7  ,7  ,7  ,7
 };
 const double pth[nbins] = {200,
-   12 ,15 ,30 ,40 ,50, 60 ,70 ,80 ,100,200,
-   12 ,15 ,25 ,30 ,35 ,40 ,45 ,50 ,80 ,200,
-   12 ,15 ,25 ,30 ,35 ,40 ,45 ,50 ,80 ,200,
+   12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,200,
+   12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,200,
+   12 ,15 ,20 ,25 ,30 ,35 ,40 ,45 ,50, 60 ,70 ,80 ,100,200,
    12 ,15 ,25 ,40 ,80 ,200,
    200,200,200,
    200,200,200,200,200,200
@@ -50,8 +50,8 @@ const double masshigh = 120;
 
 const double tagptcut = 15;
 const double tagetacut = 2.4;
-const double relPFisocut = 0.15; //1e99;
-const double reltkisocut = 1e99; //0.20;
+const double relPFisocut = 1e99; //0.15; 
+const double reltkisocut = 0.20; //1e99; 
 
 const double maxdr = 0.2;
 const double mumass =   105.6583745e-3;
@@ -77,7 +77,8 @@ void MassTemplatesForTnP::Loop(const char* filename)
 //       To read only selected branches, Insert statements like:
 // METHOD1:
    fChain->SetBranchStatus("*",0);  // disable all branches
-   fChain->SetBranchStatus("weight*",1);  // activate branchname
+   fChain->SetBranchStatus("weight*",1);  // weights are not KDE-friendly... ignore
+   // weight = 1.;
    fChain->SetBranchStatus("gen*",1);  // activate branchname
    fChain->SetBranchStatus("pt*",1);  // activate branchname
    fChain->SetBranchStatus("eta*",1);  // activate branchname
@@ -172,8 +173,15 @@ void MassTemplatesForTnP::Loop(const char* filename)
 
          for (int ihist=0; ihist<nbins; ihist++) {
             if (aeta >= ael[ihist] && aeta < aeh[ihist] && pt1 >= ptl[ihist] && pt1 < pth[ihist]) {
-               if (passiso) (hpass[ihist])->Fill(diMass,weight);
-               else (hfail[ihist])->Fill(diMass,weight);
+               if (passiso) {
+                  (hpass[ihist])->Fill(diMass,weight);
+                  valspass[ihist].push_back(diMass);
+                  weightspass[ihist].push_back(weight);
+               } else {
+                  (hfail[ihist])->Fill(diMass,weight);
+                  valsfail[ihist].push_back(diMass);
+                  weightsfail[ihist].push_back(weight);
+               }
             }
          }
       }
@@ -182,21 +190,21 @@ void MassTemplatesForTnP::Loop(const char* filename)
    // now make the RooHistPdf's
    RooRealVar var("mass","m_{#mu#mu} [GeV/c^{2}]",masslow,masshigh,"");
    for (int ihist=0; ihist<nbins; ihist++) {
-      bool ok=true;
       int ihist0 = ihist;
+      while (ihist0>0 && valspass[ihist0].size()<10) {
+         ihist0 = ihist0 - 1;
+      }
 
-      if (valspass[ihist].size()<10) ok=false;
-      if (ihist>0 && !ok) ihist0 = ihist-1;
       KDEProducer kdeprodpass(&(valspass[ihist0]),&(weightspass[ihist0]),1,nmassbins,masslow,masshigh,5,false);
       TH1D *hkdepass = (TH1D*) kdeprodpass.getAPDF(Form("%s_kde",hpass[ihist]->GetName()), Form("KDE density for %s",hpass[ihist]->GetTitle()), nmassbins, masslow, masshigh);
       RooDataHist *rhpass = new RooDataHist(Form("%s_roodatahist",hpass[ihist]->GetName()), hpass[ihist]->GetTitle(),RooArgList(var),hkdepass);
       RooHistPdf *pdfpass = new RooHistPdf(Form("%s_roohistpdf",hpass[ihist]->GetName()), hpass[ihist]->GetTitle(),RooArgList(var),*rhpass);
       w.import(*pdfpass);
-      ok=true;
 
       ihist0 = ihist;
-      if (valsfail[ihist].size()<10) ok=false;
-      if (ihist>0 && !ok) ihist0 = ihist-1;
+      while (ihist0>0 && valsfail[ihist0].size()<10) {
+         ihist0 = ihist0 - 1;
+      }
       KDEProducer kdeprodfail(&(valsfail[ihist0]),&(weightsfail[ihist0]),1,nmassbins,masslow,masshigh,5,false);
       TH1D *hkdefail = (TH1D*) kdeprodfail.getAPDF(Form("%s_kde",hfail[ihist]->GetName()), Form("KDE density for %s",hfail[ihist]->GetTitle()), nmassbins, masslow, masshigh);
       RooDataHist *rhfail = new RooDataHist(Form("%s_roodatahist",hfail[ihist]->GetName()), hfail[ihist]->GetTitle(),RooArgList(var),hkdefail);
