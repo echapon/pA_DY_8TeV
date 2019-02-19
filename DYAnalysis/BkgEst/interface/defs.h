@@ -39,7 +39,7 @@ namespace DYana {
 
 
    // kinematic bins
-   // mass
+   // mass (compatible with SMP-14-003)
    const int binnum = 13;
    double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
    // pt
@@ -50,23 +50,23 @@ namespace DYana {
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
    
-   // pt for measurement 60-120
-   const int ptbinnum_meas = 21;
-   double ptbin_meas[ptbinnum_meas+1] = {0,2,4,6,8,10,12,14,16,18,20,25,30,40,45,50,60,70,85,100,125,200};
-   const int ptbinnum_meas_1560 = 10;
-   double ptbin_meas_1560[ptbinnum_meas_1560+1] = {0,4,8,12,16,20,30,45,60,100,200};
+   // pt for measurement 60-120 (same as SMP-14-012)
+   const int ptbinnum_meas = 18;
+   double ptbin_meas[ptbinnum_meas+1] = {0,2.5,5,7.5,10,12.5,15,17.5,20,30,40,50,70,90,110,150,190,250,600};
+   const int ptbinnum_meas_1560 = 9;
+   double ptbin_meas_1560[ptbinnum_meas_1560+1] = {0,5,10,15,20,40,70,110,190,600};
    
-   // rapidity binning
+   // rapidity binning (compatible with, but finer than, HIN-15-002)
    const int rapbinnum_1560 = 12;
    double rapbin_1560[rapbinnum_1560+1] = {-2.87,-2.4,-1.93,-1.6,-1.2,-0.8,-0.4,0,0.4,0.8,1.2,1.6,1.93};
    const int rapbinnum_60120 = 24;
    double rapbin_60120[rapbinnum_60120+1] = {-2.87,-2.6,-2.4,-2.2,-1.93,-1.8,-1.6,-1.4,-1.2,-1.,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.,1.2,1.4,1.6,1.8,1.93};
 
-   // phi* binning
-   const int phistarnum = 10;
-   double phistarbin[phistarnum+1] = {0, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 3.};
-   const int phistarnum_1560 = 10;
-   double phistarbin_1560[phistarnum_1560+1] = {0, 0.01, 0.03, 0.05, 0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 3.};
+   // phi* binning (rebinned from with SMP-17-002)
+   const int phistarnum = 17;
+   double phistarbin[phistarnum+1] = {0, 0.008, 0.016, 0.024, 0.034, 0.045, 0.057, 0.072, 0.091, 0.114, 0.145, 0.189, 0.258, 0.391, 0.695, 1.153, 1.947, 3.277};
+   const int phistarnum_1560 = 9;
+   double phistarbin_1560[phistarnum_1560+1] = {0, 0.008, 0.024, 0.045, 0.072, 0.114, 0.189, 0.391, 1.153, 3.277};
 
    // object selection
    bool MuSel(PhysicsMuon *mu) {
@@ -92,6 +92,8 @@ namespace DYana {
       phistar, 
       rap60120, 
       rap1560,
+      pt1560,
+      phistar1560,
       ALLvar
    };
 
@@ -101,11 +103,15 @@ namespace DYana {
       else if (variable.Contains("phistar")) return phistar;
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
+      else if (variable.Contains("pt1560")) return pt1560;
+      else if (variable.Contains("phistar1560")) return phistar1560;
       else if (variable.Contains("Mass")) return mass;
       else if (variable.Contains("Pt")) return pt;
       else if (variable.Contains("Phistar")) return phistar;
       else if (variable.Contains("Rap60120")) return rap60120;
       else if (variable.Contains("Rap1560")) return rap1560;
+      else if (variable.Contains("Pt1560")) return pt1560;
+      else if (variable.Contains("Phistar1560")) return phistar1560;
       return mass;
    };
 
@@ -115,6 +121,8 @@ namespace DYana {
       else if (thevar==var::phistar) return "phistar";
       else if (thevar==var::rap60120) return "rap60120";
       else if (thevar==var::rap1560) return "rap1560";
+      else if (thevar==var::pt1560) return "pt1560";
+      else if (thevar==var::phistar1560) return "phistar1560";
       else return "unknown";
    };
 
@@ -124,20 +132,22 @@ namespace DYana {
       else if (thevar==var::phistar) return "Phistar";
       else if (thevar==var::rap60120) return "Rap60120";
       else if (thevar==var::rap1560) return "Rap1560";
+      else if (thevar==var::pt1560) return "Pt1560";
+      else if (thevar==var::phistar1560) return "Phistar1560";
       else return "unknown";
    };
 
    const char* xaxistitle(var thevar) {
       if (thevar==var::mass) return "M [GeV/c^{2}]";
-      else if (thevar==var::pt) return "p_{T} [GeV/c]";
-      else if (thevar==var::phistar) return "#phi^{*}";
+      else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV/c]";
+      else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
       else return "y_{CM}";
    };
 
    const char* xaxistitletex(var thevar) {
       if (thevar==var::mass) return "\\mmumu [\\GeVcc]";
-      else if (thevar==var::pt) return "\\pt [\\GeVc]";
-      else if (thevar==var::phistar) return "\\phistar";
+      else if (thevar==var::pt || thevar==var::pt1560) return "\\pt [\\GeVc]";
+      else if (thevar==var::phistar || thevar==var::phistar1560) return "\\phistar";
       else return "$y_\\text{CM}$";
    };
 
@@ -148,6 +158,8 @@ namespace DYana {
       else if (thevar==var::pt) return ptbinnum_meas;
       else if (thevar==var::phistar) return phistarnum;
       else if (thevar==var::rap1560) return rapbinnum_1560;
+      else if (thevar==var::pt1560) return ptbinnum_meas_1560;
+      else if (thevar==var::phistar1560) return phistarnum_1560;
       else return rapbinnum_60120;
    };
 
@@ -156,6 +168,8 @@ namespace DYana {
       else if (thevar==var::pt) return ptbin_meas;
       else if (thevar==var::phistar) return phistarbin;
       else if (thevar==var::rap1560) return rapbin_1560;
+      else if (thevar==var::pt1560) return ptbin_meas_1560;
+      else if (thevar==var::phistar1560) return phistarbin_1560;
       else return rapbin_60120;
    };
 
