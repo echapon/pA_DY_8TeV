@@ -265,53 +265,53 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 		cout << "\t[Total Events: " << NEvents << "]" << endl;
       // NEvents = 100000;
 		for(Int_t i=0; i<NEvents; i++)
-		{
-			loadBar(i+1, NEvents, 100, 100);
-			
-			ntuple->GetEvent(i);
+      {
+         loadBar(i+1, NEvents, 100, 100);
 
-			/////////////////////////////
-			// -- Bring the weights -- //
-			/////////////////////////////
-				// -- Positive/Negative Gen-weights -- //
-			Double_t GenWeight;
-			if( isNLO == 1 )
-				ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
-			else
-				GenWeight = 1;
+         ntuple->GetEvent(i);
 
-			SumWeight += GenWeight;
+         /////////////////////////////
+         // -- Bring the weights -- //
+         /////////////////////////////
+         // -- Positive/Negative Gen-weights -- //
+         Double_t GenWeight;
+         if( isNLO == 1 )
+            ntuple->GENEvt_weight < 0 ? GenWeight = -1 : GenWeight = 1;
+         else
+            GenWeight = 1;
 
-				// -- Pileup-Reweighting -- //
-			Double_t PUWeight = 1.; //analyzer->PileUpWeightValue( ntuple->nPileUp );
+         SumWeight += GenWeight;
+
+         // -- Pileup-Reweighting -- //
+         Double_t PUWeight = 1.; //analyzer->PileUpWeightValue( ntuple->nPileUp );
          if (doHFrew) PUWeight *= hftool.weight(ntuple->hiHF,rewmode); 
 
          // -- Tag and probe weights -- //
          Double_t TnpWeight = 1.;
 
-			Bool_t GenFlag = kFALSE;
-			GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
+         Bool_t GenFlag = kFALSE;
+         GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
 
-			if( GenFlag )
-				SumWeight_Separated += GenWeight;
+         if( GenFlag )
+            SumWeight_Separated += GenWeight;
 
          // -- Fill the histogram for gen-level information (signal sample) -- //
          vector<GenLepton> GenLeptonCollection;
-			if( GenFlag && Tag[i_tup].Contains("DYMuMu") )
-			{
-				Int_t NGenLeptons = ntuple->gnpair;
-				for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
-				{
-					GenLepton genlep;
-					genlep.FillFromNtuple(ntuple, i_gen);
-					if( genlep.isMuon() && genlep.isHardProcess )
-					{
-						GenLeptonCollection.push_back( genlep );
+         if( GenFlag && Tag[i_tup].Contains("DYMuMu") )
+         {
+            Int_t NGenLeptons = ntuple->gnpair;
+            for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
+            {
+               GenLepton genlep;
+               genlep.FillFromNtuple(ntuple, i_gen);
+               if( genlep.isMuon() && genlep.isHardProcess )
+               {
+                  GenLeptonCollection.push_back( genlep );
 
-						if( GenLeptonCollection.size() ==  2 )
-							break;
-					}
-				}
+                  if( GenLeptonCollection.size() ==  2 )
+                     break;
+               }
+            }
 
             // -- Z pt reweighting -- //
             if (zptrew) {
@@ -319,33 +319,33 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                GenWeight *= zptWeight(gen_Pt);
             }
 
-				Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
+            Plots->FillHistograms_GenDoubleMu(ntuple, GenLeptonCollection[0], GenLeptonCollection[1], GenWeight);
             genpt1 = GenLeptonCollection[0].Pt;
             geneta1 = GenLeptonCollection[0].eta;
             genphi1 = GenLeptonCollection[0].phi;
             genpt2 = GenLeptonCollection[1].Pt;
             geneta2 = GenLeptonCollection[1].eta;
             genphi2 = GenLeptonCollection[1].phi;
-			} else {
+         } else {
             genpt1=-1; geneta1=999; genphi1=999;
             genpt2=-2; geneta2=999; genphi2=999;
          }
 
-			if( ntuple->isTriggered( analyzer->HLT )  && GenFlag) 
-			{
-				//Collect Reconstruction level information
-				vector< Muon > MuonCollection;
-				Int_t NLeptons = ntuple->nMuon;
-				for(Int_t i_reco=0; i_reco<NLeptons; i_reco++)
-				{
-					Muon mu;
-					mu.FillFromNtuple(ntuple, i_reco);
-					// -- Apply Rochester momentum scale correction -- //
-					if( isCorrected == kTRUE )
-					{
-						float qter = 1.0;
+         if( ntuple->isTriggered( analyzer->HLT )  && GenFlag) 
+         {
+            //Collect Reconstruction level information
+            vector< Muon > MuonCollection;
+            Int_t NLeptons = ntuple->nMuon;
+            for(Int_t i_reco=0; i_reco<NLeptons; i_reco++)
+            {
+               Muon mu;
+               mu.FillFromNtuple(ntuple, i_reco);
+               // -- Apply Rochester momentum scale correction -- //
+               if( isCorrected == kTRUE )
+               {
+                  float qter = 1.0;
                   int s=cor_s, m=cor_m; 
-						
+
                   if( Tag[i_tup].Contains("Data") )
                      // careful, need to switch back eta to the lab frame
                      qter = rmcor.kScaleDT(mu.charge, mu.Pt, analyzer->sign*mu.eta, mu.phi, s, m);
@@ -379,58 +379,76 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                   mu.Pt = mu.Momentum.Pt();
                   // mu.eta = mu.Momentum.Eta();
                   // mu.phi = mu.Momentum.Phi();
-					}
-					
-					MuonCollection.push_back( mu );
-				}
+               }
 
-				// -- Event Selection -- //
-				vector< Muon > SelectedMuonCollection_noiso;
-				bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
-				vector< Muon > SelectedMuonCollection;
-				Bool_t isPassEventSelection = kFALSE;
-				if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+               MuonCollection.push_back( mu );
+            }
+
+            // -- Event Selection -- //
+            vector< Muon > SelectedMuonCollection_noiso;
+            bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
+            vector< Muon > SelectedMuonCollection;
+            Bool_t isPassEventSelection = kFALSE;
+            if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
 
             Muon mu1;
             Muon mu2;
             TLorentzVector dimu; 
 
-				if( isPassEventSelection == kTRUE )
-				{
-					mu1 = SelectedMuonCollection[0];
-					mu2 = SelectedMuonCollection[1];
+            if( isPassEventSelection == kTRUE )
+            {
+               mu1 = SelectedMuonCollection[0];
+               mu2 = SelectedMuonCollection[1];
                pt1 = mu1.Pt;
                pt2 = mu2.Pt;
                eta1 = mu1.eta;
                eta2 = mu2.eta;
+               double aeta1 = fabs(eta1);
+               double aeta2 = fabs(eta2);
 
                // TnP
                if (doTnPrew) {
-                  TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,eta1,0)
-                     *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,eta2,0);
+                  if (HLTname.Contains("L1DoubleMu")) {
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,aeta2,0);
+                  } else if (HLTname.Contains("L3Mu12")) {
+                     // L3Mu12 uses rel tk iso
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
+                  } else {
+                     cerr << "ERROR trigger should be L1DoubleMuOpen or L3Mu12" << endl;
+                     TnpWeight = 1.;
+                  }
                   // add trg... careful!
                   double sf_trg=1.;
-                  if (pt2>=15. && pt1>=15.) { // both muons could trigger
-                     double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)) * (1 - tnp_weight_trg_ppb(eta2,200)) );
-                     double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
-                     sf_trg = eff_data/eff_mc;
-                  } else if (pt1<15) {
-                     sf_trg = tnp_weight_trg_ppb(eta2,0);
-                  } else if (pt2<15) {
-                     sf_trg = tnp_weight_trg_ppb(eta1,0);
+                  if (HLTname.Contains("L3Mu12")) {
+                     if (pt2>=15. && pt1>=15.) { // both muons could trigger
+                        double eff_data = (1 - (1 - tnp_weight_L3Mu12_ppb(eta1,200)*tnp_weight_L3Mu12_ppb(eta1,0)/tnp_weight_L3Mu12_ppb(eta1,0)) * (1 - tnp_weight_L3Mu12_ppb(eta2,200)*tnp_weight_L3Mu12_ppb(eta2,0)/tnp_weight_L3Mu12_ppb(eta2,0)) );
+                        double eff_mc = (1 - (1 - tnp_weight_L3Mu12_ppb(eta1,300)) * (1 - tnp_weight_L3Mu12_ppb(eta2,300)) );
+                        sf_trg = eff_data/eff_mc;
+                     } else if (pt1<15) {
+                        sf_trg = tnp_weight_L3Mu12_ppb(eta2,0);
+                     } else if (pt2<15) {
+                        sf_trg = tnp_weight_L3Mu12_ppb(eta1,0);
+                     }
+                  } else if (HLTname.Contains("L1DoubleMuOpen")) { // L1DoubleMuOpen case
+                     sf_trg = tnp_weight_L1DMOpen_ppb(eta1,0) * tnp_weight_L1DMOpen_ppb(eta2,0);
+                  }
+                  else { // L1DoubleMu0
+                     sf_trg = tnp_weight_L1DM0_ppb(eta1,0) * tnp_weight_L1DM0_ppb(eta2,0);
                   }
                   TnpWeight = TnpWeight * sf_trg;
                }
 
-					Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
-					Plots_MET->FillHistograms_MET(GenWeight*PUWeight*TnpWeight);
+               Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
+               Plots_MET->FillHistograms_MET(GenWeight*PUWeight*TnpWeight);
 
-					Int_t PU = ntuple->nPileUp;
-					h_PU->Fill( PU, PUWeight*TnpWeight );
+               Int_t PU = ntuple->nPileUp;
+               h_PU->Fill( PU, PUWeight*TnpWeight );
 
-					Int_t nVertices = ntuple->nVertices;
-					h_nVertices_before->Fill(nVertices, GenWeight*TnpWeight);
-					h_nVertices_after->Fill(nVertices, GenWeight*PUWeight*TnpWeight);
+               Int_t nVertices = ntuple->nVertices;
+               h_nVertices_before->Fill(nVertices, GenWeight*TnpWeight);
+               h_nVertices_after->Fill(nVertices, GenWeight*PUWeight*TnpWeight);
 
                h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight*TnpWeight);
                h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight*TnpWeight);
@@ -457,8 +475,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                hiHF = ntuple->hiHF;
                pfMET = ntuple->pfMET_pT;
                pfMETtype1 = ntuple->pfMET_Type1_pT;
-					mu1 = SelectedMuonCollection_noiso[0];
-					mu2 = SelectedMuonCollection_noiso[1];
+               mu1 = SelectedMuonCollection_noiso[0];
+               mu2 = SelectedMuonCollection_noiso[1];
                pt1 = mu1.Pt;
                pt2 = mu2.Pt;
                eta1 = mu1.eta;
@@ -518,9 +536,9 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                sign = abs(mu1.charge+mu2.charge);
                tr->Fill();
             }
-			} //End of if( isTriggered )
+         } //End of if( isTriggered )
 
-		} //End of event iteration
+      } //End of event iteration
 
 		Plots->WriteHistograms( f );
 		Plots_MET->WriteHistograms( f );
