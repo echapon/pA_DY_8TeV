@@ -45,13 +45,13 @@ const double pth[nbins] = {200,
 };
 
 const int nmassbins = 500;
-const double masslow = 75;
-const double masshigh = 120;
+const double masslow = 60;//75;
+const double masshigh = 130;//120;
 
 const double tagptcut = 15;
 const double tagetacut = 2.4;
-const double relPFisocut = 1e99; //0.15; 
-const double reltkisocut = 0.20; //1e99; 
+const double relPFisocut = 0.15; //1e99;
+const double reltkisocut = 1e99; //0.20;
 
 const double maxdr = 0.2;
 const double mumass =   105.6583745e-3;

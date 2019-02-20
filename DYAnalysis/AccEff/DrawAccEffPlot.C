@@ -22,7 +22,7 @@ Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Doubl
 
 void DrawAccEffPlot(TString HLTname = "PAL3Mu12", 
       TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar | Pt1560 | Phistar1560
-      TString MomCor = "MomCorr", // MomCorr or MomUnCorr
+      TString MomCor = "MomCorr00", // MomCorr or MomUnCorr
       TString Rew = "rewboth", // rewboth or norew or rewplus or rewminus
       TString Generator = "Powheg") 
 {

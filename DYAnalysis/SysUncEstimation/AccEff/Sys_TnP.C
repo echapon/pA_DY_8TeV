@@ -49,8 +49,14 @@ void Sys_TnP(const char* file, var thevar) {
          }
 
          // muID
-         for (int ix=1; ix<=300; ix++) mcov_muid[(ix-1)/100][ibin][jbin] += (ee[ix]->GetEfficiency(ibin+1)-e0i)
-            * (ee[ix]->GetEfficiency(jbin+1)-e0j) / 99.;
+         // there is a super weird bug... dirty-fix it
+         for (int ix=1; ix<=300; ix++) {
+            double eixi = ee[ix]->GetEfficiency(ibin+1);
+            if (eixi<1e-9) eixi = ee[ix-1]->GetEfficiency(ibin+1);
+            double eixj = ee[ix]->GetEfficiency(jbin+1);
+            if (eixj<1e-9) eixj = ee[ix-1]->GetEfficiency(jbin+1);
+            mcov_muid[(ix-1)/100][ibin][jbin] += (eixi-e0i) * (eixj-e0j) / 99.;
+         }
          
          // iso
          for (int ix=301; ix<=600; ix++) mcov_iso[(ix-301)/100][ibin][jbin] += (ee[ix]->GetEfficiency(ibin+1)-e0i)

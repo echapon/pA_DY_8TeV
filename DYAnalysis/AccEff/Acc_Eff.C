@@ -400,6 +400,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                   double pt2 = SelectedMuonCollection[1].Pt;
                   double eta1 = analyzer->sign*SelectedMuonCollection[0].eta;
                   double eta2 = analyzer->sign*SelectedMuonCollection[1].eta;
+                  double aeta1 = fabs(eta1);
+                  double aeta2 = fabs(eta2);
 
                   for (int iwt=0; iwt<nweights; iwt++) {
                      int imuid1=0,itrg1=0,iiso1=0; // nominal
@@ -426,12 +428,12 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                      // weights for MuID and iso
                      // L1DoubleMuOpen uses relPF iso
                      if (HLTname.Contains("L1DoubleMu")) {
-                        TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_iso_ppb(pt1,eta1,iiso1)
-                           *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_iso_ppb(pt2,eta2,iiso2);
+                        TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_iso_ppb(pt1,aeta1,iiso1)
+                           *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_iso_ppb(pt2,aeta2,iiso2);
                      } else if (HLTname.Contains("L3Mu12")) {
                         // L3Mu12 uses rel tk iso
-                        TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_isotk_ppb(pt1,eta1,iiso1)
-                           *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_isotk_ppb(pt2,eta2,iiso2);
+                        TnpWeight = tnp_weight_muid_ppb(pt1,eta1,imuid1)*tnp_weight_isotk_ppb(pt1,aeta1,iiso1)
+                           *tnp_weight_muid_ppb(pt2,eta2,imuid2)*tnp_weight_isotk_ppb(pt2,aeta2,iiso2);
                      } else {
                         cerr << "ERROR trigger should be L1DoubleMuOpen or L3Mu12" << endl;
                         TnpWeight = 1.;
@@ -517,8 +519,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_mass_EffTotal->Write();
 	h_mass_EffPass->Write();
 	h_pt_EffTotal->Write();
-	h_phistar_EffTotal->Write();
 	h_pt_EffPass->Write();
+	h_phistar_EffTotal->Write();
 	h_phistar_EffPass->Write();
 	h_rap1560_EffTotal->Write();
 	h_rap1560_EffPass->Write();
@@ -787,7 +789,13 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
       tnpstat1 = sqrt(tnpstat1);
       // muID
-      for (int ix=1; ix<=300; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
+      // for (int ix=1; ix<=300; ix++) tnpstat2 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
+      // there is a super weird bug... dirty-fix it
+      for (int ix=1; ix<=300; ix++) {
+         double eix = ee[ix]->GetEfficiency(ibin+1);
+         if (eix<1e-9) eix = ee[ix-1]->GetEfficiency(ibin+1);
+         tnpstat2 += pow(eix-e0,2);
+      }
       tnpstat2 = sqrt(tnpstat2/100.);
       // iso
       for (int ix=301; ix<=600; ix++) tnpstat3 += pow(ee[ix]->GetEfficiency(ibin+1)-e0,2);
