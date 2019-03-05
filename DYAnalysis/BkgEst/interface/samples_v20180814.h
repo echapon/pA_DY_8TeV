@@ -8,9 +8,9 @@ namespace DYana_v20180814 {
 
    // list of available processes (MC + data)
    enum SampleTag : int {
-      TT=0,
-      TW,
+      TW=0,
       TbarW,
+      TT,
       WW,
       WZ,
       ZZ,
