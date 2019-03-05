@@ -230,6 +230,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float pfMETtype1; tr->Branch("pfMETtype1",&pfMETtype1,"pfMETtype1/F");
       int sign; tr->Branch("sign",&sign,"sign/I");
       float weight; tr->Branch("weight",&weight,"weight/F");
+      float hiHF; tr->Branch("hiHF",&hiHF,"hiHF/F");
+      float hiNtracks; tr->Branch("hiNtracks",&hiNtracks,"hiNtracks/F");
       // gen stuff (only muons)
       float genpt1, geneta1, genphi1;
       float genpt2, geneta2, genphi2;
@@ -533,6 +535,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                vtxprob = vtxprobD;
                vtxnormchi2 = vtxnormchi2D;
                weight = GenWeight*PUWeight*TnpWeight*Norm;
+               hiHF = ntuple->hiHF;
+               hiNtracks = ntuple->hiNtracks;
                sign = abs(mu1.charge+mu2.charge);
                tr->Fill();
             }
