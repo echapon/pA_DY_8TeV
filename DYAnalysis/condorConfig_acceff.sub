@@ -4,8 +4,11 @@ output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
 +JobFlavour           = "workday"
+
+# the line below is ONLY if you belong to CMG (CERN CMS group)
 +AccountingGroup = "group_u_CMST3.all"
-# RequestCpus           = 8
+
+# want CentOS7
 requirements = (OpSysAndVer =?= "CentOS7")
 
 #queue 11
