@@ -4,7 +4,10 @@ output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
 +JobFlavour           = "workday"
++AccountingGroup = "group_u_CMST3.all"
 # RequestCpus           = 8
+requirements = (OpSysAndVer =?= "CentOS7")
+
 #queue 11
 
 
