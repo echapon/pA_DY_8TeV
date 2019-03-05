@@ -194,23 +194,23 @@ void DYAnalyzer::AssignAccThreshold(TString HLTname, TString *HLT, Double_t *Lea
 	{
 		*HLT = "HLT_PAL3Mu12_v*"; 
 		*LeadPtCut = 15;
-		*SubPtCut = 7;//10;//15;
+		*SubPtCut = 10;//7;//15;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
    else if( HLTname.Contains("L1DoubleMu0") )
 	{
 		*HLT = "HLT_PAL1DoubleMu0_v*"; 
-		*LeadPtCut = 7;
-		*SubPtCut = 7;
+		*LeadPtCut = 10;//7;
+		*SubPtCut = 10;//7;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
    else if( HLTname.Contains("L1DoubleMuOpen") )
 	{
 		*HLT = "HLT_PAL1DoubleMuOpen_v*"; 
-		*LeadPtCut = 7;
-		*SubPtCut = 7;
+		*LeadPtCut = 10;//7;
+		*SubPtCut = 10;//7;
 		*LeadEtaCut = 2.4;
 		*SubEtaCut = 2.4;
 	}
@@ -774,7 +774,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 	    if( (dotight && MuonCollection[j].isTightMuon()) 
              || (!dotight && MuonCollection[j].isLoose) ) {
           bool passOK=false;
-          // for noiso or L3Mu12: no additional cut
+          // for noiso: no additional cut
           if (noiso || gNoIso) 
              passOK=true;
           // for L3Mu12: rel tk iso
