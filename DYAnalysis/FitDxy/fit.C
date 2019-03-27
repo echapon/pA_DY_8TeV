@@ -223,6 +223,44 @@ void fit(const char* histfile, const char* outputfile, int idxbkg1=1, int idxbkg
    hfracSS1->Write();
    hdataSS->Write();
 
+   // pt 15-60
+   dir = f->mkdir("pt1560");
+   dir->cd();
+   hndy_ini = new TH1D("hndy_ini","raw fitted pt1560 yields",ptbinnum_meas_1560,ptbin_meas_1560);
+   hndy = new TH1D("hndy","raw fitted pt1560 yields",ptbinnum_meas_1560,ptbin_meas_1560);
+   hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",ptbinnum_meas_1560,ptbin_meas_1560);
+   hdataSS = new TH1D("hdataSS","N(HF)",ptbinnum_meas_1560,ptbin_meas_1560);
+   rapbin1 = rapbin_60120[0];
+   rapbin2 = rapbin_60120[rapbinnum_60120];
+   massbin1 = 15;
+   massbin2 = 60;
+   for (int i=0; i<ptbinnum_meas_1560; i++) {
+      ptbin1 = ptbin_meas_1560[i];
+      ptbin2 = ptbin_meas_1560[i+1];
+      RooFitResult *result = fit(histfile,"pt1560",ptbin1,ptbin2,idxbkg1,idxbkg2,chi2,ndf);
+      if (!result) continue;
+      hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
+      hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
+      hndy->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("ndy")))->getVal());
+      hndy->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("ndy")))->getError());
+      if (result->floatParsFinal().find("fracSS1")) {
+         hfracSS1->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("fracSS1")))->getVal());
+         hfracSS1->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("fracSS1")))->getError());
+      }
+      hdataSS->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getVal());
+      hdataSS->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getError());
+      dir->cd();
+      result->Write(Form("pt1560_%.0f_%.0f",ptbin1,ptbin2));
+
+      fillvals(result,vals);
+      tr->Fill();
+   }
+   dir->cd();
+   hndy_ini->Write();
+   hndy->Write();
+   hfracSS1->Write();
+   hdataSS->Write();
+
    // phistar
    dir = f->mkdir("phistar");
    dir->cd();
@@ -232,6 +270,8 @@ void fit(const char* histfile, const char* outputfile, int idxbkg1=1, int idxbkg
    hdataSS = new TH1D("hdataSS","N(HF)",phistarnum,phistarbin);
    ptbin1 = ptbin_meas[0];
    ptbin2 = ptbin_meas[ptbinnum_meas];
+   massbin1 = 60;
+   massbin2 = 120;
    for (int i=0; i<phistarnum; i++) {
       phistarbin1 = phistarbin[i];
       phistarbin2 = phistarbin[i+1];
@@ -248,7 +288,45 @@ void fit(const char* histfile, const char* outputfile, int idxbkg1=1, int idxbkg
       hdataSS->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getVal());
       hdataSS->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getError());
       dir->cd();
-      result->Write(Form("phistar_%.0f_%.0f",phistarbin1,phistarbin2));
+      result->Write(Form("phistar_%.3f_%.3f",phistarbin1,phistarbin2));
+
+      fillvals(result,vals);
+      tr->Fill();
+   }
+   dir->cd();
+   hndy_ini->Write();
+   hndy->Write();
+   hfracSS1->Write();
+   hdataSS->Write();
+
+   // phistar 15-60
+   dir = f->mkdir("phistar1560");
+   dir->cd();
+   hndy_ini = new TH1D("hndy_ini","raw fitted phistar1560 yields",phistarnum_1560,phistarbin_1560);
+   hndy = new TH1D("hndy","raw fitted phistar1560 yields",phistarnum_1560,phistarbin_1560);
+   hfracSS1 = new TH1D("hfracSS1","frac(HF type 1)",phistarnum_1560,phistarbin_1560);
+   hdataSS = new TH1D("hdataSS","N(HF)",phistarnum_1560,phistarbin_1560);
+   ptbin1 = ptbin_meas[0];
+   ptbin2 = ptbin_meas[ptbinnum_meas];
+   massbin1 = 15;
+   massbin2 = 60;
+   for (int i=0; i<phistarnum_1560; i++) {
+      phistarbin1 = phistarbin_1560[i];
+      phistarbin2 = phistarbin_1560[i+1];
+      RooFitResult *result = fit(histfile,"phistar1560",phistarbin1,phistarbin2,idxbkg1,idxbkg2,chi2,ndf);
+      if (!result) continue;
+      hndy_ini->SetBinContent(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getVal());
+      hndy_ini->SetBinError(i+1,((RooRealVar*) (result->floatParsInit().find("ndy")))->getError());
+      hndy->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("ndy")))->getVal());
+      hndy->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("ndy")))->getError());
+      if (result->floatParsFinal().find("fracSS1")) {
+         hfracSS1->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("fracSS1")))->getVal());
+         hfracSS1->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("fracSS1")))->getError());
+      }
+      hdataSS->SetBinContent(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getVal());
+      hdataSS->SetBinError(i+1,((RooRealVar*) (result->floatParsFinal().find("ndataSS")))->getError());
+      dir->cd();
+      result->Write(Form("phistar1560_%.3f_%.3f",phistarbin1,phistarbin2));
 
       fillvals(result,vals);
       tr->Fill();
@@ -266,7 +344,7 @@ void fit(const char* histfile, const char* outputfile, int idxbkg1=1, int idxbkg
 
 RooFitResult* fit(const char* histfile, const char* varname, double varmin, double varmax, int idxbkg1, int idxbkg2, float &chi2, int &ndf) {
    TFile *f = TFile::Open(histfile);
-   f->cd(Form("%s/%.2f_%.2f",varname,varmin,varmax));
+   f->cd(Form("%s/%.3f_%.3f",varname,varmin,varmax));
 
    // get histos
    TH1D *hdata = (TH1D*) gDirectory->Get("data_obs"); hdata->Rebin(nrebin);
