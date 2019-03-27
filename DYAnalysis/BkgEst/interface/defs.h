@@ -43,10 +43,10 @@ namespace DYana {
    const int binnum = 13;
    double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
    // pt
-   const int ptbinnum_endcap = 10;
-   double ptbin_endcap[ptbinnum_endcap+1] = {15,20,25,30,35,40,50,70,100,200,500};
-   const int ptbinnum = 13;
-   double ptbin[ptbinnum+1] = {15,17,20,22,25,30,35,40,45,50,70,100,200,500};
+   const int ptbinnum_endcap = 11;
+   double ptbin_endcap[ptbinnum_endcap+1] = {10,15,20,25,30,35,40,50,70,100,200,500};
+   const int ptbinnum = 14;
+   double ptbin[ptbinnum+1] = {10,15,17,20,22,25,30,35,40,45,50,70,100,200,500};
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
    

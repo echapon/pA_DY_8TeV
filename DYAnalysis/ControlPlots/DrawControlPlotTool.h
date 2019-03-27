@@ -118,7 +118,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
    if (doTnpRew) TnpRew = "_tnprew";
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew_noZptrew.root");
+   cout << f_input_Data->GetTitle() << endl;
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
@@ -139,7 +140,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
 			color.push_back( kOrange );
 		else if( Tag[i].Contains("TT") )
 			color.push_back( kRed );
-		else if( Tag[i].Contains("TW") )
+		else if( Tag[i].Contains("TW") || Tag[i].Contains("TbarW") )
 			color.push_back( kRed+1 );
 	}
 
@@ -416,8 +417,9 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		/////////////////////////////////////////////////////////////////////////////////////////
 		if( Variables[i_hist].Contains("MassAnaBins") 
             || Variables[i_hist].Contains("diPtM60120")
+            || Variables[i_hist].Contains("diPtM1560")
             || Variables[i_hist].Contains("diRapidityM1560AnaBins") || Variables[i_hist].Contains("diRapidityM60120AnaBins")
-            || (Variables[i_hist].Contains("PhistarAnaBins") && !Variables[i_hist].Contains("1560")))
+            || (Variables[i_hist].Contains("PhistarAnaBins")))
 		{
 			vector< TH1D* > h_bkgs;
 			for(Int_t i_tag=0; i_tag<nTag; i_tag++)
@@ -434,9 +436,11 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
             else if( Variables[i_hist].Contains("part2") ) Type = "part2";
             TString variable = "mass";
             if (Variables[i_hist].Contains("diPtM60120")) variable = "pt";
-            if (Variables[i_hist].Contains("PhistarAnaBins")) variable = "phistar";
-            if (Variables[i_hist].Contains("diRapidityM60120AnaBins")) variable = "rap60120";
-            if (Variables[i_hist].Contains("diRapidityM1560AnaBins")) variable = "rap1560";
+            else if (Variables[i_hist].Contains("diPtM1560")) variable = "pt1560";
+            else if (Variables[i_hist].Contains("PhistarAnaBins1560")) variable = "phistar1560";
+            else if (Variables[i_hist].Contains("PhistarAnaBins")) variable = "phistar";
+            else if (Variables[i_hist].Contains("diRapidityM60120AnaBins")) variable = "rap60120";
+            else if (Variables[i_hist].Contains("diRapidityM1560AnaBins")) variable = "rap1560";
             this->DrawMassHistogram_DataDrivenBkg(Type, h_data, h_MC, variable);
          }
 		}
@@ -484,7 +488,9 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
          // cout << Tag[i_MC] << endl;
-			if( STags[i_MC] == DYana::TT )
+			if( STags[i_MC] == DYana::TW )
+				legend->AddEntry(h_MC[i_MC], "tW" );
+         else if( STags[i_MC] == DYana::TT )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
 			else if( STags[i_MC] == DYana::VVFirst )
 				legend->AddEntry(h_MC[i_MC], "Diboson" );
@@ -499,7 +505,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		// -- Sum of all prediction: for ratio plot -- //
 		TH1D *h_totMC = NULL;
 		for(Int_t i_MC=0; i_MC<nMC; i_MC++)
-		{
+      {
 			if( h_totMC == NULL )
 				h_totMC = (TH1D*)h_MC[i_MC]->Clone();
 			else

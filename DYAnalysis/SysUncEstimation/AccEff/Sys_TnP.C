@@ -9,6 +9,7 @@
 #include "TEfficiency.h"
 
 #include <vector>
+#include <iostream>
 
 using namespace std;
 using DYana::var;
@@ -18,12 +19,27 @@ using DYana::var;
 // [1] gSystem->Load("/dir/to/lhapdf/lib/libLHAPDF.so");
 // .L AccEff/Sys_AccEff.C+
 
-void Sys_TnP(const char* file, var thevar) {
+void Sys_TnP(const char* file, var thevar, bool absxsec=true) {// if absxsec=false, do effs for 1/N dN/dX instead of dN/dX
    TFile *f = TFile::Open(file);
    if (!f || !f->IsOpen()) return;
 
    TEfficiency **ee = new TEfficiency*[645];
-   for (int i=0; i<645; i++) ee[i] = (TEfficiency*) f->Get(Form("TEff_Eff_%s_Corr_tnp%d",Varname(thevar),i)); 
+   if (absxsec) {
+      for (int i=0; i<645; i++) ee[i] = (TEfficiency*) f->Get(Form("TEff_Eff_%s_Corr_tnp%d",Varname(thevar),i)); 
+   } else {
+      TH1D* hpass;
+      TH1D* htot = (TH1D*) f->Get(Form("h_%s_EffTotal",varname(thevar)));
+      // htot->Scale(1./htot->Integral());
+
+      for (int i=0; i<645; i++) {
+         // cout << i << endl;
+         hpass = (TH1D*) f->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i));
+         hpass->Scale(1./hpass->Integral());
+         ee[i] = new TEfficiency(*hpass,*htot);
+      }
+   }
+
+
    int nbins = ee[0]->GetTotalHistogram()->GetNbinsX();
 
    vector<TMatrixT<double> > mcov_trg, mcov_muid, mcov_iso, mcov_syst;
@@ -92,12 +108,12 @@ void Sys_TnP(const char* file, var thevar) {
             mcov_syst[9][ibin][jbin] = fabs(ee[644]->GetEfficiency(ibin+1)-e0i) * fabs(ee[644]->GetEfficiency(jbin+1)-e0j);
 
             // HF+PU
-            mcov_syst[10][ibin][jbin] = pow(0.34e-2,2);
-            mcov_syst[11][ibin][jbin] = pow(0.34e-2,2);
+            mcov_syst[10][ibin][jbin] = absxsec ? pow(0.34e-2,2) : 0;
+            mcov_syst[11][ibin][jbin] = absxsec ? pow(0.34e-2,2) : 0;
 
             // STA
-            mcov_syst[12][ibin][jbin] = pow(0.6e-2,2);
-            mcov_syst[13][ibin][jbin] = pow(0.6e-2,2);
+            mcov_syst[12][ibin][jbin] = absxsec ? pow(0.6e-2,2) : 0;
+            mcov_syst[13][ibin][jbin] = absxsec ? pow(0.6e-2,2) : 0;
          } // if ibin==jbin
       } // jbin loop for tnp uncertainty
    } // ibin loop for tnp uncertainty
@@ -195,9 +211,9 @@ void Sys_TnP(const char* file, var thevar) {
    f->Close();
 }
 
-void Sys_TnP(const char* file) {
+void Sys_TnP(const char* file, bool absxsec=true) {
    for (int i=0; i<var::ALLvar; i++) {
       var thevar_i = static_cast<var>(i);
-      Sys_TnP(file,thevar_i);
+      Sys_TnP(file,thevar_i,absxsec);
    }
 }
