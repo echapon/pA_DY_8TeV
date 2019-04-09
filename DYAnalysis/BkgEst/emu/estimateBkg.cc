@@ -35,8 +35,9 @@ using namespace DYana;
 void fillSystematics( TH1D* data_driven, TH1D* stat, TH1D* systematic, TH1D* total );
 void removeNegativeBins( TH1D* hist );
 
-void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 | rap60120
-      int syst_tt=0)                     // 0=nominal, 1/-1 = scale ttbar up/down for syst
+void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 | rap60120 | pt1560 | phistar1560
+      int syst_tt=0,                     // 0=nominal, 1/-1 = scale ttbar up/down for syst
+      int syst_RR=0)                     // 0=nominal, 1=variation
 {
 
    setTDRStyle();
@@ -45,34 +46,20 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
 
     // the bins depend on the variable
-    int varbinnum;
-    double *varbins;
     TString tvar(var);
-    if (tvar=="mass") {
-       varbinnum = binnum;
-       varbins = bins;
-    } else if (tvar=="pt") {
-       varbinnum = ptbinnum_meas;
-       varbins = ptbin_meas;
-    } else if (tvar=="phistar") {
-       varbinnum = phistarnum;
-       varbins = phistarbin;
-    } else if (tvar=="rap1560") {
-       varbinnum = rapbinnum_1560;
-       varbins = rapbin_1560;
-    } else if (tvar=="rap60120") {
-       varbinnum = rapbinnum_60120;
-       varbins = rapbin_60120;
-    }
+    int varbinnum = nbinsvar(tvar);
+    double *varbins = binsvar(tvar);
 
     TString tt_str("");
     if (syst_tt==1) tt_str="_ttup";
     if (syst_tt==-1) tt_str="_ttdown";
+    TString RR_str("");
+    if (syst_RR==1) RR_str="_RRvar";
 
     TFile* file[NSamples];
     for (int i=0; i<ALL; i++) file[i] = new TFile(PathHistos(static_cast<SampleTag>(i)));
 
-    TFile* g = new TFile(Form("result/emu_%s%s.root",var,tt_str.Data()),"RECREATE");
+    TFile* g = new TFile(Form("result/emu_%s%s%s.root",var,tt_str.Data(),RR_str.Data()),"RECREATE");
 
     double norm[NSamples];
 
@@ -102,7 +89,7 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
         dimu[i]->Scale(norm[i]);
 
         // determine the color
-        EColor icolor;
+        EColor icolor=kBlack;
         if (tag==TT) icolor=kRed;
         else if (IsDiboson(tag)) icolor=kGreen;
         else if (IsDY(tag)) icolor=kBlue;
@@ -148,12 +135,12 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     TH1D* emu_diboson = emu[WW];
     TH1D* emuSS_diboson = emuSS[WW];
     TH1D* dimu_diboson = dimu[WW];
-    // emu_diboson->Add(emu[WZ]);
-    // emu_diboson->Add(emu[ZZ]);
-    // emuSS_diboson->Add(emuSS[WZ]);
-    // emuSS_diboson->Add(emuSS[ZZ]);
-    // dimu_diboson->Add(dimu[WZ]);
-    // dimu_diboson->Add(dimu[ZZ]);
+    emu_diboson->Add(emu[WZ]);
+    emu_diboson->Add(emu[ZZ]);
+    emuSS_diboson->Add(emuSS[WZ]);
+    emuSS_diboson->Add(emuSS[ZZ]);
+    dimu_diboson->Add(dimu[WZ]);
+    dimu_diboson->Add(dimu[ZZ]);
 
     // tW + antitW
     // emu_tW->Add(emu_antitW);
@@ -212,7 +199,11 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     emuSS_stackMC->Add(emuSS[TT]);
 
     // Legend
-    TLegend* legend = new TLegend(.65,.55,.95,.89);
+    double xl=.65,yl=.55,xh=.85,yh=.89;
+
+    if (tvar.Contains("phistar") || tvar.Contains("pt") || tvar.Contains("rap")) {xl -= 0.45; xh -= 0.45;}
+    if (tvar == "pt1560") {yl -= 0.4; yh -= 0.4;}
+    TLegend* legend = new TLegend(xl,yl,xh,yh);
     legend->AddEntry(emu_data,"Data");
     legend->AddEntry(emu[TT],"ttbar","F");
     // legend->AddEntry(emu_tW,"tW+#bar{t}W","F");
@@ -227,7 +218,10 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     // emu_QCD->Add(emuSS_tW,-1.0);
     emu_QCD->SetFillColor(7);
 
-    const double RR = 0.57147108645;
+    double RR = 0.57147108645; // from the formula
+    if (syst_RR==1) RR = 0.4358; // from MC, with cuts
+    if (syst_RR==2) RR = 0.5365; // from MC, no cuts
+
     emu_QCD->Scale(1/RR);
 
     removeNegativeBins(emu_QCD);
@@ -240,10 +234,11 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     if (!tvar.Contains("rap")) c1->SetLogx();
     emu_data->GetYaxis()->SetTitle("Entries");
     if (tvar=="mass") emu_data->GetXaxis()->SetTitle("M_{e#mu} [GeV/c^{2}]");
-    else if (tvar=="pt") emu_data->GetXaxis()->SetTitle("p_{T,e#mu} [GeV/c]");
-    else if (tvar=="phistar") emu_data->GetXaxis()->SetTitle("#phi^{*}_{e#mu}");
+    else if (tvar.Contains("pt")) emu_data->GetXaxis()->SetTitle("p_{T,e#mu} [GeV/c]");
+    else if (tvar.Contains("phistar")) emu_data->GetXaxis()->SetTitle("#phi^{*}_{e#mu}");
     else emu_data->GetXaxis()->SetTitle("y_{e#mu}");
     emu_data->Draw();
+    emu_data->GetYaxis()->SetRangeUser(0,1.5*emu_data->GetBinContent(emu_data->GetMaximumBin()));
     emu_stackBkg->Draw("hist same");
     emu_data->Draw("same");
     legend->Draw();

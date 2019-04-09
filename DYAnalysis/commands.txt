@@ -10,10 +10,7 @@ cd BkgEst/emu
 # - select events
 root -l -b -q selectEmuEvts.cc
 # - estimate the bkg
-for var in mass pt rap1560 rap60120 phistar; do
-   root -l -b -q estimateBkg.cc'("'$var'")'
-   root -l -b -q drawplots'("'$var'")'
-done
+source estimateAll.sh
 cd -
 
 # fakerate:

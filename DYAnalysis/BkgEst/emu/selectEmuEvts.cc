@@ -70,26 +70,34 @@ void selectEmuEvts(SampleTag index)
     TH1D* el_etSC     = new TH1D("el_etSC","",97,30,1000); 
     TH1D* el_etaSC    = new TH1D("el_etaSC","",42,-2.1,2.1); 
     TH1D* el_phi      = new TH1D("el_phi","",64,-3.2,3.2); 
-    TH1D* emu_mass    = new TH1D("emu_mass","",binsize,bins);
-    TH1D* emuSS_mass  = new TH1D("emuSS_mass","",binsize,bins);
-    TH1D* dimu_mass   = new TH1D("dimu_mass","",binsize,bins);
-    TH1D* dimuSS_mass = new TH1D("dimuSS_mass","",binsize,bins);
-    TH1D* emu_pt    = new TH1D("emu_pt","",ptbinnum_meas,ptbin_meas);
-    TH1D* emuSS_pt  = new TH1D("emuSS_pt","",ptbinnum_meas,ptbin_meas);
-    TH1D* dimu_pt   = new TH1D("dimu_pt","",ptbinnum_meas,ptbin_meas);
-    TH1D* dimuSS_pt = new TH1D("dimuSS_pt","",ptbinnum_meas,ptbin_meas);
-    TH1D* emu_phistar    = new TH1D("emu_phistar","",phistarnum,phistarbin);
-    TH1D* emuSS_phistar  = new TH1D("emuSS_phistar","",phistarnum,phistarbin);
-    TH1D* dimu_phistar   = new TH1D("dimu_phistar","",phistarnum,phistarbin);
-    TH1D* dimuSS_phistar = new TH1D("dimuSS_phistar","",phistarnum,phistarbin);
-    TH1D* emu_rap1560    = new TH1D("emu_rap1560","",rapbinnum_1560,rapbin_1560);
-    TH1D* emuSS_rap1560  = new TH1D("emuSS_rap1560","",rapbinnum_1560,rapbin_1560);
-    TH1D* dimu_rap1560   = new TH1D("dimu_rap1560","",rapbinnum_1560,rapbin_1560);
-    TH1D* dimuSS_rap1560 = new TH1D("dimuSS_rap1560","",rapbinnum_1560,rapbin_1560);
-    TH1D* emu_rap60120    = new TH1D("emu_rap60120","",rapbinnum_60120,rapbin_60120);
-    TH1D* emuSS_rap60120  = new TH1D("emuSS_rap60120","",rapbinnum_60120,rapbin_60120);
-    TH1D* dimu_rap60120   = new TH1D("dimu_rap60120","",rapbinnum_60120,rapbin_60120);
-    TH1D* dimuSS_rap60120 = new TH1D("dimuSS_rap60120","",rapbinnum_60120,rapbin_60120);
+    TH1D* emu_mass    = new TH1D("emu_mass","",nbinsvar(var::mass),binsvar(var::mass));
+    TH1D* emuSS_mass  = new TH1D("emuSS_mass","",nbinsvar(var::mass),binsvar(var::mass));
+    TH1D* dimu_mass   = new TH1D("dimu_mass","",nbinsvar(var::mass),binsvar(var::mass));
+    TH1D* dimuSS_mass = new TH1D("dimuSS_mass","",nbinsvar(var::mass),binsvar(var::mass));
+    TH1D* emu_pt    = new TH1D("emu_pt","",nbinsvar(var::pt),binsvar(var::pt));
+    TH1D* emuSS_pt  = new TH1D("emuSS_pt","",nbinsvar(var::pt),binsvar(var::pt));
+    TH1D* dimu_pt   = new TH1D("dimu_pt","",nbinsvar(var::pt),binsvar(var::pt));
+    TH1D* dimuSS_pt = new TH1D("dimuSS_pt","",nbinsvar(var::pt),binsvar(var::pt));
+    TH1D* emu_phistar    = new TH1D("emu_phistar","",nbinsvar(var::phistar),binsvar(var::phistar));
+    TH1D* emuSS_phistar  = new TH1D("emuSS_phistar","",nbinsvar(var::phistar),binsvar(var::phistar));
+    TH1D* dimu_phistar   = new TH1D("dimu_phistar","",nbinsvar(var::phistar),binsvar(var::phistar));
+    TH1D* dimuSS_phistar = new TH1D("dimuSS_phistar","",nbinsvar(var::phistar),binsvar(var::phistar));
+    TH1D* emu_pt1560    = new TH1D("emu_pt1560","",nbinsvar(var::pt1560),binsvar(var::pt1560));
+    TH1D* emuSS_pt1560  = new TH1D("emuSS_pt1560","",nbinsvar(var::pt1560),binsvar(var::pt1560));
+    TH1D* dimu_pt1560   = new TH1D("dimu_pt1560","",nbinsvar(var::pt1560),binsvar(var::pt1560));
+    TH1D* dimuSS_pt1560 = new TH1D("dimuSS_pt1560","",nbinsvar(var::pt1560),binsvar(var::pt1560));
+    TH1D* emu_phistar1560    = new TH1D("emu_phistar1560","",nbinsvar(var::phistar1560),binsvar(var::phistar1560));
+    TH1D* emuSS_phistar1560  = new TH1D("emuSS_phistar1560","",nbinsvar(var::phistar1560),binsvar(var::phistar1560));
+    TH1D* dimu_phistar1560   = new TH1D("dimu_phistar1560","",nbinsvar(var::phistar1560),binsvar(var::phistar1560));
+    TH1D* dimuSS_phistar1560 = new TH1D("dimuSS_phistar1560","",nbinsvar(var::phistar1560),binsvar(var::phistar1560));
+    TH1D* emu_rap1560    = new TH1D("emu_rap1560","",nbinsvar(var::rap1560),binsvar(var::rap1560));
+    TH1D* emuSS_rap1560  = new TH1D("emuSS_rap1560","",nbinsvar(var::rap1560),binsvar(var::rap1560));
+    TH1D* dimu_rap1560   = new TH1D("dimu_rap1560","",nbinsvar(var::rap1560),binsvar(var::rap1560));
+    TH1D* dimuSS_rap1560 = new TH1D("dimuSS_rap1560","",nbinsvar(var::rap1560),binsvar(var::rap1560));
+    TH1D* emu_rap60120    = new TH1D("emu_rap60120","",nbinsvar(var::rap60120),binsvar(var::rap60120));
+    TH1D* emuSS_rap60120  = new TH1D("emuSS_rap60120","",nbinsvar(var::rap60120),binsvar(var::rap60120));
+    TH1D* dimu_rap60120   = new TH1D("dimu_rap60120","",nbinsvar(var::rap60120),binsvar(var::rap60120));
+    TH1D* dimuSS_rap60120 = new TH1D("dimuSS_rap60120","",nbinsvar(var::rap60120),binsvar(var::rap60120));
     TH1D* emu_chi2    = new TH1D("emu_chi2","",100,0,20);
     TH1D* emuSS_chi2  = new TH1D("emuSS_chi2","",100,0,20);
     TH1D* dimu_chi2   = new TH1D("dimu_chi2","",100,0,20);
@@ -195,6 +203,8 @@ void selectEmuEvts(SampleTag index)
                       emu_rap60120->Fill(rapidity,weight); 
                    } else if (mass>15 && mass<60) {
                       emu_rap1560->Fill(rapidity,weight); 
+                      emu_pt1560->Fill(pt,weight); 
+                      emu_phistar1560->Fill(phistar,weight); 
                    }
                 } else {
                    emuSS_mass->Fill(mass,weight);
@@ -205,6 +215,8 @@ void selectEmuEvts(SampleTag index)
                       emuSS_rap60120->Fill(rapidity,weight); 
                    } else if (mass>15 && mass<60) {
                       emuSS_rap1560->Fill(rapidity,weight); 
+                      emuSS_pt1560->Fill(pt,weight); 
+                      emuSS_phistar1560->Fill(phistar,weight); 
                    }
                 } // if opp. sign
             } // if emuDY 
@@ -224,6 +236,8 @@ void selectEmuEvts(SampleTag index)
                       dimu_rap60120->Fill(rapidity,weight); 
                    } else if (mass>15 && mass<60) {
                       dimu_rap1560->Fill(rapidity,weight); 
+                      dimu_pt1560->Fill(pt,weight); 
+                      dimu_phistar1560->Fill(phistar,weight); 
                    }
                 } else {
                    dimuSS_mass->Fill(mass,weight);
@@ -234,6 +248,8 @@ void selectEmuEvts(SampleTag index)
                       dimuSS_rap60120->Fill(rapidity,weight); 
                    } else if (mass>15 && mass<60) {
                       dimuSS_rap1560->Fill(rapidity,weight); 
+                      dimuSS_pt1560->Fill(pt,weight); 
+                      dimuSS_phistar1560->Fill(phistar,weight); 
                    }
                 } // if opp. sign
             } // if dimuonDY
