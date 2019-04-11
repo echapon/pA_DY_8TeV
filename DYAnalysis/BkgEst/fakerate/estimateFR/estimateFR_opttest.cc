@@ -42,7 +42,7 @@ TH1D* FRBytRatio(TH1D** numerator, TH1D** denominator);
 TH1D* FRCheck(TH1D** numerator, TH1D** denominator);
 
 
-void estimateFR_opttest(TString indir, TString rmk,TString rmk1,TString rmk2,int QCDopt=2, TString indir2="20190306v9_iso0_1_HFminus", TString indir3="20190402v11_iso0_1_HFminus", TString rmkf="rmkf") {
+void estimateFR_opttest_v20190328(TString indir, TString rmk,TString rmk1,TString rmk2,int QCDopt=2, TString indir2="20190306v9_iso0_1_HFminus", TString indir3="20190402v11_iso0_1_HFminus", TString rmkf="rmkf") {
 //void estimateFR_opttest_v20190328(TString indir, TString rmk,TString rmk1,TString rmk2) {
 
 
