@@ -429,9 +429,9 @@ void applyFR(SampleTag index, TString infrname, TString rmk, TString outdir) {
 
 // produce all plots
 void applyFR(TString infrname, TString rmk, TString outdir) {
-//   for (int i=0; i<=QCD; i++) {
+	  for (int i=0; i<=QCD; i++) {
 //	  for (int i=DYMuMu1030; i<=QCD; i++) {
-	  for (int i=0; i<=DYMuMu30_PbP; i++) {
+//	  for (int i=0; i<=DYMuMu30_PbP; i++) {
 //	  for (int i=QCD; i<=QCD; i++) {
       SampleTag tag = static_cast<SampleTag>(i);
       if (tag==ALL) continue;
