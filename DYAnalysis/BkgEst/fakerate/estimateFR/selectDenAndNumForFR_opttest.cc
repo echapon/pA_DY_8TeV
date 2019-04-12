@@ -131,6 +131,7 @@ void selectDenAndNumForFR_opttest(TString outdn="20190306v9_iso0_0p2_HFminus", i
 		else if (opt=="relPFisoR03" || opt=="relPFisoR04" || opt=="SSrelPFisoR03" || opt=="SSrelPFisoR04") isomax_=0.15;
 		else if (opt=="reltrkisoR03" || opt=="reltrkisoR04" || opt=="SSreltrkisoR04") isomax_=0.20;
 		else if (opt=="reltrkisoR03muptlt10" || opt=="SSreltrkisoR03muptlt10") isomax_=0.20;
+		else if (opt=="reltrkisoR03muptlt10isomax0p2" || opt=="SSreltrkisoR03muptlt10isomax0p2") isomax_=0.20;
 	   else if (opt=="reltrkisoR03muptlt10isomax0p5" || opt=="SSreltrkisoR03muptlt10isomax0p5") isomax_=0.50;
 	   else if (opt=="reltrkisoR03muptlt10isomax0p4" || opt=="SSreltrkisoR03muptlt10isomax0p4") isomax_=0.40;
 	   else if (opt=="reltrkisoR03muptlt10isomax0p3" || opt=="SSreltrkisoR03muptlt10isomax0p3") isomax_=0.30;
