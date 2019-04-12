@@ -33,6 +33,7 @@ namespace DYana {
    // put the default samples here
 #ifndef CT14_GENONLY
    using namespace DYana_v20180814;
+   // using namespace DYana_v20180111;
 #else
    using namespace DYana_CT14;
 #endif
@@ -75,7 +76,7 @@ namespace DYana {
       return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->trkisolation(cuts::isomax);
    };
    bool EleSel(PhysicsElectron *el) {
-      return el->acceptance(20,2.4) && el->WPMedium() && el->trkisolation(cuts::isomax);
+      return el->acceptance(cuts::ptmin2,cuts::etamax) && el->WPMedium() && el->trkisolation(cuts::isomax);
    };
 
    // sgn switch pA vs Ap
@@ -99,18 +100,18 @@ namespace DYana {
 
    var str2var(TString variable) {
       if (variable.Contains("mass")) return mass;
+      else if (variable.Contains("pt1560")) return pt1560;
+      else if (variable.Contains("phistar1560")) return phistar1560;
       else if (variable.Contains("pt")) return pt;
       else if (variable.Contains("phistar")) return phistar;
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
-      else if (variable.Contains("pt1560")) return pt1560;
-      else if (variable.Contains("phistar1560")) return phistar1560;
       else if (variable.Contains("Mass")) return mass;
+      else if (variable.Contains("Rap1560")) return rap1560;
+      else if (variable.Contains("Pt1560")) return pt1560;
       else if (variable.Contains("Pt")) return pt;
       else if (variable.Contains("Phistar")) return phistar;
       else if (variable.Contains("Rap60120")) return rap60120;
-      else if (variable.Contains("Rap1560")) return rap1560;
-      else if (variable.Contains("Pt1560")) return pt1560;
       else if (variable.Contains("Phistar1560")) return phistar1560;
       return mass;
    };
