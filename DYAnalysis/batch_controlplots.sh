@@ -17,38 +17,38 @@ which root
 
 # nominal
 if [ $1 -eq 0 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,0,0)'
 
 # alternative reweighting
 elif [ $1 -eq 1 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,false)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,false,0,0)'
 elif [ $1 -eq 2 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::Ntracks,true)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::Ntracks,true,0,0)'
 elif [ $1 -eq 3 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::plus,true)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::plus,true,0,0)'
 elif [ $1 -eq 4 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::minus,true)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::minus,true,0,0)'
 elif [ $1 -eq 5 ]; then
-   arg='(kFALSE,"Powheg","PAL3Mu12",false)'
+   arg='(kTRUE,"Powheg","PAL3Mu12",false,HFweight::HFside::both,false,0,0)'
 
 # Pyquen
 elif [ $1 -eq 6 ]; then
-   arg='(kFALSE,"Pyquen","PAL3Mu12",true,HFweight::HFside::both,true)'
+   arg='(kTRUE,"Pyquen","PAL3Mu12",true,HFweight::HFside::both,true,0,0)'
 
 # MomCor
 elif [ $1 -eq 7 ]; then
-   arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,0,0)'
+   arg='(kFALSE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true)'
 elif [ $1 -eq 8 ]; then
    arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,7,6)'
 
 # no Zpt reweighting
-elif [ $1 -eq 10 ]; then
+elif [ $1 -eq 9 ]; then
    arg='(kTRUE,"Powheg","PAL3Mu12",true,HFweight::HFside::both,true,0,0,false)'
 
 # Data
 elif [ $1 -eq 10 ]; then
    arg='(kFALSE,"Data")'
-elif [ $1 -eq 11 ]; then
+elif [ $1 -eq 11 ]; then # nominal data
    arg='(kTRUE,"Data","PAL3Mu12",false,HFweight::HFside::both,false,0,0)'
 elif [ $1 -eq 12 ]; then
    arg='(kTRUE,"Data","PAL3Mu12",false,HFweight::HFside::both,false,7,6)'
