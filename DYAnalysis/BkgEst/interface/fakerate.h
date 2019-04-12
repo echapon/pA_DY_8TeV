@@ -25,6 +25,16 @@ void initFRhistos() {
    f->Close();
 };
 
+void initFRhistos_in(TString infile) {
+   using namespace fr;
+   TFile *f = TFile::Open(infile.Data());
+   gFR_template_barrel = *(TH1D*) f->Get("FR_template_barrel")->Clone("FR1");
+   gFR_template_endcap = *(TH1D*) f->Get("FR_template_endcap")->Clone("FR2");
+   gFR_xsec_barrel = *(TH1D*) f->Get("FR_xsec_barrel")->Clone("FR3");
+   gFR_xsec_endcap = *(TH1D*) f->Get("FR_xsec_endcap")->Clone("FR4");
+   f->Close();
+};
+
 double FR_template(PhysicsMuon muon){
    using namespace fr;
 

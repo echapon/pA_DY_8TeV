@@ -12,6 +12,7 @@
 #include "samples_v20180111_noEWK.h"
 #include "samples_v20180111_negweights.h"
 #include "samples_v20180814.h"
+#include "samples_v20180814v2.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
@@ -32,7 +33,8 @@ const double rapshift = 0.465;
 namespace DYana {
    // put the default samples here
 #ifndef CT14_GENONLY
-   using namespace DYana_v20180814;
+//   using namespace DYana_v20180814;
+	using namespace DYana_v20180814v2;
 #else
    using namespace DYana_CT14;
 #endif

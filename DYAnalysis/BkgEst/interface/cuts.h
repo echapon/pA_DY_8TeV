@@ -4,6 +4,7 @@
 namespace cuts {
    double ptmin1 = 15;
    double ptmin2 = 7; // 10
+	double ptmin3 = 10;
    double etamax = 2.4;
    double isomax = 0.2;//0.15;
    const char* trig = "HLT_PAL3Mu12_v1";
