@@ -32,15 +32,7 @@
 using namespace std;
 using namespace DYana;
 
-//void estimateDijet_opt(int optval) {
-//###void estimateDijet_opt(TString rmk, TString indir) {
-//void estimateDijet_opt(TString rmk="opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12", TString indir="20190308v9", int FRopt=1) {
-//void estimateDijet_opt(TString rmk="opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12", TString indir="20190308v9", int FRopt=2) {
-//void estimateDijet_opt(TString rmk="opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12", TString indir="20190308v9_rebin0326", int FRopt=1) {
-void estimateDijet_opt(TString rmk="opt325_QCDopt2_reltrkisoR03muptlt10_isomax0p5_L3Mu12", TString indir="20190402v11_rebin0326", int FRopt=1) {
-
-
-
+void estimateDijet_opt(TString rmk="opt1050_QCDopt2_reltrkisoR03muptlt10_isomax0p2_L3Mu12", TString indir="histograms_20190411v12_rebin0326", int FRopt=2) {
 
 	for (int optval=1;optval<8;optval++) {
 		TString opttitle;
