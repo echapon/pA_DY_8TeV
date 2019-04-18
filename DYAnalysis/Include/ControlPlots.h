@@ -14,6 +14,8 @@
 #include "DYAnalyzer.h"
 #include "../BkgEst/interface/defs.h"
 
+#define NISOBINS 3
+
 using namespace DYana;
 
 class ControlPlots
@@ -63,6 +65,7 @@ public:
 
 	TH1D *h_mass_OS;
 	TH1D *h_mass_SS;
+	TH1D *h_mass2_SS;
 
 	TH1D *h_Pt_minusCharge;
 	TH1D *h_eta_minusCharge;
@@ -194,6 +197,7 @@ public:
 
 		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS );
 		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_SS );
+		h_mass2_SS = new TH1D("h_mass2_SS_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS );
 
 		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_minusCharge );
 		h_eta_minusCharge = new TH1D("h_eta_minusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_minusCharge );
@@ -453,6 +457,7 @@ public:
 
       if (!isOS) {
 			h_mass_SS->Fill( reco_M, weight );
+			h_mass2_SS->Fill( reco_M, weight );
 
          // h_maxRelTrkIso_SS->Fill(maxtrkiso, weight);
          // h_maxRelPFIso_SS->Fill(maxrelPFiso, weight);
@@ -656,6 +661,7 @@ public:
 
 	TH1D *h_mass_OS;
 	TH1D *h_mass_SS;
+	TH1D *h_mass2_SS;
 
 	TH1D *h_minusCharge_Pt;
 	TH1D *h_minusCharge_eta;
@@ -706,6 +712,7 @@ public:
 
 		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_OS );
 		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_SS );
+		h_mass2_SS = new TH1D("h_mass2_SS_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS );
 
 		h_minusCharge_Pt = new TH1D("h_minusCharge_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_minusCharge_Pt );
 		h_minusCharge_eta = new TH1D("h_minusCharge_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_minusCharge_eta );
@@ -824,8 +831,10 @@ public:
 		//Same-Sign / Opposite Invariant Mass
 		if( RecoObj1.charge != RecoObj2.charge )
 			h_mass_OS->Fill( reco_M, weight );
-		else
+		else {
 			h_mass_SS->Fill( reco_M, weight );
+			h_mass2_SS->Fill( reco_M, weight );
+      }
 	}
 
 	void WriteHistograms(TFile *fout)
@@ -1286,3 +1295,123 @@ public:
 	}
 };
 
+class ControlPlots_iso
+{
+
+public:
+	DYAnalyzer *analyzer;
+	Bool_t isMC;
+	std::vector<TH1D*> Histo;
+
+   // TH1D *h_maxRelPFIso_SS_M120600;
+   TH1D *h_Mass[NISOBINS];
+   TH1D *h_Rap60120[NISOBINS];
+   TH1D *h_Pt[NISOBINS];
+   TH1D *h_Phistar[NISOBINS];
+   TH1D *h_Rap1560[NISOBINS];
+   TH1D *h_Pt1560[NISOBINS];
+   TH1D *h_Phistar1560[NISOBINS];
+   TH1D *h_Mass_SS[NISOBINS];
+   TH1D *h_Rap60120_SS[NISOBINS];
+   TH1D *h_Pt_SS[NISOBINS];
+   TH1D *h_Phistar_SS[NISOBINS];
+   TH1D *h_Rap1560_SS[NISOBINS];
+   TH1D *h_Pt1560_SS[NISOBINS];
+   TH1D *h_Phistar1560_SS[NISOBINS];
+
+   const double iso1min[NISOBINS] = {
+      0,0,0.2
+      };
+   const double iso1max[NISOBINS] = {
+      0.2,0.2,100.
+      };
+   const double iso2min[NISOBINS] = {
+      0,0.2,0.2
+      };
+   const double iso2max[NISOBINS] = {
+      0.2,100.,100.
+      };
+
+	ControlPlots_iso(TString Type, DYAnalyzer *dyanalyzer)
+	{
+		isMC = kFALSE;
+		if( Type != "Data" )
+			isMC = kTRUE;
+
+		analyzer = dyanalyzer;
+
+      for (int i=0; i<NISOBINS; i++) {
+         float iso11=iso1min[i], iso12=iso1max[i];
+         float iso21=iso2min[i], iso22=iso2max[i];
+
+         h_Mass[i] = new TH1D(Form("h_Mass_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::mass), binsvar(var::mass) ); Histo.push_back( h_Mass[i] );
+         h_Rap60120[i] = new TH1D(Form("h_Rap60120_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap60120), binsvar(var::rap60120) ); Histo.push_back( h_Rap60120[i] );
+         h_Pt[i] = new TH1D(Form("h_Pt_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt), binsvar(var::pt) ); Histo.push_back( h_Pt[i] );
+         h_Phistar[i] = new TH1D(Form("h_Phistar_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar), binsvar(var::phistar) ); Histo.push_back( h_Phistar[i] );
+         h_Rap1560[i] = new TH1D(Form("h_Rap1560_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap1560), binsvar(var::rap1560) ); Histo.push_back( h_Rap1560[i] );
+         h_Pt1560[i] = new TH1D(Form("h_Pt1560_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt1560), binsvar(var::pt1560) ); Histo.push_back( h_Pt1560[i] );
+         h_Phistar1560[i] = new TH1D(Form("h_Phistar1560_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar1560), binsvar(var::phistar1560) ); Histo.push_back( h_Phistar1560[i] );
+
+         h_Mass_SS[i] = new TH1D(Form("h_Mass_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::mass), binsvar(var::mass) ); Histo.push_back( h_Mass_SS[i] );
+         h_Rap60120_SS[i] = new TH1D(Form("h_Rap60120_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap60120), binsvar(var::rap60120) ); Histo.push_back( h_Rap60120_SS[i] );
+         h_Pt_SS[i] = new TH1D(Form("h_Pt_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt), binsvar(var::pt) ); Histo.push_back( h_Pt_SS[i] );
+         h_Phistar_SS[i] = new TH1D(Form("h_Phistar_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar), binsvar(var::phistar) ); Histo.push_back( h_Phistar_SS[i] );
+         h_Rap1560_SS[i] = new TH1D(Form("h_Rap1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap1560), binsvar(var::rap1560) ); Histo.push_back( h_Rap1560_SS[i] );
+         h_Pt1560_SS[i] = new TH1D(Form("h_Pt1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt1560), binsvar(var::pt1560) ); Histo.push_back( h_Pt1560_SS[i] );
+         h_Phistar1560_SS[i] = new TH1D(Form("h_Phistar1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar1560), binsvar(var::phistar1560) ); Histo.push_back( h_Phistar1560_SS[i] );
+      }
+	}
+
+
+	void FillHistograms_DoubleMu(NtupleHandle *ntuple, Muon recolep1, Muon recolep2, Double_t weight)
+	{
+		TLorentzVector reco_v1 = recolep1.Momentum;
+		TLorentzVector reco_v2 = recolep2.Momentum;
+      TLorentzVector reco_vv = reco_v1 + reco_v2;
+		Double_t reco_M = reco_vv.M();
+		Double_t reco_rap = reco_vv.Rapidity();
+		Double_t reco_pt = reco_vv.Pt();
+		Double_t reco_phistar = Object::phistar(reco_v1,reco_v2);
+      Bool_t isOS = ( recolep1.charge != recolep2.charge );
+
+      double mintrkiso = min(recolep1.trkiso, recolep2.trkiso);
+      double maxtrkiso = max(recolep1.trkiso, recolep2.trkiso);
+
+      for (int i=0; i<NISOBINS; i++) {
+         if (!(mintrkiso>=iso1min[i] && mintrkiso<iso1max[i] && maxtrkiso>=iso2min[i] && maxtrkiso<iso2max[i])) continue;
+
+         if (!isOS) {
+            h_Mass_SS[i]->Fill( reco_M, weight );
+
+            if (reco_M>60 && reco_M<120) {
+               h_Rap60120_SS[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt_SS[i]->Fill( reco_pt, weight );
+               h_Phistar_SS[i]->Fill( reco_phistar, weight );
+            } else if (reco_M>15 && reco_M<60) {
+               h_Rap1560_SS[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt1560_SS[i]->Fill( reco_pt, weight );
+               h_Phistar1560_SS[i]->Fill( reco_phistar, weight );
+            }
+         } else {
+            h_Mass[i]->Fill( reco_M, weight );
+
+            if (reco_M>60 && reco_M<120) {
+               h_Rap60120[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt[i]->Fill( reco_pt, weight );
+               h_Phistar[i]->Fill( reco_phistar, weight );
+            } else if (reco_M>15 && reco_M<60) {
+               h_Rap1560[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt1560[i]->Fill( reco_pt, weight );
+               h_Phistar1560[i]->Fill( reco_phistar, weight );
+            }
+         }
+      }
+	}
+
+	void WriteHistograms(TFile *fout)
+	{
+		fout->cd();
+		for(Int_t i_hist=0; i_hist < (Int_t)Histo.size(); i_hist++)
+			Histo[i_hist]->Write();
+	}
+};
