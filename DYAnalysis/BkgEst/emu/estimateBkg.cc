@@ -71,7 +71,7 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
         SampleTag tag = static_cast<SampleTag>(i);
         double lumi = lumi_all;
         if (IsDYMuMu(tag)) { // special case of DYMuMu which has both beam directions
-           lumi = switcheta(tag)>0 ? lumi_part1 : lumi_part2;
+           lumi = (switcheta(tag)>0) ? lumi_part1 : lumi_part2;
         }
         norm[i] = (Xsec(tag)*lumi)/Nevts(tag);
         // special case of ttbar: scale it up or down for syst, by 18% (total uncertainty from HIN-17-002)

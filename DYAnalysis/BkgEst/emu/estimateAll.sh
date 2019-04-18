@@ -19,13 +19,13 @@ root -l -b -q estimateBkg.cc+'("phistar",-1)'
 root -l -b -q estimateBkg.cc+'("phistar1560",-1)'
 
 # variation of the RR value
-root -l -b -q estimateBkg.cc+'("mass",0,-1)'
-root -l -b -q estimateBkg.cc+'("pt",0,-1)'
-root -l -b -q estimateBkg.cc+'("pt1560",0,-1)'
-root -l -b -q estimateBkg.cc+'("rap1560",0,-1)'
-root -l -b -q estimateBkg.cc+'("rap60120",0,-1)'
-root -l -b -q estimateBkg.cc+'("phistar",0,-1)'
-root -l -b -q estimateBkg.cc+'("phistar1560",0,-1)'
+root -l -b -q estimateBkg.cc+'("mass",0,1)'
+root -l -b -q estimateBkg.cc+'("pt",0,1)'
+root -l -b -q estimateBkg.cc+'("pt1560",0,1)'
+root -l -b -q estimateBkg.cc+'("rap1560",0,1)'
+root -l -b -q estimateBkg.cc+'("rap60120",0,1)'
+root -l -b -q estimateBkg.cc+'("phistar",0,1)'
+root -l -b -q estimateBkg.cc+'("phistar1560",0,1)'
 
 # nominal
 root -l -b -q estimateBkg.cc+'("mass")'
