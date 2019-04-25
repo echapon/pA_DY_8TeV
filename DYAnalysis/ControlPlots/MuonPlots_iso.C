@@ -360,7 +360,7 @@ void MuonPlots_iso(Bool_t isCorrected = kTRUE,
 
             // -- Event Selection -- //
             vector< Muon > SelectedMuonCollection;
-            bool isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,true); // do not apply iso! 
+            bool isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,true,1e99); // do not apply iso! 
 
             Muon mu1;
             Muon mu2;
@@ -376,6 +376,10 @@ void MuonPlots_iso(Bool_t isCorrected = kTRUE,
                eta2 = mu2.eta;
                double aeta1 = fabs(eta1);
                double aeta2 = fabs(eta2);
+
+               double vtxprobD = -999;
+               double vtxnormchi2D = 999;
+               analyzer->DimuonVertexProbNormChi2(ntuple, mu1.Inner_pT, mu2.Inner_pT, &vtxprobD, &vtxnormchi2D);
 
                // TnP
                if (doTnPrew) {
@@ -411,7 +415,8 @@ void MuonPlots_iso(Bool_t isCorrected = kTRUE,
                   TnpWeight = TnpWeight * sf_trg;
                }
 
-               Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
+               if (vtxnormchi2D<20) Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
+               else Plots->FillHistograms_DoubleMu_hivtx(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
             }
          } //End of if( isTriggered )
 

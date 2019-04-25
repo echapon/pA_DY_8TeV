@@ -119,7 +119,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
 	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew_noZptrew.root");
-   cout << f_input_Data->GetTitle() << endl;
+   cout << f_input_Data->GetName() << endl;
+   cout << f_input->GetName() << endl;
 	
 	// -- output file -- //
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
@@ -201,6 +202,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
 	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
+	HistNames.push_back( "h_mass2_SS" );			Variables.push_back( "SSMass_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
 
 	HistNames.push_back( "h_Pt_minusCharge" );	Variables.push_back( "MinusChargePt" );		XTitles.push_back( "Muon(mu^{-}) P_{T} [GeV]");
 	HistNames.push_back( "h_Pt_plusCharge" );	Variables.push_back( "PlusChargePt" );		XTitles.push_back( "Muon(mu^{+}) P_{T} [GeV]");
@@ -815,13 +817,17 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
    // f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
    // f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
-	f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/dijet_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
-	f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/wjets_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
+   // f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/dijet_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
+   // f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/wjets_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/dijet_%s_opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12_FRopt1.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/wjets_%s_opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12_FRopt1.root",variable));
+   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/dijet_%s_opt325_QCDopt2_reltrkisoR03muptlt10_isomax0p5_L3Mu12_FRopt1.root",variable));
+   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/wjets_%s_opt325_QCDopt2_reltrkisoR03muptlt10_isomax0p5_L3Mu12_FRopt1.root",variable));
 	f_input_bkg_abcd = new TFile(FileLocation + "/BkgEst/abcd/output_ABCD_" + HLTname + "_DataMinusMC.root");
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet")->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets")->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
-   TH1D *h_abcd = (TH1D*) f_input_bkg_abcd->Get("outputs_0and1isoTo2iso/hbkg_OS_2iso_" + TString(DYana::Varname(DYana::str2var(variable))));
+   // TH1D *h_abcd = (TH1D*) f_input_bkg_abcd->Get("outputs_0and1isoTo2iso/hbkg_OS_2iso_" + TString(DYana::Varname(DYana::str2var(variable))));
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -854,7 +860,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 		h_WW_emu->Scale( NormFactor );
 		h_WZ_emu->Scale( NormFactor );
 		h_ZZ_emu->Scale( NormFactor );
-      h_abcd->Scale( NormFactor );
+      // h_abcd->Scale( NormFactor );
 	}
 
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
@@ -865,7 +871,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	StackHistos.push_back( h_ttbar_emu ); LegendNames.push_back( "ttbar (e#mu)" ); colors.push_back(kRed);
    if (DrawDataDriven==1) {StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);}
 	if (DrawDataDriven==1) {StackHistos.push_back( h_WJets_FR ); LegendNames.push_back( "WJets (FR)" ); colors.push_back(kBlue);}
-	if (DrawDataDriven==2) {StackHistos.push_back( h_abcd ); LegendNames.push_back( "Fakes (ABCD)" ); colors.push_back(kBlue);}
+   // if (DrawDataDriven==2) {StackHistos.push_back( h_abcd ); LegendNames.push_back( "Fakes (ABCD)" ); colors.push_back(kBlue);}
 	StackHistos.push_back( h_SignalMC ); LegendNames.push_back( "DYMuMu" ); colors.push_back(kOrange);
 
 	//////////////////////////////////////////
@@ -931,8 +937,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    if (DrawDataDriven==1) {
       h_bkgs.push_back( h_diJet_FR ); Names.push_back("DiJet");
       h_bkgs.push_back( h_WJets_FR ); Names.push_back("WJets");
-   } else if (DrawDataDriven==2) {
-      h_bkgs.push_back( h_abcd ); Names.push_back("ABCD");
+   // } else if (DrawDataDriven==2) {
+      // h_bkgs.push_back( h_abcd ); Names.push_back("ABCD");
    }
 	
 	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
@@ -956,8 +962,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	h_WJets_FR->SetName("h_WJets_FR");
 	h_WJets_FR->Write();
 
-	h_abcd->SetName("h_abcd");
-	h_abcd->Write();
+   // h_abcd->SetName("h_abcd");
+   // h_abcd->Write();
 
 	h_WZ_emu->SetName("h_WZ_MC");
 	h_WZ_emu->Write();

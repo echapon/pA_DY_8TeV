@@ -1303,7 +1303,6 @@ public:
 	Bool_t isMC;
 	std::vector<TH1D*> Histo;
 
-   // TH1D *h_maxRelPFIso_SS_M120600;
    TH1D *h_Mass[NISOBINS];
    TH1D *h_Rap60120[NISOBINS];
    TH1D *h_Pt[NISOBINS];
@@ -1318,6 +1317,21 @@ public:
    TH1D *h_Rap1560_SS[NISOBINS];
    TH1D *h_Pt1560_SS[NISOBINS];
    TH1D *h_Phistar1560_SS[NISOBINS];
+
+   TH1D *h_Mass_hivtx[NISOBINS];
+   TH1D *h_Rap60120_hivtx[NISOBINS];
+   TH1D *h_Pt_hivtx[NISOBINS];
+   TH1D *h_Phistar_hivtx[NISOBINS];
+   TH1D *h_Rap1560_hivtx[NISOBINS];
+   TH1D *h_Pt1560_hivtx[NISOBINS];
+   TH1D *h_Phistar1560_hivtx[NISOBINS];
+   TH1D *h_Mass_SS_hivtx[NISOBINS];
+   TH1D *h_Rap60120_SS_hivtx[NISOBINS];
+   TH1D *h_Pt_SS_hivtx[NISOBINS];
+   TH1D *h_Phistar_SS_hivtx[NISOBINS];
+   TH1D *h_Rap1560_SS_hivtx[NISOBINS];
+   TH1D *h_Pt1560_SS_hivtx[NISOBINS];
+   TH1D *h_Phistar1560_SS_hivtx[NISOBINS];
 
    const double iso1min[NISOBINS] = {
       0,0,0.2
@@ -1359,6 +1373,22 @@ public:
          h_Rap1560_SS[i] = new TH1D(Form("h_Rap1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap1560), binsvar(var::rap1560) ); Histo.push_back( h_Rap1560_SS[i] );
          h_Pt1560_SS[i] = new TH1D(Form("h_Pt1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt1560), binsvar(var::pt1560) ); Histo.push_back( h_Pt1560_SS[i] );
          h_Phistar1560_SS[i] = new TH1D(Form("h_Phistar1560_SS_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar1560), binsvar(var::phistar1560) ); Histo.push_back( h_Phistar1560_SS[i] );
+
+         h_Mass_hivtx[i] = new TH1D(Form("h_Mass_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::mass), binsvar(var::mass) ); Histo.push_back( h_Mass_hivtx[i] );
+         h_Rap60120_hivtx[i] = new TH1D(Form("h_Rap60120_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap60120), binsvar(var::rap60120) ); Histo.push_back( h_Rap60120_hivtx[i] );
+         h_Pt_hivtx[i] = new TH1D(Form("h_Pt_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt), binsvar(var::pt) ); Histo.push_back( h_Pt_hivtx[i] );
+         h_Phistar_hivtx[i] = new TH1D(Form("h_Phistar_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar), binsvar(var::phistar) ); Histo.push_back( h_Phistar_hivtx[i] );
+         h_Rap1560_hivtx[i] = new TH1D(Form("h_Rap1560_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap1560), binsvar(var::rap1560) ); Histo.push_back( h_Rap1560_hivtx[i] );
+         h_Pt1560_hivtx[i] = new TH1D(Form("h_Pt1560_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt1560), binsvar(var::pt1560) ); Histo.push_back( h_Pt1560_hivtx[i] );
+         h_Phistar1560_hivtx[i] = new TH1D(Form("h_Phistar1560_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar1560), binsvar(var::phistar1560) ); Histo.push_back( h_Phistar1560_hivtx[i] );
+
+         h_Mass_SS_hivtx[i] = new TH1D(Form("h_Mass_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::mass), binsvar(var::mass) ); Histo.push_back( h_Mass_SS_hivtx[i] );
+         h_Rap60120_SS_hivtx[i] = new TH1D(Form("h_Rap60120_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap60120), binsvar(var::rap60120) ); Histo.push_back( h_Rap60120_SS_hivtx[i] );
+         h_Pt_SS_hivtx[i] = new TH1D(Form("h_Pt_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt), binsvar(var::pt) ); Histo.push_back( h_Pt_SS_hivtx[i] );
+         h_Phistar_SS_hivtx[i] = new TH1D(Form("h_Phistar_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar), binsvar(var::phistar) ); Histo.push_back( h_Phistar_SS_hivtx[i] );
+         h_Rap1560_SS_hivtx[i] = new TH1D(Form("h_Rap1560_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::rap1560), binsvar(var::rap1560) ); Histo.push_back( h_Rap1560_SS_hivtx[i] );
+         h_Pt1560_SS_hivtx[i] = new TH1D(Form("h_Pt1560_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::pt1560), binsvar(var::pt1560) ); Histo.push_back( h_Pt1560_SS_hivtx[i] );
+         h_Phistar1560_SS_hivtx[i] = new TH1D(Form("h_Phistar1560_SS_hivtx_%.1f-%.1f_%.1f-%.1f_",iso11,iso12,iso21,iso22)+Type, "", nbinsvar(var::phistar1560), binsvar(var::phistar1560) ); Histo.push_back( h_Phistar1560_SS_hivtx[i] );
       }
 	}
 
@@ -1403,6 +1433,51 @@ public:
                h_Rap1560[i]->Fill( reco_rap-rapshift, weight );
                h_Pt1560[i]->Fill( reco_pt, weight );
                h_Phistar1560[i]->Fill( reco_phistar, weight );
+            }
+         }
+      }
+	}
+
+	void FillHistograms_DoubleMu_hivtx(NtupleHandle *ntuple, Muon recolep1, Muon recolep2, Double_t weight)
+	{
+		TLorentzVector reco_v1 = recolep1.Momentum;
+		TLorentzVector reco_v2 = recolep2.Momentum;
+      TLorentzVector reco_vv = reco_v1 + reco_v2;
+		Double_t reco_M = reco_vv.M();
+		Double_t reco_rap = reco_vv.Rapidity();
+		Double_t reco_pt = reco_vv.Pt();
+		Double_t reco_phistar = Object::phistar(reco_v1,reco_v2);
+      Bool_t isOS = ( recolep1.charge != recolep2.charge );
+
+      double mintrkiso = min(recolep1.trkiso, recolep2.trkiso);
+      double maxtrkiso = max(recolep1.trkiso, recolep2.trkiso);
+
+      for (int i=0; i<NISOBINS; i++) {
+         if (!(mintrkiso>=iso1min[i] && mintrkiso<iso1max[i] && maxtrkiso>=iso2min[i] && maxtrkiso<iso2max[i])) continue;
+
+         if (!isOS) {
+            h_Mass_SS_hivtx[i]->Fill( reco_M, weight );
+
+            if (reco_M>60 && reco_M<120) {
+               h_Rap60120_SS_hivtx[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt_SS_hivtx[i]->Fill( reco_pt, weight );
+               h_Phistar_SS_hivtx[i]->Fill( reco_phistar, weight );
+            } else if (reco_M>15 && reco_M<60) {
+               h_Rap1560_SS_hivtx[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt1560_SS_hivtx[i]->Fill( reco_pt, weight );
+               h_Phistar1560_SS_hivtx[i]->Fill( reco_phistar, weight );
+            }
+         } else {
+            h_Mass_hivtx[i]->Fill( reco_M, weight );
+
+            if (reco_M>60 && reco_M<120) {
+               h_Rap60120_hivtx[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt_hivtx[i]->Fill( reco_pt, weight );
+               h_Phistar_hivtx[i]->Fill( reco_phistar, weight );
+            } else if (reco_M>15 && reco_M<60) {
+               h_Rap1560_hivtx[i]->Fill( reco_rap-rapshift, weight );
+               h_Pt1560_hivtx[i]->Fill( reco_pt, weight );
+               h_Phistar1560_hivtx[i]->Fill( reco_phistar, weight );
             }
          }
       }
