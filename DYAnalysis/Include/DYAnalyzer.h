@@ -42,6 +42,7 @@ public:
 	Double_t LeadEtaCut;
 	Double_t SubEtaCut;
    bool gNoIso;
+   Int_t MinNTracks;
 
    Int_t sign; // 1 for pPb, -1 for Pbp
 
@@ -134,6 +135,8 @@ public:
 
 DYAnalyzer::DYAnalyzer(TString HLTname) : sign(1)
 {
+   MinNTracks = 2;
+
 	if( HLTname == "None" )
 	{
 		cout << "===================================================" << endl;
@@ -765,6 +768,9 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 {
    using namespace DYana;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	Bool_t isPassEventSelection = kFALSE;
 
 	//Collect qualified muons among muons
@@ -780,6 +786,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
           // for L3Mu12: rel tk iso
           if (!noiso && HLT.Contains("L3Mu12") && 
                    (MuonCollection[j].trkiso < 0.2))
+                   // (MuonCollection[j].trkiso < 0.5))
              passOK = true;
           // for L1DoubleMu: rel PF iso
           if (!noiso && HLT.Contains("L1DoubleMu") && 
@@ -932,6 +939,9 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 {
    using namespace DYana;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	Bool_t isPassEventSelection = kFALSE;
 
 	//Collect qualified muons among muons
@@ -943,7 +953,7 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
           if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
 	        QMuonCollection.push_back( MuonCollection[j] );
           // for L3Mu12 / high mass: use trkiso
-          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
+          if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
 	        QMuonCollection.push_back( MuonCollection[j] );
        }
 	}
@@ -1070,6 +1080,9 @@ Bool_t DYAnalyzer::EventSelection_generic(vector< Muon > MuonCollection, NtupleH
                   TString trigger, int isotype, double isocut )
 {
    using namespace DYana;
+
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
 
 	Bool_t isPassEventSelection = kFALSE;
 
@@ -1341,6 +1354,9 @@ Bool_t DYAnalyzer::EventSelection_Electron(vector< Electron > ElectronCollection
 {
 	Bool_t isPassEventSelection = kFALSE;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	// -- Electron ID -- //
 	vector< Electron > QElectronCollection;
 	for(Int_t j=0; j<(int)ElectronCollection.size(); j++)
@@ -1381,6 +1397,9 @@ Bool_t DYAnalyzer::EventSelection_ElectronChannel(vector< Electron > ElectronCol
 						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
+
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
 
 	// -- Electron ID -- //
 	vector< Electron > QElectronCollection;
@@ -1423,6 +1442,9 @@ Bool_t DYAnalyzer::EventSelection_ElectronChannel_NminusPFIso(vector< Electron >
 						vector< Electron >* SelectedElectronCollection) // -- output: 2 electrons passing event selection conditions -- //
 {
 	Bool_t isPassEventSelection = kFALSE;
+
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
 
 	// -- Electron ID -- //
 	vector< Electron > QElectronCollection;
@@ -1764,6 +1786,9 @@ Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHan
 {
 	Bool_t isPassEventSelection = kFALSE;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	//Collect qualified muons among muons
 	vector< Muon > PassingMuonCollection;
 	vector< Muon > FailingMuonCollection;
@@ -1776,7 +1801,7 @@ Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHan
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
          // for L3Mu12 / high mass: use trkiso
-         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
+         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
@@ -1893,6 +1918,9 @@ Bool_t DYAnalyzer::EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHand
 {
 	Bool_t isPassEventSelection = kFALSE;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	//Collect qualified muons among muons
 	vector< Muon > PassingMuonCollection;
 	vector< Muon > FailingMuonCollection;
@@ -1905,7 +1933,7 @@ Bool_t DYAnalyzer::EventSelection_Wjet(vector< Muon > MuonCollection, NtupleHand
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
          // for L3Mu12 / high mass: use trkiso
-         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
+         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
@@ -1957,6 +1985,9 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
 	Bool_t isPassEventSelection = kFALSE;
 	isMoreThanOneCand = kFALSE;
 
+   // at least 3 tracks
+   if (ntuple->hiNtracks <= MinNTracks) return false;
+
 	//Collect qualified muons among muons
 	vector< Muon > QMuonCollection;
 	for(Int_t j=0; j<(int)MuonCollection.size(); j++)
@@ -1966,7 +1997,7 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
          if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
             QMuonCollection.push_back( MuonCollection[j] );
          // for L3Mu12 / high mass: use trkiso
-         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.3)
+         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
             QMuonCollection.push_back( MuonCollection[j] );
       }
 	}
