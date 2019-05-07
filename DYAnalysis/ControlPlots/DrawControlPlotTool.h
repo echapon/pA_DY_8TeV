@@ -118,7 +118,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
    if (doTnpRew) TnpRew = "_tnprew";
 
 	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
-	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew_noZptrew.root");
+	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew.root");
    cout << f_input_Data->GetName() << endl;
    cout << f_input->GetName() << endl;
 	
@@ -223,6 +223,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 
 	HistNames.push_back( "h_VtxProb" );						Variables.push_back( "VtxProb" );					XTitles.push_back( "Vertex Probability");
 	HistNames.push_back( "h_VtxNormChi2" );						Variables.push_back( "VtxNormChi2" );					XTitles.push_back( "Vertex Normalized #chi^{2}");
+	HistNames.push_back( "h_VtxNormChi2_fullrange" );						Variables.push_back( "VtxNormChi2_fullrange" );					XTitles.push_back( "Vertex Normalized #chi^{2}");
 
 	HistNames.push_back( "h_mass_OS_BB" );				Variables.push_back( "OSMass_DYBin_BB" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BB) [GeV]");
 	HistNames.push_back( "h_mass_OS_BE" );				Variables.push_back( "OSMass_DYBin_BE" );		XTitles.push_back( "Invariant Mass(Opposite Sign, BE) [GeV]");
@@ -236,6 +237,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_pixelHits" );			Variables.push_back( "PixelHits" );			XTitles.push_back( "# muon Pixel Hits");
 	HistNames.push_back( "h_trackerLayers" );		Variables.push_back( "TrackerLayers" );		XTitles.push_back( "# Tracker Layers");
 	HistNames.push_back( "h_RelTrkIso" );			Variables.push_back( "RelTrkIso" );			XTitles.push_back( "TrkIso / P_{T}");
+	HistNames.push_back( "h_RelTrkIso_fullrange" );			Variables.push_back( "RelTrkIso_fullrange" );			XTitles.push_back( "TrkIso / P_{T}");
 	HistNames.push_back( "h_RelPFIso" );			Variables.push_back( "RelPFIso" );			XTitles.push_back( "PFIso / P_{T}");
 
 	HistNames.push_back( "h_pfMET_pT" );			Variables.push_back( "pfMETpt" );			XTitles.push_back( "PF MET [GeV]");
@@ -815,14 +817,23 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	// -- Bring the histograms estimated by data-driven method -- //
 	////////////////////////////////////////////////////////////////
 	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
-   // f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
-   // f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
-   // f_input_bkg_dijet = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/dijet_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
-   // f_input_bkg_wjets = new TFile(FileLocation + Form("/BkgEst/fakerate/applyFR/result_20180826_FR/wjets_%s_opt20_QCDopt2_histreltrkiso_lt0p2_HLT%s_muptopt3_ptmin1_15_ptmin2_7.root",variable,HLTname.Data()));
-   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/dijet_%s_opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12_FRopt1.root",variable));
-   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/wjets_%s_opt325_QCDopt2_reltrkisoR03muptlt10_L3Mu12_FRopt1.root",variable));
-   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/dijet_%s_opt325_QCDopt2_reltrkisoR03muptlt10_isomax0p5_L3Mu12_FRopt1.root",variable));
-   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20180308/wjets_%s_opt325_QCDopt2_reltrkisoR03muptlt10_isomax0p5_L3Mu12_FRopt1.root",variable));
+   
+   // default
+   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // // Different FR formula(modified):
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // // QCD MC varied:
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // // SF uncertainties varied:
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1005_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1005_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // // iso max varied:
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
+
 	f_input_bkg_abcd = new TFile(FileLocation + "/BkgEst/abcd/output_ABCD_" + HLTname + "_DataMinusMC.root");
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet")->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets")->Clone();
