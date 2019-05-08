@@ -124,7 +124,7 @@ double vertexFitChi2(std::vector<NtupleEmu> emus, std::pair<PhysicsElectron,int>
   return chi2;
 }
 
-bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsMuon,PhysicsMuon>* dimuon, double& chi2min) {
+bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsMuon,PhysicsMuon>* dimuon, double& chi2min, bool invertchi2cut=false) {
 	bool flag = false;
 	chi2min = 20;
 	pair<PhysicsMuon,int> mu1;
@@ -142,7 +142,13 @@ bool dimuonDY(std::vector<NtupleTriggerObject> triggerobjects, std::vector<Ntupl
 
 				if(triggerMatch(triggerobjects, mu1.first,cuts::trig)) {
 					if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
-						if(vertexFitChi2(dimuons,mu1,mu2)<chi2min) {
+						if(!invertchi2cut && vertexFitChi2(dimuons,mu1,mu2)<chi2min) {
+							flag = true;
+							chi2min = vertexFitChi2(dimuons,mu1,mu2);
+							dimuon->first = mu1.first;
+							dimuon->second = mu2.first;
+						}
+						if(invertchi2cut && vertexFitChi2(dimuons,mu1,mu2)>chi2min) {
 							flag = true;
 							chi2min = vertexFitChi2(dimuons,mu1,mu2);
 							dimuon->first = mu1.first;

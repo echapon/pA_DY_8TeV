@@ -1,0 +1,13 @@
+executable            = batch_fill.sh
+arguments             = $(ProcId)
+output                = condor/$(ClusterId).$(ProcId).out
+error                 = condor/$(ClusterId).$(ProcId).err
+log                   = condor/$(ClusterId).log
++JobFlavour           = "microcentury"
+
+# the line below is ONLY if you belong to CMG (CERN CMS group)
++AccountingGroup = "group_u_CMST3.all"
+
+# want CentOS7
+requirements = (OpSysAndVer =?= "CentOS7")
+queue 20
