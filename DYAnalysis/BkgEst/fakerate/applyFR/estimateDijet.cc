@@ -32,6 +32,8 @@
 using namespace std;
 using namespace DYana;
 
+const double lumi_sf = 0.92;
+
 void estimateDijet() {
 
     int W = 1200;
@@ -47,8 +49,8 @@ void estimateDijet() {
     float R = 0.04*W_ref;
 
     // UPDATED IN 2017
-    lumi_13TeV = Form("%.2f pb^{-1}",lumi_all);
-    // lumi_13TeV = "2833 pb^{-1}";
+    lumi_8TeV = Form("%.2f pb^{-1}",lumi_all);
+    // lumi_8TeV = "2833 pb^{-1}";
     lumiTextSize = 0.5;
     writeExtraText = true;
     extraText = "Preliminary";
@@ -88,7 +90,11 @@ void estimateDijet() {
 
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
-       norm[i] = (Xsec(tag)*lumi_all)/Nevts(tag);
+       double lumi = lumi_all;
+       if (IsDYMuMu(tag)) { // special case of DYMuMu which has both beam directions
+          lumi = (switcheta(tag)>0) ? lumi_part1 : lumi_part2;
+       }
+       norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
        cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
        dijet_template[i] = (TH1D*)f[i]->Get("histDijet1");
@@ -239,7 +245,7 @@ void estimateDijet() {
     legg->AddEntry(dijetSS_template[Data1],"Same sign", "P");
 
     dijet_template[Data1]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
@@ -251,7 +257,7 @@ void estimateDijet() {
     canv->Clear();
     dijetSS_template[Data1]->SetFillColor(7);
     dijetSS_template[Data1]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
@@ -260,7 +266,7 @@ void estimateDijet() {
     canv->Clear();
 
     dijet_ratio[Data1]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
@@ -272,7 +278,7 @@ void estimateDijet() {
     canv->Clear();
     dijetSS_ratio[Data1]->SetFillColor(7);
     dijetSS_ratio[Data1]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
@@ -304,7 +310,7 @@ void estimateDijet() {
         }
     }
 
-    TH1D* dijet = (TH1D*)dijet_ratio[Data1]->Clone(); // !!EC: change the default from template to ratio
+    TH1D* dijet = (TH1D*)dijet_template[Data1]->Clone();
     dijet->Sumw2();
     dijet->SetName("dijet");
 
@@ -370,7 +376,7 @@ void estimateDijet() {
     dijet_stat->Draw("HISTPSAME");
     massFrame->Draw("AXISSAME");
     leg->Draw("SAME");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
