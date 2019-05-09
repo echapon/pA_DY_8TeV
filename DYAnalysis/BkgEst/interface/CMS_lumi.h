@@ -1,3 +1,6 @@
+#ifndef CMS_lumi_h
+#define CMS_lumi_h
+
 #include "TPad.h"
 #include "TLatex.h"
 #include "TLine.h"
@@ -22,7 +25,7 @@ float lumiTextOffset   = 0.2;
 float cmsTextSize      = 0.75;
 float cmsTextOffset    = 0.1;  // only used in outOfFrame version
 
-float relPosX    = 0.045;
+float relPosX    = 0.085;
 float relPosY    = 0.035;
 float relExtraDY = 1.2;
 
@@ -37,3 +40,5 @@ TString lumi_sqrtS = "";
 bool drawLogo      = false;
 
 void CMS_lumi( TPad* pad, int iPeriod=3, int iPosX=10 );
+
+#endif // #ifndef CMS_lumi_h

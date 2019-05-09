@@ -1,3 +1,6 @@
+#ifndef CMS_lumi_C
+#define CMS_lumi_C
+
 #include "CMS_lumi.h"
 #include <iostream>
 
@@ -71,6 +74,11 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     {
       lumiText += "8 TeV";
     }
+  else if (iPeriod==111) {
+      if( outOfFrame ) lumiText += "#scale[0.85]{";
+      lumiText += "pPb (174 nb^{-1}, #sqrt{s_{NN}} = 8.16 TeV)"; 
+      if( outOfFrame) lumiText += "}";
+  }
   else if ( iPeriod==0 )
     {
       lumiText += lumi_sqrtS;
@@ -161,3 +169,4 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     }
   return;
 }
+#endif // #ifndef CMS_lumi_C

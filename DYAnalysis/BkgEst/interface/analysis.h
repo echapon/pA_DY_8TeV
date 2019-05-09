@@ -220,6 +220,37 @@ bool dijetDY(std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* m
 	return flag;
 }
 
+bool dijetDY(std::vector<NtupleDimuon> dimuons, vector<pair<PhysicsMuon,int>>* muons, pair<PhysicsMuon,PhysicsMuon>* dimuon, double &chi2min) {
+	bool flag = false;
+	chi2min = 20;
+	pair<PhysicsMuon,int> mu1;
+	pair<PhysicsMuon,int> mu2;
+
+	if(muons->size()>=2) {
+		for(unsigned int i=0; i<muons->size(); i++) {
+			for(unsigned int j=0; j<muons->size(); j++) {
+				if(i>=j) continue;
+
+				mu1 = muons->at(i);
+				mu2 = muons->at(j);
+
+				if( mu1.first.pt<=cuts::ptmin1 && mu2.first.pt<=cuts::ptmin2 ) continue;
+
+				if(openingAngle(dimuons,mu1,mu2)<M_PI-0.005) {
+					if(vertexFitChi2(dimuons,mu1,mu2)<chi2min) {
+						flag = true;
+						chi2min = vertexFitChi2(dimuons,mu1,mu2);
+						dimuon->first = mu1.first;
+						dimuon->second = mu2.first;
+					}
+				}
+				
+			}
+		}
+	}
+	return flag;
+}
+
 bool wjetsDY(std::vector<NtupleDimuon> dimuons, pair<PhysicsMuon,int> mu1, pair<PhysicsMuon,int> mu2, pair<PhysicsMuon,PhysicsMuon>* dimuon) {
 	bool flag = false;
 	const double min = 20;

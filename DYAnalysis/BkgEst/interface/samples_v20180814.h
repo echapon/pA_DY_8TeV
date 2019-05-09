@@ -222,25 +222,25 @@ namespace DYana_v20180814 {
    };
    const char* PathFRHistos2(SampleTag s) {
       switch (s) {
-         case DYMuMu1030:return "FIXME"; break;
-         case DYMuMu30:  return "FIXME"; break;
-         case DYMuMu1030_PbP:return "FIXME"; break;
-         case DYMuMu30_PbP:  return "FIXME"; break;
-         case DYTauTau1030:return "FIXME"; break;
-         case DYTauTau30:return "FIXME"; break;
-         case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWW.root"; break;
-         case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeWZ.root"; break;
-         case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeZZ.root"; break;
-         case TT:        return "FIXME"; break;
-         case TW:        return "FIXME"; break;
-         case TbarW:     return "FIXME"; break;
-         case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeQCD.root"; break;
-         case WpMu:      return "FIXME"; break;
-         case WmMu:      return "FIXME"; break;
-         case WpTau:     return "FIXME"; break;
-         case WmTau:     return "FIXME"; break;
-         case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeData1.root"; break;
-         case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/histograms/fakeData2.root"; break;
+         case DYMuMu1030:return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYMuMu1030.root"; break;
+         case DYMuMu30:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYMuMu30.root"; break;
+         case DYMuMu1030_PbP:return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYMuMu1030_PbP.root"; break;
+         case DYMuMu30_PbP:  return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYMuMu30_PbP.root"; break;
+         case DYTauTau1030:return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYTauTau1030.root"; break;
+         case DYTauTau30:return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeDYTauTau30.root"; break;
+         case WW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWW.root"; break;
+         case WZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWZ.root"; break;
+         case ZZ:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeZZ.root"; break;
+         case TT:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeTT.root"; break;
+         case TW:        return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeTW.root"; break;
+         case TbarW:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeTbarW.root"; break;
+         case QCD:       return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeQCD.root"; break;
+         case WpMu:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWpMu.root"; break;
+         case WmMu:      return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWmMu.root"; break;
+         case WpTau:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWpTau.root"; break;
+         case WmTau:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeWmTau.root"; break;
+         case Data1:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeData1.root"; break;
+         case Data2:     return "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/histograms/fakeData2.root"; break;
          default:        return "Unknown sample";
       }
    };

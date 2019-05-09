@@ -27,8 +27,8 @@ void initFRhistos() {
 
    gFR_template_barrel = *(TH1D*) f_temp->Get("FR_template_barrel")->Clone("FR1");
    gFR_template_endcap = *(TH1D*) f_temp->Get("FR_template_endcap")->Clone("FR2");
-   gFR_xsec_barrel = *(TH1D*) f_dataMC->Get("FR_xsec_barrel")->Clone("FR3");
-   gFR_xsec_endcap = *(TH1D*) f_dataMC->Get("FR_xsec_endcap")->Clone("FR4");
+   gFR_xsec_barrel = *(TH1D*) f_dataMC->Get("hFR2_barrel")->Clone("FR3");
+   gFR_xsec_endcap = *(TH1D*) f_dataMC->Get("hFR2_endcap")->Clone("FR4");
    f_temp->Close();
    f_dataMC->Close();
 };
