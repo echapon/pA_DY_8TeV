@@ -340,3 +340,8 @@ void applyFR() {
       applyFR(tag);
    }
 }
+
+void applyFR(int i) {
+   SampleTag tag = static_cast<SampleTag>(i);
+   applyFR(tag);
+}
