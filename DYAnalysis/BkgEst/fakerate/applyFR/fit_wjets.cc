@@ -5,7 +5,7 @@ using namespace DYana;
 
 const double lumi_sf = 0.92;
 
-void fit_wjets()
+void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
 {
 	Double_t Lumi = lumi_all;
 
@@ -29,13 +29,13 @@ void fit_wjets()
       norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
       cout<< "norm[" << i << "] = " << norm[i]<<endl;
 
-      wjets_fit[i] = (TH1D*)f[i]->Get("fitWJets1");
+      wjets_fit[i] = (TH1D*)f[i]->Get(Form("fitWJets%d",iFR));
       wjets_fit[i]->Scale(norm[i]);
-      dijet_fit[i] = (TH1D*)f[i]->Get("fitDijet1");
+      dijet_fit[i] = (TH1D*)f[i]->Get(Form("fitDijet%d",iFR));
       dijet_fit[i]->Scale(norm[i]);
-      wjetsSS_fit[i] = (TH1D*)f[i]->Get("fitSameWJets1");
+      wjetsSS_fit[i] = (TH1D*)f[i]->Get(Form("fitSameWJets%d",iFR));
       wjetsSS_fit[i]->Scale(norm[i]);
-      dijetSS_fit[i] = (TH1D*)f[i]->Get("fitSameDijet1");
+      dijetSS_fit[i] = (TH1D*)f[i]->Get(Form("fitSameDijet%d",iFR));
       dijetSS_fit[i]->Scale(norm[i]);
 
        // add histos together
@@ -72,25 +72,26 @@ void fit_wjets()
 	TH1D *h_ttbar = wjets_fit[TT];
 
    // DY template: MC, 1P1F, OS
-	TH1D *h_DYJets = wjets_fit[DYFirst];
+   TH1D *h_DYJets = wjets_fit[DYFirst];
 
    // W+jets template: data-MC, 1P1F, SS
-   // TH1D *h_WJets = wjetsSS_fit[DataFirst];
-   // // TH1D *h_DYJets_SS = dijetSS_fit[DYFirst];
-   TH1D *h_DYJets_SS = wjetsSS_fit[DYFirst];
-   TH1D *h_QCD_SS = dijetSS_fit[DataFirst];
-   TH1D *h_ttbar_SS = wjetsSS_fit[TT];
-   // // h_WJets->Add(h_QCD_SS,-2.0); // the -2 is probably because QCD is estimated from the 2noniso sample: either muon1 is propagated to low iso, either muon2 is
-   // h_WJets->Add(h_DYJets_SS,-1.0);
-   // h_WJets->Add(h_ttbar_SS,-1.0);
+   // // TH1D *h_WJets = wjetsSS_fit[DataFirst];
+   // TH1D *h_DYJets_SS = dijetSS_fit[DYFirst];
+   // TH1D *h_DYJets_SS2 = wjetsSS_fit[DYFirst];
+   // TH1D *h_QCD_SS = dijetSS_fit[DataFirst];
+   // TH1D *h_QCD_SS2 = wjetsSS_fit[DataFirst];
+   // TH1D *h_ttbar_SS = wjetsSS_fit[TT];
+   // // // h_WJets->Add(h_QCD_SS,-2.0); // the -2 is probably because QCD is estimated from the 2noniso sample: either muon1 is propagated to low iso, either muon2 is
+   // // h_WJets->Add(h_DYJets_SS,-1.0);
+   // // h_WJets->Add(h_ttbar_SS,-1.0);
 
    // temporarily take the Wjets template from MC
    TH1D *h_WJets = wjets_fit[WFirst];
 
    // QCD template: data-MC, 0P2F, OS
-	TH1D *h_QCD = dijet_fit[Data1];
-	TH1D *h_DYJets_Dijet = dijet_fit[DYFirst];
-	TH1D *h_ttbar_Dijet = dijet_fit[TT];
+   TH1D *h_QCD = dijet_fit[DataFirst];
+   TH1D *h_DYJets_Dijet = dijet_fit[DYFirst];
+   TH1D *h_ttbar_Dijet = dijet_fit[TT];
    h_QCD->Add(h_DYJets_Dijet,-1.0);
    h_QCD->Add(h_ttbar_Dijet,-1.0);
 
@@ -102,10 +103,12 @@ void fit_wjets()
    h_ttbar->Write("h_ttbar");
    h_DYJets->Write("h_DYJets");
    h_WJets->Write("h_WJets");
-   wjetsSS_fit[WFirst]->Write("hh_WJets_MC");
-   h_QCD_SS->Write("hh_QCD_SS");
-   h_DYJets_SS->Write("hh_DYJets_SS");
-   h_ttbar_SS->Write("hh_ttbar_SS");
+   // wjetsSS_fit[WFirst]->Write("hh_WJets_SS_MC");
+   // h_QCD_SS->Write("hh_QCD_SS");
+   // h_QCD_SS2->Write("hh_QCD_SS2");
+   // h_DYJets_SS->Write("hh_DYJets_SS");
+   // h_DYJets_SS2->Write("hh_DYJets_SS2");
+   // h_ttbar_SS->Write("hh_ttbar_SS");
    h_QCD->Write("h_QCD");
    h_DYJets_Dijet->Write("hh_DYJets_Dijet");
    h_ttbar_Dijet->Write("hh_ttbar_Dijet");
@@ -114,7 +117,11 @@ void fit_wjets()
    // return;
 
 	//Convert TH1D to RooDataHist
-	RooRealVar mass("mass", "Dimuon mass [GeV]", 15,200);
+   RooRealVar mass("mass", "Dimuon mass [GeV]", 15,200);
+   // RooRealVar mass("massMET", "Dimuon mass [GeV] in 2 MET bins", 0,400);
+   // RooRealVar mass("vtxchi2", "dimuon chi2", 0,20);
+   // RooRealVar mass("dphi", "dimuon Delta phi", 0,3.2);
+   // RooRealVar mass("mt", "Mt", 0,200);
 
 	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", mass, h_ttbar);
 	RooDataHist *RooHist_DYJets = new RooDataHist("RooHist_DYJets", "RooHistogram_DYJets", mass, h_DYJets);
@@ -129,25 +136,26 @@ void fit_wjets()
 	RooHistPdf *pdf_QCD = new RooHistPdf("pdf_QCD", "Template from data-driven dijet", mass, *RooHist_QCD, 0);
 
 	// Construct model = n_ttbar * ttbar + n_WJets * WJets
-	double N_ttbar = h_ttbar->Integral();
-	double N_DYJets = h_DYJets->Integral();
-	double N_WJets = h_WJets->Integral()*3; // Why???
-	double N_QCD = h_QCD->Integral()*2; // QCD is estimated from the 2noniso sample: either muon1 is propagated to low iso, either muon2 is
-	double ratio = h_data->Integral()/(N_WJets + N_QCD + N_ttbar + N_DYJets);
-   N_ttbar *= ratio;
-   N_DYJets *= ratio;
-	N_WJets *= ratio;
-	N_QCD *= ratio;
-   cout << "ratio " << ratio << endl;
+	double N_ttbar = h_ttbar->Integral() * 0.5; // Why??
+	double N_DYJets = h_DYJets->Integral() * 0.5; // Why??
+	double N_WJets = h_WJets->Integral(); 
+	double N_QCD = h_QCD->Integral()*2.; 
 
-	RooRealVar n_ttbar("n_ttbar", "n_ttbar", N_ttbar, N_ttbar*0.5, N_ttbar*1.5);
-	RooRealVar n_DYJets("n_DYJets", "n_DYJets", N_DYJets, N_DYJets*0.5, N_DYJets*1.5);
-	RooRealVar n_WJets("n_WJets", "n_WJets", N_WJets, N_WJets*0.01, N_WJets*100);
-	RooRealVar n_QCD("n_QCD", "n_QCD", N_QCD, N_QCD*0.01, N_QCD*100);
+   RooRealVar sf_MC("sf_MC", "sf_MC", 1, 0.2, 3.);
+   RooRealVar sf_QCD("sf_QCD", "sf_QCD", 1, 0.2, 3.);
+   RooRealVar sf_WJets("sf_WJets", "sf_WJets", 1, 0.2, 3.);
+   RooConstVar n_ttbar0("n_ttbar0","n_ttbar0",N_ttbar);
+	RooFormulaVar n_ttbar("n_ttbar", "@0*@1", RooArgSet(sf_MC,n_ttbar0));
+   RooConstVar n_DYJets0("n_DYJets0","n_DYJets0",N_DYJets);
+	RooFormulaVar n_DYJets("n_DYJets", "@0*@1", RooArgSet(sf_MC,n_DYJets0));
+   RooConstVar n_QCD0("n_QCD0","n_QCD0",N_QCD);
+	RooFormulaVar n_QCD("n_QCD", "@0*@1", RooArgSet(sf_QCD,n_QCD0));
+   RooConstVar n_WJets0("n_WJets0","n_WJets0",N_WJets);
+	RooFormulaVar n_WJets("n_WJets", "@0*@1", RooArgSet(sf_WJets,n_WJets0));
 	RooAddPdf model( "model","model",RooArgList(*pdf_WJets, *pdf_QCD, *pdf_DYJets, *pdf_ttbar), RooArgList(n_WJets, n_QCD, n_DYJets, n_ttbar) );
 
 	// Fit to data
-	RooFitResult* r = model.fitTo( *RooHist_data, Save() );
+	RooFitResult* r = model.fitTo( *RooHist_data, Save(), Extended() );
 	r->Print();
    // RooAbsReal *chi2 = model.createChi2(*RooHist_data);
    // cout << "chi2ndof: " << chi2->getVal() / ((Double_t)h_data->GetNbinsX()) << endl;
@@ -164,4 +172,5 @@ void fit_wjets()
    model.plotOn(frame,Components(*pdf_ttbar),LineColor(kGreen+2),FillColor(kGreen+2));
    RooHist_data->plotOn(frame);
    frame->Draw();
+
 }

@@ -69,14 +69,10 @@ void applyFR(SampleTag index) {
    TH1D* fitMETDijet2 = new TH1D("fitMETDijet2","",20,0,200);
    TH1D* fitMETSameDijet1 = new TH1D("fitMETSameDijet1","",20,0,200);
    TH1D* fitMETSameDijet2 = new TH1D("fitMETSameDijet2","",20,0,200);
-   TH1D* fitchi2Dijet1 = new TH1D("fitchi2Dijet1","",20,0,20);
-   TH1D* fitchi2Dijet2 = new TH1D("fitchi2Dijet2","",20,0,20);
-   TH1D* fitchi2SameDijet1 = new TH1D("fitchi2SameDijet1","",20,0,20);
-   TH1D* fitchi2SameDijet2 = new TH1D("fitchi2SameDijet2","",20,0,20);
-   TH1D* fitdphiDijet1 = new TH1D("fitdphiDijet1","",32,0,3.2);
-   TH1D* fitdphiDijet2 = new TH1D("fitdphiDijet2","",32,0,3.2);
-   TH1D* fitdphiSameDijet1 = new TH1D("fitdphiSameDijet1","",32,0,3.2);
-   TH1D* fitdphiSameDijet2 = new TH1D("fitdphiSameDijet2","",32,0,3.2);
+   TH1D* fitmassMETDijet1 = new TH1D("fitmassMETDijet1","",40,0,400);
+   TH1D* fitmassMETDijet2 = new TH1D("fitmassMETDijet2","",40,0,400);
+   TH1D* fitmassMETSameDijet1 = new TH1D("fitmassMETSameDijet1","",40,0,400);
+   TH1D* fitmassMETSameDijet2 = new TH1D("fitmassMETSameDijet2","",40,0,400);
    TH1D* fitMtDijet1 = new TH1D("fitMtDijet1","",20,0,200);
    TH1D* fitMtDijet2 = new TH1D("fitMtDijet2","",20,0,200);
    TH1D* fitMtSameDijet1 = new TH1D("fitMtSameDijet1","",20,0,200);
@@ -128,14 +124,10 @@ void applyFR(SampleTag index) {
    TH1D* fitMETWJets2 = new TH1D("fitMETWJets2","",20,0,200);
    TH1D* fitMETSameWJets1 = new TH1D("fitMETSameWJets1","",20,0,200);
    TH1D* fitMETSameWJets2 = new TH1D("fitMETSameWJets2","",20,0,200);
-   TH1D* fitchi2WJets1 = new TH1D("fitchi2WJets1","",20,0,20);
-   TH1D* fitchi2WJets2 = new TH1D("fitchi2WJets2","",20,0,20);
-   TH1D* fitchi2SameWJets1 = new TH1D("fitchi2SameWJets1","",20,0,20);
-   TH1D* fitchi2SameWJets2 = new TH1D("fitchi2SameWJets2","",20,0,20);
-   TH1D* fitdphiWJets1 = new TH1D("fitdphiWJets1","",32,0,3.2);
-   TH1D* fitdphiWJets2 = new TH1D("fitdphiWJets2","",32,0,3.2);
-   TH1D* fitdphiSameWJets1 = new TH1D("fitdphiSameWJets1","",32,0,3.2);
-   TH1D* fitdphiSameWJets2 = new TH1D("fitdphiSameWJets2","",32,0,3.2);
+   TH1D* fitmassMETWJets1 = new TH1D("fitmassMETWJets1","",40,0,400);
+   TH1D* fitmassMETWJets2 = new TH1D("fitmassMETWJets2","",40,0,400);
+   TH1D* fitmassMETSameWJets1 = new TH1D("fitmassMETSameWJets1","",40,0,400);
+   TH1D* fitmassMETSameWJets2 = new TH1D("fitmassMETSameWJets2","",40,0,400);
    TH1D* fitMtWJets1 = new TH1D("fitMtWJets1","",20,0,200);
    TH1D* fitMtWJets2 = new TH1D("fitMtWJets2","",20,0,200);
    TH1D* fitMtSameWJets1 = new TH1D("fitMtSameWJets1","",20,0,200);
@@ -195,13 +187,14 @@ void applyFR(SampleTag index) {
    double FR2_ratio;
    double weight_template;
    double weight_ratio;
+   double weight2_template;
+   double weight2_ratio;
    double mass;
    double sign;
    double rap;
    double MET;
-   double vtxchi2;
-   double dphi;
    double maxMt;
+   double massMET;
 
    int nPass = 0;
    int nFail = 0;
@@ -222,7 +215,7 @@ void applyFR(SampleTag index) {
          if( mu_->tightMuonID() && mu_->acceptance(cuts::ptmin2,cuts::etamax) ) {
             if( mu_->pt > cuts::ptmin1 ) leading = true;
 
-            if( mu_->isolation(cuts::isomax) ) passingMuons->push_back({*mu_,j});
+            if( mu_->trkisolation(cuts::isomax) ) passingMuons->push_back({*mu_,j});
             else failingMuons->push_back({*mu_,j});        
          }
       }
@@ -235,8 +228,8 @@ void applyFR(SampleTag index) {
       nPass += wt*passingMuons->size();
       nFail += wt*failingMuons->size();
 
-      if( failingMuons->size()>1 ) {
-         if( dijetDY(event->dimuons,failingMuons,tempMuons,vtxchi2) ) {
+      if( passingMuons->size()==0 && failingMuons->size()>1 ) {
+         if( dijetDY(event->dimuons,failingMuons,tempMuons) ) {
             FR1_template = FR_template(tempMuons->first);
             FR2_template = FR_template(tempMuons->second);
             FR1_ratio = FR_ratio(tempMuons->first);
@@ -244,6 +237,8 @@ void applyFR(SampleTag index) {
 
             weight_template = wt*FR1_template*FR2_template/((1-FR1_template)*(1-FR2_template));
             weight_ratio = wt*FR1_ratio*FR2_ratio/((1-FR1_ratio)*(1-FR2_ratio));
+            weight2_template = wt*(FR1_template/(1-FR1_template) + FR2_template/(1-FR2_template));
+            weight2_ratio = wt*(FR1_ratio/(1-FR1_ratio) + FR2_ratio/(1-FR2_ratio));
             /*
                if(weight_template > 1 || weight_ratio > 1 ) {
                cout<<"wt_temp = "<<weight_template<<", wt_ratio= "<<weight_ratio<<endl;
@@ -260,26 +255,24 @@ void applyFR(SampleTag index) {
             dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 
             MET = event->MET.at(0).pt;
-            dphi = fabs(tempMuons->first.momentum().DeltaPhi(tempMuons->second.momentum()));
             TLorentzVector tlvMET; tlvMET.SetPxPyPzE(event->MET.at(0).px,event->MET.at(0).py,0,event->MET.at(0).pt);
             double Mt1 = (tlvMET + tempMuons->first.momentum()).Mt();
             double Mt2 = (tlvMET + tempMuons->second.momentum()).Mt();
             maxMt = max(Mt1,Mt2);
+            massMET = min(mass,200.) + 200.*(MET>40);
 
             if( sign < 0 ) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histDijet1->Fill(mass, weight_template);
                   histDijet2->Fill(mass, weight_ratio);
-                  fitDijet1->Fill(mass, weight_template);
-                  fitDijet2->Fill(mass, weight_ratio);
-                  fitMETDijet1->Fill(MET, weight_template);
-                  fitMETDijet2->Fill(MET, weight_ratio);
-                  fitchi2Dijet1->Fill(vtxchi2, weight_template);
-                  fitchi2Dijet2->Fill(vtxchi2, weight_ratio);
-                  fitdphiDijet1->Fill(dphi, weight_template);
-                  fitdphiDijet2->Fill(dphi, weight_ratio);
-                  fitMtDijet1->Fill(maxMt, weight_template);
-                  fitMtDijet2->Fill(maxMt, weight_ratio);
+                  fitDijet1->Fill(mass, weight2_template);
+                  fitDijet2->Fill(mass, weight2_ratio);
+                  fitMETDijet1->Fill(MET, weight2_template);
+                  fitMETDijet2->Fill(MET, weight2_ratio);
+                  fitmassMETDijet1->Fill(massMET, weight2_template);
+                  fitmassMETDijet2->Fill(massMET, weight2_ratio);
+                  fitMtDijet1->Fill(maxMt, weight2_template);
+                  fitMtDijet2->Fill(maxMt, weight2_ratio);
                }
                if( mass > 60 && mass < 120) {
                   ZptDijet1->Fill(dimu_pt, weight_template);
@@ -302,18 +295,16 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameDijet1->Fill(mass, weight_template);
                   histSameDijet2->Fill(mass, weight_ratio);
-                  fitSameDijet1->Fill(mass, weight_template);
-                  fitSameDijet2->Fill(mass, weight_ratio);
-                  fitSameDijet1->Fill(mass, weight_template);
-                  fitSameDijet2->Fill(mass, weight_ratio);
-                  fitMETSameDijet1->Fill(MET, weight_template);
-                  fitMETSameDijet2->Fill(MET, weight_ratio);
-                  fitchi2SameDijet1->Fill(vtxchi2, weight_template);
-                  fitchi2SameDijet2->Fill(vtxchi2, weight_ratio);
-                  fitdphiSameDijet1->Fill(dphi, weight_template);
-                  fitdphiSameDijet2->Fill(dphi, weight_ratio);
-                  fitMtSameDijet1->Fill(maxMt, weight_template);
-                  fitMtSameDijet2->Fill(maxMt, weight_ratio);
+                  fitSameDijet1->Fill(mass, weight2_template);
+                  fitSameDijet2->Fill(mass, weight2_ratio);
+                  fitSameDijet1->Fill(mass, weight2_template);
+                  fitSameDijet2->Fill(mass, weight2_ratio);
+                  fitMETSameDijet1->Fill(MET, weight2_template);
+                  fitMETSameDijet2->Fill(MET, weight2_ratio);
+                  fitmassMETSameDijet1->Fill(massMET, weight2_template);
+                  fitmassMETSameDijet2->Fill(massMET, weight2_ratio);
+                  fitMtSameDijet1->Fill(maxMt, weight2_template);
+                  fitMtSameDijet2->Fill(maxMt, weight2_ratio);
                }
                if( mass > 60 && mass < 120) {
                   rapSameDijet1->Fill(rap, weight_template);
@@ -333,8 +324,7 @@ void applyFR(SampleTag index) {
                }
             }
          }
-      }
-      else if( failingMuons->size()==1 && passingMuons->size()==1 ) {
+      } else if( failingMuons->size()>1 && passingMuons->size()==1 ) {
          if( wjetsDY(event->dimuons, failingMuons->at(0), passingMuons->at(0), tempMuons) ) {
             FR1_template = FR_template(tempMuons->first);
             FR1_ratio = FR_ratio(tempMuons->first);
@@ -348,12 +338,11 @@ void applyFR(SampleTag index) {
             dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 
             MET = event->MET.at(0).pt;
-            vtxchi2 = vertexFitChi2(event->dimuons,failingMuons->at(0),passingMuons->at(0));
-            dphi = fabs(tempMuons->first.momentum().DeltaPhi(tempMuons->second.momentum()));
             TLorentzVector tlvMET; tlvMET.SetPxPyPzE(event->MET.at(0).px,event->MET.at(0).py,0,event->MET.at(0).pt);
             double Mt1 = (tlvMET + tempMuons->first.momentum()).Mt();
             double Mt2 = (tlvMET + tempMuons->second.momentum()).Mt();
             maxMt = max(Mt1,Mt2);
+            massMET = min(mass,200.) + 200.*(MET>40);
 
 
 
@@ -361,18 +350,18 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histWJets1->Fill(mass, weight_template);
                   histWJets2->Fill(mass, weight_ratio);
-                  fitWJets1->Fill(mass, weight_template);
-                  fitWJets2->Fill(mass, weight_ratio);
-                  fitWJets1->Fill(mass, weight_template);
-                  fitWJets2->Fill(mass, weight_ratio);
-                  fitMETWJets1->Fill(MET, weight_template);
-                  fitMETWJets2->Fill(MET, weight_ratio);
-                  fitchi2WJets1->Fill(vtxchi2, weight_template);
-                  fitchi2WJets2->Fill(vtxchi2, weight_ratio);
-                  fitdphiWJets1->Fill(dphi, weight_template);
-                  fitdphiWJets2->Fill(dphi, weight_ratio);
-                  fitMtWJets1->Fill(maxMt, weight_template);
-                  fitMtWJets2->Fill(maxMt, weight_ratio);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitWJets1->Fill(mass, wt);
+                     fitWJets2->Fill(mass, wt);
+                     fitWJets1->Fill(mass, wt);
+                     fitWJets2->Fill(mass, wt);
+                     fitMETWJets1->Fill(MET, wt);
+                     fitMETWJets2->Fill(MET, wt);
+                     fitmassMETWJets1->Fill(massMET, wt);
+                     fitmassMETWJets2->Fill(massMET, wt);
+                     fitMtWJets1->Fill(maxMt, wt);
+                     fitMtWJets2->Fill(maxMt, wt);
+                  // }
                }
                if( mass > 60 && mass < 120) {
                   rapWJets1->Fill(rap, weight_template);
@@ -391,23 +380,22 @@ void applyFR(SampleTag index) {
                   Zphistar1560WJets2->Fill(phistar1560, weight_ratio);
                }
 
-            }
-            else {
+            } else {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameWJets1->Fill(mass, weight_template);
                   histSameWJets2->Fill(mass, weight_ratio);
-                  fitSameWJets1->Fill(mass, weight_template);
-                  fitSameWJets2->Fill(mass, weight_ratio);
-                  fitSameWJets1->Fill(mass, weight_template);
-                  fitSameWJets2->Fill(mass, weight_ratio);
-                  fitMETSameWJets1->Fill(MET, weight_template);
-                  fitMETSameWJets2->Fill(MET, weight_ratio);
-                  fitchi2SameWJets1->Fill(vtxchi2, weight_template);
-                  fitchi2SameWJets2->Fill(vtxchi2, weight_ratio);
-                  fitdphiSameWJets1->Fill(dphi, weight_template);
-                  fitdphiSameWJets2->Fill(dphi, weight_ratio);
-                  fitMtSameWJets1->Fill(maxMt, weight_template);
-                  fitMtSameWJets2->Fill(maxMt, weight_ratio);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitSameWJets1->Fill(mass, wt);
+                     fitSameWJets2->Fill(mass, wt);
+                     fitSameWJets1->Fill(mass, wt);
+                     fitSameWJets2->Fill(mass, wt);
+                     fitMETSameWJets1->Fill(MET, wt);
+                     fitMETSameWJets2->Fill(MET, wt);
+                     fitmassMETSameWJets1->Fill(massMET, wt);
+                     fitmassMETSameWJets2->Fill(massMET, wt);
+                     fitMtSameWJets1->Fill(maxMt, wt);
+                     fitMtSameWJets2->Fill(maxMt, wt);
+                  // }
                }
                if( mass > 60 && mass < 120) {
                   rapSameWJets1->Fill(rap, weight_template);
