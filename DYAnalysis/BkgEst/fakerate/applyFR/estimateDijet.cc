@@ -34,7 +34,9 @@ using namespace DYana;
 
 const double lumi_sf = 0.92;
 
-void estimateDijet() {
+void estimateDijet();
+
+void estimateDijet(var thevar) {
 
     int W = 1200;
     int H = 1200;
@@ -59,11 +61,11 @@ void estimateDijet() {
     // int binnum = 43;
     // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
 
-    TH1D* massFrame = new TH1D("massFrame","",38,15,3000);
+    TH1D* massFrame = new TH1D("massFrame","",nbinsvar(thevar),binsvar(thevar));
     massFrame->SetMinimum(0.001);
     massFrame->SetMaximum(1000000);
     massFrame->SetStats(kFALSE);
-    massFrame->GetXaxis()->SetTitle("Mass[GeV]");
+    massFrame->GetXaxis()->SetTitle(xaxistitle(thevar));
     //massFrame->GetXaxis()->CenterTitle(kTRUE);
     //massFrame->GetYaxis()->CenterTitle(kTRUE);
     massFrame->GetYaxis()->SetTitleOffset(1);
@@ -81,12 +83,22 @@ void estimateDijet() {
     f[QCD] = new TFile("histograms/fakeQCD.root");
 
 
-    TH1D* wjets_template[NSamples+2]; // just for draw MC histograms
     TH1D* dijet_template[NSamples+2];
     TH1D* dijetSS_template[NSamples+2];
     TH1D* dijet_ratio[NSamples+2];
     TH1D* dijetSS_ratio[NSamples+2];
     double norm[NSamples+2];
+
+    TString histtag;
+    if (thevar == mass) histtag = "hist";
+    else if (thevar == rap60120) histtag = "rap";
+    else if (thevar == pt) histtag = "Zpt";
+    else if (thevar == rap1560) histtag = "lowMrap";
+    else if (thevar == phistar) histtag = "Zphistar";
+    else if (thevar == pt1560) histtag = "Zpt1560";
+    else histtag = "Zphistar1560";
+
+    TString thevarname(varname(thevar));
 
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
@@ -97,28 +109,25 @@ void estimateDijet() {
        norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
        cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
-       dijet_template[i] = (TH1D*)f[i]->Get("histDijet1");
+       dijet_template[i] = (TH1D*)f[i]->Get(histtag + "Dijet1");
        dijet_template[i]->Scale(norm[i]);
        dijet_template[i]->SetStats(kFALSE);
 
-       dijetSS_template[i] = (TH1D*)f[i]->Get("histSameDijet1");
+       dijetSS_template[i] = (TH1D*)f[i]->Get(histtag + "SameDijet1");
        dijetSS_template[i]->Scale(norm[i]);
        dijetSS_template[i]->SetStats(kFALSE);
 
-       wjets_template[i] = (TH1D*)f[i]->Get("histWJets1");
-       wjets_template[i]->Scale(norm[i]);
-       wjets_template[i]->SetStats(kFALSE);
 
-       dijet_ratio[i] = (TH1D*)f[i]->Get("histDijet2");
+       dijet_ratio[i] = (TH1D*)f[i]->Get(histtag + "Dijet2");
        dijet_ratio[i]->Scale(norm[i]);
        dijet_ratio[i]->SetStats(kFALSE);
 
-       dijetSS_ratio[i] = (TH1D*)f[i]->Get("histSameDijet2");
+       dijetSS_ratio[i] = (TH1D*)f[i]->Get(histtag + "SameDijet2");
        dijetSS_ratio[i]->Scale(norm[i]);
        dijetSS_ratio[i]->SetStats(kFALSE);
 
        // put histos in an array for easy style setting
-       TH1D* h[5] = {dijet_template[i], dijetSS_template[i], wjets_template[i], dijet_ratio[i], dijetSS_ratio[i]};
+       TH1D* h[5] = {dijet_template[i], dijetSS_template[i], NULL, dijet_ratio[i], dijetSS_ratio[i]};
        for (int j=0; j<5; j++) {
           h[j]->GetXaxis()->SetTitle("Mass[GeV]");
           h[j]->GetYaxis()->SetTitleOffset(1.5);
@@ -198,7 +207,6 @@ void estimateDijet() {
        if (toadd) {
           dijet_template[tagtoadd]->Add(dijet_template[i]);
           dijetSS_template[tagtoadd]->Add(dijetSS_template[i]);
-          wjets_template[tagtoadd]->Add(wjets_template[i]);
           dijet_ratio[tagtoadd]->Add(dijet_ratio[i]);
           dijetSS_ratio[tagtoadd]->Add(dijetSS_ratio[i]);
        }
@@ -250,10 +258,10 @@ void estimateDijet() {
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/dijet_template.pdf");
+    canv->Print("print/dijet_" + thevarname + "_template.pdf");
     dijetSS_template[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
-    canv->Print("print/dijetBoth_template.pdf");
+    canv->Print("print/dijetBoth_" + thevarname + "_template.pdf");
     canv->Clear();
     dijetSS_template[Data1]->SetFillColor(7);
     dijetSS_template[Data1]->Draw("HIST");
@@ -262,7 +270,7 @@ void estimateDijet() {
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/dijetSS_template.pdf");
+    canv->Print("print/dijetSS_" + thevarname + "_template.pdf");
     canv->Clear();
 
     dijet_ratio[Data1]->Draw("HIST");
@@ -271,10 +279,10 @@ void estimateDijet() {
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/dijet_ratio.pdf");
+    canv->Print("print/dijet_" + thevarname + "_ratio.pdf");
     dijetSS_ratio[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
-    canv->Print("print/dijetBoth_ratio.pdf");
+    canv->Print("print/dijetBoth_" + thevarname + "_ratio.pdf");
     canv->Clear();
     dijetSS_ratio[Data1]->SetFillColor(7);
     dijetSS_ratio[Data1]->Draw("HIST");
@@ -283,7 +291,7 @@ void estimateDijet() {
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/dijetSS_ratio.pdf");
+    canv->Print("print/dijetSS_" + thevarname + "_ratio.pdf");
     canv->Clear();
 
     double error = 0;
@@ -336,7 +344,7 @@ void estimateDijet() {
         dijet->SetBinError(i,total);
     }
 
-    TFile* gg = new TFile("result/dijet.root","RECREATE");
+    TFile* gg = new TFile("result/dijet_" + thevarname + ".root","RECREATE");
     dijet->Write();
     dijet_systematic->Write();
     dijet_stat->Write();
@@ -381,5 +389,15 @@ void estimateDijet() {
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/dijet_uncertainty.pdf");
+    canv->Print("print/dijet_" + thevarname + "_uncertainty.pdf");
+}
+
+void estimateDijet() {
+   estimateDijet(mass);
+   estimateDijet(rap60120);
+   estimateDijet(pt);
+   estimateDijet(phistar);
+   estimateDijet(rap1560);
+   estimateDijet(pt1560);
+   estimateDijet(phistar1560);
 }
