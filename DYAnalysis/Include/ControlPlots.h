@@ -66,6 +66,12 @@ public:
 	TH1D *h_mass_OS;
 	TH1D *h_mass_SS;
 	TH1D *h_mass2_SS;
+	TH1D *h_diPt2_SS_M60to120;
+	TH1D *h_diPt2_SS_M15to60;
+	TH1D *h_Phistar2_SS_M60to120;
+	TH1D *h_Phistar2_SS_M15to60;
+	TH1D *h_diRap2_SS_M15to60;
+	TH1D *h_diRap2_SS_M60to120;
 
 	TH1D *h_Pt_minusCharge;
 	TH1D *h_eta_minusCharge;
@@ -110,6 +116,7 @@ public:
 
 	TH1D *h_VtxProb;
 	TH1D *h_VtxNormChi2;
+	TH1D *h_VtxNormChi2_fullrange;
 	TH1D *h_VtxProb_belowM600;
 	TH1D *h_VtxNormChi2_belowM600;
 
@@ -129,6 +136,7 @@ public:
 	TH1D *h_pixelHits;
 	TH1D *h_trackerLayers;
 	TH1D *h_RelTrkIso;
+	TH1D *h_RelTrkIso_fullrange;
 	TH1D *h_RelPFIso;
 
    // // iso plots
@@ -198,6 +206,12 @@ public:
 		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS );
 		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_SS );
 		h_mass2_SS = new TH1D("h_mass2_SS_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS );
+		h_diPt2_SS_M60to120 = new TH1D("h_diPt2_SS_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_SS_M60to120 );
+		h_diPt2_SS_M15to60 = new TH1D("h_diPt2_SS_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_SS_M15to60 );
+		h_Phistar2_SS_M60to120 = new TH1D("h_Phistar2_SS_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_SS_M60to120 );
+		h_Phistar2_SS_M15to60 = new TH1D("h_Phistar2_SS_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_SS_M15to60 );
+		h_diRap2_SS_M15to60 = new TH1D("h_diRap2_SS_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_SS_M15to60 );
+		h_diRap2_SS_M60to120 = new TH1D("h_diRap2_SS_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_SS_M60to120 );
 
 		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_minusCharge );
 		h_eta_minusCharge = new TH1D("h_eta_minusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_minusCharge );
@@ -248,6 +262,7 @@ public:
 		h_VtxProb_belowM600 = new TH1D("h_VtxProb_belowM600_"+Type, "", 100, 0, 1); Histo.push_back( h_VtxProb_belowM600 );
 		
 		h_VtxNormChi2 = new TH1D("h_VtxNormChi2_"+Type, "", 20, 0, 20); Histo.push_back( h_VtxNormChi2 );
+		h_VtxNormChi2_fullrange = new TH1D("h_VtxNormChi2_fullrange_"+Type, "", 100, 0, 100); Histo.push_back( h_VtxNormChi2_fullrange );
 		h_VtxNormChi2_belowM600 = new TH1D("h_VtxNormChi2_belowM600_"+Type, "", 20, 0, 20); Histo.push_back( h_VtxNormChi2_belowM600 );
 
 		h_mass_OS_BB = new TH1D("h_mass_OS_BB_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS_BB );
@@ -266,6 +281,7 @@ public:
 		h_pixelHits = new TH1D("h_pixelHits_"+Type, "", 15, 0, 15); Histo.push_back( h_pixelHits );
 		h_trackerLayers = new TH1D("h_trackerLayers_"+Type, "", 20, 0, 20); Histo.push_back( h_trackerLayers );
 		h_RelTrkIso = new TH1D("h_RelTrkIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelTrkIso ); 
+		h_RelTrkIso_fullrange = new TH1D("h_RelTrkIso_fullrange_"+Type, "", 100, 0, 1); Histo.push_back( h_RelTrkIso_fullrange ); 
 		h_RelPFIso = new TH1D("h_RelPFIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelPFIso ); 
 
       // h_maxRelTrkIso_OS = new TH1D("h_maxRelTrkIso_OS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS );
@@ -439,6 +455,7 @@ public:
 		h_pixelHits->Fill( recolep.pixelHits, weight );
 		h_trackerLayers->Fill( recolep.trackerLayers, weight );
 		h_RelTrkIso->Fill( recolep.trkiso, weight );
+		h_RelTrkIso_fullrange->Fill( recolep.trkiso, weight );
 		h_RelPFIso->Fill( recolep.relPFiso, weight );
 	}
 
@@ -449,7 +466,10 @@ public:
 
 		TLorentzVector reco_v1 = recolep1.Momentum;
 		TLorentzVector reco_v2 = recolep2.Momentum;
-		Double_t reco_M = (reco_v1 + reco_v2).M();
+      TLorentzVector reco_v12 = reco_v1 + reco_v2;
+		Double_t reco_M = reco_v12.M();
+		Double_t reco_Rap = reco_v12.Rapidity();
+		Double_t reco_Pt = reco_v12.Pt();
       Bool_t isOS = ( recolep1.charge != recolep2.charge );
 
       double maxtrkiso = max(recolep1.trkiso, recolep2.trkiso);
@@ -458,6 +478,16 @@ public:
       if (!isOS) {
 			h_mass_SS->Fill( reco_M, weight );
 			h_mass2_SS->Fill( reco_M, weight );
+
+         if( reco_M >= 15 && reco_M < 60 ) {
+            h_diRap2_SS_M15to60->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_SS_M15to60->Fill( reco_Pt, weight );
+            h_Phistar2_SS_M15to60->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         } else if( reco_M >= 60 && reco_M < 120 ) {
+            h_diRap2_SS_M60to120->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_SS_M60to120->Fill( reco_Pt, weight );
+            h_Phistar2_SS_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         }
 
          // h_maxRelTrkIso_SS->Fill(maxtrkiso, weight);
          // h_maxRelPFIso_SS->Fill(maxrelPFiso, weight);
@@ -478,8 +508,6 @@ public:
       // from now on, we are looking at opposite sign muons.
 
 		//Dimuon Mass/Pt/Rapidity
-		Double_t reco_Rap = (reco_v1 + reco_v2).Rapidity();
-		Double_t reco_Pt = (reco_v1 + reco_v2).Pt();
 		h_mass->Fill( reco_M, weight );
 		h_mass2->Fill( reco_M, weight );
 		h_massZ->Fill( reco_M, weight );
@@ -573,6 +601,7 @@ public:
 
 		h_VtxProb->Fill( VtxProb, weight );
 		h_VtxNormChi2->Fill( VtxNormChi2, weight );
+		h_VtxNormChi2_fullrange->Fill( VtxNormChi2, weight );
 
       // h_maxRelTrkIso_OS->Fill(maxtrkiso, weight);
       // h_maxRelPFIso_OS->Fill(maxrelPFiso, weight);
