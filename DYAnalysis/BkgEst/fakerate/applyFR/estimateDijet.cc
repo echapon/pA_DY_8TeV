@@ -51,17 +51,16 @@ void estimateDijet(var thevar) {
     float R = 0.04*W_ref;
 
     // UPDATED IN 2017
-    lumi_8TeV = Form("%.2f pb^{-1}",lumi_all);
-    // lumi_8TeV = "2833 pb^{-1}";
     lumiTextSize = 0.5;
     writeExtraText = true;
     extraText = "Preliminary";
     drawLogo = false;
 
-    // int binnum = 43;
-    // double bins[44] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000, 1500, 3000};
+    TString thevarname(varname(thevar));
+    int varNbins = nbinsvar(thevar);
+    double * varbins = binsvar(thevar);
 
-    TH1D* massFrame = new TH1D("massFrame","",nbinsvar(thevar),binsvar(thevar));
+    TH1D* massFrame = new TH1D("massFrame","",varNbins,varbins);
     massFrame->SetMinimum(0.001);
     massFrame->SetMaximum(1000000);
     massFrame->SetStats(kFALSE);
@@ -97,8 +96,6 @@ void estimateDijet(var thevar) {
     else if (thevar == phistar) histtag = "Zphistar";
     else if (thevar == pt1560) histtag = "Zpt1560";
     else histtag = "Zphistar1560";
-
-    TString thevarname(varname(thevar));
 
     for (int i=0; i<ALL; i++) {
        SampleTag tag = static_cast<SampleTag>(i);
@@ -139,7 +136,7 @@ void estimateDijet(var thevar) {
           h[j]->GetXaxis()->SetMoreLogLabels();
 
           // remove negative bins
-          for(int k=1; k<binnum+3; k++) {
+          for(int k=1; k<varNbins+3; k++) {
              if(h[j]->GetBinContent(i) < 0) {
                 h[j]->SetBinContent(k,0.0);
                 h[j]->SetBinError(k,0.0);
@@ -254,52 +251,54 @@ void estimateDijet(var thevar) {
     dijetSS_ratio[Data1]->Add(dijetSS_ratio[TT],-1.0);
     dijetSS_ratio[Data1]->Add(dijetSS_ratio[WW],-1.0);
 
+    // remove negative bins
+    for(int k=1; k<varNbins+3; k++) {
+       if(dijet_template[Data1]->GetBinContent(k) < 0) {
+          dijet_template[Data1]->SetBinContent(k,0.0);
+          dijet_template[Data1]->SetBinError(k,0.0);
+       }
+       if(dijet_ratio[Data1]->GetBinContent(k) < 0) {
+          dijet_ratio[Data1]->SetBinContent(k,0.0);
+          dijet_ratio[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetSS_template[Data1]->GetBinContent(k) < 0) {
+          dijetSS_template[Data1]->SetBinContent(k,0.0);
+          dijetSS_template[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetSS_ratio[Data1]->GetBinContent(k) < 0) {
+          dijetSS_ratio[Data1]->SetBinContent(k,0.0);
+          dijetSS_ratio[Data1]->SetBinError(k,0.0);
+       }
+    }
+
+    ////////////
+    // make plots
 
     //dijet_template[5]->Smooth();
     TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(dijet_template[Data1],"Opposite sign", "F");
-    legg->AddEntry(dijetSS_template[Data1],"Same sign", "P");
+    legg->AddEntry(dijet_template[Data1],"Nominal (template)", "P");
+    legg->AddEntry(dijet_ratio[Data1],"Alt. (data-MC)", "L");
 
-    dijet_template[Data1]->Draw("HIST");
+    dijet_template[Data1]->Draw("EP");
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/dijet_" + thevarname + "_template.pdf");
-    dijetSS_template[Data1]->Draw("EPSAME");
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    dijet_ratio[Data1]->Draw("HIST SAME");
     legg->Draw("SAME");
-    canv->Print("print/dijetBoth_" + thevarname + "_template.pdf");
-    canv->Clear();
-    dijetSS_template[Data1]->SetFillColor(7);
-    dijetSS_template[Data1]->Draw("HIST");
-    CMS_lumi(canv,111,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/dijetSS_" + thevarname + "_template.pdf");
+    canv->Print("print/dijet_" + thevarname + ".pdf");
     canv->Clear();
 
-    dijet_ratio[Data1]->Draw("HIST");
+    dijetSS_template[Data1]->Draw("EP");
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/dijet_" + thevarname + "_ratio.pdf");
-    dijetSS_ratio[Data1]->Draw("EPSAME");
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    dijetSS_ratio[Data1]->Draw("HIST SAME");
     legg->Draw("SAME");
-    canv->Print("print/dijetBoth_" + thevarname + "_ratio.pdf");
-    canv->Clear();
-    dijetSS_ratio[Data1]->SetFillColor(7);
-    dijetSS_ratio[Data1]->Draw("HIST");
-    CMS_lumi(canv,111,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/dijetSS_" + thevarname + "_ratio.pdf");
+    canv->Print("print/dijetSS_" + thevarname + ".pdf");
     canv->Clear();
 
     double error = 0;
@@ -315,7 +314,7 @@ void estimateDijet(var thevar) {
     dijetSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(ratio) SS = "<<dijetSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
 
-    for(int i=1; i<binnum+1; i++) {
+    for(int i=1; i<varNbins+1; i++) {
         if(dijet_template[Data1]->GetBinContent(i) < 0) {
           dijet_template[Data1]->SetBinContent(i,0.0);
           dijet_template[Data1]->SetBinError(i,0.0);
@@ -330,11 +329,11 @@ void estimateDijet(var thevar) {
     dijet->Sumw2();
     dijet->SetName("dijet");
 
-    TH1D* dijet_total      = new TH1D("dijet_total","",binnum,bins);
-    TH1D* dijet_systematic = new TH1D("dijet_systematic","",binnum,bins);
-    TH1D* dijet_stat       = new TH1D("dijet_stat","",binnum,bins);
+    TH1D* dijet_total      = new TH1D("dijet_total","",varNbins,varbins);
+    TH1D* dijet_systematic = new TH1D("dijet_systematic","",varNbins,varbins);
+    TH1D* dijet_stat       = new TH1D("dijet_stat","",varNbins,varbins);
 
-    for(int i=1; i<binnum+1; i++) {
+    for(int i=1; i<varNbins+1; i++) {
 
         double systematic = fabs(dijet->GetBinContent(i) - dijet_ratio[Data1]->GetBinContent(i));
         double stat = dijet->GetBinError(i);
@@ -400,7 +399,7 @@ void estimateDijet(var thevar) {
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    canv->SetLogx();
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
     canv->Print("print/dijet_" + thevarname + "_uncertainty.pdf");
 }
 

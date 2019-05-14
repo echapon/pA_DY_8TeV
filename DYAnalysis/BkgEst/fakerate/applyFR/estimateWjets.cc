@@ -317,6 +317,26 @@ void estimateWjets(var thevar) {
     h_QCDSS_ratio->Add(h_ttbar_DijetSS_ratio,-1.0);
     wjetsSS_ratio[Data1]->Add(h_QCDSS_ratio,-2.*sf_fit_2[1]);
 
+    // remove negative bins
+    for(int k=1; k<varNbins+3; k++) {
+       if(wjets_template[Data1]->GetBinContent(k) < 0) {
+          wjets_template[Data1]->SetBinContent(k,0.0);
+          wjets_template[Data1]->SetBinError(k,0.0);
+       }
+       if(wjets_ratio[Data1]->GetBinContent(k) < 0) {
+          wjets_ratio[Data1]->SetBinContent(k,0.0);
+          wjets_ratio[Data1]->SetBinError(k,0.0);
+       }
+       if(wjetsSS_template[Data1]->GetBinContent(k) < 0) {
+          wjetsSS_template[Data1]->SetBinContent(k,0.0);
+          wjetsSS_template[Data1]->SetBinError(k,0.0);
+       }
+       if(wjetsSS_ratio[Data1]->GetBinContent(k) < 0) {
+          wjetsSS_ratio[Data1]->SetBinContent(k,0.0);
+          wjetsSS_ratio[Data1]->SetBinError(k,0.0);
+       }
+    }
+
     /////////////////////////
     // method 2: scaled MC //
     /////////////////////////
@@ -324,53 +344,37 @@ void estimateWjets(var thevar) {
     DYsel[WFirst]->Scale(sf_fit_2[1]);
     DYselSS[WFirst]->Scale(sf_fit_2[1]);
     
-
-
-    //wjets_template[5]->Smooth();
     TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(wjets_template[Data1],"Opposite sign", "F");
-    legg->AddEntry(wjetsSS_template[Data1],"Same sign", "P");
+    legg->AddEntry(wjets_template[Data1],"Nominal (template)", "P");
+    legg->AddEntry(wjets_ratio[Data1],"Alt. (data-MC)", "L");
+    legg->AddEntry(DYsel[WFirst],"Scaled MC", "F");
 
-    wjets_template[Data1]->Draw("HIST");
+    wjets_template[Data1]->Draw("EP");
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/wjets_" + thevarname + "_template.pdf");
-    wjetsSS_template[Data1]->Draw("EPSAME");
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    wjets_ratio[Data1]->Draw("HIST SAME");
+    DYsel[WFirst]->Draw("hist same");
+    wjets_template[Data1]->Draw("EP same");
+    wjets_ratio[Data1]->Draw("HIST SAME");
     legg->Draw("SAME");
-    canv->Print("print/wjetsBoth_" + thevarname + "_template.pdf");
-    canv->Clear();
-    wjetsSS_template[Data1]->SetFillColor(7);
-    wjetsSS_template[Data1]->Draw("HIST");
-    CMS_lumi(canv,111,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/wjetsSS_" + thevarname + "_template.pdf");
+    canv->Print("print/wjets_" + thevarname + ".pdf");
     canv->Clear();
 
-    wjets_ratio[Data1]->Draw("HIST");
+    wjetsSS_template[Data1]->Draw("EP");
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/wjets_" + thevarname + "_ratio.pdf");
-    wjetsSS_ratio[Data1]->Draw("EPSAME");
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    wjetsSS_ratio[Data1]->Draw("HIST SAME");
+    DYselSS[WFirst]->Draw("hist same");
+    wjetsSS_template[Data1]->Draw("EP same");
+    wjetsSS_ratio[Data1]->Draw("HIST SAME");
     legg->Draw("SAME");
-    canv->Print("print/wjetsBoth_" + thevarname + "_ratio.pdf");
-    canv->Clear();
-    wjetsSS_ratio[Data1]->SetFillColor(7);
-    wjetsSS_ratio[Data1]->Draw("HIST");
-    CMS_lumi(canv,111,11);
-    canv->Update();
-    canv->RedrawAxis();
-    canv->GetFrame()->Draw();
-    canv->SetLogx();
-    canv->Print("print/wjetsSS_" + thevarname + "_ratio.pdf");
+    canv->Print("print/wjetsSS_" + thevarname + ".pdf");
     canv->Clear();
 
     double error = 0;
@@ -385,12 +389,6 @@ void estimateWjets(var thevar) {
     error = 0;
     wjetsSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(ratio) SS = "<<wjetsSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
-    error = 0;
-    DYsel[WFirst]->IntegralAndError(1,45,error);
-    cout<<"WJets(scaled MC) = "<<DYsel[WFirst]->Integral(1,45)<<"+-"<<error<<endl;
-    error = 0;
-    DYselSS[WFirst]->IntegralAndError(1,45,error);
-    cout<<"WJets(scaled MD) SS = "<<DYselSS[WFirst]->Integral(1,45)<<"+-"<<error<<endl;
 
     for(int i=1; i<varNbins+1; i++) {
         if(wjets_template[Data1]->GetBinContent(i) < 0) {
@@ -400,14 +398,6 @@ void estimateWjets(var thevar) {
         if(wjets_ratio[Data1]->GetBinContent(i) < 0) {
           wjets_ratio[Data1]->SetBinContent(i,0.0);
           wjets_ratio[Data1]->SetBinError(i,0.0);
-        }
-        if(wjetsSS_template[Data1]->GetBinContent(i) < 0) {
-          wjetsSS_template[Data1]->SetBinContent(i,0.0);
-          wjetsSS_template[Data1]->SetBinError(i,0.0);
-        }
-        if(wjetsSS_ratio[Data1]->GetBinContent(i) < 0) {
-          wjetsSS_ratio[Data1]->SetBinContent(i,0.0);
-          wjetsSS_ratio[Data1]->SetBinError(i,0.0);
         }
     }
 
@@ -421,7 +411,7 @@ void estimateWjets(var thevar) {
 
     for(int i=1; i<varNbins+1; i++) {
 
-        double systematic = max(fabs(wjets->GetBinContent(i) - wjets_ratio[Data1]->GetBinContent(i)), fabs(wjets->GetBinContent(i) - DYsel[WFirst]->GetBinContent(i)));
+        double systematic = fabs(wjets->GetBinContent(i) - wjets_ratio[Data1]->GetBinContent(i));
         double stat = wjets->GetBinError(i);
         double total = sqrt( systematic*systematic + stat*stat );
         if(wjets->GetBinContent(i)==0) {
