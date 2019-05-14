@@ -46,7 +46,6 @@ public:
 	TFile *f_input_bkg_emu;
 	TFile *f_input_bkg_dijet;
 	TFile *f_input_bkg_wjets;
-	TFile *f_input_bkg_abcd;
 	TFile *f_output;
 
 	vector< TString > HistNames; vector< TString> Variables; vector< TString > XTitles;
@@ -203,6 +202,12 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
 	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
 	HistNames.push_back( "h_mass2_SS" );			Variables.push_back( "SSMass_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
+	HistNames.push_back( "h_diPt2_SS_M60to120" );			Variables.push_back( "SSdiPtM60120" );				XTitles.push_back( "dimuon P_{T} (Same Sign, 60<M_{#mu#mu}<120 GeV) [GeV]");
+   HistNames.push_back( "h_diPt2_SS_M15to60" );			Variables.push_back( "SSdiPtM1560" );				XTitles.push_back( "dimuon P_{T} (Same Sign, 15<M_{#mu#mu}<60 GeV) [GeV]");
+	HistNames.push_back( "h_Phistar2_SS_M60to120" );			Variables.push_back( "SSPhistarAnaBins" );		XTitles.push_back( "#phi^{*} (Same Sign, 60<M_{#mu#mu}<120 GeV)");
+   HistNames.push_back( "h_Phistar2_SS_M15to60" );			Variables.push_back( "SSPhistarAnaBins1560" );		XTitles.push_back( "#phi^{*} (Same Sign, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_SS_M15to60" );			Variables.push_back( "SSdiRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_SS_M60to120" );			Variables.push_back( "SSdiRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, 60<M_{#mu#mu}<120 GeV)");
 
 	HistNames.push_back( "h_Pt_minusCharge" );	Variables.push_back( "MinusChargePt" );		XTitles.push_back( "Muon(mu^{-}) P_{T} [GeV]");
 	HistNames.push_back( "h_Pt_plusCharge" );	Variables.push_back( "PlusChargePt" );		XTitles.push_back( "Muon(mu^{+}) P_{T} [GeV]");
@@ -580,7 +585,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets" || Names[i_bkg] == "ABCD"  )
+		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets"  )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -818,9 +823,15 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	////////////////////////////////////////////////////////////////
 	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
    
+
+   // EC
+   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
+   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+
+
    // default
-   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
-   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
+   // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/ForEmilien_20190506/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_beforeCor_FRopt1.root",variable));
+   // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/ForEmilien_20190506/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p2_L3Mu12_beforeCor_FRopt1.root",variable));
    // // Different FR formula(modified):
    // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
    // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt1_reltrkisoR03muptlt10isomax0p2_L3Mu12_FRopt2.root",variable));
@@ -834,11 +845,11 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
    // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
 
-	f_input_bkg_abcd = new TFile(FileLocation + "/BkgEst/abcd/output_ABCD_" + HLTname + "_DataMinusMC.root");
-	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet")->Clone();
-	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get("wjets")->Clone();
+   TString dijettag = (TString(h_data->GetName()).Contains("SS")) ? "dijetSS_template" : "dijet";
+   TString wjetstag = (TString(h_data->GetName()).Contains("SS")) ? "wjetsSS_template" : "wjets";
+	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get(dijettag)->Clone();
+	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get(wjetstag)->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
-   // TH1D *h_abcd = (TH1D*) f_input_bkg_abcd->Get("outputs_0and1isoTo2iso/hbkg_OS_2iso_" + TString(DYana::Varname(DYana::str2var(variable))));
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -871,7 +882,6 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 		h_WW_emu->Scale( NormFactor );
 		h_WZ_emu->Scale( NormFactor );
 		h_ZZ_emu->Scale( NormFactor );
-      // h_abcd->Scale( NormFactor );
 	}
 
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
@@ -882,7 +892,6 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	StackHistos.push_back( h_ttbar_emu ); LegendNames.push_back( "ttbar (e#mu)" ); colors.push_back(kRed);
    if (DrawDataDriven==1) {StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);}
 	if (DrawDataDriven==1) {StackHistos.push_back( h_WJets_FR ); LegendNames.push_back( "WJets (FR)" ); colors.push_back(kBlue);}
-   // if (DrawDataDriven==2) {StackHistos.push_back( h_abcd ); LegendNames.push_back( "Fakes (ABCD)" ); colors.push_back(kBlue);}
 	StackHistos.push_back( h_SignalMC ); LegendNames.push_back( "DYMuMu" ); colors.push_back(kOrange);
 
 	//////////////////////////////////////////
@@ -949,7 +958,6 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
       h_bkgs.push_back( h_diJet_FR ); Names.push_back("DiJet");
       h_bkgs.push_back( h_WJets_FR ); Names.push_back("WJets");
    // } else if (DrawDataDriven==2) {
-      // h_bkgs.push_back( h_abcd ); Names.push_back("ABCD");
    }
 	
 	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
@@ -972,9 +980,6 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 
 	h_WJets_FR->SetName("h_WJets_FR");
 	h_WJets_FR->Write();
-
-   // h_abcd->SetName("h_abcd");
-   // h_abcd->Write();
 
 	h_WZ_emu->SetName("h_WZ_MC");
 	h_WZ_emu->Write();
