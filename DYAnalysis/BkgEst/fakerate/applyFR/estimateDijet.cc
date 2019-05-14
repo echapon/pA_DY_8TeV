@@ -109,26 +109,26 @@ void estimateDijet(var thevar) {
        norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
        cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
-       dijet_template[i] = (TH1D*)f[i]->Get(histtag + "Dijet1");
+       dijet_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet1");
        dijet_template[i]->Scale(norm[i]);
        dijet_template[i]->SetStats(kFALSE);
 
-       dijetSS_template[i] = (TH1D*)f[i]->Get(histtag + "SameDijet1");
+       dijetSS_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameDijet1");
        dijetSS_template[i]->Scale(norm[i]);
        dijetSS_template[i]->SetStats(kFALSE);
 
 
-       dijet_ratio[i] = (TH1D*)f[i]->Get(histtag + "Dijet2");
+       dijet_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet2");
        dijet_ratio[i]->Scale(norm[i]);
        dijet_ratio[i]->SetStats(kFALSE);
 
-       dijetSS_ratio[i] = (TH1D*)f[i]->Get(histtag + "SameDijet2");
+       dijetSS_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameDijet2");
        dijetSS_ratio[i]->Scale(norm[i]);
        dijetSS_ratio[i]->SetStats(kFALSE);
 
        // put histos in an array for easy style setting
-       TH1D* h[5] = {dijet_template[i], dijetSS_template[i], NULL, dijet_ratio[i], dijetSS_ratio[i]};
-       for (int j=0; j<5; j++) {
+       TH1D* h[4] = {dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i]};
+       for (int j=0; j<4; j++) {
           h[j]->GetXaxis()->SetTitle("Mass[GeV]");
           h[j]->GetYaxis()->SetTitleOffset(1.5);
           h[j]->GetYaxis()->SetTitle("Number of events");
@@ -152,7 +152,7 @@ void estimateDijet(var thevar) {
        SampleTag tagtoadd;
        if (IsDY(tag)) {
           // style 
-          for (int j=0; j<5; j++) {
+          for (int j=0; j<4; j++) {
              h[j]->SetFillColor(2);
              // h[j]->SetmarkerColor(2);
              // h[j]->SetmarkerStyle(22);
@@ -165,7 +165,7 @@ void estimateDijet(var thevar) {
        }
        if (IsData(tag)) {
           // style 
-          for (int j=0; j<5; j++) {
+          for (int j=0; j<4; j++) {
              h[j]->SetLineColor(1);
              h[j]->SetMarkerColor(1);
              h[j]->SetMarkerStyle(22);
@@ -178,7 +178,7 @@ void estimateDijet(var thevar) {
        }
        if (IsDiboson(tag)) {
           // style 
-          for (int j=0; j<5; j++) {
+          for (int j=0; j<4; j++) {
              h[j]->SetFillColor(3);
           }
 
@@ -189,7 +189,7 @@ void estimateDijet(var thevar) {
        }
        if (IsWjets(tag)) {
           // style 
-          for (int j=0; j<5; j++) {
+          for (int j=0; j<4; j++) {
              h[j]->SetFillColor(4);
           }
 
@@ -199,7 +199,7 @@ void estimateDijet(var thevar) {
           }
        }
        if (tag==TT) {
-          for (int j=0; j<5; j++) {
+          for (int j=0; j<4; j++) {
              h[j]->SetFillColor(6);
           }
        }
@@ -245,6 +245,14 @@ void estimateDijet(var thevar) {
     dijet_ratio[Data1]->Add(dijet_ratio[DYFirst],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[TT],-1.0);
     dijet_ratio[Data1]->Add(dijet_ratio[WW],-1.0);
+
+    dijetSS_template[Data1]->Add(dijetSS_template[DYFirst],-1.0);
+    dijetSS_template[Data1]->Add(dijetSS_template[TT],-1.0);
+    dijetSS_template[Data1]->Add(dijetSS_template[WW],-1.0);
+
+    dijetSS_ratio[Data1]->Add(dijetSS_ratio[DYFirst],-1.0);
+    dijetSS_ratio[Data1]->Add(dijetSS_ratio[TT],-1.0);
+    dijetSS_ratio[Data1]->Add(dijetSS_ratio[WW],-1.0);
 
 
     //dijet_template[5]->Smooth();
@@ -348,6 +356,10 @@ void estimateDijet(var thevar) {
     dijet->Write();
     dijet_systematic->Write();
     dijet_stat->Write();
+    dijet_template[DataFirst]->Write("dijet_template");
+    dijet_ratio[DataFirst]->Write("dijet_ratio");
+    dijetSS_template[DataFirst]->Write("dijetSS_template");
+    dijetSS_ratio[DataFirst]->Write("dijetSS_ratio");
     gg->Close();
 
     //wjets_systematic->Divide(wjets);

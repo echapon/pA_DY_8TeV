@@ -17,6 +17,7 @@
 #include <TColor.h>
 #include <TLatex.h>
 #include <TEfficiency.h>
+#include <TFrame.h>
 
 #include <iostream>
 #include <string>
@@ -27,9 +28,20 @@
 
 #include "../../interface/tdrstyle.C"
 #include "../../interface/CMS_lumi.C"
+#include "../../interface/defs.h"
 using namespace std;
+using namespace DYana;
 
-void estimateWjets() {
+const double lumi_sf = 0.92;
+
+// const double sf_fit_1[3] = {5.1352e-01, 2.0523e+00, 9.1145e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1)
+// const double sf_fit_2[3] = {5.1506e-01, 1.8630e+00, 5.1743e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2)
+const double sf_fit_1[3] = {5.1352e-01,1.0262e+00,9.1126e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1,"")
+const double sf_fit_2[3] = {5.1533e-01,9.3137e-01,5.1717e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2,"")
+
+void estimateWjets();
+
+void estimateWjets(var thevar) {
 
     int W = 1200;
     int H = 1200;
@@ -44,20 +56,16 @@ void estimateWjets() {
     float R = 0.04*W_ref;
 
     // UPDATED IN 2017
-    lumi_13TeV = "2759 pb^{-1}";
     lumiTextSize = 0.5;
     writeExtraText = true;
     extraText = "Preliminary";
     drawLogo = false;
 
-    const int binnum = 43;
-    double bins[binnum+1] = {15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 64, 68, 72, 76, 81, 86, 91, 96, 101, 106, 110, 115, 120, 126, 133, 141, 150, 160, 171, 185,  200, 220, 243, 273, 320, 380, 440, 510, 600, 700,  830, 1000,1500,3000};
-
-    TH1D* massFrame = new TH1D("massFrame","",38,15,3000);
+    TH1D* massFrame = new TH1D("massFrame","",nbinsvar(thevar),binsvar(thevar));
     massFrame->SetMinimum(0.001);
     massFrame->SetMaximum(1000000);
     massFrame->SetStats(kFALSE);
-    massFrame->GetXaxis()->SetTitle("Mass[GeV]");
+    massFrame->GetXaxis()->SetTitle(xaxistitle(thevar));
     //massFrame->GetXaxis()->CenterTitle(kTRUE);
     //massFrame->GetYaxis()->CenterTitle(kTRUE);
     massFrame->GetYaxis()->SetTitleOffset(1);
@@ -68,300 +76,184 @@ void estimateWjets() {
     //massFrame->GetYaxis()->SetLabelSize(0.025); 
     massFrame->GetXaxis()->SetMoreLogLabels();
 
-    TFile* f[14];
-    f[0] = new TFile("histograms/fake0.root","READ");
-    f[3] = new TFile("histograms/fake100.root","READ");
-    f[1] = new TFile("histograms/fake1.root","READ");
-    f[6] = new TFile("histograms/fake6.root","READ");
-
-    TH1D* dijet_template[14];
-    TH1D* dijetSS_template[14];
-    TH1D* dijet_ratio[14];
-    TH1D* dijetSS_ratio[14];
-    TH1D* wjets_template[14];
-    TH1D* wjetsSS_template[14];
-    TH1D* wjets_ratio[14];
-    TH1D* wjetsSS_ratio[14];
-    /*
-    for(int i=0;i<14;i++)
-    {
-    if((i>2&&i<6)||(i>6&&i<11)) continue;
-
-    dijet_template[i] = (TH1D*)f[i]->Get("dijet_template");
-    if(i==6)
-    {	
-    dijet_template[i]->SetMarkerStyle(33);
-    dijet_template[i]->SetMarkerSize(3);
-    }
-    else
-    dijet_template[i]->SetFillColor(i+2);
-    dijet_template[i]->SetStats(kFALSE);
-    }
-    TH1D* histDijet1 = (TH1D*)f[1]->Get("histDijet1");*/
-    dijet_template[5] = (TH1D*)f[6]->Get("histDijet1")->Clone();
-    dijet_template[5]->SetFillColor(7);
-    dijet_template[5]->SetStats(kFALSE);
-    dijet_template[5]->Sumw2();
-
-    dijetSS_template[5] = (TH1D*)f[6]->Get("histSameDijet1")->Clone();
-    //dijetSS_template[5]->SetLineColor(2);
-    //dijetSS_template[5]->SetMarkerColor(2);
-    //dijetSS_template[5]->SetMarkerStyle(22);
-    //dijetSS_template[5]->SetMarkerSize(3);
-    dijetSS_template[5]->SetStats(kFALSE);
-    dijetSS_template[5]->Sumw2();
-
-    dijet_template[0] = (TH1D*)f[0]->Get("histDijet1")->Clone();
-    dijet_template[3] = (TH1D*)f[3]->Get("histDijet1")->Clone();
-    dijet_template[0]->SetFillColor(2);
-    dijet_template[0]->SetStats(kFALSE);
-    dijet_template[0]->Sumw2();
-
-    dijet_template[1] = (TH1D*)f[1]->Get("histDijet1")->Clone();
-    dijet_template[1]->SetFillColor(3);
-    dijet_template[1]->SetStats(kFALSE);
-    dijet_template[1]->Sumw2();
-
-    dijet_ratio[5] = (TH1D*)f[6]->Get("histDijet2")->Clone();
-    dijet_ratio[5]->SetFillColor(7);
-    dijet_ratio[5]->SetStats(kFALSE);
-    dijet_ratio[5]->Sumw2();
-
-    dijetSS_ratio[5] = (TH1D*)f[6]->Get("histSameDijet2")->Clone();
-    //dijetSS_ratio[5]->SetLineColor(2);
-    //dijetSS_ratio[5]->SetMarkerColor(2);
-    //dijetSS_ratio[5]->SetMarkerStyle(22);
-    //dijetSS_ratio[5]->SetMarkerSize(3);
-    dijetSS_ratio[5]->SetStats(kFALSE);
-    dijetSS_ratio[5]->Sumw2();
-
-    dijet_ratio[0] = (TH1D*)f[0]->Get("histDijet2")->Clone();
-    dijet_ratio[3] = (TH1D*)f[3]->Get("histDijet2")->Clone();
-    dijet_ratio[0]->SetFillColor(2);
-    dijet_ratio[0]->SetStats(kFALSE);
-    dijet_ratio[0]->Sumw2();
-
-    dijet_ratio[1] = (TH1D*)f[1]->Get("histDijet2")->Clone();
-    dijet_ratio[1]->SetFillColor(3);
-    dijet_ratio[1]->SetStats(kFALSE);
-    dijet_ratio[1]->Sumw2();
-
-    wjets_template[5] = (TH1D*)f[6]->Get("histWJets1")->Clone();
-    wjets_template[5]->SetFillColor(9);
-    wjets_template[5]->SetStats(kFALSE);
-    wjets_template[5]->Sumw2();
-
-    wjetsSS_template[5] = (TH1D*)f[6]->Get("histSameWJets1")->Clone();
-    wjetsSS_template[1] = (TH1D*)f[1]->Get("histSameWJets1")->Clone();
-    wjetsSS_template[5]->SetFillColor(9);
-    wjetsSS_template[5]->SetLineColor(9);
-    wjetsSS_template[5]->SetMarkerColor(2);
-    wjetsSS_template[5]->SetMarkerStyle(22);
-    wjetsSS_template[5]->SetMarkerSize(4);
-    wjetsSS_template[5]->SetStats(kFALSE);
-    wjetsSS_template[5]->Sumw2();
-
-    wjets_template[0] = (TH1D*)f[0]->Get("histWJets1")->Clone();
-    wjets_template[3] = (TH1D*)f[3]->Get("histWJets1")->Clone();
-    wjets_template[0]->SetFillColor(2);
-    wjets_template[0]->SetStats(kFALSE);
-    wjets_template[0]->Sumw2();
-
-    wjets_template[1] = (TH1D*)f[1]->Get("histWJets1")->Clone();
-    wjets_template[1]->SetFillColor(3);
-    wjets_template[1]->SetStats(kFALSE);
-    wjets_template[1]->Sumw2();
-
-    wjets_ratio[5] = (TH1D*)f[6]->Get("histWJets2")->Clone();
-    wjets_ratio[5]->SetFillColor(9);
-    wjets_ratio[5]->SetStats(kFALSE);
-    wjets_ratio[5]->Sumw2();
-
-    wjetsSS_ratio[5] = (TH1D*)f[6]->Get("histSameWJets2")->Clone();
-    wjetsSS_ratio[1] = (TH1D*)f[1]->Get("histSameWJets2")->Clone();
-    wjetsSS_ratio[5]->SetFillColor(9);
-    wjetsSS_ratio[5]->SetLineColor(9);
-    wjetsSS_ratio[5]->SetMarkerColor(2);
-    wjetsSS_ratio[5]->SetMarkerStyle(22);
-    wjetsSS_ratio[5]->SetMarkerSize(4);
-    wjetsSS_ratio[5]->SetStats(kFALSE);
-    wjetsSS_ratio[5]->Sumw2();
-
-    wjets_ratio[0] = (TH1D*)f[0]->Get("histWJets2")->Clone();
-    wjets_ratio[3] = (TH1D*)f[3]->Get("histWJets2")->Clone();
-    wjets_ratio[0]->SetFillColor(2);
-    wjets_ratio[0]->SetStats(kFALSE);
-    wjets_ratio[0]->Sumw2();
-
-    wjets_ratio[1] = (TH1D*)f[1]->Get("histWJets2")->Clone();
-    wjets_ratio[1]->SetFillColor(3);
-    wjets_ratio[1]->SetStats(kFALSE);
-    wjets_ratio[1]->Sumw2();
-
-    cout<<"2"<<endl;
-
-    //DYMuMu, ttbar, WJets, WW, tautau, QCD
-    double nEvts[14] = {8.1236e+07, 187625980, 1.36148e+08, 4.52115e+07, 3268361,2.23076e+06,0,0,0,0,0,988416, 999996,985598};
-    double xsec[14] = {2008.4*3, 831.76, 60290, 18610, 1915, 2.23076e+06,0,0,0,0,0,63.21,22.82,10.32};
-    double norm[14];
-    double norm1[14];
-    double norm2[14];
-    // UPDATED IN 2017
-    double lumi = 2759.017;
-    // double lumi = 2832.673;
-
-    for(int i=0;i<14;i++) {
-        if(i>5&&i<11) continue;
-        norm[i] = (xsec[i]*lumi)/nEvts[i];
-        cout<<norm[i]<<endl;
-    }
-
-    double n_DYJets = 2.1025e+04;
-    double n_QCD    = 5.1034e+03;
-    double n_WJets  = 1.4079e+03;
-    double n_ttbar  = 2.9787e+03;
-
-    double nn_DYJets = 1.8133e+04;
-    double nn_QCD    = 3.6450e+03;
-    double nn_WJets  = 1.9836e+03;
-    double nn_ttbar  = 2.6185e+03;
-
-    /*
-    double n_DYJets = 2.0898e+04;
-    double n_QCD    = 3.5319e+03;
-    double n_WJets  = 1.7547e+03;
-    double n_ttbar  = 4.3057e+03;
-
-    double nn_DYJets = 1.8023e+04;
-    double nn_QCD    = 2.7577e+03;
-    double nn_WJets  = 1.8361e+03;
-    double nn_ttbar  = 3.7103e+03;
-
-    double n_DYJets = 2.2214e+04;
-    double n_QCD = 3.6322e+03;
-    double n_WJets = 3.7767e+03;
-    double n_ttbar = 3.6535e+03;
-
-    double nn_DYJets = 1.8653e+04;
-    double nn_QCD = 2.5385e+03;
-    double nn_WJets = 3.8087e+03;
-    double nn_ttbar = 3.0818e+03;
-
-    double n_DYJets = 2.1908e+04;
-    double n_QCD = 5.1121e+03;
-    double n_WJets = 3.5508e+03;
-    double n_ttbar = 2.8521e+03;
-
-    double nn_DYJets = 1.8541e+04;
-    double nn_QCD = 3.9508e+03;
-    double nn_WJets = 3.3408e+03;
-    double nn_ttbar = 2.4319e+03;
-    */
+    TFile* f[NSamples+2];
+//    for (int i=0; i<ALL; i++) f[i] = new TFile(PathFRHistos2(static_cast<SampleTag>(i)));
+//    f[QCD] = new TFile(PathFRHistos2(QCD));
+    for (int i=0; i<ALL; i++) f[i] = new TFile(Form("histograms/fake%s.root",(TString*)(Name(static_cast<SampleTag>(i)))));
+    f[QCD] = new TFile("histograms/fakeQCD.root");
 
 
-    /*
-    wjets_template[0]->Smooth();
-    wjets_ratio[0]->Smooth();
-    wjets_template[1]->Smooth();
-    wjets_ratio[1]->Smooth();
-    wjets_template[5]->Smooth();
-    wjets_ratio[5]->Smooth();
-    dijet_template[5]->Smooth();
-    dijet_ratio[5]->Smooth();
-    wjetsSS_template[5]->Smooth();
-    wjetsSS_ratio[5]->Smooth();
-    */
+    TH1D* wjets_template[NSamples+2];
+    TH1D* wjetsSS_template[NSamples+2];
+    TH1D* wjets_ratio[NSamples+2];
+    TH1D* wjetsSS_ratio[NSamples+2];
+    TH1D* dijet_template[NSamples+2];
+    TH1D* dijetSS_template[NSamples+2];
+    TH1D* dijet_ratio[NSamples+2];
+    TH1D* dijetSS_ratio[NSamples+2];
+    TH1D* DYsel[NSamples+2];
+    TH1D* DYselSS[NSamples+2];
 
-    dijet_template[0]->Scale(norm[0]);
-    dijet_template[3]->Scale(norm[3]);
-    dijet_template[0]->Add(dijet_template[3]);
-    dijet_ratio[0]->Scale(norm[0]);
-    dijet_ratio[3]->Scale(norm[3]);
-    dijet_ratio[0]->Add(dijet_ratio[3]);
-    dijet_template[1]->Scale(norm[1]);
-    dijet_ratio[1]->Scale(norm[1]);
+    double norm[NSamples+2];
 
-    dijet_template[5]->Add(dijet_template[0],-1.0);
-    dijet_template[5]->Add(dijet_template[1],-1.0);
-    dijet_ratio[5]->Add(dijet_ratio[0],-1.0);
-    dijet_ratio[5]->Add(dijet_ratio[1],-1.0);
+    TString histtag;
+    if (thevar == mass) histtag = "hist";
+    else if (thevar == rap60120) histtag = "rap";
+    else if (thevar == pt) histtag = "Zpt";
+    else if (thevar == rap1560) histtag = "lowMrap";
+    else if (thevar == phistar) histtag = "Zphistar";
+    else if (thevar == pt1560) histtag = "Zpt1560";
+    else histtag = "Zphistar1560";
 
-    wjetsSS_template[1]->Scale(norm[1]);
-    wjetsSS_ratio[1]->Scale(norm[1]);
+    TString thevarname(varname(thevar));
+    int varNbins = nbinsvar(thevar);
+    double * varbins = binsvar(thevar);
 
-    wjetsSS_template[5]->Add(dijetSS_template[5],-2.0);
-    wjetsSS_template[5]->Add(wjetsSS_template[1],-1.0);
-    wjetsSS_ratio[5]->Add(dijetSS_ratio[5],-2.0);
-    wjetsSS_ratio[5]->Add(wjetsSS_ratio[1],-1.0);
-    cout<<"Same_template = "<<wjetsSS_template[5]->Integral(1,45)<<endl;
-    cout<<"Same_ratio = "<<wjetsSS_ratio[5]->Integral(1,45)<<endl;
+    for (int i=0; i<ALL; i++) {
+       SampleTag tag = static_cast<SampleTag>(i);
+       if (tag==QCD) continue;
+       double lumi = lumi_all;
+       if (IsDYMuMu(tag)) { // special case of DYMuMu which has both beam directions
+          lumi = (switcheta(tag)>0) ? lumi_part1 : lumi_part2;
+       }
+       norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
+       cout<< "norm[" << Name(static_cast<SampleTag>(i)) << "] = " << norm[i]<<endl;
 
-    wjets_template[1]->Scale(norm[1]);
-    wjets_ratio[1]->Scale(norm[1]);
-    wjets_template[0]->Scale(norm[0]);
-    wjets_template[3]->Scale(norm[3]);
-    wjets_template[0]->Add(wjets_template[3]);
-    wjets_ratio[0]->Scale(norm[0]);
-    wjets_ratio[3]->Scale(norm[3]);
-    wjets_ratio[0]->Add(wjets_ratio[3]);
+       wjets_template[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "WJets1");
+       wjets_template[i]->Scale(norm[i]);
+       wjets_template[i]->SetStats(kFALSE);
 
-    cout<<"ttbar(template): "<<wjets_template[1]->Integral()<<endl;
-    cout<<"ttbar(ratio): "<<wjets_ratio[1]->Integral()<<endl;
-    cout<<"DY(template): "<<wjets_template[0]->Integral()<<endl;
-    cout<<"DY(ratio): "<<wjets_ratio[0]->Integral()<<endl;
-    wjets_template[1]->Scale(1/norm[1]);
-    wjets_ratio[1]->Scale(1/norm[1]);
+       wjetsSS_template[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "SameWJets1");
+       wjetsSS_template[i]->Scale(norm[i]);
+       wjetsSS_template[i]->SetStats(kFALSE);
 
 
+       wjets_ratio[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "WJets2");
+       wjets_ratio[i]->Scale(norm[i]);
+       wjets_ratio[i]->SetStats(kFALSE);
 
-    cout<<"Edge="<<wjets_template[0]->GetBinLowEdge(31)<<endl;
-    norm1[0] = n_DYJets/wjets_template[0]->Integral(1,30);
-    norm1[1] = n_ttbar/wjets_template[1]->Integral(1,30);
-    norm1[2] = n_WJets/wjetsSS_template[5]->Integral(1,30);
-    norm1[5] = n_QCD/dijet_template[5]->Integral(1,30);
-    norm2[0] = nn_DYJets/wjets_ratio[0]->Integral(1,30);
-    norm2[1] = nn_ttbar/wjets_ratio[1]->Integral(1,30);
-    norm2[2] = nn_WJets/wjetsSS_ratio[5]->Integral(1,30);
-    norm2[5] = nn_QCD/dijet_ratio[5]->Integral(1,30);
-    /*
-    norm1[0] = n_DYJets/wjets_template[0]->Integral();
-    norm1[1] = n_ttbar/wjets_template[1]->Integral();
-    norm1[2] = n_WJets/wjetsSS_template[5]->Integral();
-    norm1[5] = n_QCD/dijet_template[5]->Integral();
-    norm2[0] = nn_DYJets/wjets_ratio[0]->Integral();
-    norm2[1] = nn_ttbar/wjets_ratio[1]->Integral();
-    norm2[2] = nn_WJets/wjetsSS_ratio[5]->Integral();
-    norm2[5] = nn_QCD/dijet_ratio[5]->Integral();
-    */
+       wjetsSS_ratio[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "SameWJets2");
+       wjetsSS_ratio[i]->Scale(norm[i]);
+       wjetsSS_ratio[i]->SetStats(kFALSE);
+
+       dijet_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet1");
+       dijet_template[i]->Scale(norm[i]);
+       dijet_template[i]->SetStats(kFALSE);
+
+       dijetSS_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameDijet1");
+       dijetSS_template[i]->Scale(norm[i]);
+       dijetSS_template[i]->SetStats(kFALSE);
 
 
-    wjets_template[6] = (TH1D*)wjets_template[5]->Clone();
-    wjets_ratio[6] = (TH1D*)wjets_ratio[5]->Clone();
+       dijet_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet2");
+       dijet_ratio[i]->Scale(norm[i]);
+       dijet_ratio[i]->SetStats(kFALSE);
 
-    wjets_template[6]->SetLineColor(1);
-    wjets_template[6]->SetMarkerColor(1);
-    wjets_template[6]->SetLineWidth(3);
-    wjets_template[6]->SetMarkerSize(2);
-    wjets_template[6]->SetMarkerStyle(20);
+       dijetSS_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameDijet2");
+       dijetSS_ratio[i]->Scale(norm[i]);
+       dijetSS_ratio[i]->SetStats(kFALSE);
 
-    wjets_ratio[6]->SetLineColor(1);
-    wjets_ratio[6]->SetMarkerColor(1);
-    wjets_ratio[6]->SetLineWidth(3);
-    wjets_ratio[6]->SetMarkerSize(2);
-    wjets_ratio[6]->SetMarkerStyle(20);
+       DYsel[i] = (TH1D*)f[i]->Get("DYsel/" + histtag + "DYsel");
+       DYsel[i]->Scale(norm[i]);
+       DYsel[i]->SetStats(kFALSE);
 
+       DYselSS[i] = (TH1D*)f[i]->Get("DYsel/" + histtag + "SameDYsel");
+       DYselSS[i]->Scale(norm[i]);
+       DYselSS[i]->SetStats(kFALSE);
 
-    wjets_template[5] = (TH1D*)wjetsSS_template[5]->Clone(); 
-    wjets_ratio[5] = (TH1D*)wjetsSS_ratio[5]->Clone(); 
+       // put histos in an array for easy style setting
+       TH1D* h[10] = {wjets_template[i], wjetsSS_template[i], wjets_ratio[i], wjetsSS_ratio[i],
+          dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i],
+          DYsel[i], DYselSS[i]};
+       for (int j=0; j<10; j++) {
+          h[j]->GetXaxis()->SetTitle("Mass[GeV]");
+          h[j]->GetYaxis()->SetTitleOffset(1.5);
+          h[j]->GetYaxis()->SetTitle("Number of events");
+          //h[j]->GetXaxis()->SetTitleSize(0.032);
+          //h[j]->GetYaxis()->SetTitleSize(0.032);
+          h[j]->GetXaxis()->SetLabelSize(0.025);
+          h[j]->GetYaxis()->SetLabelSize(0.025);
+          h[j]->GetXaxis()->SetMoreLogLabels();
 
-    wjets_template[0]->Scale(norm1[0]);
-    wjets_template[1]->Scale(norm1[1]);
-    dijet_template[5]->Scale(norm1[5]);
-    wjets_template[5]->Scale(norm1[2]);
-    wjets_ratio[0]->Scale(norm2[0]);
-    wjets_ratio[1]->Scale(norm2[1]);
-    dijet_ratio[5]->Scale(norm2[5]);
-    wjets_ratio[5]->Scale(norm2[2]);
+          // remove negative bins
+          for(int k=1; k<varNbins+3; k++) {
+             if(h[j]->GetBinContent(i) < 0) {
+                h[j]->SetBinContent(k,0.0);
+                h[j]->SetBinError(k,0.0);
+             }
+          }
+       } // j loop on histos
+
+       // add histos together
+       bool toadd = false;
+       SampleTag tagtoadd;
+       if (IsDY(tag)) {
+          // style 
+          for (int j=0; j<10; j++) {
+             h[j]->SetFillColor(2);
+             // h[j]->SetmarkerColor(2);
+             // h[j]->SetmarkerStyle(22);
+          }
+
+          if (tag != DYFirst) {
+             toadd = true;
+             tagtoadd = DYFirst;
+          }
+       }
+       if (IsData(tag)) {
+          // style 
+          for (int j=0; j<8; j++) {
+             h[j]->SetLineColor(1);
+             h[j]->SetMarkerColor(1);
+             h[j]->SetMarkerStyle(22);
+          }
+
+          if (tag != Data1) {
+             toadd = true;
+             tagtoadd = Data1;
+          }
+       }
+       if (IsDiboson(tag)) {
+          // style 
+          for (int j=0; j<10; j++) {
+             h[j]->SetFillColor(3);
+          }
+
+          if (tag != WW) {
+             toadd = true;
+             tagtoadd = WW;
+          }
+       }
+       if (IsWjets(tag)) {
+          // style 
+          for (int j=0; j<10; j++) {
+             h[j]->SetFillColor(4);
+          }
+
+          if (tag != WFirst) {
+             toadd = true;
+             tagtoadd = WFirst;
+          }
+       }
+       if (tag==TT) {
+          for (int j=0; j<10; j++) {
+             h[j]->SetFillColor(6);
+          }
+       }
+
+       if (toadd) {
+          wjets_template[tagtoadd]->Add(wjets_template[i]);
+          wjetsSS_template[tagtoadd]->Add(wjetsSS_template[i]);
+          wjets_ratio[tagtoadd]->Add(wjets_ratio[i]);
+          wjetsSS_ratio[tagtoadd]->Add(wjetsSS_ratio[i]);
+          dijet_template[tagtoadd]->Add(dijet_template[i]);
+          dijetSS_template[tagtoadd]->Add(dijetSS_template[i]);
+          dijet_ratio[tagtoadd]->Add(dijet_ratio[i]);
+          dijetSS_ratio[tagtoadd]->Add(dijetSS_ratio[i]);
+          DYsel[tagtoadd]->Add(DYsel[i]);
+          DYselSS[tagtoadd]->Add(DYselSS[i]);
+       }
+    } // sample loop
 
     setTDRStyle();
     tdrGrid(true);
@@ -369,58 +261,10 @@ void estimateWjets() {
     lumiTextSize = 0.6;
     cmsTextSize = 1.0;
 
-    wjets_template[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    wjets_template[5]->GetYaxis()->SetTitleOffset(1.5);
-    wjets_template[5]->GetYaxis()->SetTitle("Number of events");
-    wjets_template[5]->GetXaxis()->SetLabelSize(0.025);
-    wjets_template[5]->GetYaxis()->SetLabelSize(0.025);
-    wjets_template[5]->GetXaxis()->SetMoreLogLabels();
-
-    wjets_ratio[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    wjets_ratio[5]->GetYaxis()->SetTitleOffset(1.5);
-    wjets_ratio[5]->GetYaxis()->SetTitle("Number of events");
-    wjets_ratio[5]->GetXaxis()->SetLabelSize(0.025);
-    wjets_ratio[5]->GetYaxis()->SetLabelSize(0.025);
-    wjets_ratio[5]->GetXaxis()->SetMoreLogLabels();
-
-    wjetsSS_template[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    wjetsSS_template[5]->GetYaxis()->SetTitleOffset(1.5);
-    wjetsSS_template[5]->GetYaxis()->SetTitle("Number of events");
-    wjetsSS_template[5]->GetXaxis()->SetLabelSize(0.025);
-    wjetsSS_template[5]->GetYaxis()->SetLabelSize(0.025);
-    wjetsSS_template[5]->GetXaxis()->SetMoreLogLabels();
-
-    wjetsSS_ratio[5]->GetXaxis()->SetTitle("Mass[GeV]");
-    wjetsSS_ratio[5]->GetYaxis()->SetTitleOffset(1.5);
-    wjetsSS_ratio[5]->GetYaxis()->SetTitle("Number of events");
-    wjetsSS_ratio[5]->GetXaxis()->SetLabelSize(0.025);
-    wjetsSS_ratio[5]->GetYaxis()->SetLabelSize(0.025);
-    wjetsSS_ratio[5]->GetXaxis()->SetMoreLogLabels();
-
-
-    TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(wjets_template[5],"Opposite sign", "F");
-    legg->AddEntry(wjetsSS_template[5],"Same sign", "P");
-
-    for(int i=1; i<46; i++) {
-        if(wjets_template[5]->GetBinContent(i) < 0) {
-            wjets_template[5]->SetBinContent(i,0.0);
-            wjets_template[5]->SetBinError(i,0.0);
-        }
-        if(wjets_ratio[5]->GetBinContent(i) < 0) {
-            wjets_ratio[5]->SetBinContent(i,0.0);
-            wjets_ratio[5]->SetBinError(i,0.0);
-        }
-        if( wjetsSS_template[5]->GetBinContent(i) < 0 ) {
-            wjetsSS_template[5]->SetBinContent(i,0.0);
-            wjetsSS_template[5]->SetBinError(i,0.0);
-        }
-    }
-
-    //Smooth
-    wjets_template[5]->Smooth();
-    wjets_ratio[5]->Smooth();
-    wjetsSS_template[5]->Smooth();
+    setTDRStyle();
+    tdrGrid(true);
+    lumiTextSize = 0.5;
+    cmsTextSize = 0.75;
 
     TCanvas* canv = new TCanvas("canv","",1200,1200);
     canv->SetFillColor(0);
@@ -429,79 +273,161 @@ void estimateWjets() {
     canv->SetTopMargin( T/H );
     canv->SetBottomMargin( B/H );
 
-    wjets_template[5]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    /////////////////////////////////////
+    // method 1: subtract MC from data //
+    /////////////////////////////////////
+    wjets_template[Data1]->Add(wjets_template[DYFirst],-2.*sf_fit_1[0]);
+    wjets_template[Data1]->Add(wjets_template[TT],-2.*sf_fit_1[0]);
+    wjets_template[Data1]->Add(wjets_template[WW],-2.*sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[DYFirst],-2.*sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[TT],-2.*sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[WW],-2.*sf_fit_1[0]);
+
+    wjets_ratio[Data1]->Add(wjets_ratio[DYFirst],-2.*sf_fit_2[0]);
+    wjets_ratio[Data1]->Add(wjets_ratio[TT],-2.*sf_fit_2[0]);
+    wjets_ratio[Data1]->Add(wjets_ratio[WW],-2.*sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[DYFirst],-2.*sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[TT],-2.*sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[WW],-2.*sf_fit_2[0]);
+
+    // and subtract QCD
+    TH1D *h_QCD_template = dijet_template[DataFirst];
+    TH1D *h_DYJets_Dijet_template = dijet_template[DYFirst];
+    TH1D *h_ttbar_Dijet_template = dijet_template[TT];
+    h_QCD_template->Add(h_DYJets_Dijet_template,-1.0);
+    h_QCD_template->Add(h_ttbar_Dijet_template,-1.0);
+    wjets_template[Data1]->Add(h_QCD_template,-2.*sf_fit_1[1]);
+    TH1D *h_QCDSS_template = dijetSS_template[DataFirst];
+    TH1D *h_DYJets_DijetSS_template = dijetSS_template[DYFirst];
+    TH1D *h_ttbar_DijetSS_template = dijetSS_template[TT];
+    h_QCDSS_template->Add(h_DYJets_DijetSS_template,-1.0);
+    h_QCDSS_template->Add(h_ttbar_DijetSS_template,-1.0);
+    wjetsSS_template[Data1]->Add(h_QCDSS_template,-2.*sf_fit_1[1]);
+
+    TH1D *h_QCD_ratio = dijet_ratio[DataFirst];
+    TH1D *h_DYJets_Dijet_ratio = dijet_ratio[DYFirst];
+    TH1D *h_ttbar_Dijet_ratio = dijet_ratio[TT];
+    h_QCD_ratio->Add(h_DYJets_Dijet_ratio,-1.0);
+    h_QCD_ratio->Add(h_ttbar_Dijet_ratio,-1.0);
+    wjets_ratio[Data1]->Add(h_QCD_ratio,-2.*sf_fit_2[1]);
+    TH1D *h_QCDSS_ratio = dijetSS_ratio[DataFirst];
+    TH1D *h_DYJets_DijetSS_ratio = dijetSS_ratio[DYFirst];
+    TH1D *h_ttbar_DijetSS_ratio = dijetSS_ratio[TT];
+    h_QCDSS_ratio->Add(h_DYJets_DijetSS_ratio,-1.0);
+    h_QCDSS_ratio->Add(h_ttbar_DijetSS_ratio,-1.0);
+    wjetsSS_ratio[Data1]->Add(h_QCDSS_ratio,-2.*sf_fit_2[1]);
+
+    /////////////////////////
+    // method 2: scaled MC //
+    /////////////////////////
+
+    DYsel[WFirst]->Scale(sf_fit_2[1]);
+    DYselSS[WFirst]->Scale(sf_fit_2[1]);
+    
+
+
+    //wjets_template[5]->Smooth();
+    TLegend* legg = new TLegend(.6,.65,.95,.89);
+    legg->AddEntry(wjets_template[Data1],"Opposite sign", "F");
+    legg->AddEntry(wjetsSS_template[Data1],"Same sign", "P");
+
+    wjets_template[Data1]->Draw("HIST");
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/wjets_template.pdf");
-    wjetsSS_template[5]->Draw("HISTPSAME");
+    canv->Print("print/wjets_" + thevarname + "_template.pdf");
+    wjetsSS_template[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
-    canv->Print("print/wjetsBoth_template.pdf");
+    canv->Print("print/wjetsBoth_" + thevarname + "_template.pdf");
     canv->Clear();
-    wjetsSS_template[5]->SetFillColor(9);
-    wjetsSS_template[5]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    wjetsSS_template[Data1]->SetFillColor(7);
+    wjetsSS_template[Data1]->Draw("HIST");
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/wjetsSS_template.pdf");
+    canv->Print("print/wjetsSS_" + thevarname + "_template.pdf");
     canv->Clear();
 
-    wjets_ratio[5]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    wjets_ratio[Data1]->Draw("HIST");
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/wjets_ratio.pdf");
+    canv->Print("print/wjets_" + thevarname + "_ratio.pdf");
+    wjetsSS_ratio[Data1]->Draw("EPSAME");
     legg->Draw("SAME");
-    wjetsSS_ratio[5]->Draw("HISTPSAME");
-    canv->Print("print/wjetsBoth_ratio.pdf");
+    canv->Print("print/wjetsBoth_" + thevarname + "_ratio.pdf");
     canv->Clear();
-    wjetsSS_ratio[5]->SetFillColor(9);
-    wjetsSS_ratio[5]->Draw("HIST");
-    CMS_lumi(canv,4,11);
+    wjetsSS_ratio[Data1]->SetFillColor(7);
+    wjetsSS_ratio[Data1]->Draw("HIST");
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/wjetsSS_ratio.pdf");
+    canv->Print("print/wjetsSS_" + thevarname + "_ratio.pdf");
     canv->Clear();
-
 
     double error = 0;
-    wjets_template[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(template) = "<<wjets_template[5]->Integral(1,45)<<"+-"<<error<<endl;
+    wjets_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(template) = "<<wjets_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    wjetsSS_template[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(template) SS = "<<wjetsSS_template[5]->Integral(1,45)<<"+-"<<error<<endl;
+    wjetsSS_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(template) SS = "<<wjetsSS_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    wjets_ratio[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(ratio) = "<<wjets_ratio[5]->Integral(1,45)<<"+-"<<error<<endl;
+    wjets_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(ratio) = "<<wjets_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
-    wjetsSS_ratio[5]->IntegralAndError(1,45,error);
-    cout<<"QCD(ratio) SS = "<<wjetsSS_ratio[5]->Integral(1,45)<<"+-"<<error<<endl;
+    wjetsSS_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(ratio) SS = "<<wjetsSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
+    DYsel[WFirst]->IntegralAndError(1,45,error);
+    cout<<"WJets(scaled MC) = "<<DYsel[WFirst]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    DYselSS[WFirst]->IntegralAndError(1,45,error);
+    cout<<"WJets(scaled MD) SS = "<<DYselSS[WFirst]->Integral(1,45)<<"+-"<<error<<endl;
 
-    TH1D* wjets = (TH1D*)wjets_template[5]->Clone();
-    TH1D* wjets_control = (TH1D*)wjets_ratio[5]->Clone();
+    for(int i=1; i<varNbins+1; i++) {
+        if(wjets_template[Data1]->GetBinContent(i) < 0) {
+          wjets_template[Data1]->SetBinContent(i,0.0);
+          wjets_template[Data1]->SetBinError(i,0.0);
+        }
+        if(wjets_ratio[Data1]->GetBinContent(i) < 0) {
+          wjets_ratio[Data1]->SetBinContent(i,0.0);
+          wjets_ratio[Data1]->SetBinError(i,0.0);
+        }
+        if(wjetsSS_template[Data1]->GetBinContent(i) < 0) {
+          wjetsSS_template[Data1]->SetBinContent(i,0.0);
+          wjetsSS_template[Data1]->SetBinError(i,0.0);
+        }
+        if(wjetsSS_ratio[Data1]->GetBinContent(i) < 0) {
+          wjetsSS_ratio[Data1]->SetBinContent(i,0.0);
+          wjetsSS_ratio[Data1]->SetBinError(i,0.0);
+        }
+    }
+
+    TH1D* wjets = (TH1D*)wjets_template[Data1]->Clone();
+    wjets->Sumw2();
     wjets->SetName("wjets");
 
-    TH1D* wjets_total      = new TH1D("wjets_total","",binnum,bins);
-    TH1D* wjets_systematic = new TH1D("wjets_systematic","",binnum,bins);
-    TH1D* wjets_stat       = new TH1D("wjets_stat","",binnum,bins);
+    TH1D* wjets_total      = new TH1D("wjets_total","",varNbins,varbins);
+    TH1D* wjets_systematic = new TH1D("wjets_systematic","",varNbins,varbins);
+    TH1D* wjets_stat       = new TH1D("wjets_stat","",varNbins,varbins);
 
-    for(int i=1; i<binnum+1; i++) {
-        double systematic = fabs(wjets->GetBinContent(i) - wjets_control->GetBinContent(i));
+    for(int i=1; i<varNbins+1; i++) {
+
+        double systematic = max(fabs(wjets->GetBinContent(i) - wjets_ratio[Data1]->GetBinContent(i)), fabs(wjets->GetBinContent(i) - DYsel[WFirst]->GetBinContent(i)));
         double stat = wjets->GetBinError(i);
         double total = sqrt( systematic*systematic + stat*stat );
         if(wjets->GetBinContent(i)==0) {
-            systematic = 0;
-            stat = 0;
-            total = 0;
+          systematic = 0;
+          stat = 0;
+          total = 0;
         }
 
         wjets_systematic->SetBinContent(i,systematic);
@@ -511,10 +437,16 @@ void estimateWjets() {
         wjets->SetBinError(i,total);
     }
 
-    TFile* gg = new TFile("result/wjets.root","RECREATE");
+    TFile* gg = new TFile("result/wjets_" + thevarname + ".root","RECREATE");
     wjets->Write();
     wjets_systematic->Write();
     wjets_stat->Write();
+    wjets_ratio[DataFirst]->Write("wjets_ratio");
+    wjets_template[DataFirst]->Write("wjets_template");
+    wjetsSS_ratio[DataFirst]->Write("wjetsSS_ratio");
+    wjetsSS_template[DataFirst]->Write("wjetsSS_template");
+    DYsel[WFirst]->Write("wjetsMC");
+    DYselSS[WFirst]->Write("wjetsSSMC");
     gg->Close();
 
     //wjets_systematic->Divide(wjets);
@@ -551,10 +483,20 @@ void estimateWjets() {
     wjets_stat->Draw("HISTPSAME");
     massFrame->Draw("AXISSAME");
     leg->Draw("SAME");
-    CMS_lumi(canv,4,11);
+    CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
     canv->GetFrame()->Draw();
     canv->SetLogx();
-    canv->Print("print/wjets_uncertainty.pdf");
+    canv->Print("print/wjets_" + thevarname + "_uncertainty.pdf");
+}
+
+void estimateWjets() {
+   estimateWjets(mass);
+   estimateWjets(rap60120);
+   estimateWjets(pt);
+   estimateWjets(phistar);
+   estimateWjets(rap1560);
+   estimateWjets(pt1560);
+   estimateWjets(phistar1560);
 }

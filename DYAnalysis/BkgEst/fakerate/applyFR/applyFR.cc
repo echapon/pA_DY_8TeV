@@ -56,6 +56,8 @@ void applyFR(SampleTag index) {
 
    TFile* f = new TFile("histograms/fake"+TString(Name(index))+".root","RECREATE");
 
+   TDirectory *tdir = f->mkdir("Dijet");
+   tdir->cd();
    TH1D* histDijet1 = new TH1D("histDijet1","",binnum,bins);
    TH1D* histDijet2 = new TH1D("histDijet2","",binnum,bins);
    TH1D* histSameDijet1 = new TH1D("histSameDijet1","",binnum,bins);
@@ -111,6 +113,9 @@ void applyFR(SampleTag index) {
 
 
 
+   f->cd();
+   tdir = f->mkdir("WJets");
+   tdir->cd();
    TH1D* histWJets1 = new TH1D("histWJets1","",binnum,bins);
    TH1D* histWJets2 = new TH1D("histWJets2","",binnum,bins);
    TH1D* histSameWJets1 = new TH1D("histSameWJets1","",binnum,bins);
@@ -165,8 +170,43 @@ void applyFR(SampleTag index) {
    TH1D* Zphistar1560SameWJets2 = new TH1D("Zphistar1560SameWJets2","",phistarnum_1560,phistarbin_1560);
 
 
-   TH1D* histPass = new TH1D("histPass","",10,0,10);
-   TH1D* histFail = new TH1D("histFail","",10,0,10);
+   f->cd();
+   tdir = f->mkdir("DYsel");
+   tdir->cd();
+   TH1D* histDYsel = new TH1D("histDYsel","",binnum,bins);
+   TH1D* histSameDYsel = new TH1D("histSameDYsel","",binnum,bins);
+
+   TH1D* fitDYsel = new TH1D("fitDYsel","",37,15,200);
+   TH1D* fitSameDYsel = new TH1D("fitSameDYsel","",37,15,200);
+   TH1D* fitMETDYsel = new TH1D("fitMETDYsel","",20,0,200);
+   TH1D* fitMETSameDYsel = new TH1D("fitMETSameDYsel","",20,0,200);
+   TH1D* fitmassMETDYsel = new TH1D("fitmassMETDYsel","",40,0,400);
+   TH1D* fitmassMETSameDYsel = new TH1D("fitmassMETSameDYsel","",40,0,400);
+   TH1D* fitMtDYsel = new TH1D("fitMtDYsel","",20,0,200);
+   TH1D* fitMtSameDYsel = new TH1D("fitMtSameDYsel","",20,0,200);
+
+   TH1D* rapDYsel = new TH1D("rapDYsel","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameDYsel = new TH1D("rapSameDYsel","",rapbinnum_60120,rapbin_60120);
+
+   // added
+   TH1D* ZptDYsel = new TH1D("ZptDYsel","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameDYsel = new TH1D("ZptSameDYsel","",ptbinnum_meas,ptbin_meas);
+
+   TH1D* lowMrapDYsel = new TH1D("lowMrapDYsel","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameDYsel = new TH1D("lowMrapSameDYsel","",rapbinnum_1560,rapbin_1560);
+
+   TH1D* ZphistarDYsel = new TH1D("ZphistarDYsel","",phistarnum,phistarbin);
+   TH1D* ZphistarSameDYsel = new TH1D("ZphistarSameDYsel","",phistarnum,phistarbin);
+
+   TH1D* Zpt1560DYsel = new TH1D("Zpt1560DYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameDYsel = new TH1D("Zpt1560SameDYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
+
+   TH1D* Zphistar1560DYsel = new TH1D("Zphistar1560DYsel","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameDYsel = new TH1D("Zphistar1560SameDYsel","",phistarnum_1560,phistarbin_1560);
+
+
+   f->cd();
+   TH2D* histPassFail = new TH2D("histPassFail",";Npass;Nfail",10,0,10,10,0,10);
 
 
    initFRhistos();
@@ -195,6 +235,7 @@ void applyFR(SampleTag index) {
    double MET;
    double maxMt;
    double massMET;
+   double chi2min;
 
    int nPass = 0;
    int nFail = 0;
@@ -222,13 +263,13 @@ void applyFR(SampleTag index) {
 
       if( !leading ) continue;
 
-      histPass->Fill(passingMuons->size(),wt);
-      histFail->Fill(failingMuons->size(),wt);
+      histPassFail->Fill(passingMuons->size(),failingMuons->size(),wt);
 
       nPass += wt*passingMuons->size();
       nFail += wt*failingMuons->size();
 
       if( passingMuons->size()==0 && failingMuons->size()>1 ) {
+      // if( failingMuons->size()>1 ) {
          if( dijetDY(event->dimuons,failingMuons,tempMuons) ) {
             FR1_template = FR_template(tempMuons->first);
             FR2_template = FR_template(tempMuons->second);
@@ -287,16 +328,14 @@ void applyFR(SampleTag index) {
                   lowMrapDijet2->Fill(rap, weight_ratio);
                   Zpt1560Dijet1->Fill(dimu_pt, weight_template);
                   Zpt1560Dijet2->Fill(dimu_pt, weight_ratio);
-                  Zphistar1560Dijet1->Fill(phistar1560, weight_template);
-                  Zphistar1560Dijet2->Fill(phistar1560, weight_ratio);
+                  Zphistar1560Dijet1->Fill(phistar, weight_template);
+                  Zphistar1560Dijet2->Fill(phistar, weight_ratio);
                }
             }
             else {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameDijet1->Fill(mass, weight_template);
                   histSameDijet2->Fill(mass, weight_ratio);
-                  fitSameDijet1->Fill(mass, weight2_template);
-                  fitSameDijet2->Fill(mass, weight2_ratio);
                   fitSameDijet1->Fill(mass, weight2_template);
                   fitSameDijet2->Fill(mass, weight2_ratio);
                   fitMETSameDijet1->Fill(MET, weight2_template);
@@ -319,12 +358,12 @@ void applyFR(SampleTag index) {
                   lowMrapSameDijet2->Fill(rap, weight_ratio);
                   Zpt1560SameDijet1->Fill(dimu_pt, weight_template);
                   Zpt1560SameDijet2->Fill(dimu_pt, weight_ratio);
-                  Zphistar1560SameDijet1->Fill(phistar1560, weight_template);
-                  Zphistar1560SameDijet2->Fill(phistar1560, weight_ratio);
+                  Zphistar1560SameDijet1->Fill(phistar, weight_template);
+                  Zphistar1560SameDijet2->Fill(phistar, weight_ratio);
                }
             }
          }
-      } else if( failingMuons->size()>1 && passingMuons->size()==1 ) {
+      } else if( failingMuons->size()>=1 && passingMuons->size()==1 ) {
          if( wjetsDY(event->dimuons, failingMuons->at(0), passingMuons->at(0), tempMuons) ) {
             FR1_template = FR_template(tempMuons->first);
             FR1_ratio = FR_ratio(tempMuons->first);
@@ -353,8 +392,6 @@ void applyFR(SampleTag index) {
                   // if (passingMuons->at(0).first.isolation(0.15)) {
                      fitWJets1->Fill(mass, wt);
                      fitWJets2->Fill(mass, wt);
-                     fitWJets1->Fill(mass, wt);
-                     fitWJets2->Fill(mass, wt);
                      fitMETWJets1->Fill(MET, wt);
                      fitMETWJets2->Fill(MET, wt);
                      fitmassMETWJets1->Fill(massMET, wt);
@@ -376,8 +413,8 @@ void applyFR(SampleTag index) {
                   lowMrapWJets2->Fill(rap, weight_ratio);
                   Zpt1560WJets1->Fill(dimu_pt, weight_template);
                   Zpt1560WJets2->Fill(dimu_pt, weight_ratio);
-                  Zphistar1560WJets1->Fill(phistar1560, weight_template);
-                  Zphistar1560WJets2->Fill(phistar1560, weight_ratio);
+                  Zphistar1560WJets1->Fill(phistar, weight_template);
+                  Zphistar1560WJets2->Fill(phistar, weight_ratio);
                }
 
             } else {
@@ -385,8 +422,6 @@ void applyFR(SampleTag index) {
                   histSameWJets1->Fill(mass, weight_template);
                   histSameWJets2->Fill(mass, weight_ratio);
                   // if (passingMuons->at(0).first.isolation(0.15)) {
-                     fitSameWJets1->Fill(mass, wt);
-                     fitSameWJets2->Fill(mass, wt);
                      fitSameWJets1->Fill(mass, wt);
                      fitSameWJets2->Fill(mass, wt);
                      fitMETSameWJets1->Fill(MET, wt);
@@ -410,14 +445,76 @@ void applyFR(SampleTag index) {
                   lowMrapSameWJets2->Fill(rap, weight_ratio);
                   Zpt1560SameWJets1->Fill(dimu_pt, weight_template);
                   Zpt1560SameWJets2->Fill(dimu_pt, weight_ratio);
-                  Zphistar1560SameWJets1->Fill(phistar1560, weight_template);
-                  Zphistar1560SameWJets2->Fill(phistar1560, weight_ratio);
+                  Zphistar1560SameWJets1->Fill(phistar, weight_template);
+                  Zphistar1560SameWJets2->Fill(phistar, weight_ratio);
+               }
+
+            }
+         }
+      } else if( passingMuons->size()>=2 ) {
+         if( dimuonDY(event->triggerobjects, event->dimuons, passingMuons, tempMuons, chi2min) ) {
+
+            mass = (tempMuons->first.momentum() + tempMuons->second.momentum()).M();
+            sign = tempMuons->first.charge * tempMuons->second.charge;
+            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
+            phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
+            dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
+
+            MET = event->MET.at(0).pt;
+            TLorentzVector tlvMET; tlvMET.SetPxPyPzE(event->MET.at(0).px,event->MET.at(0).py,0,event->MET.at(0).pt);
+            double Mt1 = (tlvMET + tempMuons->first.momentum()).Mt();
+            double Mt2 = (tlvMET + tempMuons->second.momentum()).Mt();
+            maxMt = max(Mt1,Mt2);
+            massMET = min(mass,200.) + 200.*(MET>40);
+
+
+
+            if( sign < 0 ) {
+               if( mass > bins[0] && mass < bins[binnum-1]) {
+                  histDYsel->Fill(mass, wt);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitDYsel->Fill(mass, wt);
+                     fitMETDYsel->Fill(MET, wt);
+                     fitmassMETDYsel->Fill(massMET, wt);
+                     fitMtDYsel->Fill(maxMt, wt);
+                  // }
+               }
+               if( mass > 60 && mass < 120) {
+                  rapDYsel->Fill(rap, wt);
+                  ZptDYsel->Fill(dimu_pt, wt);
+                  ZphistarDYsel->Fill(phistar, wt);
+               }
+               if ( mass > 15 && mass < 60) {
+                  lowMrapDYsel->Fill(rap, wt);
+                  Zpt1560DYsel->Fill(dimu_pt, wt);
+                  Zphistar1560DYsel->Fill(phistar, wt);
+               }
+
+            } else {
+               if( mass > bins[0] && mass < bins[binnum-1]) {
+                  histSameDYsel->Fill(mass, wt);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitSameDYsel->Fill(mass, wt);
+                     fitMETSameDYsel->Fill(MET, wt);
+                     fitmassMETSameDYsel->Fill(massMET, wt);
+                     fitMtSameDYsel->Fill(maxMt, wt);
+                  // }
+               }
+               if( mass > 60 && mass < 120) {
+                  rapSameDYsel->Fill(rap, wt);
+                  ZptSameDYsel->Fill(dimu_pt, wt);
+                  ZphistarSameDYsel->Fill(phistar, wt);
+               }
+               if ( mass > 15 && mass < 60) {
+                  lowMrapSameDYsel->Fill(rap, wt);
+                  Zpt1560SameDYsel->Fill(dimu_pt, wt);
+                  Zphistar1560SameDYsel->Fill(phistar, wt);
                }
 
             }
          }
       } 
-   }
+   } // loop on events
 
 
    f->Write();

@@ -5,7 +5,9 @@ using namespace DYana;
 
 const double lumi_sf = 0.92;
 
-void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
+void fit_wjets(int iFR=1, TString vartag = "") 
+// iFR = 1 (template) or 2 (data-MC)
+// vartag = "" (mass) or "massMET" or "Mt"
 {
 	Double_t Lumi = lumi_all;
 
@@ -29,13 +31,13 @@ void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
       norm[i] = IsData(tag) ? 1. : (Xsec(tag)*lumi*lumi_sf)/Nevts(tag);
       cout<< "norm[" << i << "] = " << norm[i]<<endl;
 
-      wjets_fit[i] = (TH1D*)f[i]->Get(Form("fitWJets%d",iFR));
+      wjets_fit[i] = (TH1D*)f[i]->Get(Form("WJets/fit%sWJets%d",vartag.Data(),iFR));
       wjets_fit[i]->Scale(norm[i]);
-      dijet_fit[i] = (TH1D*)f[i]->Get(Form("fitDijet%d",iFR));
+      dijet_fit[i] = (TH1D*)f[i]->Get(Form("Dijet/fit%sDijet%d",vartag.Data(),iFR));
       dijet_fit[i]->Scale(norm[i]);
-      wjetsSS_fit[i] = (TH1D*)f[i]->Get(Form("fitSameWJets%d",iFR));
+      wjetsSS_fit[i] = (TH1D*)f[i]->Get(Form("WJets/fit%sSameWJets%d",vartag.Data(),iFR));
       wjetsSS_fit[i]->Scale(norm[i]);
-      dijetSS_fit[i] = (TH1D*)f[i]->Get(Form("fitSameDijet%d",iFR));
+      dijetSS_fit[i] = (TH1D*)f[i]->Get(Form("Dijet/fit%sSameDijet%d",vartag.Data(),iFR));
       dijetSS_fit[i]->Scale(norm[i]);
 
        // add histos together
@@ -91,6 +93,7 @@ void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
    // QCD template: data-MC, 0P2F, OS
    TH1D *h_QCD = dijet_fit[DataFirst];
    TH1D *h_DYJets_Dijet = dijet_fit[DYFirst];
+   TH1D *h_WJets_Dijet = dijet_fit[WFirst];
    TH1D *h_ttbar_Dijet = dijet_fit[TT];
    h_QCD->Add(h_DYJets_Dijet,-1.0);
    h_QCD->Add(h_ttbar_Dijet,-1.0);
@@ -111,39 +114,41 @@ void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
    // h_ttbar_SS->Write("hh_ttbar_SS");
    h_QCD->Write("h_QCD");
    h_DYJets_Dijet->Write("hh_DYJets_Dijet");
+   h_WJets_Dijet->Write("hh_WJets_Dijet");
    h_ttbar_Dijet->Write("hh_ttbar_Dijet");
    h_data->Write("h_data");
    tf->Close();
    // return;
 
 	//Convert TH1D to RooDataHist
-   RooRealVar mass("mass", "Dimuon mass [GeV]", 15,200);
-   // RooRealVar mass("massMET", "Dimuon mass [GeV] in 2 MET bins", 0,400);
+   RooRealVar* mass = NULL;
+   if (vartag=="") mass = new RooRealVar("mass", "Dimuon mass [GeV]", 15,200);
+   else if (vartag=="massMET") mass = new RooRealVar("massMET", "Dimuon mass [GeV] in 2 MET bins", 0,400);
    // RooRealVar mass("vtxchi2", "dimuon chi2", 0,20);
    // RooRealVar mass("dphi", "dimuon Delta phi", 0,3.2);
    // RooRealVar mass("mt", "Mt", 0,200);
 
-	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", mass, h_ttbar);
-	RooDataHist *RooHist_DYJets = new RooDataHist("RooHist_DYJets", "RooHistogram_DYJets", mass, h_DYJets);
-	RooDataHist *RooHist_WJets = new RooDataHist("RooHist_WJets", "RooHistogram_WJets", mass, h_WJets);
-	RooDataHist *RooHist_QCD = new RooDataHist("RooHist_QCD", "RooHistogram_QCD", mass, h_QCD);
-	RooDataHist *RooHist_data = new RooDataHist("RooHist_data", "RooHistogram_data", mass, h_data);
+	RooDataHist *RooHist_ttbar = new RooDataHist("RooHist_ttbar", "RooHistogram_ttbar", *mass, h_ttbar);
+	RooDataHist *RooHist_DYJets = new RooDataHist("RooHist_DYJets", "RooHistogram_DYJets", *mass, h_DYJets);
+	RooDataHist *RooHist_WJets = new RooDataHist("RooHist_WJets", "RooHistogram_WJets", *mass, h_WJets);
+	RooDataHist *RooHist_QCD = new RooDataHist("RooHist_QCD", "RooHistogram_QCD", *mass, h_QCD);
+	RooDataHist *RooHist_data = new RooDataHist("RooHist_data", "RooHistogram_data", *mass, h_data);
 
 	//Convert RooDataHist to RooHistPdf
-	RooHistPdf *pdf_ttbar = new RooHistPdf("pdf_ttbar", "Template from ttbar MC", mass, *RooHist_ttbar, 0);
-	RooHistPdf *pdf_DYJets = new RooHistPdf("pdf_DYJets", "Template from DYJets MC", mass, *RooHist_DYJets, 0);
-	RooHistPdf *pdf_WJets = new RooHistPdf("pdf_WJets", "Template from same-sign WJets", mass, *RooHist_WJets, 0);
-	RooHistPdf *pdf_QCD = new RooHistPdf("pdf_QCD", "Template from data-driven dijet", mass, *RooHist_QCD, 0);
+	RooHistPdf *pdf_ttbar = new RooHistPdf("pdf_ttbar", "Template from ttbar MC", *mass, *RooHist_ttbar, 0);
+	RooHistPdf *pdf_DYJets = new RooHistPdf("pdf_DYJets", "Template from DYJets MC", *mass, *RooHist_DYJets, 0);
+	RooHistPdf *pdf_WJets = new RooHistPdf("pdf_WJets", "Template from same-sign WJets", *mass, *RooHist_WJets, 0);
+	RooHistPdf *pdf_QCD = new RooHistPdf("pdf_QCD", "Template from data-driven dijet", *mass, *RooHist_QCD, 0);
 
 	// Construct model = n_ttbar * ttbar + n_WJets * WJets
-	double N_ttbar = h_ttbar->Integral() * 0.5; // Why??
-	double N_DYJets = h_DYJets->Integral() * 0.5; // Why??
+	double N_ttbar = h_ttbar->Integral(); 
+	double N_DYJets = h_DYJets->Integral(); 
 	double N_WJets = h_WJets->Integral(); 
-	double N_QCD = h_QCD->Integral()*2.; 
+	double N_QCD = h_QCD->Integral();
 
-   RooRealVar sf_MC("sf_MC", "sf_MC", 1, 0.2, 3.);
-   RooRealVar sf_QCD("sf_QCD", "sf_QCD", 1, 0.2, 3.);
-   RooRealVar sf_WJets("sf_WJets", "sf_WJets", 1, 0.2, 3.);
+   RooRealVar sf_MC("sf_MC", "sf_MC", 0.5, 0.1, 3.);
+   RooRealVar sf_QCD("sf_QCD", "sf_QCD", 1, 0.1, 10.);
+   RooRealVar sf_WJets("sf_WJets", "sf_WJets", 0.5, 0.1, 3.);
    RooConstVar n_ttbar0("n_ttbar0","n_ttbar0",N_ttbar);
 	RooFormulaVar n_ttbar("n_ttbar", "@0*@1", RooArgSet(sf_MC,n_ttbar0));
    RooConstVar n_DYJets0("n_DYJets0","n_DYJets0",N_DYJets);
@@ -160,7 +165,7 @@ void fit_wjets(int iFR=1) // 1 (template) or 2 (data-MC)
    // RooAbsReal *chi2 = model.createChi2(*RooHist_data);
    // cout << "chi2ndof: " << chi2->getVal() / ((Double_t)h_data->GetNbinsX()) << endl;
 
-   RooPlot *frame = mass.frame(Name("massframe"));
+   RooPlot *frame = mass->frame(Name("massframe"));
    // pdf_ttbar->plotOn(frame,LineColor(kRed));
    // pdf_DYJets->plotOn(frame,LineColor(kGreen));
    // pdf_WJets->plotOn(frame,LineColor(kBlue));
