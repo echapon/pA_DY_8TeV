@@ -9,7 +9,7 @@ using namespace DYana;
 
 void addToHist(TH1D *h, int i, double integral, double interror);
 
-void computeFR(TString tag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi2, 2muSS_hichi2
+void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi2, 2muSS_hichi2
    // load histos: hmass_OS_2iso, h2d_1mu_HLTL3Mu12, h2d_1mu_HLTL3Mu12_barrel, h2d_1mu_HLTL3Mu12_endcap
 
    map<SampleTag,TH1D*> hmass_OS_2iso;
@@ -27,9 +27,9 @@ void computeFR(TString tag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi2,
       }
 
       hmass_OS_2iso[*it] = (TH1D*) f->Get("hmass_OS_2iso");
-      h2d_1mu[*it] = (TH2D*) f->Get("h2d_" + tag + "_HLTL3Mu12");
-      h2d_1mu_barrel[*it] = (TH2D*) f->Get("h2d_" + tag + "_HLTL3Mu12_barrel");
-      h2d_1mu_endcap[*it] = (TH2D*) f->Get("h2d_" + tag + "_HLTL3Mu12_endcap");
+      h2d_1mu[*it] = (TH2D*) f->Get("h2d_" + mutag + "_HLTL3Mu12");
+      h2d_1mu_barrel[*it] = (TH2D*) f->Get("h2d_" + mutag + "_HLTL3Mu12_barrel");
+      h2d_1mu_endcap[*it] = (TH2D*) f->Get("h2d_" + mutag + "_HLTL3Mu12_endcap");
    }
 
 
@@ -305,11 +305,86 @@ void computeFR(TString tag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi2,
    }
 
    ///////////////////////
-   // plot the obtained FR
+   // plot the inputs
    ///////////////////////
 
+   TCanvas *c1 = new TCanvas();
+
+   hdatanoniso_barrel->SetMarkerColor(kRed+2);
+   hdataiso_barrel->SetMarkerColor(kBlue+2);
+   hdatasubnoniso_barrel->SetMarkerColor(kRed);
+   hdatasubiso_barrel->SetMarkerColor(kBlue);
+   hdatasubnoniso_barrel->SetMarkerStyle(21);
+   hdatasubiso_barrel->SetMarkerStyle(21);
+   hMCnoniso_barrel->SetMarkerColor(kRed+2);
+   hMCiso_barrel->SetMarkerColor(kBlue+2);
+   hdatanoniso_barrel->SetLineColor(kRed+2);
+   hdataiso_barrel->SetLineColor(kBlue+2);
+   hdatasubnoniso_barrel->SetLineColor(kRed);
+   hdatasubiso_barrel->SetLineColor(kBlue);
+   hMCnoniso_barrel->SetLineColor(kRed+2);
+   hMCiso_barrel->SetLineColor(kBlue+2);
+   hdatanoniso_barrel->Draw();
+   c1->SetLogx();
+   c1->SetLogy();
+   hdatanoniso_barrel->GetXaxis()->SetTitle("muon p_{T} [GeV]");
+   hdatanoniso_barrel->Draw("EP");
+   hdataiso_barrel->Draw("EP same");
+   hMCnoniso_barrel->Draw("hist same");
+   hMCiso_barrel->Draw("hist same");
+   hdatasubnoniso_barrel->Draw("EP same");
+   hdatasubiso_barrel->Draw("EP same");
+   TLegend *tleg = new TLegend(0.6,0.6,0.9,0.93);
+   tleg->SetBorderSize(0);
+   tleg->SetHeader("|#eta|<1.2");
+   tleg->AddEntry(hdatasubiso_barrel, "Data-MC, iso", "LP");
+   tleg->AddEntry(hdatasubnoniso_barrel, "Data-MC, non iso", "LP");
+   tleg->AddEntry(hdataiso_barrel, "Data, iso", "LP");
+   tleg->AddEntry(hdatanoniso_barrel, "Data, non iso", "LP");
+   tleg->AddEntry(hMCiso_barrel, "MC, iso", "L");
+   tleg->AddEntry(hMCnoniso_barrel, "MC, non iso", "L");
+   tleg->Draw();
+   c1->SaveAs("FRinputs_" + mutag + "_barrel.pdf");
+
+   hdatanoniso_endcap->SetMarkerColor(kRed+2);
+   hdataiso_endcap->SetMarkerColor(kBlue+2);
+   hdatasubnoniso_endcap->SetMarkerColor(kRed);
+   hdatasubiso_endcap->SetMarkerColor(kBlue);
+   hdatasubnoniso_endcap->SetMarkerStyle(21);
+   hdatasubiso_endcap->SetMarkerStyle(21);
+   hMCnoniso_endcap->SetMarkerColor(kRed+2);
+   hMCiso_endcap->SetMarkerColor(kBlue+2);
+   hdatanoniso_endcap->SetLineColor(kRed+2);
+   hdataiso_endcap->SetLineColor(kBlue+2);
+   hdatasubnoniso_endcap->SetLineColor(kRed);
+   hdatasubiso_endcap->SetLineColor(kBlue);
+   hMCnoniso_endcap->SetLineColor(kRed+2);
+   hMCiso_endcap->SetLineColor(kBlue+2);
+   hdatanoniso_endcap->Draw();
+   c1->SetLogx();
+   c1->SetLogy();
+   hdatanoniso_endcap->GetXaxis()->SetTitle("muon p_{T} [GeV]");
+   hdatanoniso_endcap->Draw("EP");
+   hdataiso_endcap->Draw("EP same");
+   hMCnoniso_endcap->Draw("hist same");
+   hMCiso_endcap->Draw("hist same");
+   hdatasubnoniso_endcap->Draw("EP same");
+   hdatasubiso_endcap->Draw("EP same");
+   TLegend *tleg2 = new TLegend(0.6,0.6,0.9,0.93);
+   tleg2->SetBorderSize(0);
+   tleg2->SetHeader("|#eta|>1.2");
+   tleg2->AddEntry(hdatasubiso_endcap, "Data-MC, iso", "LP");
+   tleg2->AddEntry(hdatasubnoniso_endcap, "Data-MC, non iso", "LP");
+   tleg2->AddEntry(hdataiso_endcap, "Data, iso", "LP");
+   tleg2->AddEntry(hdatanoniso_endcap, "Data, non iso", "LP");
+   tleg2->AddEntry(hMCiso_endcap, "MC, iso", "L");
+   tleg2->AddEntry(hMCnoniso_endcap, "MC, non iso", "L");
+   tleg2->Draw();
+   c1->SaveAs("FRinputs_" + mutag + "_endcap.pdf");
+
+
    // write histos to output file
-   TFile *fout = TFile::Open("FRhistos_" + tag + ".root","RECREATE");
+   TFile *fout = TFile::Open("FRhistos_" + mutag + ".root","RECREATE");
    hdataiso->Write();
    hdataiso_barrel->Write();
    hdataiso_endcap->Write();
