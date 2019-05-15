@@ -3,7 +3,7 @@
 using namespace RooFit;
 using namespace DYana;
 
-const double lumi_sf = 0.92;
+const double lumi_sf = 1.;//0.92;
 
 void fit_wjets(int iFR=1, TString vartag = "") 
 // iFR = 1 (template) or 2 (data-MC)
@@ -59,6 +59,12 @@ void fit_wjets(int iFR=1, TString vartag = "")
           if (tag != WFirst) {
              toadd = true;
              tagtoadd = WFirst;
+          }
+       }
+       if (IsData(tag)) {
+          if (tag != DataFirst) {
+             toadd = true;
+             tagtoadd = DataFirst;
           }
        }
 
@@ -148,7 +154,7 @@ void fit_wjets(int iFR=1, TString vartag = "")
 
    RooRealVar sf_MC("sf_MC", "sf_MC", 0.5, 0.1, 3.);
    RooRealVar sf_QCD("sf_QCD", "sf_QCD", 1, 0.1, 10.);
-   RooRealVar sf_WJets("sf_WJets", "sf_WJets", 0.5, 0.1, 3.);
+   RooRealVar sf_WJets("sf_WJets", "sf_WJets", 0.5, 0.1, 10.);
    RooConstVar n_ttbar0("n_ttbar0","n_ttbar0",N_ttbar);
 	RooFormulaVar n_ttbar("n_ttbar", "@0*@1", RooArgSet(sf_MC,n_ttbar0));
    RooConstVar n_DYJets0("n_DYJets0","n_DYJets0",N_DYJets);
@@ -165,6 +171,8 @@ void fit_wjets(int iFR=1, TString vartag = "")
    // RooAbsReal *chi2 = model.createChi2(*RooHist_data);
    // cout << "chi2ndof: " << chi2->getVal() / ((Double_t)h_data->GetNbinsX()) << endl;
 
+   TCanvas *c1 = new TCanvas();
+   c1->SetLogy();
    RooPlot *frame = mass->frame(Name("massframe"));
    // pdf_ttbar->plotOn(frame,LineColor(kRed));
    // pdf_DYJets->plotOn(frame,LineColor(kGreen));
@@ -178,4 +186,14 @@ void fit_wjets(int iFR=1, TString vartag = "")
    RooHist_data->plotOn(frame);
    frame->Draw();
 
+   TLegend *tleg = new TLegend(0.6,0.6,0.9,0.92);
+   tleg->SetBorderSize(0);
+   TLegendEntry *tlegent;
+   tlegent = tleg->AddEntry(frame->FindObject("h_RooHist_data"),"Data","LP"); 
+   tlegent = tleg->AddEntry(frame->FindObject("model_Norm[mass]_Comp[pdf_ttbar]"),"Top","L"); tlegent->SetLineColor(kGreen+2);
+   tlegent = tleg->AddEntry(frame->FindObject("model_Norm[mass]_Comp[pdf_ttbar,pdf_WJets] "),"W+jets","L"); tlegent->SetLineColor(kBlue);
+   tlegent = tleg->AddEntry(frame->FindObject("model_Norm[mass]_Comp[pdf_ttbar,pdf_WJets,pdf_QCD] "),"Dijet","L"); tlegent->SetLineColor(kCyan);
+   tlegent = tleg->AddEntry(frame->FindObject("model_Norm[mass]"),"Drell-Yan","L"); tlegent->SetLineColor(kRed);
+   tleg->Draw();
+   c1->SaveAs("fit_wjets_" + vartag + Form("%d.pdf",iFR));
 }
