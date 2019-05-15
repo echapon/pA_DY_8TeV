@@ -45,6 +45,7 @@ void applyFR(SampleTag index) {
    bool isData = IsData(index);;
    chain->Add(PathTuple(index));
    chain->SetBranchAddress("event",&event);  
+   bool doflip = (switcheta(index)<0);
    cout<<"# of events = "<<chain->GetEntries()<<endl;
 
    vector<pair<PhysicsMuon,int>>* passingMuons = new vector<pair<PhysicsMuon,int>>;
@@ -243,6 +244,7 @@ void applyFR(SampleTag index) {
    int nEntries = chain->GetEntries();
    for(int i=0; i!=nEntries; i++) {
       chain->GetEntry(i);
+      event->switcheta(doflip);
       if(mc) wt = event->weight;
       else wt = 1.0;
       wtsum += wt;
@@ -291,7 +293,7 @@ void applyFR(SampleTag index) {
 
             mass = (tempMuons->first.momentum() + tempMuons->second.momentum()).M();
             sign = tempMuons->first.charge * tempMuons->second.charge;
-            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
+            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity() - rapshift;
             phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
             dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 
@@ -372,7 +374,7 @@ void applyFR(SampleTag index) {
             weight_ratio = wt*FR1_ratio/(1-FR1_ratio);
             mass = (tempMuons->first.momentum() + tempMuons->second.momentum()).M();
             sign = tempMuons->first.charge * tempMuons->second.charge;
-            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
+            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity() - rapshift;
             phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
             dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 
@@ -456,7 +458,7 @@ void applyFR(SampleTag index) {
 
             mass = (tempMuons->first.momentum() + tempMuons->second.momentum()).M();
             sign = tempMuons->first.charge * tempMuons->second.charge;
-            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity();
+            rap  = (tempMuons->first.momentum() + tempMuons->second.momentum()).Rapidity() - rapshift;
             phistar = Object::phistar(tempMuons->first.momentum(), tempMuons->second.momentum() );
             dimu_pt = ( tempMuons->first.momentum() + tempMuons->second.momentum() ).Pt();
 

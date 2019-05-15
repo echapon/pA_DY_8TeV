@@ -126,7 +126,7 @@ void estimateDijet(var thevar) {
        // put histos in an array for easy style setting
        TH1D* h[4] = {dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i]};
        for (int j=0; j<4; j++) {
-          h[j]->GetXaxis()->SetTitle("Mass[GeV]");
+          h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
           h[j]->GetYaxis()->SetTitleOffset(1.5);
           h[j]->GetYaxis()->SetTitle("Number of events");
           //h[j]->GetXaxis()->SetTitleSize(0.032);

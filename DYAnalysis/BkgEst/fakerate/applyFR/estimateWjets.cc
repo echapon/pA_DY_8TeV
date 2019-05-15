@@ -32,12 +32,12 @@
 using namespace std;
 using namespace DYana;
 
-const double lumi_sf = 0.92;
+const double lumi_sf = 1.;//0.92;
 
 // const double sf_fit_1[3] = {5.1352e-01, 2.0523e+00, 9.1145e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1)
 // const double sf_fit_2[3] = {5.1506e-01, 1.8630e+00, 5.1743e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2)
-const double sf_fit_1[3] = {5.1352e-01,1.0262e+00,9.1126e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1,"")
-const double sf_fit_2[3] = {5.1533e-01,9.3137e-01,5.1717e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2,"")
+const double sf_fit_1[3] = {1.1698e+00,1.0671e+00,1.8833e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"")
+const double sf_fit_2[3] = {1.1820e+00,9.9705e-01,2.7503e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2,"")
 
 void estimateWjets();
 
@@ -166,7 +166,7 @@ void estimateWjets(var thevar) {
           dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i],
           DYsel[i], DYselSS[i]};
        for (int j=0; j<10; j++) {
-          h[j]->GetXaxis()->SetTitle("Mass[GeV]");
+          h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
           h[j]->GetYaxis()->SetTitleOffset(1.5);
           h[j]->GetYaxis()->SetTitle("Number of events");
           //h[j]->GetXaxis()->SetTitleSize(0.032);
@@ -276,19 +276,19 @@ void estimateWjets(var thevar) {
     /////////////////////////////////////
     // method 1: subtract MC from data //
     /////////////////////////////////////
-    wjets_template[Data1]->Add(wjets_template[DYFirst],-2.*sf_fit_1[0]);
-    wjets_template[Data1]->Add(wjets_template[TT],-2.*sf_fit_1[0]);
-    wjets_template[Data1]->Add(wjets_template[WW],-2.*sf_fit_1[0]);
-    wjetsSS_template[Data1]->Add(wjetsSS_template[DYFirst],-2.*sf_fit_1[0]);
-    wjetsSS_template[Data1]->Add(wjetsSS_template[TT],-2.*sf_fit_1[0]);
-    wjetsSS_template[Data1]->Add(wjetsSS_template[WW],-2.*sf_fit_1[0]);
+    wjets_template[Data1]->Add(wjets_template[DYFirst],-sf_fit_1[0]);
+    wjets_template[Data1]->Add(wjets_template[TT],-sf_fit_1[0]);
+    wjets_template[Data1]->Add(wjets_template[WW],-sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[DYFirst],-sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[TT],-sf_fit_1[0]);
+    wjetsSS_template[Data1]->Add(wjetsSS_template[WW],-sf_fit_1[0]);
 
-    wjets_ratio[Data1]->Add(wjets_ratio[DYFirst],-2.*sf_fit_2[0]);
-    wjets_ratio[Data1]->Add(wjets_ratio[TT],-2.*sf_fit_2[0]);
-    wjets_ratio[Data1]->Add(wjets_ratio[WW],-2.*sf_fit_2[0]);
-    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[DYFirst],-2.*sf_fit_2[0]);
-    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[TT],-2.*sf_fit_2[0]);
-    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[WW],-2.*sf_fit_2[0]);
+    wjets_ratio[Data1]->Add(wjets_ratio[DYFirst],-sf_fit_2[0]);
+    wjets_ratio[Data1]->Add(wjets_ratio[TT],-sf_fit_2[0]);
+    wjets_ratio[Data1]->Add(wjets_ratio[WW],-sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[DYFirst],-sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[TT],-sf_fit_2[0]);
+    wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[WW],-sf_fit_2[0]);
 
     // and subtract QCD
     TH1D *h_QCD_template = dijet_template[DataFirst];
