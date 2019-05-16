@@ -280,6 +280,7 @@ void estimateDijet(var thevar) {
     legg->AddEntry(dijet_ratio[Data1],"Alt. (data-MC)", "L");
 
     dijet_template[Data1]->Draw("EP");
+    dijet_template[Data1]->SetMaximum(2.*dijet_template[Data1]->GetMaximum());
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
@@ -291,6 +292,7 @@ void estimateDijet(var thevar) {
     canv->Clear();
 
     dijetSS_template[Data1]->Draw("EP");
+    dijetSS_template[Data1]->SetMaximum(2.*dijetSS_template[Data1]->GetMaximum());
     CMS_lumi(canv,111,11);
     canv->Update();
     canv->RedrawAxis();
