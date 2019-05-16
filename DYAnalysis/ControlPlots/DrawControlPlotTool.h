@@ -73,7 +73,7 @@ public:
 	virtual void SetAxisRange( TString Variable, TH1D* h_data);
 	virtual void SetRatioRangeLabelSize( TString Variable, Double_t &ratio_min, Double_t &ratio_max, Double_t &LabelSize );
 	virtual void ChangeHistError_StatOnlyError(TH1D *h_mass, TH1D *h_StatUnc);
-	virtual void DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable );
+	virtual void DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS );
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
@@ -425,6 +425,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
 		/////////////////////////////////////////////////////////////////////////////////////////
 		if( Variables[i_hist].Contains("MassAnaBins") 
+            || Variables[i_hist].Contains("SSMass_DYBin")
             || Variables[i_hist].Contains("diPtM60120")
             || Variables[i_hist].Contains("diPtM1560")
             || Variables[i_hist].Contains("diRapidityM1560AnaBins") || Variables[i_hist].Contains("diRapidityM60120AnaBins")
@@ -561,7 +562,7 @@ void DrawControlPlotTool::RebinHistograms( TH1D& h_data, vector< TH1D* > &h_MC, 
    // }
 }
 
-void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable )
+void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS )
 {
 	///////////////////////////////////////////
 	// -- Make total background histogram -- //
@@ -572,11 +573,14 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	TH1D* h_ZZWZ = NULL;
 	TH1D* h_DYTauTau = NULL;
 
+   cout << "Data: " << h_data->Integral() << endl;
 	Int_t nBkg = (Int_t)h_bkgs.size();
 	for(Int_t i_bkg=0; i_bkg<nBkg; i_bkg++)
    {
-      // cout << Names[i_bkg] << endl;
+      if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp")  ) continue; // skip those processes here that are replaced with data-driven
+
 		TH1D* h_temp = h_bkgs[i_bkg];
+      // cout << Names[i_bkg] << " " << h_temp->Integral() << endl;
 
 		// -- total backgrounds -- //
 		if( h_totBkg == NULL )
@@ -585,7 +589,8 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 			h_totBkg->Add( h_temp );
 
 		// -- fake rate -- //
-		if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp") || Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets"  )
+      // if( Names[i_bkg] == "QCD" || Names[i_bkg].Contains("Wm") || Names[i_bkg].Contains("Wp")  )
+		if( Names[i_bkg] == "DiJet" || Names[i_bkg] == "WJets"  )
 		{
 			if( h_FR == NULL )
 				h_FR = (TH1D*)h_temp->Clone();
@@ -650,11 +655,11 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	///////////////////////
 	// -- make canvas -- //
 	///////////////////////
-	TString CanvasName = "c_BkgRatio_DataDrivenBkg_"+Type+"_"+variable;
+	TString CanvasName = "c_BkgRatio_DataDrivenBkg_"+Type+"_"+variable + ((isSS) ? "_SS" : "");
 	TCanvas *c = new TCanvas(CanvasName, "", 800, 600);
 	c->cd();
 	if (!variable.Contains("rap")) gPad->SetLogx();
-	gPad->SetLogy();
+	if (!isSS) gPad->SetLogy();
 	gPad->SetGridx(kFALSE);
 	gPad->SetGridy(kFALSE);
 	gPad->SetLeftMargin(0.11);
@@ -682,12 +687,12 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	legend->Draw();
 
 	// -- axis settings -- //
-	h_BkgRatio_totBkg->SetMinimum(1e-5);
-	h_BkgRatio_totBkg->SetMaximum(1.0);
+   if (!isSS) h_BkgRatio_totBkg->GetYaxis()->SetRangeUser(1e-5,1.);
+   else h_BkgRatio_totBkg->GetYaxis()->SetRangeUser(0.,2.);
 	h_BkgRatio_totBkg->GetYaxis()->SetLabelSize(0.05);
 	h_BkgRatio_totBkg->GetYaxis()->SetTitle("Fraction of backgrounds");
 	h_BkgRatio_totBkg->GetYaxis()->SetTitleSize(0.045);
-	h_BkgRatio_totBkg->GetYaxis()->SetTitleOffset(0.75);
+	h_BkgRatio_totBkg->GetYaxis()->SetTitleOffset(1.);
 	
 
 	h_BkgRatio_totBkg->GetXaxis()->SetMoreLogLabels();
@@ -725,8 +730,8 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 
 	h_BkgRatio_ZZWZ->SetMarkerStyle(23);
 	h_BkgRatio_ZZWZ->SetMarkerSize(1);
-	h_BkgRatio_ZZWZ->SetMarkerColor(kGreen);
-	h_BkgRatio_ZZWZ->SetLineColor(kGreen);
+	h_BkgRatio_ZZWZ->SetMarkerColor(kGreen+2);
+	h_BkgRatio_ZZWZ->SetLineColor(kGreen+2);
 	h_BkgRatio_ZZWZ->SetFillColorAlpha(kWhite, 0);
 
 	h_BkgRatio_DYTauTau->SetMarkerStyle(29);
@@ -737,6 +742,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 
    CMS_lumi( c, 111, 0 );
 
+   c->Update();
 	c->SaveAs("ControlPlots/pdf/"+CanvasName+".pdf");
    c->SaveAs("ControlPlots/root/"+CanvasName+".root");
 }
@@ -845,8 +851,12 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    // f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/dijet_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
    // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
 
-   TString dijettag = (TString(h_data->GetName()).Contains("SS")) ? "dijetSS_template" : "dijet";
-   TString wjetstag = (TString(h_data->GetName()).Contains("SS")) ? "wjetsSS_template" : "wjets";
+   bool isSS = TString(h_data->GetName()).Contains("SS");
+   TString tagSS = isSS ? "_SS" : "";
+   TString dijettag = (isSS) ? "dijetSS_template" : "dijet";
+   TString wjetstag = (isSS) ? "wjetsSS_template" : "wjets";
+   // TString dijettag = (isSS) ? "dijetSS_ratio" : "dijet_ratio";
+   // TString wjetstag = (isSS) ? "wjetsSS_ratio" : "wjets_ratio";
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get(dijettag)->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get(wjetstag)->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
@@ -907,7 +917,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	/////////////////////////////////////////////////////////
 	// -- Make MC HStack & Set attributes: MC Histogram -- //
 	/////////////////////////////////////////////////////////
-	THStack *hs = new THStack(Form("hs_%s_DYBin_DataDrivenBkg_",variable)+Type, "");
+	THStack *hs = new THStack(Form("hs_%s_DYBin_DataDrivenBkg_",variable)+tagSS+Type, "");
 
 	Int_t nStackHists = (Int_t)StackHistos.size();
 	for(Int_t iter=0; iter<nStackHists; iter++)
@@ -924,7 +934,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	// -- Set the legend -- //
 	//////////////////////////
 	Double_t xlow = 0.75, ylow = 0.70, xhigh = 0.99, yhigh = 0.94;
-	this->SetLegendPosition( Form("%s_DYBin_DataDrivenBkg",variable), xlow, ylow, xhigh, yhigh );
+	this->SetLegendPosition( Form("%s_DYBin_DataDrivenBkg",variable)+tagSS, xlow, ylow, xhigh, yhigh );
 
 	TLegend *legend = new TLegend(xlow, ylow, xhigh, yhigh);
 	legend->SetFillStyle(0);
@@ -944,7 +954,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 			h_pred->Add( StackHistos[iter] );
 	}
 
-	this->DrawCanvas( Form("%s_DYBin_",variable)+Type+"_DataDrivenBkg", h_data, h_pred, hs, legend, Form("%s (",variable)+Type+")");
+	this->DrawCanvas( Form("%s_DYBin_",variable)+tagSS+Type+"_DataDrivenBkg", h_data, h_pred, hs, legend, Form("%s (",variable)+Type+")" + tagSS);
 
 	// -- Store yield histogram -- //
 	vector< TH1D* > h_bkgs; vector< TString > Names;
@@ -961,12 +971,12 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    }
 	
 	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
-	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names, variable );
+	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names, variable, isSS );
 
 	f_output->cd();
 	h_SignalMC->Write();
 
-	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s_",variable) + MomCor + "_" + Rew + TnpRew + "_" + Type + ".root", "RECREATE");
+	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s",variable) + tagSS + "_" + MomCor + "_" + Rew + TnpRew + "_" + Type + ".root", "RECREATE");
 	f_output2->cd();
 
 	h_data->SetName("h_data");
