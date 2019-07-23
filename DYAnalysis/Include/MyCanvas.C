@@ -260,7 +260,8 @@ public:
 		// -- Y-axis Setting -- //
 		h1->GetYaxis()->SetTitleSize(0.06);
 		h1->GetYaxis()->SetTitleOffset(1.25);
-		h1->GetYaxis()->SetRangeUser( 0.1*TMath::Min(h1->GetMinimum(), h2->GetMinimum()), 3.0*TMath::Max(h1->GetMaximum(), h2->GetMaximum()) );
+		if (isLogY) h1->GetYaxis()->SetRangeUser( 0.1*TMath::Min(h1->GetMinimum(), h2->GetMinimum()), 3.0*TMath::Max(h1->GetMaximum(), h2->GetMaximum()) );
+      else h1->GetYaxis()->SetRangeUser(0, 1.1*TMath::Max(h1->GetMaximum(), h2->GetMaximum())) ;
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h1->GetYaxis()->SetNoExponent(); h1->GetYaxis()->SetMoreLogLabels(); }
 		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
