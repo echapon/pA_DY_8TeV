@@ -42,6 +42,11 @@ const double sf_fit_2[3] = {1.1820e+00,9.9705e-01,2.7503e-01}; // MC, QCD, Wjets
 void estimateWjets();
 
 void estimateWjets(var thevar) {
+    setTDRStyle();
+    // tdrGrid(true);
+    lumiTextSize = 0.5;
+    cmsTextSize = 0.75;
+    gStyle->SetTitleOffset(0.9,"Y");
 
     int W = 1200;
     int H = 1200;
@@ -68,7 +73,7 @@ void estimateWjets(var thevar) {
     massFrame->GetXaxis()->SetTitle(xaxistitle(thevar));
     //massFrame->GetXaxis()->CenterTitle(kTRUE);
     //massFrame->GetYaxis()->CenterTitle(kTRUE);
-    massFrame->GetYaxis()->SetTitleOffset(1);
+    massFrame->GetYaxis()->SetTitleOffset(0.9);
     massFrame->GetYaxis()->SetTitle("Number of events");
     massFrame->GetXaxis()->SetTitleSize(0);
     massFrame->GetYaxis()->SetTitleSize(0.05);
@@ -167,7 +172,7 @@ void estimateWjets(var thevar) {
           DYsel[i], DYselSS[i]};
        for (int j=0; j<10; j++) {
           h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
-          h[j]->GetYaxis()->SetTitleOffset(1.5);
+          h[j]->GetYaxis()->SetTitleOffset(0.9);
           h[j]->GetYaxis()->SetTitle("Number of events");
           //h[j]->GetXaxis()->SetTitleSize(0.032);
           //h[j]->GetYaxis()->SetTitleSize(0.032);
@@ -254,17 +259,6 @@ void estimateWjets(var thevar) {
           DYselSS[tagtoadd]->Add(DYselSS[i]);
        }
     } // sample loop
-
-    setTDRStyle();
-    tdrGrid(true);
-
-    lumiTextSize = 0.6;
-    cmsTextSize = 1.0;
-
-    setTDRStyle();
-    tdrGrid(true);
-    lumiTextSize = 0.5;
-    cmsTextSize = 0.75;
 
     TCanvas* canv = new TCanvas("canv","",1200,1200);
     canv->SetFillColor(0);

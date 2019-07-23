@@ -37,6 +37,12 @@ const double lumi_sf = 0.92;
 void estimateDijet();
 
 void estimateDijet(var thevar) {
+    setTDRStyle();
+    // tdrGrid(true);
+    lumiTextSize = 0.5;
+    cmsTextSize = 0.75;
+    gStyle->SetTitleOffset(0.9,"Y");
+
 
     int W = 1200;
     int H = 1200;
@@ -67,7 +73,7 @@ void estimateDijet(var thevar) {
     massFrame->GetXaxis()->SetTitle(xaxistitle(thevar));
     //massFrame->GetXaxis()->CenterTitle(kTRUE);
     //massFrame->GetYaxis()->CenterTitle(kTRUE);
-    massFrame->GetYaxis()->SetTitleOffset(1);
+    massFrame->GetYaxis()->SetTitleOffset(0.9);
     massFrame->GetYaxis()->SetTitle("Number of events");
     massFrame->GetXaxis()->SetTitleSize(0);
     massFrame->GetYaxis()->SetTitleSize(0.05);
@@ -127,7 +133,7 @@ void estimateDijet(var thevar) {
        TH1D* h[4] = {dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i]};
        for (int j=0; j<4; j++) {
           h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
-          h[j]->GetYaxis()->SetTitleOffset(1.5);
+          h[j]->GetYaxis()->SetTitleOffset(0.9);
           h[j]->GetYaxis()->SetTitle("Number of events");
           //h[j]->GetXaxis()->SetTitleSize(0.032);
           //h[j]->GetYaxis()->SetTitleSize(0.032);
@@ -215,16 +221,6 @@ void estimateDijet(var thevar) {
     cout<<"DY(template): "<<dijet_template[DYFirst]->Integral()<<endl;
     cout<<"DY(ratio): "<<dijet_ratio[DYFirst]->Integral()<<endl;
 
-    setTDRStyle();
-    tdrGrid(true);
-
-    lumiTextSize = 0.6;
-    cmsTextSize = 1.0;
-
-    setTDRStyle();
-    tdrGrid(true);
-    lumiTextSize = 0.5;
-    cmsTextSize = 0.75;
 
     TCanvas* canv = new TCanvas("canv","",1200,1200);
     canv->SetFillColor(0);
