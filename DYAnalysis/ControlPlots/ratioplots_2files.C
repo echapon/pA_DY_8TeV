@@ -2,8 +2,9 @@
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TRatioPlot.h"
+#include "../Include/MyCanvas.C"
 
-void ratioplots_2files(const char* file1, const char* file2, const char* legend1, const char* legend2, const char* tags1, const char* tags2, double maxdiff=0.45) {
+void ratioplots_2files(const char* file1, const char* file2, TString legend1, TString legend2, const char* tags1, const char* tags2, double maxdiff=0.45) {
    TFile *f1 = TFile::Open(file1);
    if (!f1 || !f1->IsOpen()) return;
    TFile *f2 = TFile::Open(file2);
@@ -137,18 +138,10 @@ void ratioplots_2files(const char* file1, const char* file2, const char* legend1
 
       hist1->Scale(1./hist1->Integral());
       hist2->Scale(1./hist2->Integral());
-      a = new TRatioPlot(hist1,hist2);  
-      a->Draw(); 
-      a->GetLowerRefYaxis()->SetRangeUser(1.-maxdiff,1.+maxdiff); 
-      if (TString(histname[i]).Contains("Mass")) a->GetUpperPad()->SetLogy();
-      gPad->Update();
 
-      TPaveText t2(0,0.93,0.4,1,"NDC"); 
-      t2.SetFillColor(0); 
-      t2.SetBorderSize(0); 
-      t2.SetTextSize(0.05);
-      t2.AddText(histname[i]); 
-      t2.Draw();
+      MyCanvas myc("compare_" + TString(hist1->GetName()),hist1->GetXaxis()->GetTitle(),"Entries per bin (norm. to 1)");
+      myc.CanvasWithHistogramsRatioPlot(hist1,hist2,legend1,legend2,"ratio");
+      myc.c->cd();
       
       TPaveText t3(0.5,0.93,0.7,1,"NDC"); 
       t3.SetFillColor(0); 
@@ -170,15 +163,7 @@ void ratioplots_2files(const char* file1, const char* file2, const char* legend1
       t4.SetTextSize(0.05);
       t4.AddText(Form("KS %.1f%s", 100.*hist2->KolmogorovTest(hist1),"%")); 
       t4.Draw();
-      
-      TLegend *tleg = new TLegend(0.67,0.8,0.87,0.9);
-      tleg->SetBorderSize(0);
-      tleg->AddEntry(hist1,legend1,"l");
-      tleg->AddEntry(hist2,legend2,"p");
-      tleg->Draw();
-      c1->Print("ratioplots.pdf","pdf");
-      delete a;
-      delete tleg;
+
+      myc.PrintCanvas();
    }
-   c1->Print("ratioplots.pdf]");
 }
