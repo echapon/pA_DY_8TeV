@@ -33,7 +33,7 @@ namespace DYana {
    // put the default samples here
 #ifndef CT14_GENONLY
    using namespace DYana_v20180814;
-   // using namespace DYana_v20180111;
+   // using namespace DYana_v20170830;
 #else
    using namespace DYana_CT14;
 #endif
@@ -74,6 +74,10 @@ namespace DYana {
       // cout << mu->pt << " " << mu->eta << " " << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->trkisolation(cuts::isomax) << endl;
       // return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->isolation(cuts::isomax);
       return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID() && mu->trkisolation(cuts::isomax);
+   };
+   bool MuSel_noiso(PhysicsMuon *mu) {
+      return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->tightMuonID();
+      // return mu->acceptance(cuts::ptmin2,cuts::etamax) && mu->looseMuonID();
    };
    bool EleSel(PhysicsElectron *el) {
       return el->acceptance(cuts::ptmin2,cuts::etamax) && el->WPMedium() && el->trkisolation(cuts::isomax);

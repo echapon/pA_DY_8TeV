@@ -28,15 +28,19 @@
 #include <vector>
 #include "../interface/analysis.h"
 #include "../interface/defs.h"
+#include "../../Include/tnp_weight.h"
 #include "Include/DYAnalyzer.h"
 #include "Include/NtupleHandle.h"
 #include "Include/Object.h"
+#include "../../HIstuff/HFweight.h"
 
 using namespace std;
 using namespace DYana;
 
 void selectEmuEvts(SampleTag index)
 {
+    if (index == ALL) return;
+
     //Event
     TChain*       chain = new TChain("kwtuple/physicsTree");
     PhysicsEvent* event = new PhysicsEvent();
@@ -48,6 +52,10 @@ void selectEmuEvts(SampleTag index)
     bool doflip = (switcheta(index)<0);
     NtupleHandle *ntuple = new NtupleHandle( chain2, doflip );
     ntuple->TurnOnBranches_GenLepton();
+    ntuple->TurnOnBranches_HI();
+
+    // the tool for HF reweighting
+    HFweight hfTool;
 
     DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
     TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
@@ -57,6 +65,7 @@ void selectEmuEvts(SampleTag index)
     analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
     vector<pair<PhysicsMuon,int>>*     passingMuons     = new vector<pair<PhysicsMuon,int>>;
+    vector<pair<PhysicsMuon,int>>*     passingMuonsLoose= new vector<pair<PhysicsMuon,int>>;
     vector<pair<PhysicsElectron,int>>* passingElectrons = new vector<pair<PhysicsElectron,int>>;
     pair<PhysicsMuon,PhysicsMuon>*     dimuon           = new pair<PhysicsMuon,PhysicsMuon>;
     pair<PhysicsElectron,PhysicsMuon>* emu              = new pair<PhysicsElectron,PhysicsMuon>;
@@ -103,11 +112,26 @@ void selectEmuEvts(SampleTag index)
     TH1D* dimu_chi2   = new TH1D("dimu_chi2","",100,0,20);
     TH1D* dimuSS_chi2 = new TH1D("dimuSS_chi2","",100,0,20);
 
+    TH1D* denominator_pt = new TH1D("denominator_pt","",ptbinnum,ptbin); 
+    TH1D* denominator_pt_barrel = new TH1D("denominator_pt_barrel","",ptbinnum,ptbin); 
+    TH1D* denominator_pt_endcap = new TH1D("denominator_pt_endcap","",ptbinnum_endcap,ptbin_endcap);  
+    TH1D* numerator_pt = new TH1D("numerator_pt","",ptbinnum,ptbin); 
+    TH1D* numerator_pt_barrel = new TH1D("numerator_pt_barrel","",ptbinnum,ptbin); 
+    TH1D* numerator_pt_endcap = new TH1D("numerator_pt_endcap","",ptbinnum_endcap,ptbin_endcap); 
+    TH1D* denominatorSS_pt = new TH1D("denominatorSS_pt","",ptbinnum,ptbin); 
+    TH1D* denominatorSS_pt_barrel = new TH1D("denominatorSS_pt_barrel","",ptbinnum,ptbin); 
+    TH1D* denominatorSS_pt_endcap = new TH1D("denominatorSS_pt_endcap","",ptbinnum_endcap,ptbin_endcap);  
+    TH1D* numeratorSS_pt = new TH1D("numeratorSS_pt","",ptbinnum,ptbin); 
+    TH1D* numeratorSS_pt_barrel = new TH1D("numeratorSS_pt_barrel","",ptbinnum,ptbin); 
+    TH1D* numeratorSS_pt_endcap = new TH1D("numeratorSS_pt_endcap","",ptbinnum_endcap,ptbin_endcap); 
+
     cout<<"# of events = "<<chain->GetEntries()<<endl;
 
     bool leadingMu = false;
+    bool leadingMuLoose = false;
     bool leadingEl = false;
     double weight = 1.0;
+    double weight0 = 1.0;
     double weightedSum = 0;
 
     int tryEmu = 0;
@@ -133,6 +157,9 @@ void selectEmuEvts(SampleTag index)
         if( !isData ) {
             if( event->weight>0 ) weight = 1.0;
             else weight = -1.0;
+
+            weight = weight * hfTool.weight(ntuple->hiHFminus,HFweight::minus,true);
+            weight0 = weight;
         }
         weightedSum += weight;
 
@@ -141,9 +168,11 @@ void selectEmuEvts(SampleTag index)
         if( !event->TriggerSelection("HLT_PAL3Mu12_v") ) continue;
 
         leadingMu = false; 
+        leadingMuLoose = false; 
         leadingEl = false; 
 
         passingMuons->clear();
+        passingMuonsLoose->clear();
         passingElectrons->clear();
 
         for(unsigned j=0; j!=event->muons.size(); j++) {
@@ -156,6 +185,11 @@ void selectEmuEvts(SampleTag index)
                 pair<PhysicsMuon,int> taggedmu = {*mu,j};
                 passingMuons->push_back(taggedmu);
                 if(mu->pt > cuts::ptmin1) leadingMu = true;
+            } 
+            if( MuSel_noiso(mu) ) {
+                pair<PhysicsMuon,int> taggedmu = {*mu,j};
+                passingMuonsLoose->push_back(taggedmu);
+                if(mu->pt > cuts::ptmin1) leadingMuLoose = true;
             } 
         } 
 
@@ -189,6 +223,12 @@ void selectEmuEvts(SampleTag index)
         if( event->TriggerSelection("HLT_PAL3Mu12_v") ) { 
             if( passingMuons->size() > 0 && passingElectrons->size() > 0 ) ++tryEmu;
             if( emuDY(event->triggerobjects, event->emus, passingElectrons, passingMuons, emu, chi2min) ) {
+               // calc tnp weight for muon
+               PhysicsMuon mu = (PhysicsMuon) passingMuons->at(0).first;
+               if (!isData) {
+                  weight *= tnp_weight_muid_ppb(mu.pt,mu.eta,0) *tnp_weight_L3Mu12_ppb(mu.eta,0) * tnp_weight_isotk_ppb(mu.pt,mu.eta,0);
+               }
+
                 double mass = ( emu->first.momentum() + emu->second.momentum() ).M();
                 double pt = ( emu->first.momentum() + emu->second.momentum() ).Pt();
                 double rapidity = ( emu->first.momentum() + emu->second.momentum() ).Rapidity()-rapshift;
@@ -197,6 +237,9 @@ void selectEmuEvts(SampleTag index)
                 if( emu->first.charge * emu->second.charge < 0 ) {
                    emu_mass->Fill(mass,weight); 
                    emu_chi2->Fill(chi2min,weight); 
+                   numerator_pt->Fill(mu.pt,weight);
+                   if (fabs(mu.eta)<1.2) numerator_pt_barrel->Fill(mu.pt,weight);
+                   else numerator_pt_endcap->Fill(mu.pt,weight);
                    if (mass>60&&mass<120) {
                       emu_pt->Fill(pt,weight); 
                       emu_phistar->Fill(phistar,weight); 
@@ -209,6 +252,9 @@ void selectEmuEvts(SampleTag index)
                 } else {
                    emuSS_mass->Fill(mass,weight);
                    emuSS_chi2->Fill(chi2min,weight);
+                   numeratorSS_pt->Fill(mu.pt,weight);
+                   if (fabs(mu.eta)<1.2) numeratorSS_pt_barrel->Fill(mu.pt,weight);
+                   else numeratorSS_pt_endcap->Fill(mu.pt,weight);
                    if (mass>60&&mass<120) {
                       emuSS_pt->Fill(pt,weight); 
                       emuSS_phistar->Fill(phistar,weight); 
@@ -220,6 +266,23 @@ void selectEmuEvts(SampleTag index)
                    }
                 } // if opp. sign
             } // if emuDY 
+            if( emuDY(event->triggerobjects, event->emus, passingElectrons, passingMuonsLoose, emu, chi2min) ) {
+               // calc tnp weight for muon
+               PhysicsMuon mu = (PhysicsMuon) passingMuonsLoose->at(0).first;
+               if (!isData) {
+                  weight0 *= tnp_weight_muid_ppb(mu.pt,mu.eta,0) *tnp_weight_L3Mu12_ppb(mu.eta,0) * tnp_weight_isotk_ppb(mu.pt,mu.eta,0);
+               }
+
+                if( emu->first.charge * emu->second.charge < 0 ) {
+                   denominator_pt->Fill(mu.pt,weight);
+                   if (fabs(mu.eta)<1.2) denominator_pt_barrel->Fill(mu.pt,weight);
+                   else denominator_pt_endcap->Fill(mu.pt,weight);
+                } else {
+                   denominatorSS_pt->Fill(mu.pt,weight);
+                   if (fabs(mu.eta)<1.2) denominatorSS_pt_barrel->Fill(mu.pt,weight);
+                   else denominatorSS_pt_endcap->Fill(mu.pt,weight);
+                } // if opp. sign
+            } // if emuDY loose
             if( dimuonDY(event->triggerobjects, event->dimuons, passingMuons, dimuon, chi2min) ) { 
                 double mass = ( dimuon->first.momentum() + dimuon->second.momentum() ).M();
                 double pt = ( dimuon->first.momentum() + dimuon->second.momentum() ).Pt();
@@ -298,4 +361,9 @@ void selectEmuEvts() {
       cout << Name(tag) << endl;
       selectEmuEvts(tag);
    }
+}
+
+void selectEmuEvts(int i) {
+   SampleTag tag = static_cast<SampleTag>(i);
+   selectEmuEvts(tag);
 }
