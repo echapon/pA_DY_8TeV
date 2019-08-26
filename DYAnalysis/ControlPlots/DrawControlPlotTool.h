@@ -125,7 +125,7 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
 	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
-	analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Set the colors for each sample -- //
 	for(Int_t i=0; i<(Int_t)Tag.size(); i++ )
@@ -140,8 +140,8 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
 			color.push_back( kOrange );
 		else if( Tag[i].Contains("TT") )
 			color.push_back( kRed );
-		else if( Tag[i].Contains("TW") || Tag[i].Contains("TbarW") )
-			color.push_back( kRed+1 );
+      else if( Tag[i].Contains("TW") || Tag[i].Contains("TbarW") ) 
+         color.push_back( kRed+1 );
 	}
 
 	Nfactor_overall = 1;
@@ -498,8 +498,8 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		for(Int_t i_MC=nMC-1; i_MC>=0; i_MC--)
 		{
          // cout << Tag[i_MC] << endl;
-			if( STags[i_MC] == DYana::TW )
-				legend->AddEntry(h_MC[i_MC], "tW" );
+         if( STags[i_MC] == DYana::TW )
+            legend->AddEntry(h_MC[i_MC], "tW" );
          else if( STags[i_MC] == DYana::TT )
 				legend->AddEntry(h_MC[i_MC], "ttbar" );
 			else if( STags[i_MC] == DYana::VVFirst )
@@ -599,7 +599,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 		}
 
 		// -- ttbar-like bkg -- //
-		else if( Names[i_bkg] == "TT" || Names[i_bkg] == "TW" || Names[i_bkg] == "WW" || Names[i_bkg] == "ttbar" )
+      else if( Names[i_bkg] == "TT" || Names[i_bkg] == "TW" || Names[i_bkg] == "WW" || Names[i_bkg] == "ttbar" )
 		{
 			if( h_ttbarlike == NULL )
 				h_ttbarlike = (TH1D*)h_temp->Clone();
@@ -745,6 +745,10 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
    c->Update();
 	c->SaveAs("ControlPlots/pdf/"+CanvasName+".pdf");
    c->SaveAs("ControlPlots/root/"+CanvasName+".root");
+
+   // save the nonclosure for later correction
+   h_BkgRatio_totBkg->SetName("h_BkgRatio_totBkg");
+   h_BkgRatio_totBkg->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
 }
 
 void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_bkgs, TString Type )
