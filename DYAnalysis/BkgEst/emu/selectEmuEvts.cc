@@ -158,7 +158,7 @@ void selectEmuEvts(SampleTag index)
             if( event->weight>0 ) weight = 1.0;
             else weight = -1.0;
 
-            weight = weight * hfTool.weight(ntuple->hiHFminus,HFweight::minus,true);
+            weight = weight * hfTool.weight(ntuple->hiHF,HFweight::both,true);
             weight0 = weight;
         }
         weightedSum += weight;
@@ -226,7 +226,7 @@ void selectEmuEvts(SampleTag index)
                // calc tnp weight for muon
                PhysicsMuon mu = (PhysicsMuon) passingMuons->at(0).first;
                if (!isData) {
-                  weight *= tnp_weight_muid_ppb(mu.pt,mu.eta,0) *tnp_weight_L3Mu12_ppb(mu.eta,0) * tnp_weight_isotk_ppb(mu.pt,mu.eta,0);
+                  weight *= tnp_weight_muid_ppb(mu.pt,fabs(mu.eta),0) *tnp_weight_L3Mu12_ppb(fabs(mu.eta),0) * tnp_weight_isotk_ppb(mu.pt,fabs(mu.eta),0);
                }
 
                 double mass = ( emu->first.momentum() + emu->second.momentum() ).M();

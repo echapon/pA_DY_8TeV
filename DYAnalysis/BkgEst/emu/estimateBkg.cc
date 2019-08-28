@@ -74,6 +74,7 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
            lumi = (switcheta(tag)>0) ? lumi_part1 : lumi_part2;
         }
         norm[i] = (Xsec(tag)*lumi)/Nevts(tag);
+        // cout << i << " " << Name(tag) << " " << Xsec(tag) << " " << Nevts(tag) << endl;
         // special case of ttbar: scale it up or down for syst, by 18% (total uncertainty from HIN-17-002)
         if (tag==TT) {
            if (syst_tt==1) norm[i] *= 1.18;
@@ -147,24 +148,24 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     // emuSS_tW->Add(emuSS_antitW);
     // dimu_tW->Add(dimu_antitW);
 
-    cout<<"data in emu: "<<emu_data->Integral(1,43)<<endl;
-    cout<<"ttbar in emu: "<<emu[TT]->Integral(1,43)<<endl;
-    cout<<"DY in emu: "<<emu_DYtautau->Integral(1,43)<<endl;
-    cout<<"diboson in emu: "<<emu_diboson->Integral(1,43)<<endl;
-    // cout<<"tW in emu: "<<emu_tW->Integral(1,43)<<endl;
-    // cout<<"total MC in emu: "<<emu_DYtautau->Integral(1,43)+emu[TT]->Integral(1,43)+emu_diboson->Integral(1,43)+emu_tW->Integral(1,43)<<endl;
-    cout<<"total MC in emu: "<<emu_DYtautau->Integral(1,43)+emu[TT]->Integral(1,43)+emu_diboson->Integral(1,43)<<endl;
+    cout<<"data in emu: "<<emu_data->Integral()<<endl;
+    cout<<"ttbar in emu: "<<emu[TT]->Integral()<<endl;
+    cout<<"DY in emu: "<<emu_DYtautau->Integral()<<endl;
+    cout<<"diboson in emu: "<<emu_diboson->Integral()<<endl;
+    // cout<<"tW in emu: "<<emu_tW->Integral()<<endl;
+    // cout<<"total MC in emu: "<<emu_DYtautau->Integral()+emu[TT]->Integral()+emu_diboson->Integral()+emu_tW->Integral()<<endl;
+    cout<<"total MC in emu: "<<emu_DYtautau->Integral()+emu[TT]->Integral()+emu_diboson->Integral()<<endl;
     cout<<endl;
-    cout<<"data in emuSS: "<<emuSS_data->Integral(1,43)<<endl;
-    cout<<"ttbar in emuSS: "<<emuSS[TT]->Integral(1,43)<<endl;
-    cout<<"DY in emuSS: "<<emuSS_DYtautau->Integral(1,43)<<endl;
-    cout<<"diboson in emuSS: "<<emuSS_diboson->Integral(1,43)<<endl;
-    // cout<<"tW in emuSS: "<<emuSS_tW->Integral(1,43)<<endl;
+    cout<<"data in emuSS: "<<emuSS_data->Integral()<<endl;
+    cout<<"ttbar in emuSS: "<<emuSS[TT]->Integral()<<endl;
+    cout<<"DY in emuSS: "<<emuSS_DYtautau->Integral()<<endl;
+    cout<<"diboson in emuSS: "<<emuSS_diboson->Integral()<<endl;
+    // cout<<"tW in emuSS: "<<emuSS_tW->Integral()<<endl;
     cout<<endl;
-    cout<<"ttbar in dimu: "<<dimu[TT]->Integral(1,43)<<endl;
-    cout<<"DY in dimu: "<<dimu_DYtautau->Integral(1,43)<<endl;
-    cout<<"diboson in dimu: "<<dimu_diboson->Integral(1,43)<<endl;
-    // cout<<"tW in dimu: "<<dimu_tW->Integral(1,43)<<endl;
+    cout<<"ttbar in dimu: "<<dimu[TT]->Integral()<<endl;
+    cout<<"DY in dimu: "<<dimu_DYtautau->Integral()<<endl;
+    cout<<"diboson in dimu: "<<dimu_diboson->Integral()<<endl;
+    // cout<<"tW in dimu: "<<dimu_tW->Integral()<<endl;
     cout<<endl;
 
     // remove negative bins
