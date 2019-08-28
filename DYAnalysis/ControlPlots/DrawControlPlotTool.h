@@ -59,6 +59,7 @@ public:
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
    virtual void SetTexOptions(bool groupTex=true);
+   virtual void myDivide(TH1D* hnum, TH1D* hden);
 
 // protected:
 	virtual Double_t Entry_Zpeak(TH1D *h);
@@ -831,12 +832,14 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	////////////////////////////////////////////////////////////////
 	// -- Bring the histograms estimated by data-driven method -- //
 	////////////////////////////////////////////////////////////////
-	f_input_bkg_emu = new TFile(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
+	f_input_bkg_emu = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",variable));
    
 
    // EC
-   f_input_bkg_dijet = new TFile(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
-   f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+   f_input_bkg_dijet = TFile::Open(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/dijet_%s.root",variable));
+   f_input_bkg_wjets = TFile::Open(Form("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate/applyFR/result/wjets_%s.root",variable));
+   // file for nonclosure
+   TFile *f_nonclosure = TFile::Open(Form("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/SSnonclosure/%s.root",variable));
 
 
    // default
@@ -864,6 +867,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get(dijettag)->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get(wjetstag)->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
+   TH1D *h_nonclosure = (TH1D*)f_nonclosure->Get("h_BkgRatio_totBkg");
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -880,6 +884,10 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 
 	ChangeHistError_StatOnlyError(h_diJet_FR, h_StatUnc_diJet_FR);
 	ChangeHistError_StatOnlyError(h_WJets_FR, h_StatUnc_WJets_FR);
+
+   // and account for nonclosure
+   myDivide(h_diJet_FR,h_nonclosure);
+   myDivide(h_WJets_FR,h_nonclosure);
 
 	if( Type == "part1" || Type == "part2" )
 	{
@@ -1428,4 +1436,19 @@ void DrawControlPlotTool::PrintTex( TString Variable, TH1D* h_data, TH1D* h_pred
    file << "\\hline" << endl;
    file << "\\end{tabular}" << endl;
    file.close();
+}
+
+void DrawControlPlotTool::myDivide(TH1D* hnum, TH1D* hden) {
+   if (hnum->GetNbinsX() != hden->GetNbinsX()) {
+      cerr << "ERROR in DrawControlPlotTool::myDivide: numerator and denominator have different numbers of bins" << endl;
+      return;
+   }
+
+   const unsigned int nbins = hnum->GetNbinsX();
+   for (unsigned int i=0; i<=nbins+1; i++) {
+      double binc = hden->GetBinContent(i);
+      if (binc<1e-1) binc=1; // do not correct if the correction is larger than a factor 10
+      hnum->SetBinContent(i,hnum->GetBinContent(i)/binc);
+      hnum->SetBinError(i,hnum->GetBinError(i)/binc);
+   }
 }
