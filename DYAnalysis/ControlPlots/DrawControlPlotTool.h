@@ -60,6 +60,7 @@ public:
 	virtual void LoopForHistograms(Int_t nHist);
    virtual void SetTexOptions(bool groupTex=true);
    virtual void myDivide(TH1D* hnum, TH1D* hden);
+   virtual void myMultiply(TH1D* h1, TH1D* h2);
 
 // protected:
 	virtual Double_t Entry_Zpeak(TH1D *h);
@@ -747,9 +748,13 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	c->SaveAs("ControlPlots/pdf/"+CanvasName+".pdf");
    c->SaveAs("ControlPlots/root/"+CanvasName+".root");
 
-   // save the nonclosure for later correction
-   h_BkgRatio_totBkg->SetName("h_BkgRatio_totBkg");
-   h_BkgRatio_totBkg->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
+   // compute by how much FR would need to be scaled for perfect closure, and save the result
+   TH1D *h_nonclosure_scale = (TH1D*) h_data->Clone("h_nonclosure_scale");
+   h_nonclosure_scale->Add(h_ttbarlike,-1);
+   h_nonclosure_scale->Add(h_ZZWZ,-1);
+   h_nonclosure_scale->Add(h_DYTauTau,-1);
+   myDivide(h_nonclosure_scale,h_FR);
+   h_nonclosure_scale->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
 }
 
 void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_bkgs, TString Type )
@@ -867,7 +872,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get(dijettag)->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get(wjetstag)->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
-   TH1D *h_nonclosure = (TH1D*)f_nonclosure->Get("h_BkgRatio_totBkg");
+   TH1D *h_nonclosure = (TH1D*)f_nonclosure->Get("h_nonclosure_scale");
    
    // apply the emu correction here
    h_DYTauTau_emu->Multiply(h_emu_ratio);
@@ -886,8 +891,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	ChangeHistError_StatOnlyError(h_WJets_FR, h_StatUnc_WJets_FR);
 
    // and account for nonclosure
-   myDivide(h_diJet_FR,h_nonclosure);
-   myDivide(h_WJets_FR,h_nonclosure);
+   myMultiply(h_diJet_FR,h_nonclosure);
+   myMultiply(h_WJets_FR,h_nonclosure);
 
 	if( Type == "part1" || Type == "part2" )
 	{
@@ -1450,5 +1455,20 @@ void DrawControlPlotTool::myDivide(TH1D* hnum, TH1D* hden) {
       if (binc<1e-1) binc=1; // do not correct if the correction is larger than a factor 10
       hnum->SetBinContent(i,hnum->GetBinContent(i)/binc);
       hnum->SetBinError(i,hnum->GetBinError(i)/binc);
+   }
+}
+
+void DrawControlPlotTool::myMultiply(TH1D* h1, TH1D* h2) {
+   if (h1->GetNbinsX() != h2->GetNbinsX()) {
+      cerr << "ERROR in DrawControlPlotTool::myMultiply: histograms have different numbers of bins" << endl;
+      return;
+   }
+
+   const unsigned int nbins = h1->GetNbinsX();
+   for (unsigned int i=0; i<=nbins+1; i++) {
+      double binc = h2->GetBinContent(i);
+      if (fabs(binc)<1e-1 || fabs(binc)>10) binc=1; // do not correct if the correction is larger than a factor 10
+      h1->SetBinContent(i,h1->GetBinContent(i)*binc);
+      h1->SetBinError(i,h1->GetBinError(i)*binc);
    }
 }
