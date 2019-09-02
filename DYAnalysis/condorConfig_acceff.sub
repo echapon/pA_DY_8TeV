@@ -3,7 +3,7 @@ arguments             = $(ProcId) PAL3Mu12
 output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
-+JobFlavour           = "workday"
++JobFlavour           = "microcentury"
 
 # the line below is ONLY if you belong to CMG (CERN CMS group)
 +AccountingGroup = "group_u_CMST3.all"
@@ -11,8 +11,4 @@ log                   = condor/$(ClusterId).log
 # want CentOS7
 requirements = (OpSysAndVer =?= "CentOS7")
 
-#queue 11
-
-
-arguments             = $(ProcId) PAL1DoubleMuOpen
 queue 11

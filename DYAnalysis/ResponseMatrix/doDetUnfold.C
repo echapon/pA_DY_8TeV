@@ -22,9 +22,9 @@
 #include <vector>
 
 //Customized header files
-#include <Include/DYAnalyzer.h>
-#include <Include/UnfoldUtils.h>
-#include <Include/MyCanvas.C>
+#include "../Include/DYAnalyzer.h"
+#include "../Include/UnfoldUtils.h"
+#include "../Include/MyCanvas.C"
 
 using namespace DYana;
 using unfold::gUnfold;
@@ -56,6 +56,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
 
 
 	TFile *f = new TFile("ResponseMatrix/ROOTFile_ResponseMatrix_" + Sample + "_" + isApplyMomCorr + "_" + Form("%d",run) + ".root");
+   cout << f->GetName() << endl;
    TH2D *h_response = (TH2D*) f->Get(Form("h_%s_response",thevarname));
    TH1D *h_gen = (TH1D*) f->Get(Form("h_%s_gen",thevarname));
    TH1D *h_reco = (TH1D*) f->Get(Form("h_%s_reco",thevarname));
@@ -194,7 +195,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    h_response->SetMaximum(1);
    h_response->GetXaxis()->SetTitle(Form("%s (reco level)", xaxistitle(thevar)));
    h_response->GetYaxis()->SetTitle(Form("%s (gen level)", xaxistitle(thevar)));
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       gPad->SetLogx();
       gPad->SetLogy();
    }
@@ -355,7 +356,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    MyCanvas c1D(Form("ResponseMatrix/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cov(Form("ResponseMatrix/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cor(Form("ResponseMatrix/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c_cov.SetLogx();
       c_cov.SetLogy();
