@@ -142,10 +142,10 @@ namespace unfold {
       // cout << hin->GetNbinsX() << endl;
       // cout << hresponse->GetNbinsX() << " " << hresponse->GetNbinsY() << endl;
       // input values
-      TVectorD vin(hin->GetNbinsY());
+      TVectorD vin(hin->GetNbinsX());
       // input covariance
-      TMatrixD mcov_in(hin->GetNbinsY(),hin->GetNbinsY());
-      for (int i=1; i<=hin->GetNbinsY(); i++) {
+      TMatrixD mcov_in(hin->GetNbinsX(),hin->GetNbinsX());
+      for (int i=1; i<=hin->GetNbinsX(); i++) {
          vin[i-1] = hin->GetBinContent(i);
          mcov_in(i-1,i-1) = pow(hin->GetBinError(i),2);
       }
