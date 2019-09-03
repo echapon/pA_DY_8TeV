@@ -35,6 +35,7 @@ elif [ $1 -eq 3 ]; then
    arg='(kTRUE,"Powheg","'$trigger'",1)'
 elif [ $1 -eq 4 ]; then
    arg='(kTRUE,"Powheg","'$trigger'",2)'
+fi
 
 echo root -l -b -q ResponseMatrix/MuonResponseMatrix_1D.C+${arg}
 root -l -b -q ResponseMatrix/MuonResponseMatrix_1D.C+${arg}
