@@ -103,7 +103,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	TH1D *h_pt1560_gen = new TH1D("h_pt1560_gen", ";pt1560(gen level);Entries", ptbinnum_meas_1560, ptbin_meas_1560);
 	TH1D *h_pt1560_reco = new TH1D("h_pt1560_reco", ";pt1560(reco level);Entries", ptbinnum_meas_1560, ptbin_meas_1560);
-	TH1D *h_pt1560_resol = new TH1D("h_pt1560_resol", ";pt1560 resolution ( (gen-reco)/gen) );Entries", 100, -0.4, 0.4);
+	TH1D *h_pt1560_resol = new TH1D("h_pt1560_resol", ";pt1560 resolution ( (gen-reco)/gen) );Entries", 100, -0.8, 0.8);
    TH2D *h_pt1560_response = new TH2D("h_pt1560_response", ";pt1560(reco level);pt1560(gen level)", ptbinnum_meas_1560, ptbin_meas_1560, ptbinnum_meas_1560, ptbin_meas_1560);
 
 	TH1D *h_phistar1560_gen = new TH1D("h_phistar1560_gen", ";phistar1560(gen level);Entries", phistarnum_1560, phistarbin_1560);

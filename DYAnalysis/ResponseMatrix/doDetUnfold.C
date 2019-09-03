@@ -25,6 +25,7 @@
 #include "../Include/DYAnalyzer.h"
 #include "../Include/UnfoldUtils.h"
 #include "../Include/MyCanvas.C"
+#include "../Include/PlotTools.h"
 
 using namespace DYana;
 using unfold::gUnfold;
@@ -56,7 +57,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
 
 
 	TFile *f = new TFile("ResponseMatrix/ROOTFile_ResponseMatrix_" + Sample + "_" + isApplyMomCorr + "_" + Form("%d",run) + ".root");
-   cout << f->GetName() << endl;
+   // cout << f->GetName() << endl;
    TH2D *h_response = (TH2D*) f->Get(Form("h_%s_response",thevarname));
    TH1D *h_gen = (TH1D*) f->Get(Form("h_%s_gen",thevarname));
    TH1D *h_reco = (TH1D*) f->Get(Form("h_%s_reco",thevarname));
@@ -83,6 +84,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
    TString fdataname = "ROOTFile_YieldHistogram_" + isApplyMomCorr + "_rewboth_tnprew.root";
+   // cout << fdataname << endl;
    TFile *fdata = TFile::Open(fdataname);
    if (!fdata || !fdata->IsOpen()) {
       cout << "Error, file " << fdataname.Data() << " not found" << endl;
@@ -90,7 +92,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    }
    TH1D *histMdetData = (TH1D*) fdata->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname));
    if (!histMdetData) {
-      cout << "Error, histo " << Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname)<< "not found" << endl;
+      cout << "Error, histo " << Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname)<< " not found" << endl;
       return;
    }
 
@@ -362,6 +364,8 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       c_cov.SetLogy();
       c_cor.SetLogx();
       c_cor.SetLogy();
+      fixXaxis(histMunfold);
+      fixXaxis(h_Measured_TUnfold);
    }
    if (thevar==var::mass) c1D.SetRatioRange(0.7,1.3);
    else if (thevar==var::pt) c1D.SetRatioRange(0.8,1.2);

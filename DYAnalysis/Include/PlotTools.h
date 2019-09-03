@@ -1116,7 +1116,7 @@ public:
 
 // fix the binning for plots in logX scale
 void fixXaxis(TGraphAsymmErrors *g) {
-   if (g->GetX()[0]-g->GetEXlow()[0]<1e-10) {
+   if (fabs(g->GetX()[0]-g->GetEXlow()[0])<1e-10) {
       double eyl = g->GetEYlow()[0];
       double eyh = g->GetEYhigh()[0];
       double exl = g->GetEXlow()[0]/2.;
@@ -1126,7 +1126,7 @@ void fixXaxis(TGraphAsymmErrors *g) {
 }
 
 void fixXaxis(TH1 *h) {
-   if (h->GetBinLowEdge(1)<=1e-10) {
+   if (fabs(h->GetBinLowEdge(1))<=1e-10) {
       int nbins = h->GetNbinsX();
       double *newbins = new double[nbins+1];
       for (int i=1; i<nbins+1; i++) {
