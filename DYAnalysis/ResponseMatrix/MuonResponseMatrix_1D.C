@@ -332,6 +332,8 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
                         h_rap60120_gen->Fill( gen_Rap, TotWeight );
                      } else if (gen_M>15 && gen_M<60) {
                         h_rap1560_gen->Fill( gen_Rap, TotWeight );
+                        h_pt1560_gen->Fill( gen_Pt, TotWeight );
+                        h_phistar1560_gen->Fill( gen_Phistar, TotWeight );
                      }
 
 							h_mass_reco->Fill( reco_M, TotWeight );
