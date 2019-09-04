@@ -68,7 +68,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    if (variable == "Rap1560") {yl1=0.6;yl2=0.95;}
    
    // Rochester corrections
-   MyCanvas cEffRoch("comp_eff_momcor_InclVsH_"+variable,xtitle,"Efficiency");
+   MyCanvas cEffRoch("comp_eff_momcor_"+variable,xtitle,"Efficiency");
    if (!variable.Contains("Rap")) cEffRoch.SetLogx();
    cEffRoch.SetLegendPosition(xl1,yl1,xl2,yl2);
    cEffRoch.SetXRange(xmin,xmax);
@@ -79,7 +79,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
 
    
    // reweighting effect
-   MyCanvas cAccrew("comp_acc_rew_"+variable,xtitle,"Acciciency");
+   MyCanvas cAccrew("comp_acc_rew_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccrew.SetLogx();
    cAccrew.SetLegendPosition(xl1,yl1,xl2,yl2);
    cAccrew.SetXRange(xmin,xmax);
@@ -98,7 +98,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    cEffrew.PrintCanvas();
 
    // pPb vs Pbp
-   MyCanvas cAccbeam("comp_acc_beamdir_"+variable,xtitle,"Acciciency");
+   MyCanvas cAccbeam("comp_acc_beamdir_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccbeam.SetLogx();
    cAccbeam.SetLegendPosition(xl1,yl1,xl2,yl2);
    cAccbeam.SetXRange(xmin,xmax);
@@ -117,7 +117,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    cEffbeam.PrintCanvas();
    
    // Powheg vs Pyquen
-   MyCanvas cAccgenerator("comp_acc_generator_"+variable,xtitle,"Acciciency");
+   MyCanvas cAccgenerator("comp_acc_generator_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccgenerator.SetLogx();
    cAccgenerator.SetLegendPosition(xl1,yl1,xl2,yl2);
    cAccgenerator.SetXRange(xmin,xmax);
