@@ -350,16 +350,31 @@ void DYAnalyzer::SetupMCsamples_v20180111( TString Type, vector<TString> *ntuple
 
 void DYAnalyzer::SetupMCsamples_v20180814( TString Type, vector<TString> *ntupleDirectory, vector<TString> *Tag, vector<Double_t> *xsec, vector<Double_t> *nEvents, vector<DYana_v20180814::SampleTag> *STags )
 {
-   using namespace DYana_v20180814;
-   cout << "Using samples from v20180814 for Type " << Type.Data() << endl;
-   for (int i=0; i<DataFirst; i++) {
-      SampleTag tag = static_cast<SampleTag>(i);
-      // if (!IsDYMuMu(tag)) continue;
-      ntupleDirectory->push_back(NtupleDir(tag));
-      Tag->push_back(Name(tag));
-      xsec->push_back(Xsec(tag));
-      nEvents->push_back(Nevts(tag));
-      STags->push_back(tag);
+   if (Type=="Pyquen") { // Pyquen
+      using namespace DYana_v20180814_Pyquen;
+      cout << "Using samples from v20180814 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         DYana_v20180814::SampleTag tag_Powheg = static_cast<DYana_v20180814::SampleTag>(i);
+         STags->push_back(tag_Powheg);
+      }
+   } else { 
+      using namespace DYana_v20180814;
+      cout << "Using samples from v20180814 for Type " << Type.Data() << endl;
+      for (int i=0; i<DataFirst; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         STags->push_back(tag);
+      }
    }
 }
 
@@ -785,8 +800,7 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
              passOK=true;
           // for L3Mu12: rel tk iso
           if (!noiso && HLT.Contains("L3Mu12") && 
-                   (MuonCollection[j].trkiso < 0.2))
-                   // (MuonCollection[j].trkiso < 0.5))
+                   (MuonCollection[j].trkiso < 0.2)) 
              passOK = true;
           // for L1DoubleMu: rel PF iso
           if (!noiso && HLT.Contains("L1DoubleMu") && 
@@ -1801,7 +1815,7 @@ Bool_t DYAnalyzer::EventSelection_Dijet(vector< Muon > MuonCollection, NtupleHan
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
          // for L3Mu12 / high mass: use trkiso
-         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
+         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2) 
             PassingMuonCollection.push_back( MuonCollection[j] );
          else
             FailingMuonCollection.push_back( MuonCollection[j] );
@@ -1997,7 +2011,7 @@ Bool_t DYAnalyzer::EventSelection_CheckMoreThanOneDimuonCand(vector< Muon > Muon
          if (HLT.Contains("L1DoubleMu") && MuonCollection[j].relPFiso < 0.3)
             QMuonCollection.push_back( MuonCollection[j] );
          // for L3Mu12 / high mass: use trkiso
-         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2)
+         if (HLT.Contains("L3Mu12") && MuonCollection[j].trkiso < 0.2) 
             QMuonCollection.push_back( MuonCollection[j] );
       }
 	}

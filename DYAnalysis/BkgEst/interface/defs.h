@@ -12,6 +12,7 @@
 #include "samples_v20180111_noEWK.h"
 #include "samples_v20180111_negweights.h"
 #include "samples_v20180814.h"
+#include "samples_v20180814_Pyquen.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
