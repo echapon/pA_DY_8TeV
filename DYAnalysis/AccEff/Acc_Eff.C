@@ -360,7 +360,8 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
 						// -- Event Selection -- //
 						Bool_t isPassEventSelection = kFALSE;
-						isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+                  isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+                  // isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection, true);
 
 						if( isPassEventSelection == kTRUE && 
                         SelectedMuonCollection.size()>=2 && SelectedMuonCollection[0].charge != SelectedMuonCollection[1].charge )

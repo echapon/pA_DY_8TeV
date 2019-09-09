@@ -14,6 +14,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    TFile *fpPb = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_1_rewboth.root");
    TFile *fPbp = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_2_rewboth.root");
    TFile *fPyquen = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Pyquen_PAL3Mu12_0_rewboth.root");
+   TFile *fnoiso = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth_noiso.root");
 
    TEfficiency *acc_nom = (TEfficiency*) fnom->Get("TEff_Acc_" + variable);
    TEfficiency *eff_nom = (TEfficiency*) fnom->Get("TEff_Eff_" + variable);
@@ -31,6 +32,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    TEfficiency *eff_Pbp = (TEfficiency*) fPbp->Get("TEff_Eff_" + variable);
    TEfficiency *acc_Pyquen = (TEfficiency*) fPyquen->Get("TEff_Acc_" + variable);
    TEfficiency *eff_Pyquen = (TEfficiency*) fPyquen->Get("TEff_Eff_" + variable);
+   TEfficiency *eff_noiso = (TEfficiency*) fnoiso->Get("TEff_Eff_" + variable);
    // // we only have Pyquen for M>30: set lower masses to 0
    // TH1 *htmp = (TH1*) acc_Pyquen->GetPassedHistogram()->Clone();
    // for (int i=0; i<=htmp->GetNbinsX(); i++) 
@@ -44,23 +46,23 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    // eff_Pyquen->SetPassedHistogram(*htmp,"");
 
    // axes
-   TString xtitle; double xmin, xmax;
+   TString xtitle; double x_min=0, x_max=0;
    if (variable=="Mass") {
       xtitle="Gen-Level Dimuon Mass (post-FSR) [GeV]";
-      xmin=15.;
-      xmax=600.;
+      x_min=15.;
+      x_max=600.;
    } else if (variable.Contains("Pt")) {
       xtitle="Gen-Level Dimuon p_{T} (post-FSR) [GeV]";
-      xmin=0.3;
-      xmax=600.;
+      x_min=0.3;
+      x_max=600.;
    } else if (variable.Contains("Rap")) {
       xtitle="Gen-Level Dimuon y_{CM} (post-FSR)";
-      xmin=-2.87;
-      xmax=1.93;
+      x_min=-2.87;
+      x_max=1.93;
    } else if (variable.Contains("Phistar")) {
       xtitle="Gen-Level Dimuon #phi^{*} (post-FSR)";
-      xmin=0.002;
-      xmax=3.277;
+      x_min=0.002;
+      x_max=3.277;
    }
 
    double xl1=0.6,yl1=0.35,xl2=0.9,yl2=0.55;
@@ -71,7 +73,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cEffRoch("comp_eff_momcor_"+variable,xtitle,"Efficiency");
    if (!variable.Contains("Rap")) cEffRoch.SetLogx();
    cEffRoch.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cEffRoch.SetXRange(xmin,xmax);
+   cEffRoch.SetXRange(x_min,x_max);
    cEffRoch.SetYRange(0.5,1.05);
    cEffRoch.SetRatioRange(0.95,1.05);
    cEffRoch.CanvasWithGraphRatioPlot(eff_momcor->CreateGraph(),eff_nom->CreateGraph(),"No mom. corr.","Mom. corr. B-H","No mom. corr. / corr. B-H");
@@ -82,7 +84,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cAccrew("comp_acc_rew_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccrew.SetLogx();
    cAccrew.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cAccrew.SetXRange(xmin,xmax);
+   cAccrew.SetXRange(x_min,x_max);
    cAccrew.SetYRange(1e-3,1.1);
    cAccrew.SetRatioRange(0.95,1.05);
    cAccrew.CanvasWithGraphRatioPlot(acc_norew->CreateGraph(),acc_nom->CreateGraph(),"No HF rew","HF both","No HF rew / HF both");
@@ -91,7 +93,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cEffrew("comp_eff_rew_"+variable,xtitle,"Efficiency");
    if (!variable.Contains("Rap")) cEffrew.SetLogx();
    cEffrew.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cEffrew.SetXRange(xmin,xmax);
+   cEffrew.SetXRange(x_min,x_max);
    cEffrew.SetYRange(0.5,1.05);
    cEffrew.SetRatioRange(0.95,1.05);
    cEffrew.CanvasWithGraphRatioPlot(eff_norew->CreateGraph(),eff_nom->CreateGraph(),"No HF rew","HF both","No HF rew / HF both");
@@ -101,7 +103,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cAccbeam("comp_acc_beamdir_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccbeam.SetLogx();
    cAccbeam.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cAccbeam.SetXRange(xmin,xmax);
+   cAccbeam.SetXRange(x_min,x_max);
    cAccbeam.SetYRange(1e-3,1.1);
    cAccbeam.SetRatioRange(0.95,1.05);
    cAccbeam.CanvasWithThreeGraphsRatioPlot(acc_pPb->CreateGraph(),acc_Pbp->CreateGraph(),acc_nom->CreateGraph(),"pPb","Pbp","pPb+Pbp","pPb or Pbp / pPb+Pbp");
@@ -110,7 +112,7 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cEffbeam("comp_eff_beamdir_"+variable,xtitle,"Efficiency");
    if (!variable.Contains("Rap")) cEffbeam.SetLogx();
    cEffbeam.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cEffbeam.SetXRange(xmin,xmax);
+   cEffbeam.SetXRange(x_min,x_max);
    cEffbeam.SetYRange(0.5,1.05);
    cEffbeam.SetRatioRange(0.95,1.05);
    cEffbeam.CanvasWithThreeGraphsRatioPlot(eff_pPb->CreateGraph(),eff_Pbp->CreateGraph(),eff_nom->CreateGraph(),"pPb","Pbp","pPb+Pbp","pPb or Pbp / pPb+Pbp");
@@ -120,20 +122,30 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
    MyCanvas cAccgenerator("comp_acc_generator_"+variable,xtitle,"Acceptance");
    if (!variable.Contains("Rap")) cAccgenerator.SetLogx();
    cAccgenerator.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cAccgenerator.SetXRange(xmin,xmax);
+   cAccgenerator.SetXRange(x_min,x_max);
    cAccgenerator.SetYRange(1e-3,1.1);
-   cAccgenerator.SetRatioRange(0.95,1.05);
+   cAccgenerator.SetRatioRange(0.8,1.2);
    cAccgenerator.CanvasWithGraphRatioPlot(acc_Pyquen->CreateGraph(),acc_nom->CreateGraph(),"Pyquen","Powheg","Pyquen / Powheg");
    cAccgenerator.PrintCanvas();
 
    MyCanvas cEffgenerator("comp_eff_generator_"+variable,xtitle,"Efficiency");
    if (!variable.Contains("Rap")) cEffgenerator.SetLogx();
    cEffgenerator.SetLegendPosition(xl1,yl1,xl2,yl2);
-   cEffgenerator.SetXRange(xmin,xmax);
+   cEffgenerator.SetXRange(x_min,x_max);
    cEffgenerator.SetYRange(0.5,1.05);
-   cEffgenerator.SetRatioRange(0.95,1.05);
+   cEffgenerator.SetRatioRange(0.8,1.2);
    cEffgenerator.CanvasWithGraphRatioPlot(eff_Pyquen->CreateGraph(),eff_nom->CreateGraph(),"Pyquen","Powheg","Pyquen / Powheg");
    cEffgenerator.PrintCanvas();
+
+   // no iso
+   MyCanvas cEffnoiso("comp_eff_noiso_"+variable,xtitle,"Efficiency");
+   if (!variable.Contains("Rap")) cEffnoiso.SetLogx();
+   cEffnoiso.SetLegendPosition(xl1,yl1,xl2,yl2);
+   cEffnoiso.SetXRange(x_min,x_max);
+   cEffnoiso.SetYRange(0.5,1.05);
+   cEffnoiso.SetRatioRange(0.8,1.2);
+   cEffnoiso.CanvasWithGraphRatioPlot(eff_noiso->CreateGraph(),eff_nom->CreateGraph(),"No isolation","Isolation","no iso / iso");
+   cEffnoiso.PrintCanvas();
 }
 
 void setStyle(TEfficiency *e, Color_t color, Style_t markerstyle) {
