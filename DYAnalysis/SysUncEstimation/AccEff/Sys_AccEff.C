@@ -2,6 +2,7 @@
 #include "../../Include/MyCanvas.C"
 #include "../../Include/texUtils.h"
 #include "../../Include/lhapdf_utils.h"
+#include "../../Include/PlotTools.h"
 #include "../syst.C"
 
 #include "TFile.h"
@@ -18,6 +19,8 @@ using DYana::var;
 // [1] gSystem->Load("/dir/to/lhapdf/lib/libLHAPDF.so");
 // .L AccEff/Sys_AccEff.C+
 
+void checkNumDen(TH1 *hnum, TH1 *hden);
+
 TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin = TFile::Open(file);
 
@@ -29,7 +32,7 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    int idx[7] = {0, 8, 4, 6, 3, 2, 1}; // muR, muF = (1, 1), (0.5, 0.5), (2, 2), (0.5, 1), (2, 1), (1, 0.5), (1, 2)
    const char* gn[7] = {"(1,1)", "(0.5,0.5)", "(2,2)", "(0.5,1)", "(2,1)", "(1,0.5)", "(1,2)"};
    MyCanvas c1(Form("AccEff/AccEff_scales_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<7; i++) {
       hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
@@ -38,10 +41,13 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
       hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
+   checkNumDen(hAccPass[0],hAccTotal[0]);
    gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
    gAcc->SetName("gAcc_scales");
+   checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff->SetName("gEff_scales");
+   checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff->SetName("gAccEff_scales");
    gAccEffs.push_back(gAccEff);
@@ -52,8 +58,11 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    mcor.push_back(TMatrixT<double>(nbins,nbins));
 
    for (int i=1; i<7; i++) {
+      checkNumDen(hAccPass[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
+      checkNumDen(hEffPass_Corr_tnp[i],hEffTotal[i]);
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
+      checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
@@ -142,7 +151,7 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    int idx[3] = {0, 168, 169}; // nominal, 0.117, 0.119 
    const char* gn[3] = {"#alpha_{S}=0.118","#alpha_{S}=0.117","#alpha_{S}=0.119"};
    MyCanvas c1(Form("AccEff/AccEff_alphas_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<3; i++) {
       hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
@@ -151,10 +160,13 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
       hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
+   checkNumDen(hAccPass[0],hAccTotal[0]);
    gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
    gAcc->SetName("gAcc_alphas");
+   checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff->SetName("gEff_alphas");
+   checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff->SetName("gAccEff_alphas");
    gAccEffs.push_back(gAccEff);
@@ -165,8 +177,11 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    mcor.push_back(TMatrixT<double>(nbins,nbins));
 
    for (int i=1; i<3; i++) {
+      checkNumDen(hAccPass[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
+      checkNumDen(hEffPass_Corr_tnp[i],hEffTotal[i]);
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
+      checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
@@ -260,7 +275,7 @@ TH2D* Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    vector<TH1D*> hAcc, hEff, hAccEff;
    vector<TString> histNames;
    MyCanvas c1(Form("AccEff/AccEff_EPPS16_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    int i=0;
    hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
@@ -322,7 +337,7 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
 
    const char* gn[2] = {"Nominal", "No p_{T}^{Z} reweighting"};
    MyCanvas c1(Form("AccEff/AccEff_Zpt_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    hAccTotal.push_back((TH1D*) fin[0]->Get(Form("h_%s_AccTotal0",varname(thevar))));
    hAccPass.push_back((TH1D*) fin[0]->Get(Form("h_%s_AccPass0",varname(thevar))));
@@ -333,10 +348,13 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
    hEffTotal.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffTotal",varname(thevar))));
    hEffPass_Corr_tnp.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
 
+   checkNumDen(hAccPass[0],hAccTotal[0]);
    gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
    gAcc->SetName("gAcc_Zpt");
+   checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff->SetName("gEff_Zpt");
+   checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff->SetName("gAccEff_Zpt");
    gAccEffs.push_back(gAccEff);
@@ -348,8 +366,11 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
          nbins,hEffPass_Corr_tnp[0]->GetXaxis()->GetXbins()->GetArray());
 
    int i=1;
+   checkNumDen(hAccPass[i],hAccTotal[i]);
    TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
+   checkNumDen(hEffPass_Corr_tnp[i],hEffTotal[i]);
    TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
+   checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
    TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
    gAccEffs.push_back(gAccEffTmp);
    graphNames.push_back(gn[i]);
@@ -599,7 +620,7 @@ void Sys_AccEff(const char* file, var thevar) {
 
 
    MyCanvas c1(Form("systematics_AccEff_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
    if (thevar==var::phistar) c1.SetYRange(0,6);
    c1.CanvasWithMultipleGraphs(graphs,tags, "LP");
    c1.PrintCanvas();
@@ -610,5 +631,21 @@ void Sys_AccEff(const char* file) {
    for (int i=0; i<var::ALLvar; i++) {
       var thevar_i = static_cast<var>(i);
       Sys_AccEff(file,thevar_i);
+   }
+}
+
+void checkNumDen(TH1 *hnum, TH1 *hden) {
+   // helper function in case some bin contents are higher in the numerator than denominator
+   if (hnum->GetNbinsX() != hden->GetNbinsX()) {
+      cout << "ERROR: " << hnum->GetName() << " and " << hden->GetName() << " have different numbers of bins." << endl;
+      return;
+   }
+
+   for (int i=0; i<= hnum->GetNbinsX()+1; i++) {
+      if (hnum->GetBinContent(i) > hden->GetBinContent(i)) {
+         cout << "WARNING: " << hnum->GetName() << "(" << i << ") > " << hden->GetName() << "(" << i << ")" << endl;
+         hnum->SetBinContent(i,hden->GetBinContent(i));
+         hnum->SetBinError(i,hden->GetBinError(i));
+      }
    }
 }

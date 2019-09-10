@@ -20,13 +20,13 @@
 #include <vector>
 
 // -- for Rochester Muon momentum correction -- //
-#include <Include/roccor.2016.v3/RoccoR.cc>
+#include "../Include/roccor.2016.v3/RoccoR.cc"
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <Include/tnp_weight.h>
-#include <BkgEst/interface/defs.h>
-#include <HIstuff/HFweight.h>
+#include "../Include/DYAnalyzer.h"
+#include "../Include/tnp_weight.h"
+#include "../BkgEst/interface/defs.h"
+#include "../HIstuff/HFweight.h"
 
 using namespace DYana;
 
@@ -59,7 +59,7 @@ int tnpregtrg(int ireg, float eta, int ivar) {
 }
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, bool zptrew = true  ) // run: 0=all, 1=pPb, 2=PbP
+void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool doHFrew = true, HFweight::HFside rewmode = HFweight::HFside::both, int cor_s=0, int cor_m=0, bool zptrew = true ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -69,7 +69,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 	if( isCorrected == kTRUE )
 	{
 		cout << "Apply Roochester Muon Momentum Correction..." << endl;
-		isApplyMomCorr = "MomCorr";
+      cout << "Using s = " << cor_s << ", m = " << cor_m << endl;
+		isApplyMomCorr = Form("MomCorr%d%d",cor_s,cor_m);
 	}
 	else
 	{
@@ -101,28 +102,38 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_phistar_AccTotal[nweights];
    TH1D* h_rap1560_AccTotal[nweights];
    TH1D* h_rap60120_AccTotal[nweights];
+   TH1D* h_pt1560_AccTotal[nweights];
+   TH1D* h_phistar1560_AccTotal[nweights];
    TH1D* h_mass_AccPass[nweights];
    TH1D* h_pt_AccPass[nweights];
    TH1D* h_phistar_AccPass[nweights];
    TH1D* h_rap1560_AccPass[nweights];
    TH1D* h_rap60120_AccPass[nweights];
+   TH1D* h_pt1560_AccPass[nweights];
+   TH1D* h_phistar1560_AccPass[nweights];
    
    TH1D* h_mass_EffTotal[nweights];
    TH1D* h_pt_EffTotal[nweights];
    TH1D* h_phistar_EffTotal[nweights];
    TH1D* h_rap1560_EffTotal[nweights];
    TH1D* h_rap60120_EffTotal[nweights];
+   TH1D* h_pt1560_EffTotal[nweights];
+   TH1D* h_phistar1560_EffTotal[nweights];
    TH1D* h_mass_EffPass[nweights];
    TH1D* h_pt_EffPass[nweights];
    TH1D* h_phistar_EffPass[nweights];
    TH1D* h_rap1560_EffPass[nweights];
    TH1D* h_rap60120_EffPass[nweights];
+   TH1D* h_pt1560_EffPass[nweights];
+   TH1D* h_phistar1560_EffPass[nweights];
 
    TH1D* h_mass_EffPass_Corr_tnp[nweights];
    TH1D* h_pt_EffPass_Corr_tnp[nweights];
    TH1D* h_phistar_EffPass_Corr_tnp[nweights];
    TH1D* h_rap1560_EffPass_Corr_tnp[nweights];
    TH1D* h_rap60120_EffPass_Corr_tnp[nweights];
+   TH1D* h_pt1560_EffPass_Corr_tnp[nweights];
+   TH1D* h_phistar1560_EffPass_Corr_tnp[nweights];
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
@@ -134,6 +145,10 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_rap1560_AccPass[i] = new TH1D(Form("h_rap1560_AccPass%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap60120_AccTotal[i] = new TH1D(Form("h_rap60120_AccTotal%d",i), "", rapbinnum_60120, rapbin_60120);
       h_rap60120_AccPass[i] = new TH1D(Form("h_rap60120_AccPass%d",i), "", rapbinnum_60120, rapbin_60120);
+      h_pt1560_AccTotal[i] = new TH1D(Form("h_pt1560_AccTotal%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_pt1560_AccPass[i] = new TH1D(Form("h_pt1560_AccPass%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_phistar1560_AccTotal[i] = new TH1D(Form("h_phistar1560_AccTotal%d",i), "", phistarnum_1560, phistarbin_1560);
+      h_phistar1560_AccPass[i] = new TH1D(Form("h_phistar1560_AccPass%d",i), "", phistarnum_1560, phistarbin_1560);
 
       h_mass_EffPass[i] = new TH1D(Form("h_mass_EffPass%d",i), "", binnum, bins);	 
       h_mass_EffTotal[i] = new TH1D(Form("h_mass_EffTotal%d",i), "", binnum, bins);
@@ -145,12 +160,18 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_rap1560_EffTotal[i] = new TH1D(Form("h_rap1560_EffTotal%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap60120_EffPass[i] = new TH1D(Form("h_rap60120_EffPass%d",i), "", rapbinnum_60120, rapbin_60120);	 
       h_rap60120_EffTotal[i] = new TH1D(Form("h_rap60120_EffTotal%d",i), "", rapbinnum_60120, rapbin_60120);
+      h_pt1560_EffPass[i] = new TH1D(Form("h_pt1560_EffPass%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);	 
+      h_pt1560_EffTotal[i] = new TH1D(Form("h_pt1560_EffTotal%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_phistar1560_EffPass[i] = new TH1D(Form("h_phistar1560_EffPass%d",i), "", phistarnum_1560, phistarbin_1560);	 
+      h_phistar1560_EffTotal[i] = new TH1D(Form("h_phistar1560_EffTotal%d",i), "", phistarnum_1560, phistarbin_1560);
 
       h_mass_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass_EffPass_Corr_tnp%d",i), "", binnum, bins);
       h_pt_EffPass_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_Corr_tnp%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_EffPass_Corr_tnp[i] = new TH1D(Form("h_phistar_EffPass_Corr_tnp%d",i), "", phistarnum, phistarbin);
       h_rap1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap1560_EffPass_Corr_tnp%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap60120_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap60120_EffPass_Corr_tnp%d",i), "", rapbinnum_60120, rapbin_60120);
+      h_pt1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_pt1560_EffPass_Corr_tnp%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_phistar1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_phistar1560_EffPass_Corr_tnp%d",i), "", phistarnum_1560, phistarbin_1560);
    }
 
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
@@ -158,7 +179,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -301,6 +322,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                   h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
                } else if (gen_M>15 && gen_M<60) {
                   h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
+                  h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
+                  h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
                }
                if( Flag_PassAcc == kTRUE ) 
                {
@@ -311,6 +334,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                      h_rap60120_AccPass[iwt]->Fill( gen_Rap, wt );
                   } else if (gen_M>15 && gen_M<60) {
                      h_rap1560_AccPass[iwt]->Fill( gen_Rap, wt );
+                     h_pt1560_AccPass[iwt]->Fill( gen_Pt, wt );
+                     h_phistar1560_AccPass[iwt]->Fill( gen_Phistar, wt );
                   }
                }
             }
@@ -336,8 +361,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                      if( isCorrected == kTRUE )
                      {
                         float qter = 1.0;
-                        int s=0, m=0; // nominal
-                        // int s=7, m=6; // Run2016H only
+                        int s=cor_s, m=cor_m;
 
                         if( Tag[i_tup] == "Data" )
                            // careful, need to switch back eta to the lab frame
@@ -404,6 +428,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                      h_rap60120_EffTotal[iwt]->Fill( gen_Rap, wt * PUWeight );
                   } else if (gen_M>15 && gen_M<60) {
                      h_rap1560_EffTotal[iwt]->Fill( gen_Rap, wt * PUWeight );
+                     h_pt1560_EffTotal[iwt]->Fill( gen_Pt, wt * PUWeight );
+                     h_phistar1560_EffTotal[iwt]->Fill( gen_Phistar, wt * PUWeight );
                   }
                }
 					if( Flag_PassEff == kTRUE)
@@ -421,6 +447,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                         h_rap60120_EffPass[iwt]->Fill( gen_Rap, wt * PUWeight );
                      } else if (gen_M>15 && gen_M<60) {
                         h_rap1560_EffPass[iwt]->Fill( gen_Rap, wt * PUWeight );
+                        h_pt1560_EffPass[iwt]->Fill( gen_Pt, wt * PUWeight );
+                        h_phistar1560_EffPass[iwt]->Fill( gen_Phistar, wt * PUWeight );
                      }
                   }
 
@@ -436,13 +464,13 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                   // add trg... careful!
                   double sf_trg;
                   if (pt2>=15. && pt1>=15.) { // both muons could trigger
-                     double eff_data = (1 - (1 - tnp_weight_trg_ppb(eta1,200)*tnp_weight_trg_ppb(eta1,0)/tnp_weight_trg_ppb(eta1,0)) * (1 - tnp_weight_trg_ppb(eta2,200)*tnp_weight_trg_ppb(eta2,0)/tnp_weight_trg_ppb(eta2,0)) );
-                     double eff_mc = (1 - (1 - tnp_weight_trg_ppb(eta1,300)) * (1 - tnp_weight_trg_ppb(eta2,300)) );
+                     double eff_data = (1 - (1 - tnp_weight_L3Mu12_ppb(eta1,200)*tnp_weight_L3Mu12_ppb(eta1,0)/tnp_weight_L3Mu12_ppb(eta1,0)) * (1 - tnp_weight_L3Mu12_ppb(eta2,200)*tnp_weight_L3Mu12_ppb(eta2,0)/tnp_weight_L3Mu12_ppb(eta2,0)) );
+                     double eff_mc = (1 - (1 - tnp_weight_L3Mu12_ppb(eta1,300)) * (1 - tnp_weight_L3Mu12_ppb(eta2,300)) );
                      sf_trg = eff_data/eff_mc;
                   } else if (pt1<15) {
-                     sf_trg = tnp_weight_trg_ppb(eta2,0);
+                     sf_trg = tnp_weight_L3Mu12_ppb(eta2,0);
                   } else if (pt2<15) {
-                     sf_trg = tnp_weight_trg_ppb(eta1,0);
+                     sf_trg = tnp_weight_L3Mu12_ppb(eta1,0);
                   }
                   TnpWeight = TnpWeight * sf_trg;
 
@@ -459,6 +487,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                         h_rap60120_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, wt * PUWeight * TnpWeight );
                      } else if (gen_M>15 && gen_M<60) {
                         h_rap1560_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, wt * PUWeight * TnpWeight );
+                        h_pt1560_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, wt * PUWeight * TnpWeight );
+                        h_phistar1560_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, wt * PUWeight * TnpWeight );
                      }
                   } 
 					}
@@ -493,6 +523,10 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_rap1560_AccPass[i]->Write();
       h_rap60120_AccTotal[i]->Write();
       h_rap60120_AccPass[i]->Write();
+      h_pt1560_AccTotal[i]->Write();
+      h_pt1560_AccPass[i]->Write();
+      h_phistar1560_AccTotal[i]->Write();
+      h_phistar1560_AccPass[i]->Write();
       h_mass_EffTotal[i]->Write();
       h_mass_EffPass[i]->Write();
       h_pt_EffTotal[i]->Write();
@@ -501,6 +535,10 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar_EffPass[i]->Write();
       h_rap1560_EffTotal[i]->Write();
       h_rap1560_EffPass[i]->Write();
+      h_pt1560_EffTotal[i]->Write();
+      h_pt1560_EffPass[i]->Write();
+      h_phistar1560_EffTotal[i]->Write();
+      h_phistar1560_EffPass[i]->Write();
       h_rap60120_EffTotal[i]->Write();
       h_rap60120_EffPass[i]->Write();
       h_mass_EffPass_Corr_tnp[i]->Write();
@@ -508,6 +546,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar_EffPass_Corr_tnp[i]->Write();
       h_rap1560_EffPass_Corr_tnp[i]->Write();
       h_rap60120_EffPass_Corr_tnp[i]->Write();
+      h_pt1560_EffPass_Corr_tnp[i]->Write();
+      h_phistar1560_EffPass_Corr_tnp[i]->Write();
    }
 
 
