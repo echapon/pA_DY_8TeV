@@ -84,7 +84,7 @@ void plotSysts_tnp(var thevar, bool plotabs=false) {
 
    MyCanvas c1(Form("systematics_tnp_%s_%s",plotabs ? "abs" : "rel",varname(thevar)),xaxistitle(thevar),plotabs ? "Abs. uncertainty" : "Rel. uncertainty (%)",800,800);
    c1.SetLegendPosition(0.65,0.69,0.95,0.93);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
    c1.CanvasWithMultipleGraphs(graphs,tags, plotboxes ? "5" : "LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
