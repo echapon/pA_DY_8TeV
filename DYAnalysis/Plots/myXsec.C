@@ -46,7 +46,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
       const char* accefffile="ROOTFile_Histogram_Acc_Eff_MomCorr_Powheg_PAL3Mu12_0_rewboth.root",// acceptance and efficiency
       const char* outputfile="Plots/results/xsec_nom_detcor_FSRcor.root",                        // where to write the output xsec
       bool forsyst=false,                                        // if true, don't print canvases and tables
-      bool doxsec=true) {                                        // if false, don't do dxsec/dxxx, just correct for acc eff
+      bool doxsec=true,                                          // if false, don't do dxsec/dxxx, just correct for acc eff
+      bool correctforacc=true) {                                 // if flase, do not correct for acceptance, only efficiency
    TFile *fy = TFile::Open(datafile);
    TFile *fae = TFile::Open(accefffile);
 
@@ -88,7 +89,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
             bin thebin;
             thebin.first = hy->GetBinLowEdge(i+1);
             thebin.second = thebin.first + hy->GetBinWidth(i+1);
-            double val = hy->GetBinContent(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+            double ae = (correctforacc) ? ga->GetY()[i]*ge->GetY()[i] : ge->GetY()[i];
+            double val = hy->GetBinContent(i+1)/ae;
             double errl,errh;
             double errl_stat,errh_stat;
             // cout << hy->GetBinError(i+1)/hy->GetBinContent(i+1) << " ";
@@ -109,7 +111,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
                   + pow(thesyst[thebin].value,2) // other systs
                   );
             errh = errh * val;
-            errl_stat = hy->GetBinError(i+1)/(ga->GetY()[i]*ge->GetY()[i]);
+            errl_stat = hy->GetBinError(i+1)/ae;
             errh_stat = errl_stat;
 
             gres->SetPoint(i,hy->GetBinCenter(i+1),val);
@@ -160,12 +162,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
          xtitle_tex = "\\mmumu (\\GeVcc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeVcc)";
          logx= true; logy=true;
-      } else if (thevar==pt) {
+      } else if (thevar==pt || thevar==pt1560) {
          ytitle = "d#sigma/dp_{T} [nb/GeV/c]";
          xtitle_tex = "\\pt (\\GeVc)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeVc)";
          logx = true; logy=true;
-      } else if (thevar==phistar) {
+      } else if (thevar==phistar || thevar==phistar1560) {
          ytitle = "d#sigma/d#phi^{*} [nb]";
          xtitle_tex = "\\phistar";
          ytitle_tex = "$\\dd\\sigma/\\dd\\phistar$ (nb)";
@@ -197,16 +199,17 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
       TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
       vector<TH1D*> hth_EPPS16;
       int i=0;
-      hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      const char* acceffstr = (correctforacc) ? "AccTotal_pre" : "AccPass";
+      hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
       hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
       Obtain_dSigma_dX(hth_EPPS16.back());
       for (i=285; i<=324; i++) {
-         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_EPPS16.back());
       }
       for (i=112; i<=167; i++) {
-         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_EPPS16.back());
       }
@@ -219,11 +222,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
       TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
       vector<TH1D*> hth_CT14;
       i=0;
-      hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+      hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
       hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
       Obtain_dSigma_dX(hth_CT14.back());
       for (i=112; i<=167; i++) {
-         hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_AccTotal_pre%d",varname(thevar),i)));
+         hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_CT14.back());
       }
@@ -235,7 +238,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
 
       if (!forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
-         if (thevar==var::pt || thevar==var::phistar) {
+         if (thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
             fixXaxis(gth_CT14);
             fixXaxis(gth_EPPS16);
             fixXaxis(gres);
