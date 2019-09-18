@@ -256,9 +256,11 @@ void applyFR(SampleTag index) {
       for(unsigned j=0; j!=event->muons.size(); j++) {
          PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
          if( mu_->tightMuonID() && mu_->acceptance(cuts::ptmin2,cuts::etamax) ) {
+         // if( mu_->looseMuonID() && mu_->acceptance(cuts::ptmin2,cuts::etamax) ) { // ARC CHECK
             if( mu_->pt > cuts::ptmin1 ) leading = true;
 
             if( mu_->trkisolation(cuts::isomax) ) passingMuons->push_back({*mu_,j});
+            // if( mu_->trkisolation(cuts::isomax) && mu_->tightMuonID() ) passingMuons->push_back({*mu_,j}); // ARC CHECK
             else failingMuons->push_back({*mu_,j});        
          }
       }

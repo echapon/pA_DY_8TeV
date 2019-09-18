@@ -8,8 +8,11 @@
 #include <iostream>
 
 namespace fr {
-  const char* fakeratefile_templates = "/afs/cern.ch/work/h/hckim/public/ForEmilien_20190506_v2/input/estimateFRinput/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12_beforeCor.root";
+  // const char* fakeratefile_templates = "/afs/cern.ch/work/h/hckim/public/ForEmilien_20190506_v2/input/estimateFRinput/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12_beforeCor.root";
+  // const char* fakeratefile_templates = "/afs/cern.ch/work/h/hckim/public/ForEmilien_20190514/FRfinal/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12.root";
+  const char* fakeratefile_templates = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_HCK_v20190918/fakerate_QCDopt3_ptincl_correctedFR.root";
   const char* fakeratefile_dataMC = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_Emilien_20190508/FRhistos_2muSS.root";
+  // const char* fakeratefile_dataMC = "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate_Emilien/FRhistos_2muSS.root"; // ARC CHECK
 
    TH1D gFR_template_barrel;
    TH1D gFR_template_endcap;
@@ -45,7 +48,7 @@ double FR_template(PhysicsMuon muon){
    else hFR_temp = &gFR_template_endcap;
 
    int ibin = hFR_temp->FindBin(pT);
-   while (fakerate <= 0.) { // this is to avoid 0 fakerate in the high pt bins in some cases: look for the closest lower pt bin with nonzero fakerate
+   while (fakerate <= 0. || fakerate >= 0.95) { // this is to avoid buggy fakerate in the high pt bins in some cases: look for the closest lower pt bin with nonzero fakerate
       fakerate = hFR_temp->GetBinContent(ibin);
       ibin--;
    }
@@ -65,7 +68,7 @@ double FR_ratio(PhysicsMuon muon){
    else hFR_temp = &gFR_xsec_endcap;
 
    int ibin = hFR_temp->FindBin(pT);
-   while (fakerate <= 0.) { // this is to avoid 0 fakerate in the high pt bins in some cases: look for the closest lower pt bin with nonzero fakerate
+   while (fakerate <= 0. || fakerate >= 0.95) { // this is to avoid buggy fakerate in the high pt bins in some cases: look for the closest lower pt bin with nonzero fakerate
       fakerate = hFR_temp->GetBinContent(ibin);
       ibin--;
    }
