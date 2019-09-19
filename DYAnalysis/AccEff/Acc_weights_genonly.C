@@ -20,9 +20,9 @@
 #include <vector>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <Include/tnp_weight.h>
-#include <BkgEst/interface/defs.h>
+#include "../Include/DYAnalyzer.h"
+#include "../Include/tnp_weight.h"
+#include "../BkgEst/interface/defs.h"
 
 using namespace DYana;
 
@@ -49,21 +49,29 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_phistar_AccTotal[nweights];
    TH1D* h_rap1560_AccTotal[nweights];
    TH1D* h_rap60120_AccTotal[nweights];
+   TH1D* h_pt1560_AccTotal[nweights];
+   TH1D* h_phistar1560_AccTotal[nweights];
    TH1D* h_mass_AccTotal_pre[nweights];
    TH1D* h_pt_AccTotal_pre[nweights];
    TH1D* h_phistar_AccTotal_pre[nweights];
    TH1D* h_rap1560_AccTotal_pre[nweights];
    TH1D* h_rap60120_AccTotal_pre[nweights];
+   TH1D* h_pt1560_AccTotal_pre[nweights];
+   TH1D* h_phistar1560_AccTotal_pre[nweights];
    TH1D* h_mass_AccTotal_post[nweights];
    TH1D* h_pt_AccTotal_post[nweights];
    TH1D* h_phistar_AccTotal_post[nweights];
    TH1D* h_rap1560_AccTotal_post[nweights];
    TH1D* h_rap60120_AccTotal_post[nweights];
+   TH1D* h_pt1560_AccTotal_post[nweights];
+   TH1D* h_phistar1560_AccTotal_post[nweights];
    TH1D* h_mass_AccPass[nweights];
    TH1D* h_pt_AccPass[nweights];
    TH1D* h_phistar_AccPass[nweights];
    TH1D* h_rap1560_AccPass[nweights];
    TH1D* h_rap60120_AccPass[nweights];
+   TH1D* h_pt1560_AccPass[nweights];
+   TH1D* h_phistar1560_AccPass[nweights];
    
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
@@ -86,6 +94,14 @@ void Acc_weights_genonly(TString Sample)
       h_rap60120_AccTotal_pre[i] = new TH1D(Form("h_rap60120_AccTotal_pre%d",i), "", rapbinnum_60120, rapbin_60120);
       h_rap60120_AccTotal_post[i] = new TH1D(Form("h_rap60120_AccTotal_post%d",i), "", rapbinnum_60120, rapbin_60120);
       h_rap60120_AccPass[i] = new TH1D(Form("h_rap60120_AccPass%d",i), "", rapbinnum_60120, rapbin_60120);
+      h_pt1560_AccTotal[i] = new TH1D(Form("h_pt1560_AccTotal%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_pt1560_AccTotal_pre[i] = new TH1D(Form("h_pt1560_AccTotal_pre%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_pt1560_AccTotal_post[i] = new TH1D(Form("h_pt1560_AccTotal_post%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_pt1560_AccPass[i] = new TH1D(Form("h_pt1560_AccPass%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_phistar1560_AccTotal[i] = new TH1D(Form("h_phistar1560_AccTotal%d",i), "", phistarnum_1560, phistarbin_1560);
+      h_phistar1560_AccTotal_pre[i] = new TH1D(Form("h_phistar1560_AccTotal_pre%d",i), "", phistarnum_1560, phistarbin_1560);
+      h_phistar1560_AccTotal_post[i] = new TH1D(Form("h_phistar1560_AccTotal_post%d",i), "", phistarnum_1560, phistarbin_1560);
+      h_phistar1560_AccPass[i] = new TH1D(Form("h_phistar1560_AccPass%d",i), "", phistarnum_1560, phistarbin_1560);
    }
 
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
@@ -93,7 +109,7 @@ void Acc_weights_genonly(TString Sample)
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Loop for all samples -- //
 	const Int_t Ntup = ntupleDirectory.size();
@@ -265,6 +281,8 @@ void Acc_weights_genonly(TString Sample)
                   h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
                } else if (gen_M>15 && gen_M<60) {
                   h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
+                  h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
+                  h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
                }
                if( Flag_PassAcc == kTRUE ) 
                {
@@ -275,6 +293,8 @@ void Acc_weights_genonly(TString Sample)
                      h_rap60120_AccPass[iwt]->Fill( gen_Rap, wt );
                   } else if (gen_M>15 && gen_M<60) {
                      h_rap1560_AccPass[iwt]->Fill( gen_Rap, wt );
+                     h_pt1560_AccPass[iwt]->Fill( gen_Pt, wt );
+                     h_phistar1560_AccPass[iwt]->Fill( gen_Phistar, wt );
                   }
                }
 
@@ -285,6 +305,8 @@ void Acc_weights_genonly(TString Sample)
                   h_rap60120_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
                } else if (gen_M_pre>15 && gen_M_pre<60) {
                   h_rap1560_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
+                  h_pt1560_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
+                  h_phistar1560_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
                }
 
                h_mass_AccTotal_post[iwt]->Fill( gen_M_post, wt );
@@ -294,6 +316,8 @@ void Acc_weights_genonly(TString Sample)
                   h_rap60120_AccTotal_post[iwt]->Fill( gen_Rap_post, wt );
                } else if (gen_M_post>15 && gen_M_post<60) {
                   h_rap1560_AccTotal_post[iwt]->Fill( gen_Rap_post, wt );
+                  h_pt1560_AccTotal_post[iwt]->Fill( gen_Pt_post, wt );
+                  h_phistar1560_AccTotal_post[iwt]->Fill( gen_Phistar_post, wt );
                }
             }
          } // -- End of if( GenFlag == kTRUE )
@@ -334,6 +358,14 @@ void Acc_weights_genonly(TString Sample)
       h_rap60120_AccTotal_pre[i]->Write();
       h_rap60120_AccTotal_post[i]->Write();
       h_rap60120_AccPass[i]->Write();
+      h_pt1560_AccTotal[i]->Write();
+      h_pt1560_AccTotal_pre[i]->Write();
+      h_pt1560_AccTotal_post[i]->Write();
+      h_pt1560_AccPass[i]->Write();
+      h_phistar1560_AccTotal[i]->Write();
+      h_phistar1560_AccTotal_pre[i]->Write();
+      h_phistar1560_AccTotal_post[i]->Write();
+      h_phistar1560_AccPass[i]->Write();
    }
 
 

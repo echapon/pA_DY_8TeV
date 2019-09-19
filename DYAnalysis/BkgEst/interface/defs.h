@@ -13,6 +13,7 @@
 #include "samples_v20180111_negweights.h"
 #include "samples_v20180814.h"
 #include "samples_v20180814_Pyquen.h"
+#include "samples_v20180814_CT14.h"
 
 // UPDATED IN 2017
 // 1st part, PbP
