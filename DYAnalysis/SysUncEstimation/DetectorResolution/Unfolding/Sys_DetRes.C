@@ -17,8 +17,8 @@ void Sys_DetRes(var thevar) {
    const char* thevarname = varname(thevar);
 
    // Powheg vs Pyquen
-   TFile *fnom = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_0.root");
-   TFile *fpyq = TFile::Open("../ResponseMatrix/yields_detcor_Pyquen_MomCorr_0.root");
+   TFile *fnom = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr00_0.root");
+   TFile *fpyq = TFile::Open("../ResponseMatrix/yields_detcor_Pyquen_MomCorr00_0.root");
    TH1D *hnom = (TH1D*) fnom->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpyq = (TH1D*) fpyq->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
@@ -41,8 +41,8 @@ void Sys_DetRes(var thevar) {
    }
 
    // pPb vs PbP
-   TFile *fPbP = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_1.root");
-   TFile *fpPb = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr_2.root");
+   TFile *fPbP = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr00_1.root");
+   TFile *fpPb = TFile::Open("../ResponseMatrix/yields_detcor_Powheg_MomCorr00_2.root");
    TH1D *hPbP = (TH1D*) fPbP->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpPb = (TH1D*) fpPb->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
@@ -105,7 +105,7 @@ void Sys_DetRes(var thevar) {
    // MyCanvas c1(Form("systematics_UnfoldDetRes_%s",thevarname),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    TString cname(Form("systematics_UnfoldDetRes_%s",thevarname));
    MyCanvas c1(cname,xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
    c1.SetYRange(-2.9,2.9);
    c1.CanvasWithMultipleGraphs(graphs,ynames, "LPX");
    c1.PrintCanvas();
