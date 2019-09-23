@@ -83,3 +83,25 @@ void createSystAll(var thevar=mass) {
 
    createStat("../Plots/results/xsec_nom.root",thevar);
 }
+
+// create constant syst
+void createConstantSyst(const char* shortname, const char* header, double systvalue, var thevar) {
+   ofstream systfile(Form("csv/%s_%s.csv",shortname,varname(thevar)));
+   systfile << header << endl;
+
+   double* thebins = binsvar(thevar);
+
+   for (int i=0; i<nbinsvar(thevar); i++) {
+      systfile << thebins[i] << ", " << thebins[i+1] << ", " << systvalue << endl;
+   }
+
+   systfile.close();
+   cout << "closed " << Form("csv/%s_%s.csv",shortname,varname(thevar)) << endl;
+}
+
+void createConstantSystAll(const char* shortname, const char* header, double systvalue) {
+   for (int i=0; i<ALLvar; i++) {
+      DYana::var thevar_i = static_cast<DYana::var>(i);
+      createConstantSyst(shortname, header, systvalue, thevar_i);
+   }
+}
