@@ -226,6 +226,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       float vtxnormchi2; tr->Branch("vtxnormchi2",&vtxnormchi2,"vtxnormchi2/F");
       float vtxprob; tr->Branch("vtxprob",&vtxprob,"vtxprob/F");
       float hiHF; tr->Branch("hiHF",&hiHF,"hiHF/F");
+      float hiNtracks; tr->Branch("hiNtracks",&hiNtracks,"hiNtracks/F");
       float pfMET; tr->Branch("pfMET",&pfMET,"pfMET/F");
       float pfMETtype1; tr->Branch("pfMETtype1",&pfMETtype1,"pfMETtype1/F");
       int sign; tr->Branch("sign",&sign,"sign/I");
@@ -389,7 +390,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
             vector< Muon > SelectedMuonCollection;
             Bool_t isPassEventSelection = kFALSE;
-            if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
+            if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection); 
 
             Muon mu1;
             Muon mu2;
@@ -413,8 +414,10 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                         *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,aeta2,0);
                   } else if (HLTname.Contains("L3Mu12")) {
                      // L3Mu12 uses rel tk iso
-                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
-                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
+                     // TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
+                     //    *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,aeta2,0);
                   } else {
                      cerr << "ERROR trigger should be L1DoubleMuOpen or L3Mu12" << endl;
                      TnpWeight = 1.;
@@ -473,6 +476,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             }
             if (filltree && isPassEventSelection_noiso) {
                hiHF = ntuple->hiHF;
+               hiNtracks = ntuple->hiNtracks;
                pfMET = ntuple->pfMET_pT;
                pfMETtype1 = ntuple->pfMET_Type1_pT;
                mu1 = SelectedMuonCollection_noiso[0];

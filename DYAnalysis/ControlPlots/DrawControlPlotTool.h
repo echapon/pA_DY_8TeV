@@ -754,6 +754,15 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
    h_nonclosure_scale->Add(h_ZZWZ,-1);
    h_nonclosure_scale->Add(h_DYTauTau,-1);
    myDivide(h_nonclosure_scale,h_FR);
+
+   // protection: if there is no data, then set the nonclosure ratio to 1 +/- 1
+   for (int i=0; i<=h_nonclosure_scale->GetNbinsX()+1; i++) {
+      if (h_data->GetBinContent(i)<0.1) {
+         h_nonclosure_scale->SetBinContent(i,1);
+         h_nonclosure_scale->SetBinError(i,0.5);
+      }
+   }
+
    h_nonclosure_scale->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
 }
 
@@ -774,7 +783,9 @@ void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_b
 	TString HistoName = h_data->GetName();
 	HistoName.ReplaceAll("mass2", "mass_bkgsub");
 	HistoName.ReplaceAll("diPt2_M60to120", "pt_bkgsub");
+	HistoName.ReplaceAll("diPt2_M15to60", "pt1560_bkgsub");
 	HistoName.ReplaceAll("Phistar2_M60to120", "phistar_bkgsub");
+	HistoName.ReplaceAll("Phistar2_M15to60", "phistar1560_bkgsub");
 	HistoName.ReplaceAll("diRap2_M15to60", "rap1560_bkgsub");
 	HistoName.ReplaceAll("diRap2_M60to120", "rap60120_bkgsub");
 	HistoName.ReplaceAll("_Data", "_"+Type);
