@@ -11,10 +11,10 @@
 #include "TLegendEntry.h"
 #include "THStack.h"
 
-#include "BkgEst/interface/defs.h"
-#include "Include/tdrstyle.C"
-#include "Include/CMS_lumi.C"
-#include "Include/PlotTools.h"
+#include "../BkgEst/interface/defs.h"
+#include "../Include/tdrstyle.C"
+#include "../Include/CMS_lumi.C"
+#include "../Include/PlotTools.h"
 
 using namespace DYana;
 
@@ -54,7 +54,7 @@ void dataMC(var thevar)
    TopPad->SetFillColor(0);
    TopPad->SetBorderMode(0);
    TopPad->SetBorderSize(2);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       TopPad->SetLogx();
       TopPad->SetLogy();
    }
@@ -72,6 +72,7 @@ void dataMC(var thevar)
    TopPad->SetFrameBorderMode(0);
 
    TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_All.root",thevarname));
+   // TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_notnprew_All.root",thevarname));
    f1->cd();
 
    TH1D* h_data = (TH1D*) f1->Get("h_data");
@@ -99,7 +100,8 @@ void dataMC(var thevar)
    normBinWidth(h_diJet_FR);
 
    // if pt or phistar: need to fix the X axis so that we can see the first bin
-   if (TString(thevarname)=="pt" || TString(thevarname)=="phistar") {
+   if (TString(thevarname).Contains("pt") || TString(thevarname).Contains("phistar")
+         || TString(thevarname).Contains("pt1560") || TString(thevarname).Contains("phistar1560")) {
       fixXaxis(h_data);
       fixXaxis(h_SignalMC);
       fixXaxis(h_ttbar_emu);
@@ -162,7 +164,7 @@ void dataMC(var thevar)
    h_data->SetMarkerSize(1.0);
    h_data->GetXaxis()->SetTitle(thexaxistitle);
    // h_data->GetXaxis()->SetRange(1,43);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
       h_data->GetXaxis()->SetMoreLogLabels();
    }
    h_data->GetXaxis()->SetNoExponent();
@@ -171,7 +173,7 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
    if (thevar==var::mass) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
-   else if (thevar==var::pt) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
+   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
    else h_data->GetYaxis()->SetTitle("Entries / 1");
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035);
@@ -183,21 +185,27 @@ void dataMC(var thevar)
    h_data->GetZaxis()->SetTitleSize(0.035);
    h_data->GetZaxis()->SetTitleFont(42);
    double yaxismin = 0.001;
-   if (thevar == var::pt) yaxismin = 0.1;
-   else if (thevar == var::rap1560) {
+   if (thevar == var::pt) yaxismin = 0.01;
+   else if (thevar == var::pt1560) {
+      yaxismin = 0.0001;
+      h_data->SetMaximum(900);
+   } else if (thevar == var::rap1560) {
       yaxismin = 0;
       h_data->SetMaximum(1450);
    } else if (thevar == var::rap60120) {
       yaxismin = 0;
-      h_data->SetMaximum(7750);
+      h_data->SetMaximum(7950);
    } else if (thevar == var::phistar) {
       yaxismin = 1;
-      h_data->SetMaximum(2e5);
+      h_data->SetMaximum(5e5);
+   } else if (thevar == var::phistar1560) {
+      yaxismin = 1;
+      h_data->SetMaximum(5e5);
    }
    h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
-   if (thevar==var::pt) h_data->GetXaxis()->SetRangeUser(0.5,200);
-   if (thevar==var::phistar) h_data->GetXaxis()->SetRangeUser(0.005,3);
+   if (thevar==var::pt || thevar==var::pt1560) h_data->GetXaxis()->SetRangeUser(0.5,600);
+   if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetXaxis()->SetRangeUser(0.001,3.277);
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -246,7 +254,7 @@ void dataMC(var thevar)
    bottomPad->SetFillColor(0);
    bottomPad->SetBorderMode(0);
    bottomPad->SetBorderSize(2);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar)  bottomPad->SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560)  bottomPad->SetLogx();
    //bottomPad->SetGridx();
    //bottomPad->SetGridy();
    bottomPad->SetTickx(1);
@@ -271,7 +279,7 @@ void dataMC(var thevar)
    hratio->SetMarkerStyle(20);
    hratio->GetXaxis()->SetTitle(thexaxistitle);
    // hratio->GetXaxis()->SetRange(1,43);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar) hratio->GetXaxis()->SetMoreLogLabels();
+   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) hratio->GetXaxis()->SetMoreLogLabels();
    hratio->GetXaxis()->SetNoExponent();
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
@@ -291,8 +299,8 @@ void dataMC(var thevar)
    hratio->GetZaxis()->SetTitleSize(0.035);
    hratio->GetZaxis()->SetTitleFont(42);
    hratio->Draw("E1PL");
-   if (thevar==var::pt) hratio->GetXaxis()->SetRangeUser(0.5,200);
-   if (thevar==var::phistar) hratio->GetXaxis()->SetRangeUser(0.005,3);
+   if (thevar==var::pt || thevar==var::pt1560) hratio->GetXaxis()->SetRangeUser(0.5,600);
+   if (thevar==var::phistar || thevar==phistar1560) hratio->GetXaxis()->SetRangeUser(0.001,3.277);
    hratio->Draw("E1PL");
    
    TF1 *f_line1 = new TF1("f_line","1",-10000,10000);

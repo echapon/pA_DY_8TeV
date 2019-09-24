@@ -7,12 +7,12 @@
 #include <TStyle.h>
 #include <TFrame.h>
 
-#include "Include/tdrstyle.C"
-#include "Include/CMS_lumi.C"
-#include "Include/MyCanvas.C"
-#include "Include/lhapdf_utils.h"
-#include "Include/PlotTools.h"
-#include "SysUncEstimation/syst.C"
+#include "../Include/tdrstyle.C"
+#include "../Include/CMS_lumi.C"
+#include "../Include/MyCanvas.C"
+#include "../Include/lhapdf_utils.h"
+#include "../Include/PlotTools.h"
+#include "../SysUncEstimation/syst.C"
 
 const int rfb_rapbinnum_1560 = 5;
 const double rfb_rapbin_1560[rfb_rapbinnum_1560+1] = {0.0,0.4,0.8,1.2,1.6,1.93};
@@ -27,7 +27,7 @@ void Obtain_dSigma_dX(TH1D *h);
 
 using namespace std;
 
-void CompRFB (const char* infile="Plots/results/xsec_nom.root") {
+void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSRcor.root") {
    TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");

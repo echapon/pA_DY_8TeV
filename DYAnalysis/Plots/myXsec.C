@@ -42,8 +42,8 @@ void Obtain_dSigma_dX(TH1D *h){
 	}
 }
 
-void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",                           // data and bkg histos
-      const char* accefffile="ROOTFile_Histogram_Acc_Eff_MomCorr_Powheg_PAL3Mu12_0_rewboth.root",// acceptance and efficiency
+void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.root",                           // data and bkg histos
+      const char* accefffile="ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root",// acceptance and efficiency
       const char* outputfile="Plots/results/xsec_nom_detcor_FSRcor.root",                        // where to write the output xsec
       bool forsyst=false,                                        // if true, don't print canvases and tables
       bool doxsec=true,                                          // if false, don't do dxsec/dxxx, just correct for acc eff
@@ -59,7 +59,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
    // for (int ivar=0; ivar<pt; ivar++) { // only mass for now
       var thevar = static_cast<var>(ivar);
       // the systs
-      map<bin,syst> thesyst = readSyst_all(thevar,false,"","./");
+      map<bin,syst> thesyst = readSyst_all(thevar,false,"","./",!correctforacc);
 
       TH1D *hy = (TH1D*) fy->Get(Form("h_%s_bkgsub_DataDrivenBkg_All1",varname(thevar)));
       TH1D *hy_statonly;
@@ -182,7 +182,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
          ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
       }
 
-      MyCanvas c1(Form("Plots/results/plots/result_%s",varname(thevar)),xtitle,ytitle,lx,ly);
+      MyCanvas c1(Form("Plots/results/plots/result%s_%s",correctforacc ? "" : "_noacc",varname(thevar)),xtitle,ytitle,lx,ly);
       if (logx) c1.SetLogx();
       if (logy) c1.SetLogy(false);
 
@@ -238,6 +238,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
 
       if (!forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
+         if (!correctforacc && thevar==var::rap1560) c1.SetYRange(0,10);
+         if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,49);
          if (thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
             fixXaxis(gth_CT14);
             fixXaxis(gth_EPPS16);
@@ -251,9 +253,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_nom.root",          
          c1.PrintCanvas_C();
 
          // print graph
-         inittex(Form("Plots/results/tex/%s.tex",varname(thevar)),xtitle.Data(),ytitle.Data());
-         printGraph(gres_statonly,gres,Form("Plots/results/tex/%s.tex",varname(thevar)));
-         closetex(Form("Plots/results/tex/%s.tex",varname(thevar)));
+         inittex(Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"),xtitle.Data(),ytitle.Data());
+         printGraph(gres_statonly,gres,Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"));
+         closetex(Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"));
       }
 
 
