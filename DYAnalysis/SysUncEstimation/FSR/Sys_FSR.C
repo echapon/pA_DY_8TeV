@@ -17,8 +17,8 @@ void Sys_FSR(var thevar) {
    const char* thevarname = varname(thevar);
 
    // Powheg vs Pyquen
-   TFile *fnom = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr_0.root");
-   TFile *fpyq = TFile::Open("../FSRCorrection/xsec_FSRcor_Pyquen_MomCorr_0.root");
+   TFile *fnom = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.root");
+   TFile *fpyq = TFile::Open("../FSRCorrection/xsec_FSRcor_Pyquen_MomCorr00_0.root");
    TH1D *hnom = (TH1D*) fnom->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpyq = (TH1D*) fpyq->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
@@ -30,7 +30,7 @@ void Sys_FSR(var thevar) {
    map<bin,syst> systmod;
    for (int i=0; i<gmod->GetN(); i++) {
       syst thesyst;
-      thesyst.name = "Unfold (det.res., model)";
+      thesyst.name = "Unfold (FSR, model)";
       thesyst.value = gmod->GetY()[i]/100.;
       double x = gmod->GetX()[i];
       double xmin = x-gmod->GetEXlow()[i];
@@ -41,8 +41,8 @@ void Sys_FSR(var thevar) {
    }
 
    // pPb vs PbP
-   TFile *fPbP = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr_1.root");
-   TFile *fpPb = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr_2.root");
+   TFile *fPbP = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_1.root");
+   TFile *fpPb = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_2.root");
    TH1D *hPbP = (TH1D*) fPbP->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    TH1D *hpPb = (TH1D*) fpPb->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
    
@@ -55,7 +55,7 @@ void Sys_FSR(var thevar) {
    map<bin,syst> systrun;
    for (int i=0; i<grun->GetN(); i++) {
       syst thesyst;
-      thesyst.name = "Unfold (det.res., pPb/PbP)";
+      thesyst.name = "Unfold (FSR, pPb/PbP)";
       thesyst.value = grun->GetY()[i]/100.;
       double x = grun->GetX()[i];
       double xmin = x-grun->GetEXlow()[i];
@@ -73,7 +73,7 @@ void Sys_FSR(var thevar) {
 
    // print the csv
    ofstream of_syst(Form("csv/FSRUnfold_%s.csv",thevarname));
-   of_syst << "Unfold (det.res.)" << endl;
+   of_syst << "Unfold (FSR)" << endl;
    for (map<bin,syst>::const_iterator it=syst_tot.begin(); it!=syst_tot.end(); it++) {
       of_syst << it->first.low() << ", " << it->first.high() << ", " << it->second.value << endl;
    }
@@ -105,7 +105,7 @@ void Sys_FSR(var thevar) {
    // MyCanvas c1(Form("systematics_UnfoldFSR_%s",thevarname),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
    TString cname(Form("systematics_UnfoldFSR_%s",thevarname));
    MyCanvas c1(cname,xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
    c1.SetYRange(-1.9,1.9);
    c1.CanvasWithMultipleGraphs(graphs,ynames, "LPX");
    c1.PrintCanvas();

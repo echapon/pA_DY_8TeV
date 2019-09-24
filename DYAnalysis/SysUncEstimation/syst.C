@@ -198,7 +198,7 @@ TMatrixT<double> combineSyst_cor(vector< map<bin2, syst> > theSysts) {
    return ans;
 }
 
-map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix) {
+map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TString prefix, bool noacc) {
    vector< map<bin, syst> > systmap_all;
 
    vector<TString> tags;
@@ -229,7 +229,7 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    return ans;
 };
 
-TMatrixT<double> readSyst_all_cor(var thevar, TString prefix) {
+TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc) {
    vector< map<bin2, syst> > systmap_all;
 
    vector<TString> tags;

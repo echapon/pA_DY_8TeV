@@ -3,7 +3,7 @@ arguments             = $(ProcId)
 output                = condor/$(ClusterId).$(ProcId).out
 error                 = condor/$(ClusterId).$(ProcId).err
 log                   = condor/$(ClusterId).log
-+JobFlavour           = "workday"
++JobFlavour           = "microcentury"
 
 # the line below is ONLY if you belong to CMG (CERN CMS group)
 +AccountingGroup = "group_u_CMST3.all"

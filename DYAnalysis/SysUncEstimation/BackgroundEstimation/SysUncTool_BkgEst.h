@@ -1,6 +1,6 @@
-#include "Include/DYAnalyzer.h"
-#include "Include/tdrstyle.C"
-#include "Include/CMS_lumi.C"
+#include "../../Include/DYAnalyzer.h"
+#include "../../Include/tdrstyle.C"
+#include "../../Include/CMS_lumi.C"
 
 #include <fstream>
 
@@ -31,24 +31,8 @@ public:
 		this->Type = _Type;
       this->thevar = _thevar;
 
-      if (thevar == var::mass) {
-         nBin = binnum;
-         BinEdges = bins;
-      } else if (thevar == var::pt) {
-         nBin = ptbinnum_meas;
-         BinEdges = ptbin_meas;
-      } else if (thevar == var::phistar) {
-         nBin = phistarnum;
-         BinEdges = phistarbin;
-      } else if (thevar == var::rap1560) {
-         nBin = rapbinnum_1560;
-         BinEdges = rapbin_1560;
-      } else if (thevar == var::rap60120) {
-         nBin = rapbinnum_60120;
-         BinEdges = rapbin_60120;
-      } else {
-         cout << "HistgoramContainer::HistogramContainer: Error! Unknown variable" << endl;
-      }
+      nBin = nbinsvar(_thevar);
+      BinEdges = binsvar(_thevar);
 
 		this->h_nEvent = new TH1D( "h_nEvent_"+Type, "", nBin, BinEdges );
 
@@ -159,6 +143,7 @@ public:
 	HistogramContainer* Hists_DYtautau;
 	HistogramContainer* Hists_WJets;
 	HistogramContainer* Hists_QCD;
+	HistogramContainer* Hists_FRnonclosure;
 	HistogramContainer* Hists_WW;
 	HistogramContainer* Hists_WZ;
 	HistogramContainer* Hists_ZZ;
@@ -174,29 +159,13 @@ public:
 		version = _version;
       thevar = _thevar;
 
-      if (thevar == var::mass) {
-         nBin = binnum;
-         BinEdges = bins;
-      } else if (thevar == var::pt) {
-         nBin = ptbinnum_meas;
-         BinEdges = ptbin_meas;
-      } else if (thevar == var::phistar) {
-         nBin = phistarnum;
-         BinEdges = phistarbin;
-      } else if (thevar == var::rap1560) {
-         nBin = rapbinnum_1560;
-         BinEdges = rapbin_1560;
-      } else if (thevar == var::rap60120) {
-         nBin = rapbinnum_60120;
-         BinEdges = rapbin_60120;
-      } else {
-         cout << "HistgoramContainer::HistogramContainer: Error! Unknown variable" << endl;
-      }
+      nBin = nbinsvar(_thevar);
+      BinEdges = binsvar(_thevar);
 
-		FileLocation = "../" + version;
+		FileLocation = "../";// + version;
 
       DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
-      analyzer->SetupMCsamples_v20180111("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+      analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 		this->f_output = new TFile("ROOTFile_SysUnc_BkgEst.root", "RECREATE");
 
@@ -312,6 +281,7 @@ protected:
 		this->Hists_DYtautau = new HistogramContainer( "DYtautau", thevar ); Hists_Bkg.push_back( Hists_DYtautau );
 		this->Hists_WJets = new HistogramContainer( "WJets", thevar ); Hists_Bkg.push_back( Hists_WJets );
 		this->Hists_QCD = new HistogramContainer( "QCD", thevar ); Hists_Bkg.push_back( Hists_QCD );
+		this->Hists_FRnonclosure = new HistogramContainer( "FRnonclosure", thevar ); Hists_Bkg.push_back( Hists_FRnonclosure );
 		this->Hists_WW = new HistogramContainer( "WW", thevar ); Hists_Bkg.push_back( Hists_WW );
 		this->Hists_WZ = new HistogramContainer( "WZ", thevar ); Hists_Bkg.push_back( Hists_WZ );
 		this->Hists_ZZ = new HistogramContainer( "ZZ", thevar ); Hists_Bkg.push_back( Hists_ZZ );
@@ -348,12 +318,14 @@ protected:
 		vector< HistogramContainer* > vec_Hists_FR;
 		vec_Hists_FR.push_back( Hists_WJets );
 		vec_Hists_FR.push_back( Hists_QCD );
+		vec_Hists_FR.push_back( Hists_FRnonclosure );
 		this->MakeCombinedHistogram( vec_Hists_FR, this->Hists_FR );
 
 		vector< TH1D* > vec_h_RelUnc_FR; vector< TString > Names_FR;
 		vec_h_RelUnc_FR.push_back( this->Hists_FR->h_RelUnc_Tot ); Names_FR.push_back( "Total Unc. from FR method" );
 		vec_h_RelUnc_FR.push_back( this->Hists_WJets->h_RelUnc_Tot ); Names_FR.push_back( "W+Jets" );
 		vec_h_RelUnc_FR.push_back( this->Hists_QCD->h_RelUnc_Tot ); Names_FR.push_back( "QCD" );
+		vec_h_RelUnc_FR.push_back( this->Hists_FRnonclosure->h_RelUnc_Tot ); Names_FR.push_back( "FRnonclosure" );
 		this->MakeCanvas_SysUnc( "FR", vec_h_RelUnc_FR, Names_FR );
 
 
@@ -421,7 +393,7 @@ protected:
 		gPad->SetRightMargin(0.03);
 		gPad->SetLeftMargin(0.13);
 
-		if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) gPad->SetLogx();
+		if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) gPad->SetLogx();
 		gPad->SetGridx();
 		gPad->SetGridy();
 
@@ -453,7 +425,7 @@ protected:
       if (thevar==var::phistar) yMax = 1;
       else if (thevar==var::rap60120 || thevar==var::rap1560) yMax = 5;
       // if( Type == "emu") yMax *= 0.6;
-		if( Type == "FR") yMax *= 0.2;
+		if( Type == "FR") yMax *= 0.8;
       else if( Type == "MC") yMax *= 0.1;
 		// else if( Type == "total" ) yMax = 80;
 
@@ -488,7 +460,7 @@ protected:
 
 	void SetupHistogram_Unfolded()
 	{
-      TFile *f_result = TFile::Open(FileLocation + "/ResponseMatrix/yields_detcor_Powheg_MomCorr_0.root");
+      TFile *f_result = TFile::Open(FileLocation + "/ResponseMatrix/yields_detcor_Powheg_MomCorr00_0.root");
       h_unfolded = (TH1D*)f_result->Get(Form("h_Measured_unfoldedMLE_%s",DYana::varname(thevar)))->Clone();
 	}
 
@@ -496,6 +468,7 @@ protected:
 	{
 		this->SetupHistogram_DataDrivenBkg( "dijet", this->Hists_QCD );
 		this->SetupHistogram_DataDrivenBkg( "wjets", this->Hists_WJets );
+		this->SetupHistogram_DataDrivenBkg( "FRnonclosure", this->Hists_FRnonclosure );
 		this->SetupHistogram_DataDrivenBkg( "ttbar", this->Hists_ttbar );
       // this->SetupHistogram_DataDrivenBkg( "tW", this->Hists_tW );
 		this->SetupHistogram_DataDrivenBkg( "DYtautau", this->Hists_DYtautau );
@@ -509,6 +482,8 @@ protected:
          f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",DYana::varname(thevar)));
       } else if (Type == "dijet") {
          f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",DYana::varname(thevar)));
+      } else if (Type == "FRnonclosure") {
+         f_input = TFile::Open(Form("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/SSnonclosure/syst_%s.root",DYana::varname(thevar)));
       } else {
          f_input = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",DYana::varname(thevar)));
       }
@@ -536,6 +511,22 @@ protected:
             dup = hup ? fabs(Hists->h_nEvent->GetBinContent(i_bin)-hup->GetBinContent(i_bin)) : 0.;
             ddown = hdown ? fabs(Hists->h_nEvent->GetBinContent(i_bin)-hdown->GetBinContent(i_bin)) : 0.;
          }
+
+         // protection against very large uncertainties on very small backgrounds.. except for FRnonclosure, for which the protection is upstream
+         if (Type != "FRnonclosure") {
+            if (Hists->h_nEvent->GetBinContent(i_bin)<1 && AbsUnc_Stat>1) AbsUnc_Stat=1;
+            else if (AbsUnc_Stat > fabs(Hists->h_nEvent->GetBinContent(i_bin))) AbsUnc_Stat=Hists->h_nEvent->GetBinContent(i_bin);
+
+            if (Hists->h_nEvent->GetBinContent(i_bin)<1 && AbsUnc_Syst>1) AbsUnc_Syst=1;
+            else if (AbsUnc_Syst > fabs(Hists->h_nEvent->GetBinContent(i_bin))) AbsUnc_Syst=Hists->h_nEvent->GetBinContent(i_bin);
+            
+            if (Hists->h_nEvent->GetBinContent(i_bin)<1 && dup>1) dup=1;
+            else if (dup > fabs(Hists->h_nEvent->GetBinContent(i_bin))) dup=Hists->h_nEvent->GetBinContent(i_bin);
+            
+            if (Hists->h_nEvent->GetBinContent(i_bin)<1 && ddown>1) ddown=1;
+            else if (ddown > fabs(Hists->h_nEvent->GetBinContent(i_bin))) ddown=Hists->h_nEvent->GetBinContent(i_bin);
+         }
+
          // cout << AbsUnc_Syst << ", " << max(dup,ddown) << endl;
          AbsUnc_Syst = sqrt(pow(AbsUnc_Syst,2) + pow(max(dup,ddown),2));
          Hists->h_AbsUnc_Syst->SetBinContent(i_bin,AbsUnc_Syst);
@@ -578,11 +569,13 @@ protected:
       TString htag;
       if (thevar == DYana::var::mass) htag = "mass2";
       else if (thevar == DYana::var::pt) htag = "diPt2_M60to120";
+      else if (thevar == DYana::var::pt1560) htag = "diPt2_M15to60";
       else if (thevar == DYana::var::phistar) htag = "Phistar2_M60to120";
+      else if (thevar == DYana::var::phistar1560) htag = "Phistar2_M15to60";
       else if (thevar == DYana::var::rap1560) htag = "diRap2_M15to60";
       else if (thevar == DYana::var::rap60120) htag = "diRap2_M60to120";
 
-		TFile *f_MC = TFile::Open(FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr_rewboth_tnprew_All.root"); f_MC->cd();
+		TFile *f_MC = TFile::Open(FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr00_rewboth_tnprew_All.root"); f_MC->cd();
 		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_FR");
 		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_emu");
 		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_MC");

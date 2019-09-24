@@ -30,9 +30,11 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
    TString hname;
    if (thevar==var::mass) hname = "h_mass2";
    else if (thevar==var::pt) hname = "h_diPt2_M60to120";
+   else if (thevar==var::pt1560) hname = "h_diPt2_M15to60";
    else if (thevar==var::rap1560) hname = "h_diRap2_M15to60";
    else if (thevar==var::rap60120) hname = "h_diRap2_M60to120";
    else if (thevar==var::phistar) hname = "h_Phistar2_M60to120";
+   else if (thevar==var::phistar1560) hname = "h_Phistar2_M15to60";
 
    vector<TGraphAsymmErrors*> graphs;
    vector<TMatrixT<double> > mcor;
@@ -40,7 +42,7 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
    gErr = NULL;
 
    MyCanvas c1(Form("DetectorResolution/MomentumCorrection/momcorvariations_%s%d",varname(thevar),itype),xaxistitle(thevar),"Ratio to nominal",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    TFile *f = TFile::Open(file);
    TH1D *hnom = (TH1D*) f->Get(hname + "_Data1");
@@ -268,7 +270,7 @@ void Sys_MomCorr(const char* file, var thevar) {
 
 
    MyCanvas c1(Form("systematics_MomCorr_%s",varname(thevar)),xaxistitle(thevar),"Rel. uncertainty (%)",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) c1.SetLogx();
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
    if (thevar==var::pt) c1.SetYRange(0,3.9);
    c1.CanvasWithMultipleGraphs(graphs,ynames, "LPX");
    c1.PrintCanvas();

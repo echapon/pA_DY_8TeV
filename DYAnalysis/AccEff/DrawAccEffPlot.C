@@ -169,7 +169,7 @@ void DrawAccEffPlot(TString HLTname = "PAL3Mu12",
 	myc_tnp->LowerEdge_Y = HLTname.Contains("L1DoubleMu") ? 0. : 0.5;
 	myc_tnp->UpperEdge_Y = 1.05;
 
-	myc_tnp->LowerEdge_Ratio = HLTname.Contains("L1DoubleMu") ? 0.8 : 0.9;
+	myc_tnp->LowerEdge_Ratio = HLTname.Contains("L1DoubleMu") ? 0.8 : 0.85;
 	myc_tnp->UpperEdge_Ratio = 1.02;
 	if (!variable.Contains("Rap")) myc_tnp->isLogX = kTRUE;
 

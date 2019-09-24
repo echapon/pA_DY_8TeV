@@ -27,7 +27,7 @@
 using namespace DYana;
 
 // number of gen weights (CT14: 284, EPPS16: 325
-const int nweights = 325;
+const int nweights = 325;//284;
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_weights_genonly(TString Sample) 

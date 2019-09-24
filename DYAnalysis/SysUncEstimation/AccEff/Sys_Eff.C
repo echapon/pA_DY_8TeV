@@ -539,6 +539,44 @@ void Sys_Eff(const char* file) {
    }
 }
 
+void Sys_Eff_MCstat(const char* file, var thevar) {
+   TFile *fin = TFile::Open(file);
+   TH1D *hAccTotal = (TH1D*) fin->Get(Form("h_%s_EffTotal",varname(thevar)));
+   TH1D *hEffPass_Corr_tnp = (TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
+   cout << hEffPass_Corr_tnp << " " << hAccTotal << endl;
+   checkNumDen(hEffPass_Corr_tnp,hAccTotal);
+   TGraphAsymmErrors *gae = new TGraphAsymmErrors(hEffPass_Corr_tnp,hAccTotal);
+
+   double* thebins = binsvar(thevar);
+
+   ofstream of_up(Form("csv/effstat_up_%s.csv",varname(thevar)));
+   of_up << "Acc Eff (stat, up)" << endl;
+
+   for (int i=0; i<gae->GetN(); i++) {
+      of_up << thebins[i] << ", " << thebins[i+1] << ", " << gae->GetEYhigh()[i] / gae->GetY()[i] << endl;
+   }
+
+   of_up.close();
+   cout << "closed " << Form("csv/effstat_up_%s.csv",varname(thevar)) << endl;
+
+   ofstream of_down(Form("csv/effstat_down_%s.csv",varname(thevar)));
+   of_down << "Acc Eff (stat, down)" << endl;
+
+   for (int i=0; i<gae->GetN(); i++) {
+      of_down << thebins[i] << ", " << thebins[i+1] << ", " << gae->GetEYhigh()[i] / gae->GetY()[i] << endl;
+   }
+
+   of_down.close();
+   cout << "closed " << Form("csv/effstat_down_%s.csv",varname(thevar)) << endl;
+}
+
+void Sys_Eff_MCstat(const char* file) {
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      Sys_Eff_MCstat(file,thevar_i);
+   }
+}
+
 void checkNumDen(TH1 *hnum, TH1 *hden) {
    // helper function in case some bin contents are higher in the numerator than denominator
    if (hnum->GetNbinsX() != hden->GetNbinsX()) {

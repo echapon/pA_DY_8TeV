@@ -140,7 +140,8 @@ void fillHistosForFR(SampleTag index)
       for(unsigned j=0; j!=event->muons.size(); j++) {
 
          PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
-         if( !mu_->tightMuonID() ) continue;
+         // if( !mu_->tightMuonID() ) continue;
+         if( !mu_->looseMuonID() ) continue; // ID+ISO CHECK
 
          // if( mu_->acceptance(cuts::ptmin1,cuts::etamax) ) {
          if( mu_->acceptance(cuts::ptmin2,cuts::etamax) ) {
@@ -165,6 +166,7 @@ void fillHistosForFR(SampleTag index)
 
             // overflow
             if (iso >= isomaxrange) iso = isomaxrange-1e-5;
+            if (!mu.tightMuonID()) iso = 1.5*cuts::isomax; // ID+ISO CHECK
 
             // tnp weight
             double wt_tnp = 1.;
@@ -278,6 +280,8 @@ void fillHistosForFR(SampleTag index)
             // overflow
             if (iso1 >= isomaxrange) iso1 = isomaxrange-1e-5;
             if (iso2 >= isomaxrange) iso2 = isomaxrange-1e-5;
+            if (!mu1.tightMuonID()) iso1 = 1.5*cuts::isomax; // ID+ISO CHECK
+            if (!mu2.tightMuonID()) iso2 = 1.5*cuts::isomax; // ID+ISO CHECK
 
             // tnp weight
             double wt_tnp = 1.;
@@ -314,6 +318,8 @@ void fillHistosForFR(SampleTag index)
             // overflow
             if (iso1 >= isomaxrange) iso1 = isomaxrange-1e-5;
             if (iso2 >= isomaxrange) iso2 = isomaxrange-1e-5;
+            if (!mu1.tightMuonID()) iso1 = 1.5*cuts::isomax; // ID+ISO CHECK
+            if (!mu2.tightMuonID()) iso2 = 1.5*cuts::isomax; // ID+ISO CHECK
 
             // tnp weight
             double wt_tnp = 1.;
