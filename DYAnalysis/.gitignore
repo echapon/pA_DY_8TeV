@@ -42,3 +42,6 @@ Outputs/
 *.exe
 *.out
 *.app
+
+# docs
+*.pdf
