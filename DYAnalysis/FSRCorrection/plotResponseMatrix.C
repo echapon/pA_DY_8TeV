@@ -1,7 +1,8 @@
 #include "TFile.h"
-#include "Include/MyCanvas.C"
-#include "BkgEst/interface/defs.h"
-#include "Include/CMS_lumi.C"
+#include "../Include/MyCanvas.C"
+#include "../BkgEst/interface/defs.h"
+#include "../Include/CMS_lumi.C"
+#include "../Include/PlotTools.h"
 
 using namespace DYana;
 
@@ -21,10 +22,18 @@ void plotResponseMatrix(TFile *f, var thevar) {
    TH1D *h_ratio = (TH1D*) f->Get(Form("h_%s_ratio",thevarname));
    TH2D *h_postpreFSR_tot = (TH2D*) f->Get(Form("h_%s_postpreFSR_tot",thevarname));
 
+   // if pt or phistar: need to fix the X axis so that we can see the first bin
+   if (TString(thevarname).Contains("pt") || TString(thevarname).Contains("phistar")
+         || TString(thevarname).Contains("pt1560") || TString(thevarname).Contains("phistar1560")) {
+      fixXaxis(h_preFSR);
+      fixXaxis(h_postFSR);
+      fixXaxis(h_ratio);
+   }
+
    MyCanvas c1D(Form("FSRCorrection/c_%s_1D",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas cres(Form("FSRCorrection/c_%s_ratio",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c2D(Form("FSRCorrection/c_%s_postpreFSR_tot",thevarname),xaxistitle(thevar),"Entries",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c2D.SetLogx();
       c2D.SetLogy();

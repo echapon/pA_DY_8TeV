@@ -22,9 +22,9 @@
 #include <vector>
 
 //Customized header files
-#include "Include/DYAnalyzer.h"
-#include "Include/UnfoldUtils.h"
-#include "Include/MyCanvas.C"
+#include "../Include/DYAnalyzer.h"
+#include "../Include/UnfoldUtils.h"
+#include "../Include/MyCanvas.C"
 
 using namespace DYana;
 using unfold::gUnfold;
@@ -81,8 +81,9 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    // errors larger or equal 10000 are fatal:
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
-   // TFile *fdata = new TFile(Form("Plots/results/xsec_%s_%s_%d_detcor.root",Sample.Data(),isApplyMomCorr.Data(),run));
-   TFile *fdata = TFile::Open("Plots/results/xsec_nom_detcor.root");
+   // TFile *fdata = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run));
+   // TFile *fdata = TFile::Open("Plots/results/yields_nom_detcor_noacc.root");
+   TFile *fdata = TFile::Open("Plots/results/yields_nom_detcor.root");
    if (!fdata || !fdata->IsOpen()) {
       cout << "Error, data file not found" << endl;
       return;
@@ -208,7 +209,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    h_postpreFSR_tot->SetMaximum(1);
    h_postpreFSR_tot->GetXaxis()->SetTitle(Form("%s (reco level)", xaxistitle(thevar)));
    h_postpreFSR_tot->GetYaxis()->SetTitle(Form("%s (gen level)", xaxistitle(thevar)));
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       gPad->SetLogx();
       gPad->SetLogy();
    }
@@ -376,7 +377,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    MyCanvas c1D(Form("FSRCorrection/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cov(Form("FSRCorrection/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cor(Form("FSRCorrection/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar) {
+   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c_cov.SetLogx();
       c_cov.SetLogy();

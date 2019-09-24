@@ -20,8 +20,8 @@
 #include <vector>
 
 //Customized header files
-#include <Include/DYAnalyzer.h>
-#include <Include/UnfoldUtils.h>
+#include "../Include/DYAnalyzer.h"
+#include "../Include/UnfoldUtils.h"
 
 using namespace DYana;
 using unfold::gUnfold;
@@ -57,7 +57,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root", "RECREATE");
 
@@ -101,6 +101,22 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	TH1D *h_phistar_ratio_tot = new TH1D("h_phistar_ratio", "", 100, -1, 1);
    TH2D *h_phistar_postpreFSR_tot = new TH2D("h_phistar_postpreFSR_tot", ";phistar(post-FSR);phistar(pre-FSR)", phistarnum, phistarbin, phistarnum, phistarbin);
    TH2D *h_phistar_postpreFSR_tot_fine = new TH2D("h_phistar_postpreFSR_tot_fine", ";phistar(post-FSR);phistar(pre-FSR)", 500,-3,2,500,-3,2);
+
+	TH1D *h_pt1560_preFSR_tot = new TH1D("h_pt1560_preFSR", "", ptbinnum_meas_1560, ptbin_meas_1560);
+	TH1D *h_pt1560_preFSR_tot_fine = new TH1D("h_pt1560_preFSR_fine", "", 200,0,200);
+	TH1D *h_pt1560_postFSR_tot = new TH1D("h_pt1560_postFSR", "", ptbinnum_meas_1560, ptbin_meas_1560);
+	TH1D *h_pt1560_postFSR_tot_fine = new TH1D("h_pt1560_postFSR_fine", "", 200,0,200);
+	TH1D *h_pt1560_ratio_tot = new TH1D("h_pt1560_ratio", "", 100, -1, 1);
+   TH2D *h_pt1560_postpreFSR_tot = new TH2D("h_pt1560_postpreFSR_tot", ";pt1560(post-FSR);pt1560(pre-FSR)", ptbinnum_meas_1560, ptbin_meas_1560, ptbinnum_meas_1560, ptbin_meas_1560);
+   TH2D *h_pt1560_postpreFSR_tot_fine = new TH2D("h_pt1560_postpreFSR_tot_fine", ";pt1560(post-FSR);pt1560(pre-FSR)", 200,0,200,200,0,200);
+
+	TH1D *h_phistar1560_preFSR_tot = new TH1D("h_phistar1560_preFSR", "", phistarnum_1560, phistarbin_1560);
+	TH1D *h_phistar1560_preFSR_tot_fine = new TH1D("h_phistar1560_preFSR_fine", "", 500,-3,2);
+	TH1D *h_phistar1560_postFSR_tot = new TH1D("h_phistar1560_postFSR", "", phistarnum_1560, phistarbin_1560);
+	TH1D *h_phistar1560_postFSR_tot_fine = new TH1D("h_phistar1560_postFSR_fine", "", 500,-3,2);
+	TH1D *h_phistar1560_ratio_tot = new TH1D("h_phistar1560_ratio", "", 100, -1, 1);
+   TH2D *h_phistar1560_postpreFSR_tot = new TH2D("h_phistar1560_postpreFSR_tot", ";phistar1560(post-FSR);phistar1560(pre-FSR)", phistarnum_1560, phistarbin_1560, phistarnum_1560, phistarbin_1560);
+   TH2D *h_phistar1560_postpreFSR_tot_fine = new TH2D("h_phistar1560_postpreFSR_tot_fine", ";phistar1560(post-FSR);phistar1560(pre-FSR)", 500,-3,2,500,-3,2);
 
 	// const Int_t ndRCuts = 10;
 	// Double_t dRCuts[ndRCuts] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
@@ -391,6 +407,26 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				if (M_preFSR>60 && M_preFSR<120) h_phistar_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
 				if (M_postFSR>60 && M_postFSR<120) h_phistar_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
 				h_phistar_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? phistar_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? phistar_preFSR : -99, TotWeight );
+
+            // pt 15-60 histos
+				if (M_preFSR>15 && M_preFSR<60) h_pt1560_preFSR_tot->Fill( pt_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_pt1560_postFSR_tot->Fill( pt_postFSR, TotWeight );
+				if (M_preFSR>15 && M_preFSR<60) h_pt1560_ratio_tot->Fill( pt_ratio, TotWeight );
+				h_pt1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? pt_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? pt_preFSR : -99, TotWeight );
+
+				if (M_preFSR>15 && M_preFSR<60) h_pt1560_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_pt1560_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
+				h_pt1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? pt_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? pt_preFSR : -99, TotWeight );
+
+            // phistar 15-60 histos
+				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_preFSR_tot->Fill( phistar_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_phistar1560_postFSR_tot->Fill( phistar_postFSR, TotWeight );
+				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_ratio_tot->Fill( phistar_ratio, TotWeight );
+				h_phistar1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? phistar_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? phistar_preFSR : -99, TotWeight );
+
+				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
+				if (M_postFSR>15 && M_postFSR<60) h_phistar1560_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
+				h_phistar1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? phistar_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? phistar_preFSR : -99, TotWeight );
 			} // -- End of if( GenFlag == kTRUE ) -- //
 
 		} //End of event iteration
@@ -454,6 +490,24 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
          }
       }
    }
+   for (int j=0; j<=h_pt1560_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_pt1560_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_pt1560_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_pt1560_postpreFSR_tot->SetBinContent(i,j,h_pt1560_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_pt1560_postpreFSR_tot->SetBinError(i,j,h_pt1560_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   for (int j=0; j<=h_phistar1560_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_phistar1560_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_phistar1560_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_phistar1560_postpreFSR_tot->SetBinContent(i,j,h_phistar1560_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_phistar1560_postpreFSR_tot->SetBinError(i,j,h_phistar1560_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
 
 	f->cd();
 	h_mass_preFSR_tot->Write();
@@ -496,6 +550,22 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	h_phistar_preFSR_tot_fine->Write();
 	h_phistar_postFSR_tot_fine->Write();
    h_phistar_postpreFSR_tot_fine->Write();
+
+	h_pt1560_preFSR_tot->Write();
+	h_pt1560_postFSR_tot->Write();
+   h_pt1560_ratio_tot->Write();
+   h_pt1560_postpreFSR_tot->Write();
+	h_pt1560_preFSR_tot_fine->Write();
+	h_pt1560_postFSR_tot_fine->Write();
+   h_pt1560_postpreFSR_tot_fine->Write();
+
+	h_phistar1560_preFSR_tot->Write();
+	h_phistar1560_postFSR_tot->Write();
+   h_phistar1560_ratio_tot->Write();
+   h_phistar1560_postpreFSR_tot->Write();
+	h_phistar1560_preFSR_tot_fine->Write();
+	h_phistar1560_postFSR_tot_fine->Write();
+   h_phistar1560_postpreFSR_tot_fine->Write();
 
 
    f->Close();
