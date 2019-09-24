@@ -53,6 +53,8 @@ TMatrixT<double> readSyst_cor(const char* systfile) {
    int nbins=0;
    if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
    else if (tsystfile.Contains("pt")) nbins = DYana::nbinsvar("pt");
+   else if (tsystfile.Contains("phistar1560")) nbins = DYana::nbinsvar("phistar1560");
+   else if (tsystfile.Contains("pt1560")) nbins = DYana::nbinsvar("pt1560");
    else if (tsystfile.Contains("phistar")) nbins = DYana::nbinsvar("phistar");
    else if (tsystfile.Contains("rap1560")) nbins = DYana::nbinsvar("rap1560");
    else if (tsystfile.Contains("rap60120")) nbins = DYana::nbinsvar("rap60120");
@@ -203,9 +205,11 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr_smooth");
    tags.push_back("tnp_tot");
-   tags.push_back("acceffstat_up");
-   tags.push_back("bkg_smooth");
-   tags.push_back("AccEff_theory");
+   if (!noacc) tags.push_back("acceffstat_up");
+   else tags.push_back("effstat_up");
+   tags.push_back("bkg");
+   if (!noacc) tags.push_back("AccEff_theory");
+   else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
 
@@ -232,9 +236,11 @@ TMatrixT<double> readSyst_all_cor(var thevar, TString prefix) {
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr_smooth");
    tags.push_back("tnp_tot");
-   tags.push_back("acceffstat_up");
-   tags.push_back("bkg_smooth");
-   tags.push_back("AccEff_theory");
+   if (!noacc) tags.push_back("acceffstat_up");
+   else tags.push_back("effstat_up");
+   tags.push_back("bkg");
+   if (!noacc) tags.push_back("AccEff_theory");
+   else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
 
@@ -250,16 +256,18 @@ TMatrixT<double> readSyst_all_cor(var thevar, TString prefix) {
    return ans;
 }
 
-map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix) {
+map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix, bool noacc) {
    vector< map<bin2, syst> > systmap_all;
 
    vector<TString> tags;
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr_smooth");
    tags.push_back("tnp_tot");
-   tags.push_back("acceffstat_up");
-   tags.push_back("bkg_smooth");
-   tags.push_back("AccEff_theory");
+   if (!noacc) tags.push_back("acceffstat_up");
+   else tags.push_back("effstat_up");
+   tags.push_back("bkg");
+   if (!noacc) tags.push_back("AccEff_theory");
+   else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
 
@@ -383,6 +391,8 @@ void smooth(const char* systfile, const char* systsuffix, int ntimes) {
    newsystname.ReplaceAll("_mass.csv",Form("%s_mass.csv",systsuffix));
    newsystname.ReplaceAll("_pt.csv",Form("%s_pt.csv",systsuffix));
    newsystname.ReplaceAll("_phistar.csv",Form("%s_phistar.csv",systsuffix));
+   newsystname.ReplaceAll("_pt1560.csv",Form("%s_pt1560.csv",systsuffix));
+   newsystname.ReplaceAll("_phistar1560.csv",Form("%s_phistar1560.csv",systsuffix));
    newsystname.ReplaceAll("_rap1560.csv",Form("%s_rap1560.csv",systsuffix));
    newsystname.ReplaceAll("_rap60120.csv",Form("%s_rap60120.csv",systsuffix));
    
