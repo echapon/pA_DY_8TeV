@@ -341,9 +341,38 @@ void estimateWjets(var thevar) {
 
     DYsel[WFirst]->Scale(sf_fit_2[1]);
     DYselSS[WFirst]->Scale(sf_fit_2[1]);
+
+    for(int i=1; i<varNbins+1; i++) {
+        if(wjets_template[Data1]->GetBinContent(i) < 0) {
+          wjets_template[Data1]->SetBinContent(i,0.0);
+          wjets_template[Data1]->SetBinError(i,0.0);
+        }
+        if(wjets_ratio[Data1]->GetBinContent(i) < 0) {
+          wjets_ratio[Data1]->SetBinContent(i,0.0);
+          wjets_ratio[Data1]->SetBinError(i,0.0);
+        }
+    }
+
+    // wjets estimations can be very jumpy, especially vs pt or phistar. Let's remove fluctuations with smoothing.
+    TH1D *wjets_template_nosmooth = (TH1D*) wjets_template[Data1]->Clone("wjets_template_nosmooth");
+    TH1D *wjets_ratio_nosmooth = (TH1D*) wjets_ratio[Data1]->Clone("wjets_ratio_nosmooth");
+    TH1D *wjetsSS_template_nosmooth = (TH1D*) wjetsSS_template[Data1]->Clone("wjetsSS_template_nosmooth");
+    TH1D *wjetsSS_ratio_nosmooth = (TH1D*) wjetsSS_ratio[Data1]->Clone("wjetsSS_ratio_nosmooth");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) {
+       wjets_template[Data1]->Smooth();
+       wjets_ratio[Data1]->Smooth();
+       wjetsSS_template[Data1]->Smooth();
+       wjetsSS_ratio[Data1]->Smooth();
+
+       wjets_template_nosmooth->SetLineStyle(2);
+       wjets_ratio_nosmooth->SetLineStyle(2);
+       wjetsSS_template_nosmooth->SetLineStyle(2);
+       wjetsSS_ratio_nosmooth->SetLineStyle(2);
+    }
     
     TLegend* legg = new TLegend(.6,.65,.95,.89);
     legg->AddEntry(wjets_template[Data1],"Nominal (template)", "P");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) legg->AddEntry(wjets_template_nosmooth,"Nominal, no smooth", "L");
     legg->AddEntry(wjets_ratio[Data1],"Alt. (data-MC)", "L");
     legg->AddEntry(DYsel[WFirst],"Scaled MC", "F");
 
@@ -357,6 +386,7 @@ void estimateWjets(var thevar) {
     DYsel[WFirst]->Draw("hist same");
     wjets_template[Data1]->Draw("EP same");
     wjets_ratio[Data1]->Draw("HIST SAME");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) wjets_template_nosmooth->Draw("HIST SAME");
     legg->Draw("SAME");
     canv->Print("print/wjets_" + thevarname + ".pdf");
     canv->Clear();
@@ -371,6 +401,7 @@ void estimateWjets(var thevar) {
     DYselSS[WFirst]->Draw("hist same");
     wjetsSS_template[Data1]->Draw("EP same");
     wjetsSS_ratio[Data1]->Draw("HIST SAME");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) wjetsSS_template_nosmooth->Draw("HIST SAME");
     legg->Draw("SAME");
     canv->Print("print/wjetsSS_" + thevarname + ".pdf");
     canv->Clear();
@@ -387,17 +418,6 @@ void estimateWjets(var thevar) {
     error = 0;
     wjetsSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(ratio) SS = "<<wjetsSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
-
-    for(int i=1; i<varNbins+1; i++) {
-        if(wjets_template[Data1]->GetBinContent(i) < 0) {
-          wjets_template[Data1]->SetBinContent(i,0.0);
-          wjets_template[Data1]->SetBinError(i,0.0);
-        }
-        if(wjets_ratio[Data1]->GetBinContent(i) < 0) {
-          wjets_ratio[Data1]->SetBinContent(i,0.0);
-          wjets_ratio[Data1]->SetBinError(i,0.0);
-        }
-    }
 
     TH1D* wjets = (TH1D*)wjets_template[Data1]->Clone();
     wjets->Sumw2();
