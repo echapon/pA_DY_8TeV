@@ -57,30 +57,17 @@ TH1D* ratio_Data;
 TH1D* test_barrel_denominator_QCDtemplate;
 TH1D* test_barrel_numerator_QCDtemplate;
 
-
-//void estimateFR_opttest_v20190901(TString indir, TString rmk,TString rmk1,TString rmk2,int QCDopt=2, TString indir2="20190306v9_iso0_1_HFminus", TString indir3="20190402v11_iso0_1_HFminus", TString rmkf="rmkf", int FRopt=1) {
 void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso0_0p2_nominalfixed",TString rmk="opt1050_QCDopt2_reltrkisoR03muptlt10_L3Mu12",TString rmk1="reltrkisoR03muptlt10",TString rmk2="L3Mu12",int QCDopt=2,TString indir2="20190901v50_iso0_1_nominal",TString indir3="20190906v62_60ptincl_iso0_0p2_nominalfixed",TString rmkf="reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12_FRopt101",int FRopt=101) {
 
 	TFile* file[NSamples+2];
 	TFile* fileSS1;
 	TFile* fileSS2;
 
-	//TFile* fin_fitNch_barrel = new TFile(Form("histogramsFit_%s/histFRFit_barrel_%s_QCDin0p875Data.root",indir.Data(),rmk.Data()),"read");
-	//TFile* fin_fitNch_endcap = new TFile(Form("histogramsFit_%s/histFRFit_endcap_%s_QCDin0p875Data.root",indir.Data(),rmk.Data()),"read");
-
 	TFile* fin_fitNch_barrel = new TFile(Form("histogramsFit_%s/histFRFit_barrel_%s.root",indir.Data(),rmk.Data()),"read");
 	TFile* fin_fitNch_endcap = new TFile(Form("histogramsFit_%s/histFRFit_endcap_%s.root",indir.Data(),rmk.Data()),"read");
 
-
-	//histogramsFit_20190128/histFRFit_endcap_opt15_QCDopt2_reltrkisoR03_highPtMuonID_L1DoubleMu0_QCDin0p875Data.root
-
 	TH1D* h_fitNch_barrel = (TH1D*)fin_fitNch_barrel->Get("h_fitNch_barrel");
 	TH1D* h_fitNch_endcap = (TH1D*)fin_fitNch_endcap->Get("h_fitNch_endcap");
-	/*
-		for (int i=0; i<ALL; i++) file[i] = new TFile(PathFRHistos(static_cast<SampleTag>(i)));
-		file[QCD] = new TFile(PathFRHistos(QCD));
-		*/
-
 
 	TH1D* denominator_pt_fit_barrel[NSamples+2];
 	TH1D* denominator_pt_fit_endcap[NSamples+2];
@@ -101,7 +88,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	double norm_pt_fit_barrel[NSamples+2];
 	double norm_pt_fit_endcap[NSamples+2];
 
-
 	// Stack is not working yet..need to solve
 	THStack *hs_fit = new THStack("hs_fit","fit stacked");
 	THStack *hs_xsec = new THStack("hs_xsec","xsec stacked");
@@ -111,7 +97,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 		if (i==ALL) continue;
 		SampleTag tag = static_cast<SampleTag>(i);
 		file[i] = new TFile(Form("histograms_%s/histFR_%s_%s_%s.root",indir2.Data(),rmk1.Data(),Name(tag),rmk2.Data()));
-		//histograms_20190128/histFR_reltrkisoR03_ZZ_highPtMuonID_L1DoubleMu0.root
 
 		if (i==QCD && QCDopt==2) {
 			fileSS1 = new TFile(Form("histograms_%s/histFR_SS%s_Data1_%s.root",indir2.Data(),rmk1.Data(),rmk2.Data()));
@@ -192,7 +177,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	test_barrel_denominator_QCDtemplate = (TH1D*)denominator_pt_fit_barrel[QCD]->Clone();
    test_barrel_numerator_QCDtemplate = (TH1D*)numerator_pt_barrel[QCD]->Clone();
 
-
 	// NB: the numbers below are the output of fitTemplate.cc
 
 	double intDY_barrel=0, intDY_endcap=0;
@@ -200,8 +184,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* denominator_endcap_DYJets;
 	TH1D* tmp_barrel=(TH1D*)denominator_barrel[DYTauTau1030]->Clone();
 	TH1D* tmp_endcap=(TH1D*)denominator_endcap[DYTauTau1030]->Clone();
-	//       tmp_barrel->Scale(norm_all[DYTauTau1030]);
-	//       tmp_endcap->Scale(norm_all[DYTauTau1030]);
 	denominator_barrel_DYJets=(TH1D*)tmp_barrel->Clone();
 	denominator_endcap_DYJets=(TH1D*)tmp_endcap->Clone();
 	intDY_barrel+=denominator_barrel_DYJets->Integral();
@@ -209,29 +191,10 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	for (int i=DYTauTau30; i<=DYMuMu30_PbP; i++) {
 		SampleTag tag = static_cast<SampleTag>(i);
 
-		//		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
 		tmp_barrel=(TH1D*)denominator_barrel[i]->Clone();
 		tmp_endcap=(TH1D*)denominator_endcap[i]->Clone();
-		/*
-			if ((i==DYMuMu1030_PbP || i==DYMuMu30_PbP)) {
-			tmp_barrel->Scale((Xsec(tag)*lumi_part1)/Nevts(tag));
-			tmp_endcap->Scale((Xsec(tag)*lumi_part1)/Nevts(tag));
-			}
-			else if ((i==DYMuMu1030 || i==DYMuMu30)){
-			tmp_barrel->Scale((Xsec(tag)*lumi_part2)/Nevts(tag));
-			tmp_endcap->Scale((Xsec(tag)*lumi_part2)/Nevts(tag));
-			}
-			else {
-			tmp_barrel->Scale((Xsec(tag)*lumi_all)/Nevts(tag));
-			tmp_endcap->Scale((Xsec(tag)*lumi_all)/Nevts(tag));
-			}
-			*/
-		//tmp_barrel->Scale(norm_all[i]);
-		//tmp_endcap->Scale(norm_all[i]);
 		denominator_barrel_DYJets->Add(tmp_barrel);
 		denominator_endcap_DYJets->Add(tmp_endcap);
-		//	    intDY_barrel+=denominator_barrel_DYJets->Integral();
-		//     intDY_endcap+=denominator_endcap_DYJets->Integral();
 		intDY_barrel+=tmp_barrel->Integral();
 		intDY_endcap+=tmp_endcap->Integral();
 	}
@@ -240,8 +203,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* denominator_endcap_DYJets_pt;
 	TH1D* tmp_barrel_pt=(TH1D*)denominator_pt_fit_barrel[DYTauTau1030]->Clone();
 	TH1D* tmp_endcap_pt=(TH1D*)denominator_pt_fit_endcap[DYTauTau1030]->Clone();
-	//       tmp_barrel_pt->Scale(norm_all[DYTauTau1030]);
-	//       tmp_endcap_pt->Scale(norm_all[DYTauTau1030]);
 	denominator_barrel_DYJets_pt=(TH1D*)tmp_barrel_pt->Clone();
 	denominator_endcap_DYJets_pt=(TH1D*)tmp_endcap_pt->Clone();
 	intDY_barrel_pt+=denominator_barrel_DYJets_pt->Integral();
@@ -249,29 +210,10 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	for (int i=DYTauTau30; i<=DYMuMu30_PbP; i++) {
 		SampleTag tag = static_cast<SampleTag>(i);
 
-		//		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
 		tmp_barrel_pt=(TH1D*)denominator_pt_fit_barrel[i]->Clone();
 		tmp_endcap_pt=(TH1D*)denominator_pt_fit_endcap[i]->Clone();
-		/*
-			if ((i==DYMuMu1030_PbP || i==DYMuMu30_PbP)) {
-			tmp_barrel_pt->Scale((Xsec(tag)*lumi_part1)/Nevts(tag));
-			tmp_endcap_pt->Scale((Xsec(tag)*lumi_part1)/Nevts(tag));
-			}
-			else if ((i==DYMuMu1030 || i==DYMuMu30)){
-			tmp_barrel_pt->Scale((Xsec(tag)*lumi_part2)/Nevts(tag));
-			tmp_endcap_pt->Scale((Xsec(tag)*lumi_part2)/Nevts(tag));
-			}
-			else {
-			tmp_barrel_pt->Scale((Xsec(tag)*lumi_all)/Nevts(tag));
-			tmp_endcap_pt->Scale((Xsec(tag)*lumi_all)/Nevts(tag));
-			}
-			*/
-		//tmp_barrel->Scale(norm_all[i]);
-		//tmp_endcap->Scale(norm_all[i]);
 		denominator_barrel_DYJets_pt->Add(tmp_barrel_pt);
 		denominator_endcap_DYJets_pt->Add(tmp_endcap_pt);
-		//	    intDY_barrel+=denominator_barrel_DYJets->Integral();
-		//     intDY_endcap+=denominator_endcap_DYJets->Integral();
 		intDY_barrel_pt+=tmp_barrel_pt->Integral();
 		intDY_endcap_pt+=tmp_endcap_pt->Integral();
 	}
@@ -281,24 +223,16 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* denominator_endcap_WJets;
 	TH1D* tmp_barrel_WJets=(TH1D*)denominator_barrel[WpMu]->Clone();
 	TH1D* tmp_endcap_WJets=(TH1D*)denominator_endcap[WpMu]->Clone();
-	//       tmp_barrel_WJets->Scale(norm_all[WpMu]);
-	//       tmp_endcap_WJets->Scale(norm_all[WpMu]);
 	denominator_barrel_WJets=(TH1D*)tmp_barrel_WJets->Clone();
 	denominator_endcap_WJets=(TH1D*)tmp_endcap_WJets->Clone();
-	//	    intDY_barrel+=denominator_barrel_WJets->Integral();
-	//     intDY_endcap+=denominator_endcap_WJets->Integral();
 	intWJets_barrel+=denominator_barrel_WJets->Integral();
 	intWJets_endcap+=denominator_endcap_WJets->Integral();
 
 	for (int i=WmMu; i<=WmTau; i++) {
 		tmp_barrel_WJets=(TH1D*)denominator_barrel[i]->Clone();
 		tmp_endcap_WJets=(TH1D*)denominator_endcap[i]->Clone();
-		//       tmp_barrel_WJets->Scale(norm_all[i]);
-		//       tmp_endcap_WJets->Scale(norm_all[i]);
 		denominator_barrel_WJets->Add(tmp_barrel_WJets);
 		denominator_endcap_WJets->Add(tmp_endcap_WJets);
-		//	    intDY_barrel+=denominator_barrel_WJets->Integral();
-		//     intDY_endcap+=denominator_endcap_WJets->Integral();
 		intWJets_barrel+=tmp_barrel_WJets->Integral();
 		intWJets_endcap+=tmp_endcap_WJets->Integral();
 	}
@@ -308,24 +242,16 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* denominator_endcap_WJets_pt;
 	TH1D* tmp_barrel_WJets_pt=(TH1D*)denominator_pt_fit_barrel[WpMu]->Clone();
 	TH1D* tmp_endcap_WJets_pt=(TH1D*)denominator_pt_fit_endcap[WpMu]->Clone();
-	//       tmp_barrel_WJets_pt->Scale(norm_all[WpMu]);
-	//       tmp_endcap_WJets_pt->Scale(norm_all[WpMu]);
 	denominator_barrel_WJets_pt=(TH1D*)tmp_barrel_WJets_pt->Clone();
 	denominator_endcap_WJets_pt=(TH1D*)tmp_endcap_WJets_pt->Clone();
-	//	    intDY_barrel+=denominator_barrel_WJets->Integral();
-	//     intDY_endcap+=denominator_endcap_WJets->Integral();
 	intWJets_barrel_pt+=denominator_barrel_WJets_pt->Integral();
 	intWJets_endcap_pt+=denominator_endcap_WJets_pt->Integral();
 
 	for (int i=WmMu; i<=WmTau; i++) {
 		tmp_barrel_WJets_pt=(TH1D*)denominator_pt_fit_barrel[i]->Clone();
 		tmp_endcap_WJets_pt=(TH1D*)denominator_pt_fit_endcap[i]->Clone();
-		//       tmp_barrel_WJets_pt->Scale(norm_all[i]);
-		//       tmp_endcap_WJets_pt->Scale(norm_all[i]);
 		denominator_barrel_WJets_pt->Add(tmp_barrel_WJets_pt);
 		denominator_endcap_WJets_pt->Add(tmp_endcap_WJets_pt);
-		//	    intDY_barrel+=denominator_barrel_WJets->Integral();
-		//     intDY_endcap+=denominator_endcap_WJets->Integral();
 		intWJets_barrel_pt+=tmp_barrel_WJets_pt->Integral();
 		intWJets_endcap_pt+=tmp_endcap_WJets_pt->Integral();
 	}
@@ -346,12 +272,8 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 
 	}
 
-	//norm_fit_barrel[TT] = h_fitNch_barrel->GetBinContent(8)/denominator_barrel[TT]->Integral();
-	//###	norm_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[TT]->Integral();
-	//###	norm_pt_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[TT]->Integral();
 	norm_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/sum_of_fitNch_barrel)*dataall_barrel_integ/denominator_barrel[TT]->Integral();
 	norm_pt_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/denominator_pt_fit_barrel[TT]->Integral();
-
 
 	std::cout << "--- h_fitNch_barrel->GetBinContent(8): " << h_fitNch_barrel->GetBinContent(8) << std::endl;
 	std::cout << "--- h_fitNch_barrel->GetBinContent(9) : " << h_fitNch_barrel->GetBinContent(9) << std::endl;
@@ -365,23 +287,18 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	std::cout << "denominator_pt_fit_barrel[TT]->Integral() : " << denominator_pt_fit_barrel[TT]->Integral() << std::endl;
 	std::cout << "norm_pt_fit_barrel[TT] : " << norm_pt_fit_barrel[TT] << std::endl;
 
-
 	//for TW+TbarW
 	double intTWs_barrel=0, intTWs_endcap=0;
 	TH1D* denominator_barrel_TWs;
 	TH1D* denominator_endcap_TWs;
 	TH1D* tmp_barrel_TWs=(TH1D*)denominator_barrel[TW]->Clone();
 	TH1D* tmp_endcap_TWs=(TH1D*)denominator_endcap[TW]->Clone();
-	//       tmp_barrel_TWs->Scale(norm_all[TW]);
-	//       tmp_endcap_TWs->Scale(norm_all[TW]);
 	denominator_barrel_TWs=(TH1D*)tmp_barrel_TWs->Clone();
 	denominator_endcap_TWs=(TH1D*)tmp_endcap_TWs->Clone();
 	intTWs_barrel+=denominator_barrel_TWs->Integral();
 	intTWs_endcap+=denominator_endcap_TWs->Integral();
 	tmp_barrel_TWs=(TH1D*)denominator_barrel[TbarW]->Clone();
 	tmp_endcap_TWs=(TH1D*)denominator_endcap[TbarW]->Clone();
-	//       tmp_barrel_TWs->Scale(norm_all[TbarW]);
-	//       tmp_endcap_TWs->Scale(norm_all[TbarW]);
 	denominator_barrel_TWs->Add(tmp_barrel_TWs);
 	denominator_endcap_TWs->Add(tmp_endcap_TWs);
 	intTWs_barrel+=denominator_barrel_TWs->Integral();
@@ -392,32 +309,20 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* denominator_endcap_TWs_pt;
 	TH1D* tmp_barrel_TWs_pt=(TH1D*)denominator_pt_fit_barrel[TW]->Clone();
 	TH1D* tmp_endcap_TWs_pt=(TH1D*)denominator_pt_fit_endcap[TW]->Clone();
-	//       tmp_barrel_TWs_pt->Scale(norm_all[TW]);
-	//       tmp_endcap_TWs_pt->Scale(norm_all[TW]);
 	denominator_barrel_TWs_pt=(TH1D*)tmp_barrel_TWs_pt->Clone();
 	denominator_endcap_TWs_pt=(TH1D*)tmp_endcap_TWs_pt->Clone();
 	intTWs_barrel_pt+=denominator_barrel_TWs_pt->Integral();
 	intTWs_endcap_pt+=denominator_endcap_TWs_pt->Integral();
 	tmp_barrel_TWs_pt=(TH1D*)denominator_pt_fit_barrel[TbarW]->Clone();
 	tmp_endcap_TWs_pt=(TH1D*)denominator_pt_fit_endcap[TbarW]->Clone();
-	//       tmp_barrel_TWs_pt->Scale(norm_all[TbarW]);
-	//       tmp_endcap_TWs_pt->Scale(norm_all[TbarW]);
 	denominator_barrel_TWs_pt->Add(tmp_barrel_TWs_pt);
 	denominator_endcap_TWs_pt->Add(tmp_endcap_TWs_pt);
 	intTWs_barrel_pt+=denominator_barrel_TWs_pt->Integral();
 	intTWs_endcap_pt+=denominator_endcap_TWs_pt->Integral();
 
-
-
 	for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
-		//		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
-		//       norm_fit_barrel[i] = h_fitNch_barrel->GetBinContent(1)/intDY_barrel;
-		//###			norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(1)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/intDY_barrel;
-		//###			norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(1)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/intDY_barrel_pt;
 		norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(1)/sum_of_fitNch_barrel)*dataall_barrel_integ/intDY_barrel;
 		norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(1)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/intDY_barrel_pt;
-
-
 
 		std::cout << std::endl;
 		std::cout << "--- h_fitNch_barrel->GetBinContent(1): " << h_fitNch_barrel->GetBinContent(1) << std::endl;
@@ -431,18 +336,10 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 		std::cout << "dataall_pt_barrel_integ : " << dataall_pt_barrel_integ << std::endl;
 		std::cout << "intDY_barrel_pt : " << intDY_barrel_pt << std::endl;
 		std::cout << "norm_pt_fit_barrel[" << i << "] : " << norm_pt_fit_barrel[i] << std::endl;
-
-
-
 	}
 	for (int i=WpMu; i<=WmTau; i++) {
-		// norm_fit_barrel[i] = h_fitNch_barrel->GetBinContent(3)/intWJets_barrel;
-		//###		norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(3)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/intWJets_barrel;
-		//###		norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(3)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/intWJets_barrel_pt;
 		norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(3)/sum_of_fitNch_barrel)*dataall_barrel_integ/intWJets_barrel;
 		norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(3)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/intWJets_barrel_pt;
-
-
 
 		std::cout << std::endl;
 		std::cout << "--- h_fitNch_barrel->GetBinContent(3): " << h_fitNch_barrel->GetBinContent(3) << std::endl;
@@ -456,42 +353,11 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 		std::cout << "dataall_pt_barrel_integ : " << dataall_pt_barrel_integ << std::endl;
 		std::cout << "intWJets_barrel_pt : " << intWJets_barrel_pt << std::endl;
 		std::cout << "norm_pt_fit_barrel[" << i << "] : " << norm_pt_fit_barrel[i] << std::endl;
-
-
-
 	}
 	for (int i=TW; i<=TbarW; i++) {
-		//norm_fit_barrel[i] = h_fitNch_barrel->GetBinContent(4)/intTWs_barrel;
-		//###	norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(4)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/intTWs_barrel;
-		//###	norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(4)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/intTWs_barrel_pt;
 		norm_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(4)/sum_of_fitNch_barrel)*dataall_barrel_integ/intTWs_barrel;
 		norm_pt_fit_barrel[i] = (h_fitNch_barrel->GetBinContent(4)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/intTWs_barrel_pt;
-
-
-
 	}
-	/*
-		norm_fit_barrel[TT] = h_fitNch_barrel->GetBinContent(8)/denominator_barrel[TT]->Integral();
-		norm_fit_barrel[QCD] = h_fitNch_barrel->GetBinContent(2)/denominator_barrel[QCD]->Integral();
-	//	 norm_fit_barrel[TW] = h_fitNch_barrel->GetBinContent(4)/denominator_barrel[TW]->Integral();
-	norm_fit_barrel[WW] = h_fitNch_barrel->GetBinContent(5)/denominator_barrel[WW]->Integral();
-	norm_fit_barrel[WZ] = h_fitNch_barrel->GetBinContent(6)/denominator_barrel[WZ]->Integral();
-	norm_fit_barrel[ZZ] = h_fitNch_barrel->GetBinContent(7)/denominator_barrel[ZZ]->Integral();
-	*/
-	//######
-	/*
-		norm_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[TT]->Integral();
-		norm_pt_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[TT]->Integral();
-		norm_fit_barrel[QCD] = (h_fitNch_barrel->GetBinContent(2)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[QCD]->Integral();
-		norm_pt_fit_barrel[QCD] = (h_fitNch_barrel->GetBinContent(2)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[QCD]->Integral();
-		norm_fit_barrel[WW] = (h_fitNch_barrel->GetBinContent(5)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[WW]->Integral();
-		norm_pt_fit_barrel[WW] = (h_fitNch_barrel->GetBinContent(5)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[WW]->Integral();
-		norm_fit_barrel[WZ] = (h_fitNch_barrel->GetBinContent(6)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[WZ]->Integral();
-		norm_pt_fit_barrel[WZ] = (h_fitNch_barrel->GetBinContent(6)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[WZ]->Integral();
-		norm_fit_barrel[ZZ] = (h_fitNch_barrel->GetBinContent(7)/h_fitNch_barrel->GetBinContent(9))*dataall_barrel_integ/denominator_barrel[ZZ]->Integral();
-		norm_pt_fit_barrel[ZZ] = (h_fitNch_barrel->GetBinContent(7)/h_fitNch_barrel->GetBinContent(9))*dataall_pt_barrel_integ/denominator_pt_fit_barrel[ZZ]->Integral();
-		*/
-	//#######
 	norm_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/sum_of_fitNch_barrel)*dataall_barrel_integ/denominator_barrel[TT]->Integral();
 	norm_pt_fit_barrel[TT] = (h_fitNch_barrel->GetBinContent(8)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/denominator_pt_fit_barrel[TT]->Integral();
 	norm_fit_barrel[QCD] = (h_fitNch_barrel->GetBinContent(2)/sum_of_fitNch_barrel)*dataall_barrel_integ/denominator_barrel[QCD]->Integral();
@@ -503,76 +369,25 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	norm_fit_barrel[ZZ] = (h_fitNch_barrel->GetBinContent(7)/sum_of_fitNch_barrel)*dataall_barrel_integ/denominator_barrel[ZZ]->Integral();
 	norm_pt_fit_barrel[ZZ] = (h_fitNch_barrel->GetBinContent(7)/sum_of_fitNch_barrel)*dataall_pt_barrel_integ/denominator_pt_fit_barrel[ZZ]->Integral();
 
-
-
-
-
-
 	std::cout << "#######################" << std::endl;
 	std::cout << "norm_fit_barrel[QCD]: "<< norm_fit_barrel[QCD] << std::endl;
 
 	for (int i=DYTauTau1030; i<=DYMuMu30_PbP; i++) {
-		//   		 if (i==DYMuMu1030_PbP || i==DYMuMu30_PbP) continue;
-		//	   norm_fit_endcap[i] = h_fitNch_endcap->GetBinContent(1)/intDY_endcap;
-		//###	norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(1)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/intDY_endcap;
-		//###	norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(1)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/intDY_endcap_pt;
 		norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(1)/sum_of_fitNch_endcap)*dataall_endcap_integ/intDY_endcap;
 		norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(1)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/intDY_endcap_pt;
-
-
 	}
-	//    norm_fit_endcap[TT] = h_fitNch_endcap->GetBinContent(8)/denominator_endcap[TT]->Integral();
-	//###	norm_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[TT]->Integral();
-	//###	norm_pt_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[TT]->Integral();
 	norm_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/sum_of_fitNch_endcap)*dataall_endcap_integ/denominator_endcap[TT]->Integral();
 	norm_pt_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/denominator_pt_fit_endcap[TT]->Integral();
 
-
-
 	for (int i=WpMu; i<=WmTau; i++) {
-		//       norm_fit_endcap[i] = h_fitNch_endcap->GetBinContent(3)/intWJets_endcap;
-		//### 	norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(3)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/intWJets_endcap;
-		//###	norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(3)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/intWJets_endcap_pt;
 		norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(3)/sum_of_fitNch_endcap)*dataall_endcap_integ/intWJets_endcap;
 		norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(3)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/intWJets_endcap_pt;
-
-
-
 	}
 	for (int i=TW; i<=TbarW; i++) {
-		//       norm_fit_endcap[i] = h_fitNch_endcap->GetBinContent(4)/intTWs_endcap;
-		//###	norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(4)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/intTWs_endcap;
-		//###	norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(4)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/intTWs_endcap_pt;
 		norm_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(4)/sum_of_fitNch_endcap)*dataall_endcap_integ/intTWs_endcap;
 		norm_pt_fit_endcap[i] = (h_fitNch_endcap->GetBinContent(4)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/intTWs_endcap_pt;
-
-
-
 	}
 
-	/*
-		norm_fit_endcap[QCD] = h_fitNch_endcap->GetBinContent(2)/denominator_endcap[QCD]->Integral();
-	//	 norm_fit_endcap[TW] = h_fitNch_endcap->GetBinContent(4)/denominator_endcap[TW]->Integral();
-	norm_fit_endcap[WW] = h_fitNch_endcap->GetBinContent(5)/denominator_endcap[WW]->Integral();
-	norm_fit_endcap[WZ] = h_fitNch_endcap->GetBinContent(6)/denominator_endcap[WZ]->Integral();
-	norm_fit_endcap[ZZ] = h_fitNch_endcap->GetBinContent(7)/denominator_endcap[ZZ]->Integral();
-	*/
-
-
-	//###########
-	/*
-		norm_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[TT]->Integral();
-		norm_pt_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[TT]->Integral();
-		norm_fit_endcap[QCD] = (h_fitNch_endcap->GetBinContent(2)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[QCD]->Integral();
-		norm_pt_fit_endcap[QCD] = (h_fitNch_endcap->GetBinContent(2)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[QCD]->Integral();
-		norm_fit_endcap[WW] = (h_fitNch_endcap->GetBinContent(5)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[WW]->Integral();
-		norm_pt_fit_endcap[WW] = (h_fitNch_endcap->GetBinContent(5)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[WW]->Integral();
-		norm_fit_endcap[WZ] = (h_fitNch_endcap->GetBinContent(6)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[WZ]->Integral();
-		norm_pt_fit_endcap[WZ] = (h_fitNch_endcap->GetBinContent(6)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[WZ]->Integral();
-		norm_fit_endcap[ZZ] = (h_fitNch_endcap->GetBinContent(7)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[ZZ]->Integral();
-		norm_pt_fit_endcap[ZZ] = (h_fitNch_endcap->GetBinContent(7)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[ZZ]->Integral();
-		*/
-	//###################
 	norm_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/sum_of_fitNch_endcap)*dataall_endcap_integ/denominator_endcap[TT]->Integral();
 	norm_pt_fit_endcap[TT] = (h_fitNch_endcap->GetBinContent(8)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/denominator_pt_fit_endcap[TT]->Integral();
 	norm_fit_endcap[QCD] = (h_fitNch_endcap->GetBinContent(2)/sum_of_fitNch_endcap)*dataall_endcap_integ/denominator_endcap[QCD]->Integral();
@@ -584,7 +399,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	norm_fit_endcap[ZZ] = (h_fitNch_endcap->GetBinContent(7)/sum_of_fitNch_endcap)*dataall_endcap_integ/denominator_endcap[ZZ]->Integral();
 	norm_pt_fit_endcap[ZZ] = (h_fitNch_endcap->GetBinContent(7)/sum_of_fitNch_endcap)*dataall_pt_endcap_integ/denominator_pt_fit_endcap[ZZ]->Integral();
 
-
 	norm_fit_endcap[Data1] = 1.0;
 	norm_fit_endcap[Data2] = 1.0;
 	norm_fit_barrel[Data1] = 1.0;
@@ -595,7 +409,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	norm_pt_fit_barrel[Data1] = 1.0;
 	norm_pt_fit_barrel[Data2] = 1.0;
 
-	//    norm_all[Data1] = (Xsec(tag)*lumi_all)/Nevts(tag);
 	TH1D* FR_QCDonly_barrel;
 	TH1D* FR_QCDonly_endcap;
 
@@ -622,27 +435,14 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* FR_QCDonly_barrel_beffit = (TH1D*)FR_QCDonly_barrel->Clone("FR_QCDonly_barrel_beffit");
 	TH1D* FR_QCDonly_endcap_beffit = (TH1D*)FR_QCDonly_endcap->Clone("FR_QCDonly_endcap_beffit");
 
-
-
 	for(int i=0;i<=QCD;i++) {
 		if (i==ALL) continue;
 		SampleTag tag = static_cast<SampleTag>(i);
 		denominator_barrel[i]->Scale(norm_fit_barrel[i]);
-		//       denominator_pt_fit_barrel[i]->Scale(norm_fit_barrel[i]);
 		denominator_pt_fit_barrel[i]->Scale(norm_pt_fit_barrel[i]);
-		//       denominator_pt_xsec_barrel[i]->Scale(norm_all[i]);
-		//       numerator_pt_barrel[i]->Scale(norm_all[i]);
-
-		//###L672		if (i==QCD) numerator_pt_barrel[i]->Scale(norm_pt_fit_barrel[i]);
 		numerator_pt_barrel[i]->Scale(norm_pt_fit_barrel[i]);
 		denominator_endcap[i]->Scale(norm_fit_endcap[i]);
-		//       denominator_pt_fit_endcap[i]->Scale(norm_fit_endcap[i]);
 		denominator_pt_fit_endcap[i]->Scale(norm_pt_fit_endcap[i]);
-		//       denominator_pt_xsec_endcap[i]->Scale(norm_all[i]);
-		//       numerator_pt_endcap[i]->Scale(norm_all[i]);
-		//###L679		if (i==QCD) numerator_pt_endcap[i]->Scale(norm_pt_fit_endcap[i]);
-		//	norm_fit_endcap[QCD] = (h_fitNch_endcap->GetBinContent(2)/h_fitNch_endcap->GetBinContent(9))*dataall_endcap_integ/denominator_endcap[QCD]->Integral();
-		//	norm_pt_fit_endcap[QCD] = (h_fitNch_endcap->GetBinContent(2)/h_fitNch_endcap->GetBinContent(9))*dataall_pt_endcap_integ/denominator_pt_fit_endcap[QCD]->Integral();
 		numerator_pt_endcap[i]->Scale(norm_pt_fit_endcap[i]);
 		std::cout << "#######################" << std::endl;
 		std::cout << "scaled denominator_pt_fit_barrel[" << Name(tag) << "(" << i << ")]: " << denominator_pt_fit_barrel[i]->Integral() << std::endl;
@@ -730,9 +530,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 
 
 		hratio_xsecvsfit->Draw("pe");
-		//chs->SaveAs(Form("print/Comp_Xsec_vs_Fit_%s_opt7_QCDDATASS2.pdf",Name(tag)));	
-		//###chs->SaveAs(Form("print/Comp_Xsec_vs_Fit_%s_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf",Name(tag)));	
-		//	chs->SaveAs(Form("printEst_20190128/Comp_Xsec_vs_Fit_%s_%s.pdf",Name(tag),rmk.Data()));	
 		chs->SaveAs(Form("printEst_%s/Comp_Xsec_vs_Fit_%s_%s.pdf",indir3.Data(),Name(tag),rmkf.Data()));  
 
 	}
@@ -740,52 +537,22 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	chs1->SetLogy(1);
 	hs_data->Draw("");
 	hs_xsec->Draw("same");
-	//	 chs1->SaveAs("print/Comp_Data_vs_Xsec_stacked_opt7_QCDDATASS2.pdf");
-	//	 chs1->SaveAs("print/Comp_Data_vs_Xsec_stacked_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf");
-	//	 chs1->SaveAs(Form("printEst_20190128/Comp_Data_vs_Xsec_stacked_%s.pdf",rmk.Data()));
 	chs1->SaveAs(Form("printEst_%s/Comp_Data_vs_Xsec_stacked_%s.pdf",indir3.Data(),rmkf.Data()));
 
 
 	hs_data->Draw("");
 	hs_fit->Draw("same");
-	//	 chs1->SaveAs("print/Comp_Data_vs_Fit_stacked_opt7_QCDDATASS2.pdf");
-	//	 chs1->SaveAs("print/Comp_Data_vs_Fit_stacked_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf");
-	//	 chs1->SaveAs(Form("printEst_20190128/Comp_Data_vs_Fit_stacked_%s.pdf",rmk.Data()));
 	chs1->SaveAs(Form("printEst_%s/Comp_Data_vs_Fit_stacked_%s.pdf",indir3.Data(),rmkf.Data()));
-
-	/*
-		TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
-		TH1D* FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
-
-		TH1D* FR_xsec_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_xsec_barrel);
-		TH1D* FR_xsec_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_xsec_endcap);
-		*/
-	//    TH1D* FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
-	//    TH1D* FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
-
-	//    TH1D* FR_template_barrel = (TH1D*)FRByTemplate(denominator_pt_fit_barrel, denominator_pt_fit_barrel);
-	//    TH1D* FR_template_endcap = (TH1D*)FRByTemplate(denominator_pt_fit_endcap, denominator_pt_fit_endcap);
 
 	TH1D* FR_template_barrel_tmp = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
 	TH1D* FR_template_endcap_tmp = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
 
-
 	TH1D* FR_xsec_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
 	TH1D* FR_xsec_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-	/*
-		TH1D* FRCheck_numerator_pt_barrel = (TH1D*)FRCheck(numerator_pt_barrel, numerator_pt_barrel);
-		TH1D* FRCheck_numerator_pt_endcap = (TH1D*)FRCheck(numerator_pt_endcap, numerator_pt_endcap);
-		TH1D* FRCheck_denominator_pt_fit_barrel = (TH1D*)FRCheck(denominator_pt_fit_barrel, denominator_pt_fit_barrel);
-		TH1D* FRCheck_denominator_pt_fit_endcap = (TH1D*)FRCheck(denominator_pt_fit_endcap, denominator_pt_fit_endcap);
-		*/
 	TH1D* FRCheck_numerator_pt_barrel;
 	TH1D* FRCheck_numerator_pt_endcap;
 	TH1D* FRCheck_denominator_pt_fit_barrel;
 	TH1D* FRCheck_denominator_pt_fit_endcap;
-	//	 FRCheck_numerator_pt_barrel->Sumw2();
-	//	 FRCheck_numerator_pt_endcap->Sumw2();
-	//	 FRCheck_denominator_pt_fit_barrel->Sumw2();
-	//	 FRCheck_denominator_pt_fit_endcap->Sumw2();
 	FRCheck_numerator_pt_barrel = (TH1D*)FRCheck(numerator_pt_barrel, numerator_pt_barrel);
 	FRCheck_numerator_pt_endcap = (TH1D*)FRCheck(numerator_pt_endcap, numerator_pt_endcap);
 	FRCheck_denominator_pt_fit_barrel = (TH1D*)FRCheck(denominator_pt_fit_barrel, denominator_pt_fit_barrel);
@@ -801,8 +568,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 
 	Ratio_barrel->Divide(Ratio_barrel,FRCheck_denominator_pt_fit_barrel,1,1,"B");
 	Ratio_endcap->Divide(Ratio_endcap,FRCheck_denominator_pt_fit_endcap,1,1,"B");
-
-
 
 	TH1D* Ratio_tot_barrel;
 	TH1D* Ratio_tot_endcap;
@@ -834,18 +599,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	Ratio_tot_barrel->SetName("Ratio_tot_barrel");
 	Ratio_tot_endcap->SetName("Ratio_tot_endcap");
 
-	//###	 Ratio_barrel->Divide(Ratio_barrel,FRCheck_denominator_pt_fit_barrel,1,1,"B");
-	//###	 Ratio_endcap->Divide(Ratio_endcap,FRCheck_denominator_pt_fit_endcap,1,1,"B");
-
-	//    TH1D* FR_xsec_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
-	//    TH1D* FR_xsec_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-
-	//###	 FR_xsec_barrel->Divide(FR_xsec_barrel,Ratio_barrel,1,1,"B");
-	//###	 FR_xsec_endcap->Divide(FR_xsec_endcap,Ratio_endcap,1,1,"B");
-
-	//	 FR_template_barrel->Divide(FR_template_barrel,FRCheck_denominator_pt_fit_barrel,1,1,"B");
-	//	 FR_template_endcap->Divide(FR_template_endcap,FRCheck_denominator_pt_fit_endcap,1,1,"B");
-
 	if (FRopt==101 || FRopt==102) {
 		std::cout << "FRopt == 101 or 102 , PASSED" << std::endl;
 	}
@@ -869,27 +622,10 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	TH1D* FR_QCDonly_barrel_aftfit = (TH1D*)FR_QCDonly_barrel->Clone("FR_QCDonly_barrel_aftfit");
 	TH1D* FR_QCDonly_endcap_aftfit = (TH1D*)FR_QCDonly_endcap->Clone("FR_QCDonly_endcap_aftfit");
 
-
 	TH1D* FR_template_barrel;
 	TH1D* FR_template_endcap;
 
-	/*
-		if (FRopt==10) {
-		FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
-		FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
-		}
-		else if (FRopt==11) {
-		FR_template_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
-		FR_template_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-		}
-		else if (FRopt==12) {
-		FR_template_barrel = (TH1D*)numerator_pt_barrel[QCD]->Clone();
-		FR_template_endcap = (TH1D*)numerator_pt_barrel[QCD]->Clone();
-		FR_template_barrel->Divide(numerator_pt_barrel[QCD],denominator_pt_fit_barrel[QCD],1,1,"B");
-		FR_template_endcap->Divide(numerator_pt_endcap[QCD],denominator_pt_fit_endcap[QCD],1,1,"B");
-		}
-		*/
-
+//### FR DECISION (start) - FR with different formulas, 200 : modified FR, 201 : original FR, 205 is corrected FR(nominal)
 	if (FRopt==200) {
 		FR_template_barrel = (TH1D*)FRByTemplate(numerator_pt_barrel, denominator_pt_fit_barrel);
 		FR_template_endcap = (TH1D*)FRByTemplate(numerator_pt_endcap, denominator_pt_fit_endcap);
@@ -928,25 +664,10 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 		FR_template_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
 		FR_template_barrel->Divide(FR_template_barrel,Ratio_tot_barrel,1,1,"B");
 		FR_template_endcap->Divide(FR_template_endcap,Ratio_tot_endcap,1,1,"B");
-
 	}
 	FR_template_barrel->SetName("FR_template_barrel");
 	FR_template_endcap->SetName("FR_template_endcap");
-
-	//###	 Ratio_barrel->Divide(Ratio_barrel,FRCheck_denominator_pt_fit_barrel,1,1,"B");
-	//###	 Ratio_endcap->Divide(Ratio_endcap,FRCheck_denominator_pt_fit_endcap,1,1,"B");
-
-	//    TH1D* FR_xsec_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
-	//    TH1D* FR_xsec_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-
-	//###	 FR_xsec_barrel->Divide(FR_xsec_barrel,Ratio_barrel,1,1,"B");
-	//###	 FR_xsec_endcap->Divide(FR_xsec_endcap,Ratio_endcap,1,1,"B");
-
-	//	 FR_template_barrel->Divide(FR_template_barrel,FRCheck_denominator_pt_fit_barrel,1,1,"B");
-	//	 FR_template_endcap->Divide(FR_template_endcap,FRCheck_denominator_pt_fit_endcap,1,1,"B");
-
-
-
+//### FR DECISION (end)
 
 	std::cout << "### CHECK UNITY ###" << std::endl;
 	double num_uni = denominator_pt_fit_barrel[Data1]->Integral()+denominator_pt_fit_barrel[Data2]->Integral();
@@ -957,11 +678,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	}
 	std::cout << "num_uni : " << num_uni << std::endl;
 	std::cout << "den_uni : " << den_uni << std::endl;
-
-
-	//    TH1D* FR_template_barrel = (TH1D*)FRByRatio(numerator_pt_barrel, denominator_pt_fit_barrel);
-	//    TH1D* FR_template_endcap = (TH1D*)FRByRatio(numerator_pt_endcap, denominator_pt_fit_endcap);
-
 
 	int W = 1200;
 	int H = 1200;
@@ -982,22 +698,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	tdrGrid(true);
 	lumiTextSize = 0.5;
 	cmsTextSize = 0.75;
-	/*
-		TH1D* ptFrame = new TH1D("ptFrame","",8,47,500);
-		ptFrame->SetStats(kFALSE);
-		ptFrame->GetXaxis()->SetTitle("p_{T}[GeV]");
-		ptFrame->GetYaxis()->SetTitle("Fake Rate");
-
-		ptFrame->SetMinimum(0);
-		ptFrame->SetMaximum(1.0); 
-		ptFrame->GetXaxis()->SetTitleOffset(1);
-		ptFrame->GetYaxis()->SetTitleOffset(1.1);
-		ptFrame->GetXaxis()->SetTitleSize(0.05);
-		ptFrame->GetYaxis()->SetTitleSize(0.05);  
-		ptFrame->GetXaxis()->SetLabelSize(0.035);
-		ptFrame->GetYaxis()->SetLabelSize(0.035); 
-		ptFrame->GetXaxis()->SetMoreLogLabels(); 
-		*/
 	TH2D* ptFrame = new TH2D("ptFrame","",8,47,500,105,-0.05,1.00);
 	ptFrame->SetStats(kFALSE);
 	ptFrame->GetXaxis()->SetTitle("p_{T}[GeV]");
@@ -1062,9 +762,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	FR_template_barrel->Draw("");
 	FR_xsec_barrel->Draw("same");
 	legend2->Draw("SAME");
-	//canv->Print("print/FR_Barrel_opt7_QCDDATASS2.pdf");
-	//canv->Print("print/FR_Barrel_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf");
-	//canv->Print(Form("printEst_20190128/FR_Barrel_%s.pdf",rmk.Data()));
 	canv->Print(Form("printEst_%s/FR_Barrel_%s.pdf",indir3.Data(),rmkf.Data()));
 
 	canv->Clear();
@@ -1076,28 +773,14 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	FR_template_endcap->Draw("");
 	FR_xsec_endcap->Draw("same");
 	legend2->Draw("SAME");
-	//canv->Print("print/FR_Endcap_opt7_QCDDATASS2.pdf");
-	//canv->Print("print/FR_Endcap_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.pdf");
-	//canv->Print(Form("printEst_20190128/FR_Endcap_%s.pdf",rmk.Data()));
 	canv->Print(Form("printEst_%s/FR_Endcap_%s.pdf",indir3.Data(),rmkf.Data()));
 
-
-	//TFile* g = new TFile("result/fakerate_opt7_QCDDATASS2.root","RECREATE");
-	//TFile* g = new TFile("result/fakerate_opt16_QCDopt2_histZVETO_SMUwJET_MuPtlt15_QCDin0p875Data.root","RECREATE");
-	//TFile* g = new TFile(Form("resultEst_20190128/fakerate_%s.root",rmk.Data()),"RECREATE");
 	TFile* g = new TFile(Form("resultEst_%s/fakerate_%s.root",indir3.Data(),rmkf.Data()),"RECREATE");
-
-
-	//    FRStore(g,numerator_pt_barrel, denominator_pt_fit_barrel);
-	//    FRStore(g,numerator_pt_endcap, denominator_pt_fit_endcap);
 
 	g->cd();
 	test_barrel_denominator_QCDtemplate->Write();
    test_barrel_numerator_QCDtemplate->Write();
 
-
-	//FR_template_barrel->Write();
-	//FR_template_endcap->Write();
 	FR_xsec_barrel->Write();
 	FR_xsec_endcap->Write();
 	FRCheck_numerator_pt_barrel->Write();
@@ -1117,8 +800,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 	FR_QCDonly_barrel_aftfit->Write();
 	FR_QCDonly_endcap_aftfit->Write();
 
-
-
 	Ratio_num_barrel->Write();
 	Ratio_num_endcap->Write();
 	Ratio_den_barrel->Write();
@@ -1128,10 +809,6 @@ void estimateFR_opttest_v20190918_ptincl(TString indir="20190906v62_60ptincl_iso
 
 	FR_template_barrel->Write();
 	FR_template_endcap->Write();
-
-
-
-
 
 	//##################################################################
 	g->Close();
@@ -1469,9 +1146,6 @@ void FRStore(TFile* g, TH1D** numerator, TH1D** denominator) {
 	tight_allch->Write();
 	loose_allch->Write();
 	ratio_allch->Write();
-
-
-
 
 	return;
 }
