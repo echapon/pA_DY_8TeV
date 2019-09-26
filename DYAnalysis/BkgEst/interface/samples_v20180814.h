@@ -169,6 +169,14 @@ namespace DYana_v20180814 {
       }
    };
 
+   const char* PathDimuTuple(SampleTag s) {
+      switch (s) {
+         case Data1:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_1stpart_2010604/180604_092521/0000/ntuple_skim*root"; break;
+         case Data2:     return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_2ndpart_2010604/180604_093537/0000/ntuple_skim*root"; break;
+         default:        return "Unknown sample";
+      }   
+   };  
+
    // path to the histos for emu
    const char* PathHistos(SampleTag s) {
       switch (s) {
