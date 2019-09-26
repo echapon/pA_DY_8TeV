@@ -103,8 +103,9 @@ double vertexFitChi2(std::vector<NtupleDimuon> dimuons, std::pair<PhysicsMuon,in
 			break;
 		}
 	}
-    if(fail) cout<<"Wrong"<<endl;
+    //###if(fail) cout<<"Wrong"<<endl;
 	//cout<<"Dimuon chi2 = "<<chi2<<endl;
+	//###if (!fail) std::cout <<"Dimuon chi2 = "<<chi2<< std::endl;
 	return chi2;
 }
 
