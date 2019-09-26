@@ -33,6 +33,22 @@ void initFRhistos() {
    f_dataMC->Close();
 };
 
+void initFRhistos_in2(TString infile1, TString infile2) {
+   using namespace fr; 
+   TFile *f1 = TFile::Open(infile1.Data());
+   TFile *f2 = TFile::Open(infile2.Data());
+
+   std::cout << "Nominal (template) FR file: " << infile1.Data() << std::endl;
+   std::cout << "Alternative (data-MC) FR file: " << infile2.Data() << std::endl;
+   
+   gFR_template_barrel = *(TH1D*) f1->Get("FR_template_barrel")->Clone("FR1");
+   gFR_template_endcap = *(TH1D*) f1->Get("FR_template_endcap")->Clone("FR2");
+   gFR_xsec_barrel = *(TH1D*) f2->Get("hFR2_barrel")->Clone("FR3");
+   gFR_xsec_endcap = *(TH1D*) f2->Get("hFR2_endcap")->Clone("FR4");
+   f1->Close();
+   f2->Close();
+};
+
 double FR_template(PhysicsMuon muon){
    using namespace fr;
 
