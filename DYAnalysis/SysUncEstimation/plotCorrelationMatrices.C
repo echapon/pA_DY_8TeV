@@ -35,7 +35,7 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
    }
 
    // and finally the total correlation matrix
-   TH2D *hm = matrix2hist(readSyst_all_cor(thevar,"../"),varname(thevar));
+   TH2D *hm = matrix2hist(readSyst_all_cor(thevar,"../",noacc),varname(thevar));
 
    MyCanvas c("correlation_matrices/"+cormatname+"_total_"+TString(varname(thevar)),xaxistitle(thevar),xaxistitle(thevar));
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
