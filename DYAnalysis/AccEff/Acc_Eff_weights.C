@@ -455,12 +455,25 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                   // TnP
                   double pt1 = SelectedMuonCollection[0].Pt;
                   double pt2 = SelectedMuonCollection[1].Pt;
-                  double eta1 = SelectedMuonCollection[0].eta;
-                  double eta2 = SelectedMuonCollection[1].eta;
+                  double eta1 = analyzer->sign*SelectedMuonCollection[0].eta;
+                  double eta2 = analyzer->sign*SelectedMuonCollection[1].eta;
+                  double aeta1 = fabs(eta1);
+                  double aeta2 = fabs(eta2);
 
                   // weights for MuID and iso
-                  TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,eta1,0)
-                     *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,eta2,0);
+                  // L1DoubleMuOpen uses relPF iso
+                  if (HLTname.Contains("L1DoubleMu")) {
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,aeta2,0);
+                  } else if (HLTname.Contains("L3Mu12")) {
+                     // L3Mu12 uses rel tk iso
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
+                  } else {
+                     cerr << "ERROR trigger should be L1DoubleMuOpen or L3Mu12" << endl;
+                     TnpWeight = 1.;
+                  }
+
                   // add trg... careful!
                   double sf_trg;
                   if (pt2>=15. && pt1>=15.) { // both muons could trigger
