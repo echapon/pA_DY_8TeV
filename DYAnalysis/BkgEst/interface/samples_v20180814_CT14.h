@@ -59,8 +59,8 @@ namespace DYana_v20180814_CT14 {
    // Nevts for each process
    int Nevts(SampleTag s) {
       switch (s) {
-         case DYMuMu1030_PbP:  return 1e6; break; // was 1e6 but contains 10-600 // 795824
-         case DYMuMu30_PbP:    return 971000; break;
+         case DYMuMu1030_PbP:  return 1980000; break; // was 1e6 but contains 10-600 // 795824
+         case DYMuMu30_PbP:    return 1940000; break;
          default:          return -1;
       }
    };
@@ -77,8 +77,8 @@ namespace DYana_v20180814_CT14 {
    // path to the ntuple
    const char* PathTuple(SampleTag s) {
       switch (s) {
-         case DYMuMu1030_PbP:return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Powheg_DY_M_10_30_mumu_PbP_CT14_GENonly/crab_DYtoMuMu_M-10_30_PbP_powheg_CT14_genonly_20180222_2/180222_132125/0000/ntuple_skim_*.root"; break;
-         case DYMuMu30_PbP:  return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/Powheg_DY_M_30_mumu_PbP_CT14_GENonly/crab_DYtoMuMu_M-30_PbP_powheg_CT14_genonly_20180222/180222_102155/0000/ntuple_skim_*root"; break;
+         case DYMuMu1030_PbP:return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DY_M_10_30_mumu_8p16TeV_Pbp_CT14_noEWK_Z/crab_DYtoMuMu_M-10_30_PbP_powheg_CT14_noEWK_genonly_20190928_2/190928_173808/0000/ntuple_skim_*.root"; break;
+         case DYMuMu30_PbP:  return "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/DY_M_30_mumu_8p16TeV_Pbp_CT14_noEWK_Z/crab_DYtoMuMu_M-30_PbP_powheg_CT14_noEWK_genonly_20190928/190928_165503/0000/ntuple_skim_*root"; break;
          default:        return "Unknown sample";
       }
    };
@@ -118,8 +118,8 @@ namespace DYana_v20180814_CT14 {
    // path to ntuple in EOS
    const char* NtupleDir(SampleTag s) {
       switch(s) {
-         case DYMuMu1030_PbP:return "Powheg_DY_M_10_30_mumu_PbP_CT14_GENonly/crab_DYtoMuMu_M-10_30_PbP_powheg_CT14_genonly_20180222_2/180222_132125/0000/"; break;
-         case DYMuMu30_PbP:  return "Powheg_DY_M_30_mumu_PbP_CT14_GENonly/crab_DYtoMuMu_M-30_PbP_powheg_CT14_genonly_20180222/180222_102155/0000/"; break;
+         case DYMuMu1030_PbP:return "DY_M_10_30_mumu_8p16TeV_Pbp_CT14_noEWK_Z/crab_DYtoMuMu_M-10_30_PbP_powheg_CT14_noEWK_genonly_20190928_2/190928_173808/0000"; break;
+         case DYMuMu30_PbP:  return "DY_M_30_mumu_8p16TeV_Pbp_CT14_noEWK_Z/crab_DYtoMuMu_M-30_PbP_powheg_CT14_noEWK_genonly_20190928/190928_165503/0000"; break;
          default:        return "Unknown sample";
       }
    };
