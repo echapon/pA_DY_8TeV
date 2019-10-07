@@ -83,6 +83,10 @@ void selectEmuEvts(SampleTag index)
     TH1D* emuSS_mass  = new TH1D("emuSS_mass","",nbinsvar(var::mass),binsvar(var::mass));
     TH1D* dimu_mass   = new TH1D("dimu_mass","",nbinsvar(var::mass),binsvar(var::mass));
     TH1D* dimuSS_mass = new TH1D("dimuSS_mass","",nbinsvar(var::mass),binsvar(var::mass));
+    TH1D* emu_mass3bins    = new TH1D("emu_mass3bins","",nbinsvar(var::mass3bins),binsvar(var::mass3bins));
+    TH1D* emuSS_mass3bins  = new TH1D("emuSS_mass3bins","",nbinsvar(var::mass3bins),binsvar(var::mass3bins));
+    TH1D* dimu_mass3bins   = new TH1D("dimu_mass3bins","",nbinsvar(var::mass3bins),binsvar(var::mass3bins));
+    TH1D* dimuSS_mass3bins = new TH1D("dimuSS_mass3bins","",nbinsvar(var::mass3bins),binsvar(var::mass3bins));
     TH1D* emu_pt    = new TH1D("emu_pt","",nbinsvar(var::pt),binsvar(var::pt));
     TH1D* emuSS_pt  = new TH1D("emuSS_pt","",nbinsvar(var::pt),binsvar(var::pt));
     TH1D* dimu_pt   = new TH1D("dimu_pt","",nbinsvar(var::pt),binsvar(var::pt));
@@ -236,6 +240,7 @@ void selectEmuEvts(SampleTag index)
                 okEmu++;
                 if( emu->first.charge * emu->second.charge < 0 ) {
                    emu_mass->Fill(mass,weight); 
+                   emu_mass3bins->Fill(mass3bins,weight); 
                    emu_chi2->Fill(chi2min,weight); 
                    numerator_pt->Fill(mu.pt,weight);
                    if (fabs(mu.eta)<1.2) numerator_pt_barrel->Fill(mu.pt,weight);
@@ -251,6 +256,7 @@ void selectEmuEvts(SampleTag index)
                    }
                 } else {
                    emuSS_mass->Fill(mass,weight);
+                   emuSS_mass3bins->Fill(mass3bins,weight);
                    emuSS_chi2->Fill(chi2min,weight);
                    numeratorSS_pt->Fill(mu.pt,weight);
                    if (fabs(mu.eta)<1.2) numeratorSS_pt_barrel->Fill(mu.pt,weight);
@@ -292,6 +298,7 @@ void selectEmuEvts(SampleTag index)
                 okDimu++;
                 if( dimuon->first.charge * dimuon->second.charge <0 ) {
                    dimu_mass->Fill(mass,weight);
+                   dimu_mass3bins->Fill(mass3bins,weight);
                    dimu_chi2->Fill(chi2min,weight);
                    if (mass>60&&mass<120) {
                       dimu_pt->Fill(pt,weight); 
@@ -304,6 +311,7 @@ void selectEmuEvts(SampleTag index)
                    }
                 } else {
                    dimuSS_mass->Fill(mass,weight);
+                   dimuSS_mass3bins->Fill(mass3bins,weight);
                    dimuSS_chi2->Fill(chi2min,weight);
                    if (mass>60&&mass<120) {
                       dimuSS_pt->Fill(pt,weight); 
