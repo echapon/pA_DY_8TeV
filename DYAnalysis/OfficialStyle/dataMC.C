@@ -54,7 +54,7 @@ void dataMC(var thevar)
    TopPad->SetFillColor(0);
    TopPad->SetBorderMode(0);
    TopPad->SetBorderSize(2);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       TopPad->SetLogx();
       TopPad->SetLogy();
    }
@@ -164,7 +164,7 @@ void dataMC(var thevar)
    h_data->SetMarkerSize(1.0);
    h_data->GetXaxis()->SetTitle(thexaxistitle);
    // h_data->GetXaxis()->SetRange(1,43);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
       h_data->GetXaxis()->SetMoreLogLabels();
    }
    h_data->GetXaxis()->SetNoExponent();
@@ -172,7 +172,7 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetLabelSize(0);
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
-   if (thevar==var::mass) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
+   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
    else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
    else h_data->GetYaxis()->SetTitle("Entries / 1");
    h_data->GetYaxis()->SetLabelFont(42);
@@ -254,7 +254,7 @@ void dataMC(var thevar)
    bottomPad->SetFillColor(0);
    bottomPad->SetBorderMode(0);
    bottomPad->SetBorderSize(2);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560)  bottomPad->SetLogx();
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560)  bottomPad->SetLogx();
    //bottomPad->SetGridx();
    //bottomPad->SetGridy();
    bottomPad->SetTickx(1);
@@ -279,7 +279,7 @@ void dataMC(var thevar)
    hratio->SetMarkerStyle(20);
    hratio->GetXaxis()->SetTitle(thexaxistitle);
    // hratio->GetXaxis()->SetRange(1,43);
-   if (thevar==var::mass || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) hratio->GetXaxis()->SetMoreLogLabels();
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) hratio->GetXaxis()->SetMoreLogLabels();
    hratio->GetXaxis()->SetNoExponent();
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);

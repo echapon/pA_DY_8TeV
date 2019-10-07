@@ -17,9 +17,9 @@
    // gSystem->SetIncludePath("-I/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/lhapdf/6.1.6-ikhhed/include/");
    // gSystem->AddLinkedLibs("/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/lhapdf/6.1.6-ikhhed/lib/libLHAPDF.so");
 
-   // setup LHAPDF for lxplus
-   if (TString(gSystem->Getenv("HOSTNAME")).Contains("lxplus")) {
-      gROOT->ProcessLine(".include /afs/cern.ch/work/e/echapon/private/xFitter/deps/lhapdf/include/");
-      gSystem->Load("/afs/cern.ch/work/e/echapon/private/xFitter/deps/lhapdf/lib/libLHAPDF.so");
-   }
+   // // setup LHAPDF for lxplus
+   // if (TString(gSystem->Getenv("HOSTNAME")).Contains("lxplus")) {
+   //    gROOT->ProcessLine(".include /afs/cern.ch/work/e/echapon/private/xFitter/deps/lhapdf/include/");
+   //    gSystem->Load("/afs/cern.ch/work/e/echapon/private/xFitter/deps/lhapdf/lib/libLHAPDF.so");
+   // }
 }

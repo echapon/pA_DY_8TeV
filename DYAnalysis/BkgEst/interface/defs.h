@@ -108,16 +108,16 @@ namespace DYana {
    };
 
    var str2var(TString variable) {
-      if (variable.Contains("mass")) return mass;
-      else if (variable.Contains("mass3bins")) return mass3bins;
+      if (variable.Contains("mass3bins")) return mass3bins;
+      else if (variable.Contains("mass")) return mass;
       else if (variable.Contains("pt1560")) return pt1560;
       else if (variable.Contains("phistar1560")) return phistar1560;
       else if (variable.Contains("pt")) return pt;
       else if (variable.Contains("phistar")) return phistar;
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
-      else if (variable.Contains("Mass")) return mass;
       else if (variable.Contains("Mass3bins")) return mass3bins;
+      else if (variable.Contains("Mass")) return mass;
       else if (variable.Contains("Rap1560")) return rap1560;
       else if (variable.Contains("Phistar1560")) return phistar1560;
       else if (variable.Contains("Pt1560")) return pt1560;

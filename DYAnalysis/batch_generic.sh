@@ -20,5 +20,5 @@ uname -a
 which root
 
 
-echo root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
-root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
+echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'

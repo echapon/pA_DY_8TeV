@@ -4,7 +4,7 @@ void plotNonClosure(TString variable) {
 
    TCanvas c1;
 
-   if (variable=="mass") {
+   if (variable.Contains("mass")) {
       c1.SetLogx();
       h_nonclosure->GetXaxis()->SetTitle("M [GeV/c^{2}]");
    } else if (variable.Contains("phistar")) {
@@ -33,6 +33,7 @@ void plotNonClosure(TString variable) {
 
 void plotNonClosure() {
    plotNonClosure("mass");
+   plotNonClosure("mass3bins");
    plotNonClosure("rap1560");
    plotNonClosure("pt1560");
    plotNonClosure("phistar1560");

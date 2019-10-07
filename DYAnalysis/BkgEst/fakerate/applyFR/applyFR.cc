@@ -321,6 +321,8 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histDijet1->Fill(mass, weight_template);
                   histDijet2->Fill(mass, weight_ratio);
+                  hist3binsDijet1->Fill(mass, weight_template);
+                  hist3binsDijet2->Fill(mass, weight_ratio);
                   fitDijet1->Fill(mass, weight2_template);
                   fitDijet2->Fill(mass, weight2_ratio);
                   fitMETDijet1->Fill(MET, weight2_template);
@@ -351,6 +353,8 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameDijet1->Fill(mass, weight_template);
                   histSameDijet2->Fill(mass, weight_ratio);
+                  hist3binsSameDijet1->Fill(mass, weight_template);
+                  hist3binsSameDijet2->Fill(mass, weight_ratio);
                   fitSameDijet1->Fill(mass, weight2_template);
                   fitSameDijet2->Fill(mass, weight2_ratio);
                   fitMETSameDijet1->Fill(MET, weight2_template);
@@ -404,6 +408,8 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histWJets1->Fill(mass, weight_template);
                   histWJets2->Fill(mass, weight_ratio);
+                  hist3binsWJets1->Fill(mass, weight_template);
+                  hist3binsWJets2->Fill(mass, weight_ratio);
                   // if (passingMuons->at(0).first.isolation(0.15)) {
                      fitWJets1->Fill(mass, wt);
                      fitWJets2->Fill(mass, wt);
@@ -436,6 +442,8 @@ void applyFR(SampleTag index) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameWJets1->Fill(mass, weight_template);
                   histSameWJets2->Fill(mass, weight_ratio);
+                  hist3binsSameWJets1->Fill(mass, weight_template);
+                  hist3binsSameWJets2->Fill(mass, weight_ratio);
                   // if (passingMuons->at(0).first.isolation(0.15)) {
                      fitSameWJets1->Fill(mass, wt);
                      fitSameWJets2->Fill(mass, wt);
@@ -487,6 +495,7 @@ void applyFR(SampleTag index) {
             if( sign < 0 ) {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histDYsel->Fill(mass, wt);
+                  hist3binsDYsel->Fill(mass, wt);
                   // if (passingMuons->at(0).first.isolation(0.15)) {
                      fitDYsel->Fill(mass, wt);
                      fitMETDYsel->Fill(MET, wt);
@@ -508,6 +517,7 @@ void applyFR(SampleTag index) {
             } else {
                if( mass > bins[0] && mass < bins[binnum-1]) {
                   histSameDYsel->Fill(mass, wt);
+                  hist3binsSameDYsel->Fill(mass, wt);
                   // if (passingMuons->at(0).first.isolation(0.15)) {
                      fitSameDYsel->Fill(mass, wt);
                      fitMETSameDYsel->Fill(MET, wt);
