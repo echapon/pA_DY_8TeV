@@ -185,27 +185,31 @@ void dataMC(var thevar)
    h_data->GetZaxis()->SetTitleSize(0.035);
    h_data->GetZaxis()->SetTitleFont(42);
    double yaxismin = 0.001;
-   if (thevar == var::pt) yaxismin = 0.01;
-   else if (thevar == var::pt1560) {
-      yaxismin = 0.0001;
-      h_data->SetMaximum(900);
+   if (thevar == var::pt) {
+      yaxismin = 0.1;
+      h_data->SetMaximum(2e4);
+   } else if (thevar == var::pt1560) {
+      yaxismin = 0.1;
+      h_data->SetMaximum(1900);
    } else if (thevar == var::rap1560) {
       yaxismin = 0;
-      h_data->SetMaximum(1450);
+      h_data->SetMaximum(1550);
    } else if (thevar == var::rap60120) {
       yaxismin = 0;
-      h_data->SetMaximum(7950);
+      h_data->SetMaximum(8150);
    } else if (thevar == var::phistar) {
-      yaxismin = 1;
-      h_data->SetMaximum(5e5);
+      yaxismin = 10;
+      h_data->SetMaximum(9e5);
    } else if (thevar == var::phistar1560) {
-      yaxismin = 1;
+      yaxismin = 10;
       h_data->SetMaximum(5e5);
    }
    h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
-   if (thevar==var::pt || thevar==var::pt1560) h_data->GetXaxis()->SetRangeUser(0.5,600);
-   if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetXaxis()->SetRangeUser(0.001,3.277);
+   if (thevar==var::pt) h_data->GetXaxis()->SetRangeUser(0.5,ptbin_meas[ptbinnum_meas-1]);
+   if (thevar==var::pt1560) h_data->GetXaxis()->SetRangeUser(0.5,ptbin_meas_1560[ptbinnum_meas_1560-1]);
+   if (thevar==var::phistar) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
+   if (thevar==var::phistar1560) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -245,6 +249,7 @@ void dataMC(var thevar)
    // ttitle->SetTextSize(0.035);
    // ptitle->Draw("0");
    CMS_lumi( TopPad, 111, 0 );
+   TopPad->RedrawAxis();
 
 // ------------>Primitives in pad: bottomPad
    TPad *bottomPad = new TPad("bottomPad", "bottomPad",0.01,0.01,0.99,0.3);
@@ -299,8 +304,10 @@ void dataMC(var thevar)
    hratio->GetZaxis()->SetTitleSize(0.035);
    hratio->GetZaxis()->SetTitleFont(42);
    hratio->Draw("E1PL");
-   if (thevar==var::pt || thevar==var::pt1560) hratio->GetXaxis()->SetRangeUser(0.5,600);
-   if (thevar==var::phistar || thevar==phistar1560) hratio->GetXaxis()->SetRangeUser(0.001,3.277);
+   if (thevar==var::pt) hratio->GetXaxis()->SetRangeUser(0.5,ptbin_meas[ptbinnum_meas-1]);
+   if (thevar==var::pt1560) hratio->GetXaxis()->SetRangeUser(0.5,ptbin_meas_1560[ptbinnum_meas_1560-1]);
+   if (thevar==var::phistar) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
+   if (thevar==var::phistar1560) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
    hratio->Draw("E1PL");
    
    TF1 *f_line1 = new TF1("f_line","1",-10000,10000);
