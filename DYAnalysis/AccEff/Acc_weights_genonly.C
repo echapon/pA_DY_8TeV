@@ -45,6 +45,7 @@ void Acc_weights_genonly(TString Sample)
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
    TH1D* h_mass_AccTotal[nweights];
+   TH1D* h_mass3bins_AccTotal[nweights];
    TH1D* h_pt_AccTotal[nweights];
    TH1D* h_phistar_AccTotal[nweights];
    TH1D* h_rap1560_AccTotal[nweights];
@@ -52,6 +53,7 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_pt1560_AccTotal[nweights];
    TH1D* h_phistar1560_AccTotal[nweights];
    TH1D* h_mass_AccTotal_pre[nweights];
+   TH1D* h_mass3bins_AccTotal_pre[nweights];
    TH1D* h_pt_AccTotal_pre[nweights];
    TH1D* h_phistar_AccTotal_pre[nweights];
    TH1D* h_rap1560_AccTotal_pre[nweights];
@@ -59,6 +61,7 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_pt1560_AccTotal_pre[nweights];
    TH1D* h_phistar1560_AccTotal_pre[nweights];
    TH1D* h_mass_AccTotal_post[nweights];
+   TH1D* h_mass3bins_AccTotal_post[nweights];
    TH1D* h_pt_AccTotal_post[nweights];
    TH1D* h_phistar_AccTotal_post[nweights];
    TH1D* h_rap1560_AccTotal_post[nweights];
@@ -66,6 +69,7 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_pt1560_AccTotal_post[nweights];
    TH1D* h_phistar1560_AccTotal_post[nweights];
    TH1D* h_mass_AccPass[nweights];
+   TH1D* h_mass3bins_AccPass[nweights];
    TH1D* h_pt_AccPass[nweights];
    TH1D* h_phistar_AccPass[nweights];
    TH1D* h_rap1560_AccPass[nweights];
@@ -78,6 +82,10 @@ void Acc_weights_genonly(TString Sample)
       h_mass_AccTotal_pre[i] = new TH1D(Form("h_mass_AccTotal_pre%d",i), "", binnum, bins);
       h_mass_AccTotal_post[i] = new TH1D(Form("h_mass_AccTotal_post%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
+      h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum3, bins3);
+      h_mass3bins_AccTotal_pre[i] = new TH1D(Form("h_mass3bins_AccTotal_pre%d",i), "", binnum3, bins3);
+      h_mass3bins_AccTotal_post[i] = new TH1D(Form("h_mass3bins_AccTotal_post%d",i), "", binnum3, bins3);
+      h_mass3bins_AccPass[i] = new TH1D(Form("h_mass3bins_AccPass%d",i), "", binnum3, bins3);
       h_pt_AccTotal[i] = new TH1D(Form("h_pt_AccTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccTotal_pre[i] = new TH1D(Form("h_pt_AccTotal_pre%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccTotal_post[i] = new TH1D(Form("h_pt_AccTotal_post%d",i), "", ptbinnum_meas, ptbin_meas);
@@ -275,6 +283,7 @@ void Acc_weights_genonly(TString Sample)
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                h_mass_AccTotal[iwt]->Fill( gen_M, wt );
+               h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
                   h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
@@ -287,6 +296,7 @@ void Acc_weights_genonly(TString Sample)
                if( Flag_PassAcc == kTRUE ) 
                {
                   h_mass_AccPass[iwt]->Fill( gen_M, wt );
+                  h_mass3bins_AccPass[iwt]->Fill( gen_M, wt );
                   if (gen_M>60 && gen_M<120) {
                      h_pt_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar_AccPass[iwt]->Fill( gen_Phistar, wt );
@@ -299,6 +309,7 @@ void Acc_weights_genonly(TString Sample)
                }
 
                h_mass_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
+               h_mass3bins_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
                if (gen_M_pre>60 && gen_M_pre<120) {
                   h_pt_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
                   h_phistar_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
@@ -310,6 +321,7 @@ void Acc_weights_genonly(TString Sample)
                }
 
                h_mass_AccTotal_post[iwt]->Fill( gen_M_post, wt );
+               h_mass3bins_AccTotal_post[iwt]->Fill( gen_M_post, wt );
                if (gen_M_post>60 && gen_M_post<120) {
                   h_pt_AccTotal_post[iwt]->Fill( gen_Pt_post, wt );
                   h_phistar_AccTotal_post[iwt]->Fill( gen_Phistar_post, wt );
@@ -342,6 +354,10 @@ void Acc_weights_genonly(TString Sample)
       h_mass_AccTotal_pre[i]->Write();
       h_mass_AccTotal_post[i]->Write();
       h_mass_AccPass[i]->Write();
+      h_mass3bins_AccTotal[i]->Write();
+      h_mass3bins_AccTotal_pre[i]->Write();
+      h_mass3bins_AccTotal_post[i]->Write();
+      h_mass3bins_AccPass[i]->Write();
       h_pt_AccTotal[i]->Write();
       h_phistar_AccTotal[i]->Write();
       h_pt_AccTotal_pre[i]->Write();
