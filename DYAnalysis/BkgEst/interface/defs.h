@@ -45,6 +45,8 @@ namespace DYana {
    // mass (compatible with SMP-14-003)
    const int binnum = 13;
    double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
+   const int binnum3 = 3;
+   double bins3[14] = {15,60,120,600};
    // pt
    const int ptbinnum_endcap = 11;
    double ptbin_endcap[ptbinnum_endcap+1] = {10,15,20,25,30,35,40,50,70,100,200,500};
@@ -53,11 +55,11 @@ namespace DYana {
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
    
-   // pt for measurement 60-120 (same as SMP-14-012)
-   const int ptbinnum_meas = 18;
-   double ptbin_meas[ptbinnum_meas+1] = {0,2.5,5,7.5,10,12.5,15,17.5,20,30,40,50,70,90,110,150,190,250,600};
-   const int ptbinnum_meas_1560 = 9;
-   double ptbin_meas_1560[ptbinnum_meas_1560+1] = {0,5,10,15,20,40,70,110,190,600};
+   // pt for measurement 60-120 (almost same as SMP-14-012)
+   const int ptbinnum_meas = 17;
+   double ptbin_meas[ptbinnum_meas+1] = {0,2.5,5,7.5,10,12.5,15,17.5,20,30,40,50,70,90,110,150,200,300};//190,250,600};
+   const int ptbinnum_meas_1560 = 8;
+   double ptbin_meas_1560[ptbinnum_meas_1560+1] = {0,5,10,15,20,40,70,110,200};//190,600};
    
    // rapidity binning (compatible with, but finer than, HIN-15-002)
    const int rapbinnum_1560 = 12;
@@ -95,6 +97,7 @@ namespace DYana {
    // enum for variable type
    enum var : int {
       mass=0, 
+      mass3bins, 
       pt, 
       phistar, 
       rap60120, 
@@ -106,6 +109,7 @@ namespace DYana {
 
    var str2var(TString variable) {
       if (variable.Contains("mass")) return mass;
+      else if (variable.Contains("mass3bins")) return mass3bins;
       else if (variable.Contains("pt1560")) return pt1560;
       else if (variable.Contains("phistar1560")) return phistar1560;
       else if (variable.Contains("pt")) return pt;
@@ -113,17 +117,19 @@ namespace DYana {
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
       else if (variable.Contains("Mass")) return mass;
+      else if (variable.Contains("Mass3bins")) return mass3bins;
       else if (variable.Contains("Rap1560")) return rap1560;
+      else if (variable.Contains("Phistar1560")) return phistar1560;
       else if (variable.Contains("Pt1560")) return pt1560;
       else if (variable.Contains("Pt")) return pt;
       else if (variable.Contains("Phistar")) return phistar;
       else if (variable.Contains("Rap60120")) return rap60120;
-      else if (variable.Contains("Phistar1560")) return phistar1560;
       return mass;
    };
 
    const char* varname(var thevar) {
       if (thevar==var::mass) return "mass";
+      else if (thevar==var::mass3bins) return "mass3bins";
       else if (thevar==var::pt) return "pt";
       else if (thevar==var::phistar) return "phistar";
       else if (thevar==var::rap60120) return "rap60120";
@@ -135,6 +141,7 @@ namespace DYana {
 
    const char* Varname(var thevar) {
       if (thevar==var::mass) return "Mass";
+      else if (thevar==var::mass3bins) return "Mass3bins";
       else if (thevar==var::pt) return "Pt";
       else if (thevar==var::phistar) return "Phistar";
       else if (thevar==var::rap60120) return "Rap60120";
@@ -145,14 +152,14 @@ namespace DYana {
    };
 
    const char* xaxistitle(var thevar) {
-      if (thevar==var::mass) return "M [GeV/c^{2}]";
+      if (thevar==var::mass || thevar==var::mass3bins) return "M [GeV/c^{2}]";
       else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV/c]";
       else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
       else return "y_{CM}";
    };
 
    const char* xaxistitletex(var thevar) {
-      if (thevar==var::mass) return "\\mmumu [\\GeVcc]";
+      if (thevar==var::mass || thevar==var::mass3bins) return "\\mmumu [\\GeVcc]";
       else if (thevar==var::pt || thevar==var::pt1560) return "\\pt [\\GeVc]";
       else if (thevar==var::phistar || thevar==var::phistar1560) return "\\phistar";
       else return "$y_\\text{CM}$";
@@ -162,6 +169,7 @@ namespace DYana {
 
    int nbinsvar(var thevar) {
       if (thevar==var::mass) return binnum;
+      else if (thevar==var::mass3bins) return binnum3;
       else if (thevar==var::pt) return ptbinnum_meas;
       else if (thevar==var::phistar) return phistarnum;
       else if (thevar==var::rap1560) return rapbinnum_1560;
@@ -172,6 +180,7 @@ namespace DYana {
 
    double* binsvar(var thevar) {
       if (thevar==var::mass) return bins;
+      else if (thevar==var::mass3bins) return bins3;
       else if (thevar==var::pt) return ptbin_meas;
       else if (thevar==var::phistar) return phistarbin;
       else if (thevar==var::rap1560) return rapbin_1560;
