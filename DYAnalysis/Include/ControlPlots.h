@@ -31,6 +31,7 @@ public:
 	TH1D *h_phi;
 	TH1D *h_mass;
 	TH1D *h_mass2;
+	TH1D *h_mass3bins;
 	TH1D *h_massZ;
 	TH1D *h_diPt;
 	TH1D *h_diPt2_M60to120;
@@ -66,6 +67,7 @@ public:
 	TH1D *h_mass_OS;
 	TH1D *h_mass_SS;
 	TH1D *h_mass2_SS;
+	TH1D *h_mass3bins_SS;
 	TH1D *h_diPt2_SS_M60to120;
 	TH1D *h_diPt2_SS_M15to60;
 	TH1D *h_Phistar2_SS_M60to120;
@@ -171,6 +173,7 @@ public:
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
 		h_mass = new TH1D("h_mass_"+Type, "", 120, 0, 600); Histo.push_back( h_mass );
 		h_mass2 = new TH1D("h_mass2_"+Type, "", binnum, bins); Histo.push_back( h_mass2 );
+		h_mass3bins = new TH1D("h_mass3bins_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins );
 		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 100, 0, 500); Histo.push_back( h_diPt );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
@@ -206,6 +209,7 @@ public:
 		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_OS );
 		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_SS );
 		h_mass2_SS = new TH1D("h_mass2_SS_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS );
+		h_mass3bins_SS = new TH1D("h_mass3bins_SS_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins_SS );
 		h_diPt2_SS_M60to120 = new TH1D("h_diPt2_SS_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_SS_M60to120 );
 		h_diPt2_SS_M15to60 = new TH1D("h_diPt2_SS_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_SS_M15to60 );
 		h_Phistar2_SS_M60to120 = new TH1D("h_Phistar2_SS_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_SS_M60to120 );
@@ -478,6 +482,7 @@ public:
       if (!isOS) {
 			h_mass_SS->Fill( reco_M, weight );
 			h_mass2_SS->Fill( reco_M, weight );
+			h_mass3bins_SS->Fill( reco_M, weight );
 
          if( reco_M >= 15 && reco_M < 60 ) {
             h_diRap2_SS_M15to60->Fill( reco_Rap-rapshift, weight);
@@ -510,6 +515,7 @@ public:
 		//Dimuon Mass/Pt/Rapidity
 		h_mass->Fill( reco_M, weight );
 		h_mass2->Fill( reco_M, weight );
+		h_mass3bins->Fill( reco_M, weight );
 		h_massZ->Fill( reco_M, weight );
 		h_diPt->Fill( reco_Pt, weight );
 		h_diRap->Fill( reco_Rap, weight );
@@ -691,6 +697,7 @@ public:
 	TH1D *h_mass_OS;
 	TH1D *h_mass_SS;
 	TH1D *h_mass2_SS;
+	TH1D *h_mass3bins_SS;
 
 	TH1D *h_minusCharge_Pt;
 	TH1D *h_minusCharge_eta;
@@ -742,6 +749,7 @@ public:
 		h_mass_OS = new TH1D("h_mass_OS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_OS );
 		h_mass_SS = new TH1D("h_mass_SS_"+Type, "", 100, 0, 500); Histo.push_back( h_mass_SS );
 		h_mass2_SS = new TH1D("h_mass2_SS_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS );
+		h_mass3bins_SS = new TH1D("h_mass3bins_SS_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins_SS );
 
 		h_minusCharge_Pt = new TH1D("h_minusCharge_Pt_"+Type, "", 125, 0, 250); Histo.push_back( h_minusCharge_Pt );
 		h_minusCharge_eta = new TH1D("h_minusCharge_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_minusCharge_eta );
@@ -863,6 +871,7 @@ public:
 		else {
 			h_mass_SS->Fill( reco_M, weight );
 			h_mass2_SS->Fill( reco_M, weight );
+			h_mass3bins_SS->Fill( reco_M, weight );
       }
 	}
 

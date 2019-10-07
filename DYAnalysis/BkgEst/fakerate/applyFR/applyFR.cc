@@ -63,6 +63,10 @@ void applyFR(SampleTag index) {
    TH1D* histDijet2 = new TH1D("histDijet2","",binnum,bins);
    TH1D* histSameDijet1 = new TH1D("histSameDijet1","",binnum,bins);
    TH1D* histSameDijet2 = new TH1D("histSameDijet2","",binnum,bins);
+   TH1D* hist3binsDijet1 = new TH1D("hist3binsDijet1","",binnum3,bins3);
+   TH1D* hist3binsDijet2 = new TH1D("hist3binsDijet2","",binnum3,bins3);
+   TH1D* hist3binsSameDijet1 = new TH1D("hist3binsSameDijet1","",binnum3,bins3);
+   TH1D* hist3binsSameDijet2 = new TH1D("hist3binsSameDijet2","",binnum3,bins3);
 
    TH1D* fitDijet1 = new TH1D("fitDijet1","",37,15,200);
    TH1D* fitDijet2 = new TH1D("fitDijet2","",37,15,200);
@@ -121,6 +125,10 @@ void applyFR(SampleTag index) {
    TH1D* histWJets2 = new TH1D("histWJets2","",binnum,bins);
    TH1D* histSameWJets1 = new TH1D("histSameWJets1","",binnum,bins);
    TH1D* histSameWJets2 = new TH1D("histSameWJets2","",binnum,bins);
+   TH1D* hist3binsWJets1 = new TH1D("hist3binsWJets1","",binnum3,bins3);
+   TH1D* hist3binsWJets2 = new TH1D("hist3binsWJets2","",binnum3,bins3);
+   TH1D* hist3binsSameWJets1 = new TH1D("hist3binsSameWJets1","",binnum3,bins3);
+   TH1D* hist3binsSameWJets2 = new TH1D("hist3binsSameWJets2","",binnum3,bins3);
 
    TH1D* fitWJets1 = new TH1D("fitWJets1","",37,15,200);
    TH1D* fitWJets2 = new TH1D("fitWJets2","",37,15,200);
@@ -176,6 +184,8 @@ void applyFR(SampleTag index) {
    tdir->cd();
    TH1D* histDYsel = new TH1D("histDYsel","",binnum,bins);
    TH1D* histSameDYsel = new TH1D("histSameDYsel","",binnum,bins);
+   TH1D* hist3binsDYsel = new TH1D("hist3binsDYsel","",binnum3,bins3);
+   TH1D* hist3binsSameDYsel = new TH1D("hist3binsSameDYsel","",binnum3,bins3);
 
    TH1D* fitDYsel = new TH1D("fitDYsel","",37,15,200);
    TH1D* fitSameDYsel = new TH1D("fitSameDYsel","",37,15,200);

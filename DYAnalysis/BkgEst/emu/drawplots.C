@@ -4,12 +4,12 @@ void drawplots(const char* var="mass") {
    TFile *f = TFile::Open(Form("result/emu_%s.root",var));
    TString xaxis;
    TString tvar(var);
-   if (tvar=="mass") xaxis = "M_{e#mu} [GeV/c^{2}]";
+   if (tvar.Contains("mass")) xaxis = "M_{e#mu} [GeV/c^{2}]";
    else if (tvar.Contains("pt")) xaxis = "p_{T,e#mu} [GeV/c]";
    else if (tvar.Contains("phistar")) xaxis = "#phi^{*}_{e#mu}";
    else xaxis = "y_{e#mu}";
 
-   bool logx = (tvar=="mass" || tvar.Contains("pt") || tvar.Contains("phistar"));
+   bool logx = (tvar.Contains("mass") || tvar.Contains("pt") || tvar.Contains("phistar"));
 
    MyCanvas c1("result/plot_" + tvar + "_ttbar",xaxis,"Entries");
    if (logx) c1.SetLogx();

@@ -96,6 +96,7 @@ void estimateDijet(var thevar) {
 
     TString histtag;
     if (thevar == mass) histtag = "hist";
+    else if (thevar == mass3bins) histtag = "hist3bins";
     else if (thevar == rap60120) histtag = "rap";
     else if (thevar == pt) histtag = "Zpt";
     else if (thevar == rap1560) histtag = "lowMrap";
@@ -403,6 +404,7 @@ void estimateDijet(var thevar) {
 
 void estimateDijet() {
    estimateDijet(mass);
+   estimateDijet(mass3bins);
    estimateDijet(rap60120);
    estimateDijet(pt);
    estimateDijet(phistar);

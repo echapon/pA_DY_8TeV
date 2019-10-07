@@ -98,6 +98,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
    TH1D* h_mass_AccTotal[nweights];
+   TH1D* h_mass3bins_AccTotal[nweights];
    TH1D* h_pt_AccTotal[nweights];
    TH1D* h_phistar_AccTotal[nweights];
    TH1D* h_rap1560_AccTotal[nweights];
@@ -105,6 +106,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_pt1560_AccTotal[nweights];
    TH1D* h_phistar1560_AccTotal[nweights];
    TH1D* h_mass_AccPass[nweights];
+   TH1D* h_mass3bins_AccPass[nweights];
    TH1D* h_pt_AccPass[nweights];
    TH1D* h_phistar_AccPass[nweights];
    TH1D* h_rap1560_AccPass[nweights];
@@ -113,6 +115,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_phistar1560_AccPass[nweights];
    
    TH1D* h_mass_EffTotal[nweights];
+   TH1D* h_mass3bins_EffTotal[nweights];
    TH1D* h_pt_EffTotal[nweights];
    TH1D* h_phistar_EffTotal[nweights];
    TH1D* h_rap1560_EffTotal[nweights];
@@ -120,6 +123,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_pt1560_EffTotal[nweights];
    TH1D* h_phistar1560_EffTotal[nweights];
    TH1D* h_mass_EffPass[nweights];
+   TH1D* h_mass3bins_EffPass[nweights];
    TH1D* h_pt_EffPass[nweights];
    TH1D* h_phistar_EffPass[nweights];
    TH1D* h_rap1560_EffPass[nweights];
@@ -128,6 +132,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_phistar1560_EffPass[nweights];
 
    TH1D* h_mass_EffPass_Corr_tnp[nweights];
+   TH1D* h_mass3bins_EffPass_Corr_tnp[nweights];
    TH1D* h_pt_EffPass_Corr_tnp[nweights];
    TH1D* h_phistar_EffPass_Corr_tnp[nweights];
    TH1D* h_rap1560_EffPass_Corr_tnp[nweights];
@@ -137,6 +142,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
+      h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum, bins);
+      h_mass3bins_AccPass[i] = new TH1D(Form("h_mass3bins_AccPass%d",i), "", binnum, bins);
       h_pt_AccTotal[i] = new TH1D(Form("h_pt_AccTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccPass[i] = new TH1D(Form("h_pt_AccPass%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_AccTotal[i] = new TH1D(Form("h_phistar_AccTotal%d",i), "", phistarnum, phistarbin);
@@ -152,6 +159,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
       h_mass_EffPass[i] = new TH1D(Form("h_mass_EffPass%d",i), "", binnum, bins);	 
       h_mass_EffTotal[i] = new TH1D(Form("h_mass_EffTotal%d",i), "", binnum, bins);
+      h_mass3bins_EffPass[i] = new TH1D(Form("h_mass3bins_EffPass%d",i), "", binnum, bins);	 
+      h_mass3bins_EffTotal[i] = new TH1D(Form("h_mass3bins_EffTotal%d",i), "", binnum, bins);
       h_pt_EffPass[i] = new TH1D(Form("h_pt_EffPass%d",i), "", ptbinnum_meas, ptbin_meas);	 
       h_pt_EffTotal[i] = new TH1D(Form("h_pt_EffTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_EffPass[i] = new TH1D(Form("h_phistar_EffPass%d",i), "", phistarnum, phistarbin);	 
@@ -166,6 +175,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar1560_EffTotal[i] = new TH1D(Form("h_phistar1560_EffTotal%d",i), "", phistarnum_1560, phistarbin_1560);
 
       h_mass_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass_EffPass_Corr_tnp%d",i), "", binnum, bins);
+      h_mass3bins_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass3bins_EffPass_Corr_tnp%d",i), "", binnum, bins);
       h_pt_EffPass_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_Corr_tnp%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_EffPass_Corr_tnp[i] = new TH1D(Form("h_phistar_EffPass_Corr_tnp%d",i), "", phistarnum, phistarbin);
       h_rap1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap1560_EffPass_Corr_tnp%d",i), "", rapbinnum_1560, rapbin_1560);
@@ -316,6 +326,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                h_mass_AccTotal[iwt]->Fill( gen_M, wt );
+               h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
                   h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
@@ -328,6 +339,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                if( Flag_PassAcc == kTRUE ) 
                {
                   h_mass_AccPass[iwt]->Fill( gen_M, wt );
+                  h_mass3bins_AccPass[iwt]->Fill( gen_M, wt );
                   if (gen_M>60 && gen_M<120) {
                      h_pt_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar_AccPass[iwt]->Fill( gen_Phistar, wt );
@@ -422,6 +434,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                   else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                   h_mass_EffTotal[iwt]->Fill( gen_M, wt * PUWeight );
+                  h_mass3bins_EffTotal[iwt]->Fill( gen_M, wt * PUWeight );
                   if (gen_M>60 && gen_M<120) {
                      h_pt_EffTotal[iwt]->Fill( gen_Pt, wt * PUWeight );
                      h_phistar_EffTotal[iwt]->Fill( gen_Phistar, wt * PUWeight );
@@ -441,6 +454,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                      else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                      h_mass_EffPass[iwt]->Fill( gen_M, wt * PUWeight );
+                     h_mass3bins_EffPass[iwt]->Fill( gen_M, wt * PUWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_EffPass[iwt]->Fill( gen_Pt, wt * PUWeight );
                         h_phistar_EffPass[iwt]->Fill( gen_Phistar, wt * PUWeight );
@@ -494,6 +508,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                      else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, wt * PUWeight * TnpWeight );
+                     h_mass3bins_EffPass_Corr_tnp[iwt]->Fill( gen_M, wt * PUWeight * TnpWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, wt * PUWeight * TnpWeight );
                         h_phistar_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, wt * PUWeight * TnpWeight );
@@ -528,6 +543,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i]->Write();
       h_mass_AccPass[i]->Write();
+      h_mass3bins_AccTotal[i]->Write();
+      h_mass3bins_AccPass[i]->Write();
       h_pt_AccTotal[i]->Write();
       h_phistar_AccTotal[i]->Write();
       h_pt_AccPass[i]->Write();
@@ -542,6 +559,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar1560_AccPass[i]->Write();
       h_mass_EffTotal[i]->Write();
       h_mass_EffPass[i]->Write();
+      h_mass3bins_EffTotal[i]->Write();
+      h_mass3bins_EffPass[i]->Write();
       h_pt_EffTotal[i]->Write();
       h_phistar_EffTotal[i]->Write();
       h_pt_EffPass[i]->Write();
@@ -555,6 +574,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_rap60120_EffTotal[i]->Write();
       h_rap60120_EffPass[i]->Write();
       h_mass_EffPass_Corr_tnp[i]->Write();
+      h_mass3bins_EffPass_Corr_tnp[i]->Write();
       h_pt_EffPass_Corr_tnp[i]->Write();
       h_phistar_EffPass_Corr_tnp[i]->Write();
       h_rap1560_EffPass_Corr_tnp[i]->Write();

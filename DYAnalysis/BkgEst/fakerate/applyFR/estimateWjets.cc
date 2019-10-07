@@ -107,6 +107,7 @@ void estimateWjets(var thevar) {
 
     TString histtag;
     if (thevar == mass) histtag = "hist";
+    else if (thevar == mass3bins) histtag = "hist3bins";
     else if (thevar == rap60120) histtag = "rap";
     else if (thevar == pt) histtag = "Zpt";
     else if (thevar == rap1560) histtag = "lowMrap";
@@ -501,6 +502,7 @@ void estimateWjets(var thevar) {
 
 void estimateWjets() {
    estimateWjets(mass);
+   estimateWjets(mass3bins);
    estimateWjets(rap60120);
    estimateWjets(pt);
    estimateWjets(phistar);

@@ -157,6 +157,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 {
    // put the observables first
    HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass3bins" );			Variables.push_back( "Mass3bins" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins_part1" );				XTitles.push_back( "Invariant Mass(#mu#mu) (PbP) [GeV]");
    HistNames.push_back( "h_mass2" );			Variables.push_back( "MassAnaBins_part2" );				XTitles.push_back( "Invariant Mass(#mu#mu) (pPb) [GeV]");
 	HistNames.push_back( "h_diPt2_M60to120" );			Variables.push_back( "diPtM60120" );				XTitles.push_back( "dimuon P_{T} (60<M_{#mu#mu}<120 GeV) [GeV]");
@@ -204,6 +205,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_mass_OS" );			Variables.push_back( "OSMass_DYBin" );		XTitles.push_back( "Invariant Mass(Opposite Sign) [GeV]");
 	HistNames.push_back( "h_mass_SS" );			Variables.push_back( "SSMass" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
 	HistNames.push_back( "h_mass2_SS" );			Variables.push_back( "SSMass_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
+	HistNames.push_back( "h_mass3bins_SS" );			Variables.push_back( "SSMass3bins_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign) [GeV]");
 	HistNames.push_back( "h_diPt2_SS_M60to120" );			Variables.push_back( "SSdiPtM60120" );				XTitles.push_back( "dimuon P_{T} (Same Sign, 60<M_{#mu#mu}<120 GeV) [GeV]");
    HistNames.push_back( "h_diPt2_SS_M15to60" );			Variables.push_back( "SSdiPtM1560" );				XTitles.push_back( "dimuon P_{T} (Same Sign, 15<M_{#mu#mu}<60 GeV) [GeV]");
 	HistNames.push_back( "h_Phistar2_SS_M60to120" );			Variables.push_back( "SSPhistarAnaBins" );		XTitles.push_back( "#phi^{*} (Same Sign, 60<M_{#mu#mu}<120 GeV)");
@@ -427,6 +429,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		// -- Store yield histogram && Draw mass distribution using data-driven backgrounds -- //
 		/////////////////////////////////////////////////////////////////////////////////////////
 		if( Variables[i_hist].Contains("MassAnaBins") 
+            || Variables[i_hist].Contains("Mass3bins")
             || Variables[i_hist].Contains("SSMass_DYBin")
             || Variables[i_hist].Contains("diPtM60120")
             || Variables[i_hist].Contains("diPtM1560")
@@ -448,6 +451,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
             else if( Variables[i_hist].Contains("part2") ) Type = "part2";
             TString variable = "mass";
             if (Variables[i_hist].Contains("diPtM60120")) variable = "pt";
+            else if (Variables[i_hist].Contains("3bins")) variable = "mass3bins";
             else if (Variables[i_hist].Contains("diPtM1560")) variable = "pt1560";
             else if (Variables[i_hist].Contains("PhistarAnaBins1560")) variable = "phistar1560";
             else if (Variables[i_hist].Contains("PhistarAnaBins")) variable = "phistar";
@@ -782,6 +786,7 @@ void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_b
 
 	TString HistoName = h_data->GetName();
 	HistoName.ReplaceAll("mass2", "mass_bkgsub");
+	HistoName.ReplaceAll("mass3bins", "mass3bins_bkgsub");
 	HistoName.ReplaceAll("diPt2_M60to120", "pt_bkgsub");
 	HistoName.ReplaceAll("diPt2_M15to60", "pt1560_bkgsub");
 	HistoName.ReplaceAll("Phistar2_M60to120", "phistar_bkgsub");

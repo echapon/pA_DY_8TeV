@@ -50,8 +50,8 @@ namespace DYana_v20180814_CT14 {
    // xsec for each process (in pb)
    double Xsec(SampleTag s) {
       switch (s) {
-         case DYMuMu1030_PbP:return 4144.575e3*208.; break; // Powheg, updated 2019, Sept 24
-         case DYMuMu30_PbP:  return 1436.096e3*208.; break; // Powheg, updated 2019, Sept 24
+         case DYMuMu1030_PbP:return 4144.575*208.; break; // Powheg, updated 2019, Sept 24
+         case DYMuMu30_PbP:  return 1436.096*208.; break; // Powheg, updated 2019, Sept 24
          default:        return -1;
       }
    };

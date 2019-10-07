@@ -35,7 +35,7 @@ using namespace DYana;
 void fillSystematics( TH1D* data_driven, TH1D* stat, TH1D* systematic, TH1D* total );
 void removeNegativeBins( TH1D* hist );
 
-void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 | rap60120 | pt1560 | phistar1560
+void estimateBkg(const char* var="mass", // var = mass | mass3bins | pt | phistar | rap1560 | rap60120 | pt1560 | phistar1560
       int syst_tt=0,                     // 0=nominal, 1/-1 = scale ttbar up/down for syst
       int syst_RR=0)                     // 0=nominal, 1=variation
 {
@@ -234,7 +234,7 @@ void estimateBkg(const char* var="mass", // var = mass | pt | phistar | rap1560 
     TCanvas *c1 = new TCanvas();
     if (!tvar.Contains("rap")) c1->SetLogx();
     emu_data->GetYaxis()->SetTitle("Entries");
-    if (tvar=="mass") emu_data->GetXaxis()->SetTitle("M_{e#mu} [GeV/c^{2}]");
+    if (tvar.Contains("mass")) emu_data->GetXaxis()->SetTitle("M_{e#mu} [GeV/c^{2}]");
     else if (tvar.Contains("pt")) emu_data->GetXaxis()->SetTitle("p_{T,e#mu} [GeV/c]");
     else if (tvar.Contains("phistar")) emu_data->GetXaxis()->SetTitle("#phi^{*}_{e#mu}");
     else emu_data->GetXaxis()->SetTitle("y_{e#mu}");
