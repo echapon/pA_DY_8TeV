@@ -241,8 +241,10 @@ void fillHistosForFR(SampleTag index)
             }
          }
 
-         double wt_tnp_iso1 = mc ? tnp_weight_isotk_ppb(mu1.pt,mu1.eta,0) : 1.;
-         double wt_tnp_iso2 = mc ? tnp_weight_isotk_ppb(mu2.pt,mu2.eta,0) : 1.;
+         double wt_tnp_iso1 = mc ? tnp_weight_isotk_ppb(mu1.pt,fabs(mu1.eta),0) : 1.;
+         double wt_tnp_iso2 = mc ? tnp_weight_isotk_ppb(mu2.pt,fabs(mu2.eta),0) : 1.;
+
+         if (i<10) cout << wt << " " << wt_tnp << " " << wt_tnp_iso1 << " " << wt_tnp_iso2 << endl;
 
          // fill the mass histos
          using namespace cuts;
