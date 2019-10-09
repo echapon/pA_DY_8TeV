@@ -33,6 +33,19 @@ elif [ $1 -eq 2 ]; then
    arg='("Powheg","'$trigger'",1)'
 elif [ $1 -eq 3 ]; then
    arg='("Powheg","'$trigger'",2)'
+
+# and the same without acceptance correction
+# nominal
+elif [ $1 -eq 4 ]; then
+   arg='("Powheg","'$trigger'",0,false)'
+
+# others
+elif [ $1 -eq 5 ]; then
+   arg='("Pyquen","'$trigger'",0,false)'
+elif [ $1 -eq 6 ]; then
+   arg='("Powheg","'$trigger'",1,false)'
+elif [ $1 -eq 7 ]; then
+   arg='("Powheg","'$trigger'",2,false)'
 fi
 
 echo root -l -b -q FSRCorrection/FSRCorrections_DressedLepton.C+${arg}
