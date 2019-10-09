@@ -29,7 +29,7 @@ using unfold::gUnfold;
 static inline void loadBar(int x, int n, int r, int w);
 // TH1F* unfold_MLE(TH1F *hin, TH2F *hresponse, TH2F *hcov);
 // TH1F* fold_MLE(TH1F *hin, TH1F *hresponse);
-void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0 ) // run: 0=all, 1=pPb, 2=PbP
+void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = "PAL3Mu12", int run=0, bool correctforacc = true ) // run: 0=all, 1=pPb, 2=PbP
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -59,7 +59,9 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 
    analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
-	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root", "RECREATE");
+   TString accstr = correctforacc ? "" : "_noacc";
+
+	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + accstr + ".root", "RECREATE");
 
 	TH1D *h_mass_preFSR_tot = new TH1D("h_mass_preFSR", "", binnum, bins);
 	TH1D *h_mass_preFSR_tot_fine = new TH1D("h_mass_preFSR_fine", "", 585,15,600);
@@ -69,6 +71,15 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	TH1D *h_mass_ratio_tot = new TH1D("h_mass_ratio", "", 100, -1, 1);
    TH2D *h_mass_postpreFSR_tot = new TH2D("h_mass_postpreFSR_tot", ";mass(post-FSR);mass(pre-FSR)", binnum, bins, binnum, bins);
    TH2D *h_mass_postpreFSR_tot_fine = new TH2D("h_mass_postpreFSR_tot_fine", ";mass(post-FSR);mass(pre-FSR)", 585,15,600,585,15,600);
+
+	TH1D *h_mass3bins_preFSR_tot = new TH1D("h_mass3bins_preFSR", "", binnum3, bins3);
+	TH1D *h_mass3bins_preFSR_tot_fine = new TH1D("h_mass3bins_preFSR_fine", "", 585,15,600);
+	TH1D *h_mass3bins_postFSR_tot = new TH1D("h_mass3bins_postFSR", "", binnum3, bins3);
+	TH1D *h_mass3bins_postFSR_tot_fine = new TH1D("h_mass3bins_postFSR_fine", "", 585,15,600);
+	TH1D *h_mass3bins_bare_tot_fine = new TH1D("h_mass3bins_bare_fine", "", 585,15,600);
+	TH1D *h_mass3bins_ratio_tot = new TH1D("h_mass3bins_ratio", "", 100, -1, 1);
+   TH2D *h_mass3bins_postpreFSR_tot = new TH2D("h_mass3bins_postpreFSR_tot", ";mass3bins(post-FSR);mass3bins(pre-FSR)", binnum3, bins3, binnum3, bins3);
+   TH2D *h_mass3bins_postpreFSR_tot_fine = new TH2D("h_mass3bins_postpreFSR_tot_fine", ";mass3bins(post-FSR);mass3bins(pre-FSR)", 585,15,600,585,15,600);
 
 	TH1D *h_pt_preFSR_tot = new TH1D("h_pt_preFSR", "", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_preFSR_tot_fine = new TH1D("h_pt_preFSR_fine", "", 200,0,200);
@@ -287,13 +298,13 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
 
             // acceptance flags
-            // NOW REMOVED we correct data after acceptance correction (ie before acceptance cuts)
-				bool Flag_PassAcc_postFSR = true; // analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
-				bool Flag_PassAcc_preFSR = true; //analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+            // ignored if we correct data after acceptance correction (ie before acceptance cuts)
+				bool Flag_PassAcc_postFSR = correctforacc || analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
+				bool Flag_PassAcc_preFSR = correctforacc || analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
 
             // if neither of the pre- and post-FSR leptons pass acceptance cuts... why bother?
-            // if (!Flag_PassAcc_preFSR && !Flag_PassAcc_postFSR) continue;
-            if (!Flag_PassAcc_preFSR) continue;
+            if (!Flag_PassAcc_preFSR && !Flag_PassAcc_postFSR) continue;
+            // if (!Flag_PassAcc_preFSR) continue;
 
             // -- Z pt reweighting -- //
             TotWeight *= zptWeight(gen_Pt);
@@ -367,6 +378,17 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				h_mass_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
 				h_mass_bare_tot_fine->Fill( gen_M, TotWeight );
 				h_mass_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
+
+            // mass3bins histos
+				h_mass3bins_preFSR_tot->Fill( M_preFSR, TotWeight );
+				h_mass3bins_postFSR_tot->Fill( M_postFSR, TotWeight );
+				h_mass3bins_ratio_tot->Fill( mass_ratio, TotWeight );
+				h_mass3bins_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
+
+				h_mass3bins_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
+				h_mass3bins_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
+				h_mass3bins_bare_tot_fine->Fill( gen_M, TotWeight );
+				h_mass3bins_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
 
             // pt histos
 				if (M_preFSR>60 && M_preFSR<120) h_pt_preFSR_tot->Fill( pt_preFSR, TotWeight );
@@ -454,6 +476,15 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
          }
       }
    }
+   for (int j=0; j<=h_mass3bins_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_mass3bins_preFSR_tot->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_mass3bins_postpreFSR_tot->GetNbinsX()+1; i++) {
+            h_mass3bins_postpreFSR_tot->SetBinContent(i,j,h_mass3bins_postpreFSR_tot->GetBinContent(i,j)/genj);
+            h_mass3bins_postpreFSR_tot->SetBinError(i,j,h_mass3bins_postpreFSR_tot->GetBinError(i,j)/genj);
+         }
+      }
+   }
    for (int j=0; j<=h_pt_postpreFSR_tot->GetNbinsY()+1; j++) { // include UF and OF
       double genj = h_pt_preFSR_tot->GetBinContent(j);
       if (genj>0) {
@@ -518,6 +549,15 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	h_mass_postFSR_tot_fine->Write();
 	h_mass_bare_tot_fine->Write();
    h_mass_postpreFSR_tot_fine->Write();
+
+	h_mass3bins_preFSR_tot->Write();
+	h_mass3bins_postFSR_tot->Write();
+   h_mass3bins_ratio_tot->Write();
+   h_mass3bins_postpreFSR_tot->Write();
+	h_mass3bins_preFSR_tot_fine->Write();
+	h_mass3bins_postFSR_tot_fine->Write();
+	h_mass3bins_bare_tot_fine->Write();
+   h_mass3bins_postpreFSR_tot_fine->Write();
 
 	h_pt_preFSR_tot->Write();
 	h_pt_postFSR_tot->Write();
