@@ -12,6 +12,8 @@ namespace fr {
   // const char* fakeratefile_templates = "/afs/cern.ch/work/h/hckim/public/ForEmilien_20190514/FRfinal/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12.root";
   const char* fakeratefile_templates = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_HCK_v20190918/fakerate_QCDopt3_ptincl_correctedFR.root";
   const char* fakeratefile_dataMC = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_Emilien_20190508/FRhistos_2muSS.root";
+  const char* fakeratefile_dataMC_2muOS_hichi2 = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_Emilien_20191009/FRhistos_2muOS_hichi2.root";
+  const char* fakeratefile_dataMC_2muSS = "/afs/cern.ch/work/e/echapon/public/DY_pA_2016/FR_Emilien_20191009/FRhistos_2muSS.root";
   // const char* fakeratefile_dataMC = "/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/BkgEst/fakerate_Emilien/FRhistos_2muSS.root"; // ARC CHECK
 
    TH1D gFR_template_barrel;
@@ -22,14 +24,14 @@ namespace fr {
 
 void initFRhistos() {
    using namespace fr;
-   TFile *f_temp = TFile::Open(fakeratefile_templates);
-   TFile *f_dataMC = TFile::Open(fakeratefile_dataMC);
+   TFile *f_temp = TFile::Open(fakeratefile_dataMC_2muOS_hichi2);
+   TFile *f_dataMC = TFile::Open(fakeratefile_dataMC_2muSS);
 
-   std::cout << "Nominal (template) FR file: " << fakeratefile_templates << std::endl;
-   std::cout << "Alternative (data-MC) FR file: " << fakeratefile_dataMC << std::endl;
+   std::cout << "Nominal (data-MC, 2muOS_hichi2) FR file: " << fakeratefile_dataMC_2muOS_hichi2 << std::endl;
+   std::cout << "Alternative (data-MC, 2muSS) FR file: " << fakeratefile_dataMC_2muSS << std::endl;
 
-   gFR_template_barrel = *(TH1D*) f_temp->Get("FR_template_barrel")->Clone("FR1");
-   gFR_template_endcap = *(TH1D*) f_temp->Get("FR_template_endcap")->Clone("FR2");
+   gFR_template_barrel = *(TH1D*) f_temp->Get("hFR2_barrel")->Clone("FR1");
+   gFR_template_endcap = *(TH1D*) f_temp->Get("hFR2_endcap")->Clone("FR2");
    gFR_xsec_barrel = *(TH1D*) f_dataMC->Get("hFR2_barrel")->Clone("FR3");
    gFR_xsec_endcap = *(TH1D*) f_dataMC->Get("hFR2_endcap")->Clone("FR4");
    f_temp->Close();

@@ -310,6 +310,12 @@ void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi
 
    TCanvas *c1 = new TCanvas();
 
+   // -- Top Pad -- //
+   c1->cd();
+   TPad *TopPad = new TPad("TopPad","TopPad",0.01,0.3,0.99,0.99);
+   TopPad->Draw();
+   TopPad->cd();
+
    hdatanoniso_barrel->SetMarkerColor(kRed+2);
    hdataiso_barrel->SetMarkerColor(kBlue+2);
    hdatasubnoniso_barrel->SetMarkerColor(kRed);
@@ -325,8 +331,8 @@ void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi
    hMCnoniso_barrel->SetLineColor(kRed+2);
    hMCiso_barrel->SetLineColor(kBlue+2);
    hdatanoniso_barrel->Draw();
-   c1->SetLogx();
-   c1->SetLogy();
+   TopPad->SetLogx();
+   TopPad->SetLogy();
    hdatanoniso_barrel->GetXaxis()->SetTitle("muon p_{T} [GeV]");
    hdatanoniso_barrel->Draw("EP");
    hdataiso_barrel->Draw("EP same");
@@ -344,8 +350,33 @@ void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi
    tleg->AddEntry(hMCiso_barrel, "MC, iso", "L");
    tleg->AddEntry(hMCnoniso_barrel, "MC, non iso", "L");
    tleg->Draw();
+   TopPad->Draw();
+
+   // -- Bottom Pad -- //
+   c1->cd();
+   TPad *BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
+   BottomPad->Draw();
+   BottomPad->cd();
+   BottomPad->SetLogx();
+
+   TH1D* hdata_barrel_ratio = (TH1D*) hdataiso_barrel->Clone("hdata_barrel_ratio");
+   hdata_barrel_ratio->Divide(hdatanoniso_barrel);
+   hdata_barrel_ratio->Draw();
+   hdata_barrel_ratio->GetYaxis()->SetTitle("iso / non iso");
+   hdata_barrel_ratio->GetYaxis()->SetRangeUser(0,1);
+   hdata_barrel_ratio->Draw();
+   TH1D* hMC_barrel_ratio = (TH1D*) hMCiso_barrel->Clone("hMC_barrel_ratio");
+   hMC_barrel_ratio->Divide(hMCnoniso_barrel);
+   hMC_barrel_ratio->Draw("hist same");
+   TH1D* hdatasub_barrel_ratio = (TH1D*) hdatasubiso_barrel->Clone("hdatasub_barrel_ratio");
+   hdatasub_barrel_ratio->Divide(hdatasubnoniso_barrel);
+   hdatasub_barrel_ratio->Draw("same");
+   BottomPad->Draw();
+
    c1->SaveAs("FRinputs_" + mutag + "_barrel.pdf");
 
+   // endcap
+   TopPad->cd();
    hdatanoniso_endcap->SetMarkerColor(kRed+2);
    hdataiso_endcap->SetMarkerColor(kBlue+2);
    hdatasubnoniso_endcap->SetMarkerColor(kRed);
@@ -361,8 +392,8 @@ void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi
    hMCnoniso_endcap->SetLineColor(kRed+2);
    hMCiso_endcap->SetLineColor(kBlue+2);
    hdatanoniso_endcap->Draw();
-   c1->SetLogx();
-   c1->SetLogy();
+   TopPad->SetLogx();
+   TopPad->SetLogy();
    hdatanoniso_endcap->GetXaxis()->SetTitle("muon p_{T} [GeV]");
    hdatanoniso_endcap->Draw("EP");
    hdataiso_endcap->Draw("EP same");
@@ -380,6 +411,25 @@ void computeFR(TString mutag = "1mu") {// possibilities: 1mu, 2muSS, 2muSS_lochi
    tleg2->AddEntry(hMCiso_endcap, "MC, iso", "L");
    tleg2->AddEntry(hMCnoniso_endcap, "MC, non iso", "L");
    tleg2->Draw();
+   TopPad->Draw();
+
+   BottomPad->cd();
+   BottomPad->SetLogx();
+
+   TH1D* hdata_endcap_ratio = (TH1D*) hdataiso_endcap->Clone("hdata_endcap_ratio");
+   hdata_endcap_ratio->Divide(hdatanoniso_endcap);
+   hdata_endcap_ratio->Draw();
+   hdata_endcap_ratio->GetYaxis()->SetTitle("iso / non iso");
+   hdata_endcap_ratio->GetYaxis()->SetRangeUser(0,1);
+   hdata_endcap_ratio->Draw();
+   TH1D* hMC_endcap_ratio = (TH1D*) hMCiso_endcap->Clone("hMC_endcap_ratio");
+   hMC_endcap_ratio->Divide(hMCnoniso_endcap);
+   hMC_endcap_ratio->Draw("hist same");
+   TH1D* hdatasub_endcap_ratio = (TH1D*) hdatasubiso_endcap->Clone("hdatasub_endcap_ratio");
+   hdatasub_endcap_ratio->Divide(hdatasubnoniso_endcap);
+   hdatasub_endcap_ratio->Draw("same");
+   BottomPad->Draw();
+
    c1->SaveAs("FRinputs_" + mutag + "_endcap.pdf");
 
 

@@ -79,6 +79,14 @@ void fillHistosForFR(SampleTag index)
    TH2D* h2d_2muSS_hichi2_HLTL3Mu12_barrel = new TH2D("h2d_2muSS_hichi2_HLTL3Mu12_barrel","",ptbinnum,ptbin,20,0,isomaxrange);
    TH2D* h2d_2muSS_hichi2_HLTL3Mu12_endcap = new TH2D("h2d_2muSS_hichi2_HLTL3Mu12_endcap","",ptbinnum_endcap,ptbin_endcap,20,0,isomaxrange);
 
+   // 2mu OS
+   TH2D* h2d_2muOS_lochi2_HLTL3Mu12 = new TH2D("h2d_2muOS_lochi2_HLTL3Mu12","",ptbinnum,ptbin,20,0,isomaxrange);
+   TH2D* h2d_2muOS_lochi2_HLTL3Mu12_barrel = new TH2D("h2d_2muOS_lochi2_HLTL3Mu12_barrel","",ptbinnum,ptbin,20,0,isomaxrange);
+   TH2D* h2d_2muOS_lochi2_HLTL3Mu12_endcap = new TH2D("h2d_2muOS_lochi2_HLTL3Mu12_endcap","",ptbinnum_endcap,ptbin_endcap,20,0,isomaxrange);
+   TH2D* h2d_2muOS_hichi2_HLTL3Mu12 = new TH2D("h2d_2muOS_hichi2_HLTL3Mu12","",ptbinnum,ptbin,20,0,isomaxrange);
+   TH2D* h2d_2muOS_hichi2_HLTL3Mu12_barrel = new TH2D("h2d_2muOS_hichi2_HLTL3Mu12_barrel","",ptbinnum,ptbin,20,0,isomaxrange);
+   TH2D* h2d_2muOS_hichi2_HLTL3Mu12_endcap = new TH2D("h2d_2muOS_hichi2_HLTL3Mu12_endcap","",ptbinnum_endcap,ptbin_endcap,20,0,isomaxrange);
+
    // addition of Mu7: FIXME need to check several triggers and get the prescale, from the other tree...
    TH2D* h2d_1mu_HLTL3Mu712 = new TH2D("h2d_1mu_HLTL3Mu712","",ptbinnum,ptbin,20,0,isomaxrange);
    TH2D* h2d_1mu_HLTL3Mu712_barrel = new TH2D("h2d_1mu_HLTL3Mu712_barrel","",ptbinnum,ptbin,20,0,isomaxrange);
@@ -140,8 +148,8 @@ void fillHistosForFR(SampleTag index)
       for(unsigned j=0; j!=event->muons.size(); j++) {
 
          PhysicsMuon* mu_ = (PhysicsMuon*)&event->muons.at(j);
-         // if( !mu_->tightMuonID() ) continue;
-         if( !mu_->looseMuonID() ) continue; // ID+ISO CHECK
+         if( !mu_->tightMuonID() ) continue;
+         // if( !mu_->looseMuonID() ) continue; // ID+ISO CHECK
 
          // if( mu_->acceptance(cuts::ptmin1,cuts::etamax) ) {
          if( mu_->acceptance(cuts::ptmin2,cuts::etamax) ) {
@@ -185,7 +193,7 @@ void fillHistosForFR(SampleTag index)
          //         double muon histos        //
          ///////////////////////////////////////
          idx1=-1; idx2=-1;
-         iso1=99.; iso2=99.;
+         iso1=1e99; iso2=1e99;
          ch1=0; ch2=0;
 
          for(unsigned j=0; j!=passingMuons->size(); j++) {
@@ -270,7 +278,7 @@ void fillHistosForFR(SampleTag index)
             PhysicsMuon mu2 = tempMuons->second;
             ch1 = mu1.charge;
             ch2 = mu2.charge;
-            if (ch1 != ch2) continue; // keep only SS
+            bool isOS = (ch1 != ch2);
 
             pt1 = mu1.pt;
             eta1 = runsgn(event->run) * mu1.eta;
@@ -290,25 +298,34 @@ void fillHistosForFR(SampleTag index)
             wt_tnp *= mc ? tnp_weight_muid_ppb(pt1,eta1,0) * tnp_weight_muid_ppb(pt2,eta2,0) : 1;
             wt_tnp *= mc ? tnp_weight_L3Mu12_ppb(eta1,0) : 1;
 
-            h2d_2muSS_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
-            h2d_2muSS_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
-            if (fabs(eta1)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
-            else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
-            if (fabs(eta2)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
-            else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            if (!isOS) { // SS
+               h2d_2muSS_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muSS_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
 
-            h2d_2muSS_lochi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
-            h2d_2muSS_lochi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
-            if (fabs(eta1)<1.2) h2d_2muSS_lochi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
-            else h2d_2muSS_lochi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
-            if (fabs(eta2)<1.2) h2d_2muSS_lochi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
-            else h2d_2muSS_lochi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+               h2d_2muSS_lochi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muSS_lochi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muSS_lochi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muSS_lochi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muSS_lochi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muSS_lochi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            } else { // OS
+               h2d_2muOS_lochi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muOS_lochi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muOS_lochi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muOS_lochi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muOS_lochi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muOS_lochi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            }
          } else if (dimuonDY(event->triggerobjects,event->dimuons,passingMuons2,tempMuons,chi2min,true)) { // high dimuon vertex chi2
             PhysicsMuon mu1 = tempMuons->first;
             PhysicsMuon mu2 = tempMuons->second;
             ch1 = mu1.charge;
             ch2 = mu2.charge;
-            if (ch1 != ch2) continue; // keep only SS
+            bool isOS = (ch1 != ch2);
 
             pt1 = mu1.pt;
             eta1 = runsgn(event->run) * mu1.eta;
@@ -328,19 +345,28 @@ void fillHistosForFR(SampleTag index)
             wt_tnp *= mc ? tnp_weight_muid_ppb(pt1,eta1,0) * tnp_weight_muid_ppb(pt2,eta2,0) : 1;
             wt_tnp *= mc ? tnp_weight_L3Mu12_ppb(eta1,0) : 1;
 
-            h2d_2muSS_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
-            h2d_2muSS_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
-            if (fabs(eta1)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
-            else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
-            if (fabs(eta2)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
-            else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            if (!isOS) { // SS
+               h2d_2muSS_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muSS_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muSS_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muSS_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
 
-            h2d_2muSS_hichi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
-            h2d_2muSS_hichi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
-            if (fabs(eta1)<1.2) h2d_2muSS_hichi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
-            else h2d_2muSS_hichi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
-            if (fabs(eta2)<1.2) h2d_2muSS_hichi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
-            else h2d_2muSS_hichi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+               h2d_2muSS_hichi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muSS_hichi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muSS_hichi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muSS_hichi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muSS_hichi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muSS_hichi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            } else { // OS
+               h2d_2muOS_hichi2_HLTL3Mu12->Fill(pt1,iso1,wt_tnp);
+               h2d_2muOS_hichi2_HLTL3Mu12->Fill(pt2,iso2,wt_tnp);
+               if (fabs(eta1)<1.2) h2d_2muOS_hichi2_HLTL3Mu12_barrel->Fill(pt1,iso1,wt_tnp);
+               else h2d_2muOS_hichi2_HLTL3Mu12_endcap->Fill(pt1,iso1,wt_tnp);
+               if (fabs(eta2)<1.2) h2d_2muOS_hichi2_HLTL3Mu12_barrel->Fill(pt2,iso2,wt_tnp);
+               else h2d_2muOS_hichi2_HLTL3Mu12_endcap->Fill(pt2,iso2,wt_tnp);
+            }
          }
       } // >=2 muon case
    } // event loop

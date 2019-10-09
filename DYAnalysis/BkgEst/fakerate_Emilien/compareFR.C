@@ -5,6 +5,8 @@ void compareFR(TString etaregion) { // "", "_barrel", "_endcap"
    TFile *f2muSS = TFile::Open("FRhistos_2muSS.root");
    TFile *f2muSS_lochi2 = TFile::Open("FRhistos_2muSS_lochi2.root");
    TFile *f2muSS_hichi2 = TFile::Open("FRhistos_2muSS_hichi2.root");
+   TFile *f2muOS_lochi2 = TFile::Open("FRhistos_2muOS_lochi2.root");
+   TFile *f2muOS_hichi2 = TFile::Open("FRhistos_2muOS_hichi2.root");
    // TFile *ftemplate = TFile::Open("/afs/cern.ch/work/h/hckim/public/ForEmilien_20190506_v2/input/estimateFRinput/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12_beforeCor.root");
    // TFile *ftemplate = TFile::Open("/afs/cern.ch/work/h/hckim/public/ForEmilien_20190514");
    // TFile *ftemplate = TFile::Open("/afs/cern.ch/work/h/hckim/public/ForEmilien_20190514/FRfinal/fakerate_reltrkisoR03muptlt10isomax0p2_opt1050_QCDopt2_L3Mu12.root");
@@ -18,10 +20,14 @@ void compareFR(TString etaregion) { // "", "_barrel", "_endcap"
    TH1D *h2muSS = (TH1D*) f2muSS->Get("hFR2" + etaregion);
    TH1D *h2muSS_lochi2 = (TH1D*) f2muSS_lochi2->Get("hFR2" + etaregion);
    TH1D *h2muSS_hichi2 = (TH1D*) f2muSS_hichi2->Get("hFR2" + etaregion);
+   TH1D *h2muOS_lochi2 = (TH1D*) f2muOS_lochi2->Get("hFR2" + etaregion);
+   TH1D *h2muOS_hichi2 = (TH1D*) f2muOS_hichi2->Get("hFR2" + etaregion);
    TH1D *hQCD1mu = (TH1D*) f1mu->Get("hFR2_QCD" + etaregion);
    TH1D *hQCD2muSS = (TH1D*) f2muSS->Get("hFR2_QCD" + etaregion);
    TH1D *hQCD2muSS_lochi2 = (TH1D*) f2muSS_lochi2->Get("hFR2_QCD" + etaregion);
    TH1D *hQCD2muSS_hichi2 = (TH1D*) f2muSS_hichi2->Get("hFR2_QCD" + etaregion);
+   TH1D *hQCD2muOS_lochi2 = (TH1D*) f2muOS_lochi2->Get("hFR2_QCD" + etaregion);
+   TH1D *hQCD2muOS_hichi2 = (TH1D*) f2muOS_hichi2->Get("hFR2_QCD" + etaregion);
 
    TH1D *hFR20190918_ptdiff = (TH1D*) f20190918_ptdiff->Get("FR_template" + etaregion);
    TH1D *hFR20190918_ptincl = (TH1D*) f20190918_ptincl->Get("FR_template" + etaregion);
@@ -55,6 +61,12 @@ void compareFR(TString etaregion) { // "", "_barrel", "_endcap"
    h2muSS_hichi2->SetMarkerStyle(23);
    h2muSS_hichi2->SetMarkerColor(kBlue-7);
    h2muSS_hichi2->SetLineColor(kBlue-7);
+   h2muOS_lochi2->SetMarkerStyle(22);
+   h2muOS_lochi2->SetMarkerColor(kRed+2);
+   h2muOS_lochi2->SetLineColor(kRed+2);
+   h2muOS_hichi2->SetMarkerStyle(23);
+   h2muOS_hichi2->SetMarkerColor(kRed);
+   h2muOS_hichi2->SetLineColor(kRed);
 
    hQCD1mu->SetMarkerStyle(24);
    hQCD1mu->SetMarkerColor(kMagenta);
@@ -68,6 +80,12 @@ void compareFR(TString etaregion) { // "", "_barrel", "_endcap"
    hQCD2muSS_hichi2->SetMarkerStyle(32);
    hQCD2muSS_hichi2->SetMarkerColor(kCyan-7);
    hQCD2muSS_hichi2->SetLineColor(kCyan-7);
+   hQCD2muOS_lochi2->SetMarkerStyle(26);
+   hQCD2muOS_lochi2->SetMarkerColor(kMagenta+2);
+   hQCD2muOS_lochi2->SetLineColor(kMagenta+2);
+   hQCD2muOS_hichi2->SetMarkerStyle(32);
+   hQCD2muOS_hichi2->SetMarkerColor(kMagenta);
+   hQCD2muOS_hichi2->SetLineColor(kMagenta);
 
    TCanvas c1;
    c1.SetLogx();
@@ -78,25 +96,31 @@ void compareFR(TString etaregion) { // "", "_barrel", "_endcap"
 
    // hQCD1mu->Draw("same");
    // h1mu->Draw("same");
+   // hQCD2muOS_lochi2->Draw("same");
+   hQCD2muOS_hichi2->Draw("same");
+   h2muOS_hichi2->Draw("same");
    hQCD2muSS->Draw("same");
-   if (htemplate) {
-      htemplate->Draw("same");
-      // hFR20190918_ptdiff->Draw("same");
-      // hFR20190918_ptincl->Draw("same");
-   }
+   // if (htemplate) {
+   //    htemplate->Draw("same");
+   //    // hFR20190918_ptdiff->Draw("same");
+   //    // hFR20190918_ptincl->Draw("same");
+   // }
 
    TLegend *tleg = new TLegend(0.2,0.65,0.5,0.95);
    tleg->SetBorderSize(0);
    if (etaregion=="_barrel") tleg->SetHeader("|#eta|<1.2");
    else if (etaregion=="_endcap") tleg->SetHeader("|#eta|>1.2");
    else tleg->SetHeader("|#eta|<2.4");
-   tleg->AddEntry(htemplate, "Data, template", "lp");
+   // tleg->AddEntry(htemplate, "Data, template", "lp");
    // tleg->AddEntry(hFR20190918_ptdiff, "Data, FR20190918_ptdiff", "lp");
    // tleg->AddEntry(hFR20190918_ptincl, "Data, FR20190918_ptincl", "lp");
    // tleg->AddEntry(h1mu, "Data-MC, 1#mu", "lp");
    tleg->AddEntry(h2muSS, "Data-MC, 2#mu SS", "lp");
+   tleg->AddEntry(h2muOS_hichi2, "Data-MC, 2#mu OS high dimu #chi^{2}", "lp");
    // tleg->AddEntry(hQCD1mu, "QCD MC, 1#mu", "lp");
    tleg->AddEntry(hQCD2muSS, "QCD MC, 2#mu SS", "lp");
+   tleg->AddEntry(hQCD2muOS_hichi2, "QCD MC, 2#mu OS high dimu #chi^{2}", "lp");
+   // tleg->AddEntry(hQCD2muOS_lochi2, "QCD MC, 2#mu OS low dimu #chi^{2}", "lp");
    tleg->Draw();
    c1.SaveAs("compareFR" + etaregion + ".pdf");
 

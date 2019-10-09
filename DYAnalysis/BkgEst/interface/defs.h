@@ -37,7 +37,7 @@ namespace DYana {
    using namespace DYana_v20180814;
    // using namespace DYana_v20170830;
 #else
-   using namespace DYana_CT14;
+   using namespace DYana_v20180814_CT14;
 #endif
 
 
@@ -47,11 +47,11 @@ namespace DYana {
    double bins[14] = {15,20,30,40,50,60,76,86,96,106,120,150,200,600};
    const int binnum3 = 3;
    double bins3[14] = {15,60,120,600};
-   // pt
-   const int ptbinnum_endcap = 11;
-   double ptbin_endcap[ptbinnum_endcap+1] = {10,15,20,25,30,35,40,50,70,100,200,500};
-   const int ptbinnum = 14;
-   double ptbin[ptbinnum+1] = {10,15,17,20,22,25,30,35,40,45,50,70,100,200,500};
+   // pt, for FR
+   const int ptbinnum_endcap = 9;
+   double ptbin_endcap[ptbinnum_endcap+1] = {10,15,20,25,30,35,40,50,70,200};
+   const int ptbinnum = 12;
+   double ptbin[ptbinnum+1] = {10,15,17,20,22,25,30,35,40,45,50,70,200};
    const int etabinnum = 2;
    double etabin[etabinnum+1] = {0,1.2,2.4};
    
