@@ -39,9 +39,14 @@ const double lumi_sf = 1.;//0.92;
 // const double sf_fit_1[3] = {1.1698e+00,1.0671e+00,1.8833e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"")
 // const double sf_fit_2[3] = {1.1820e+00,9.9705e-01,2.7503e-01}; // MC, QCD, Wjets; from fit_wjets.cc(2,"")
 
-// values from 2019 09/18
-const double sf_fit_1[3] = {1.1464e+00,9.6762e-01,8.4521e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
-const double sf_fit_2[3] = {1.1503e+00,9.7400e-01,1.0749e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
+// // values from 2019 09/18
+// const double sf_fit_1[3] = {1.1464e+00,9.6762e-01,8.4521e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
+// const double sf_fit_2[3] = {1.1503e+00,9.7400e-01,1.0749e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
+
+// values from 2019 10/09
+const double sf_fit_1[3] = {1.1619e+00,9.7863e-01,1.3484e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
+const double sf_fit_2[3] = {1.1484e+00,9.7525e-01,1.0788e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
+
 
 void estimateWjets();
 
@@ -372,9 +377,9 @@ void estimateWjets(var thevar) {
     }
     
     TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(wjets_template[Data1],"Nominal (template)", "P");
+    legg->AddEntry(wjets_template[Data1],"Nominal (2#mu OS high #chi^{2})", "P");
     if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) legg->AddEntry(wjets_template_nosmooth,"Nominal, no smooth", "L");
-    legg->AddEntry(wjets_ratio[Data1],"Alt. (data-MC)", "L");
+    legg->AddEntry(wjets_ratio[Data1],"Alt. (2#mu SS)", "L");
     legg->AddEntry(DYsel[WFirst],"Scaled MC", "F");
 
     wjets_template[Data1]->Draw("EP");

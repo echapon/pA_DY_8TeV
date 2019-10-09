@@ -273,8 +273,8 @@ void estimateDijet(var thevar) {
 
     //dijet_template[5]->Smooth();
     TLegend* legg = new TLegend(.6,.65,.95,.89);
-    legg->AddEntry(dijet_template[Data1],"Nominal (template)", "P");
-    legg->AddEntry(dijet_ratio[Data1],"Alt. (data-MC)", "L");
+    legg->AddEntry(dijet_template[Data1],"Nominal (2#mu OS high #chi^{2})", "P");
+    legg->AddEntry(dijet_ratio[Data1],"Alt. (2#mu SS)", "L");
 
     dijet_template[Data1]->Draw("EP");
     dijet_template[Data1]->SetMaximum(2.*dijet_template[Data1]->GetMaximum());
