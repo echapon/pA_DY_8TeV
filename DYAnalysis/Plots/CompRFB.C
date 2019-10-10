@@ -96,6 +96,12 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSRcor.root") {
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
          kBlue,kRed,kBlack,
          "5","5","EP");
+   c_1560.TopPad->cd();
+   TLatex latex;
+   latex.SetNDC();
+   latex.SetTextSize(0.03);
+   double xlatex=.2, ylatex=0.9, dylatex=0.04;
+   latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
    c_1560.PrintCanvas();
 
    MyCanvas c_60120("Plots/grfbp_rap60120","|y|","R_{FB}",800,800);
@@ -104,6 +110,9 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSRcor.root") {
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
          kBlue,kRed,kBlack,
          "5","5","EP");
+   c_60120.TopPad->cd();
+   ylatex=0.9;
+   latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
    c_60120.PrintCanvas();
 }
 

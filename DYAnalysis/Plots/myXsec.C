@@ -18,6 +18,8 @@
 using namespace DYana;
 using namespace std;
 
+void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist);
+
 void Obtain_dSigma_dX(TH1D *h){
 	Int_t nBins = h->GetNbinsX();
 	for(Int_t i=0; i<nBins; i++)
@@ -200,55 +202,108 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       vector<TH1D*> hth_EPPS16;
       int i=0;
       const char* acceffstr = (correctforacc) ? "AccTotal_pre" : "AccPass";
-      hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-      hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
-      Obtain_dSigma_dX(hth_EPPS16.back());
-      for (i=285; i<=324; i++) {
+      TGraphAsymmErrors *gth_EPPS16 = NULL;
+      if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
          hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_EPPS16.back());
-      }
-      for (i=112; i<=167; i++) {
-         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-         hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hth_EPPS16.back());
-      }
+         for (i=285; i<=324; i++) {
+            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+            hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
+            Obtain_dSigma_dX(hth_EPPS16.back());
+         }
+         for (i=112; i<=167; i++) {
+            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+            hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
+            Obtain_dSigma_dX(hth_EPPS16.back());
+         }
 
-      TGraphAsymmErrors *gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-      gth_EPPS16->SetMarkerSize(0);
-      gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+
+         gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+         gth_EPPS16->SetMarkerSize(0);
+         gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+      }
 
       // CT14
       TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
       vector<TH1D*> hth_CT14;
       i=0;
-      hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-      hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
-      Obtain_dSigma_dX(hth_CT14.back());
-      for (i=112; i<=167; i++) {
+      TGraphAsymmErrors *gth_CT14 = NULL;
+      if (fth_CT14->IsOpen()) { // skip the theory part if we don't want dsigma/dX
          hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
          Obtain_dSigma_dX(hth_CT14.back());
+         for (i=112; i<=167; i++) {
+            hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+            hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
+            Obtain_dSigma_dX(hth_CT14.back());
+         }
+
+         gth_CT14 = pdfuncert(hth_CT14, "CT14nlo");
+         gth_CT14->SetMarkerSize(0);
+         gth_CT14->SetName(Form("gth_CT14_%s",varname(thevar)));
       }
 
-      TGraphAsymmErrors *gth_CT14 = pdfuncert(hth_CT14, "CT14nlo");
-      gth_CT14->SetMarkerSize(0);
-      gth_CT14->SetName(Form("gth_CT14_%s",varname(thevar)));
 
-
-      if (!forsyst) {
+      if (doxsec && !forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
          if (!correctforacc && thevar==var::rap1560) c1.SetYRange(0,10);
          if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,49);
          if (thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
-            fixXaxis(gth_CT14);
-            fixXaxis(gth_EPPS16);
+            if (gth_CT14) fixXaxis(gth_CT14);
+            if (gth_EPPS16) fixXaxis(gth_EPPS16);
             fixXaxis(gres);
          }
+
+         // let's take central values from pre-FSR, BUT the (n)PDF uncertainties are the ones we just obtained
+         TFile *fFSR_CT14=NULL;
+         TFile *fFSR_EPPS16=NULL;
+         if (correctforacc) {
+            fFSR_CT14 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_CT14_0.root");
+            fFSR_EPPS16 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+         } else {
+            fFSR_CT14 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_CT14_0_noacc.root");
+            fFSR_EPPS16 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0_noacc.root");
+         }
+         TH1D *hpreFSR_CT14 = (TH1D*) fFSR_CT14->Get(Form("h_%s_preFSR",varname(thevar)));
+         hpreFSR_CT14->Scale(1e-3/lumi_all); // pb -> nb
+         Obtain_dSigma_dX(hpreFSR_CT14);
+         TH1D *hpreFSR_EPPS16 = (TH1D*) fFSR_EPPS16->Get(Form("h_%s_preFSR",varname(thevar)));
+         hpreFSR_EPPS16->Scale(1e-3/lumi_all); // pb -> nb
+         Obtain_dSigma_dX(hpreFSR_EPPS16);
+         replaceCentralValues(gth_CT14,hpreFSR_CT14);
+         replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
+
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
                kBlue,kRed,kBlack,
                "5","5","EP");
+
+         // add label
+         c1.TopPad->cd();
+         TLatex latex;
+         latex.SetNDC();
+         latex.SetTextSize(0.03);
+         double xlatex=.2, ylatex=0.5, dylatex=0.04;
+         if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.9;
+         latex.SetTextAlign(12);  //centered
+         if (thevar!=rap1560 && thevar!=rap60120) {
+            latex.DrawLatex(xlatex,ylatex,"-2.87 < |y_{CM}| < 1.93");
+            ylatex -= dylatex;
+         }
+         if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
+            latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+            ylatex -= dylatex;
+         }
+         if (thevar==pt || thevar==phistar || thevar==rap60120) {
+            latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+            ylatex -= dylatex;
+         }
+         if (!correctforacc) {
+            latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
+            ylatex -= dylatex;
+         }
+
          c1.PrintCanvas();
          c1.PrintCanvas_C();
 
@@ -262,13 +317,10 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       // write to file
       fout->cd();
       gres->Write();
-      gth_CT14->Write();
-      gth_EPPS16->Write();
+      if (gth_CT14) gth_CT14->Write();
+      if (gth_EPPS16) gth_EPPS16->Write();
       hy->Write();
       hy_statonly->Write();
-
-      fth_CT14->Close();
-      fth_EPPS16->Close();
    }
 
    // close file
@@ -276,4 +328,23 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
    fout->Close();
    fy->Close();
    fae->Close();
+}
+
+void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist) {
+   if (!tg || !hist) return;
+   if (tg->GetN() != hist->GetNbinsX()) return;
+
+   for (int i=0; i<tg->GetN(); i++) {
+      double x = tg->GetX()[i];
+      double y = tg->GetY()[i];
+      double exl = tg->GetEXlow()[i];
+      double exh = tg->GetEXhigh()[i];
+      double eyl = tg->GetEYlow()[i];
+      double eyh = tg->GetEYhigh()[i];
+
+      double y2 = hist->GetBinContent(i+1);
+
+      tg->SetPoint(i,x,y2);
+      tg->SetPointError(i,exl,exh,y2*eyl/y,y2*eyh/y);
+   }
 }
