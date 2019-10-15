@@ -81,6 +81,11 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 	TH1D *h_mass_resol = new TH1D("h_mass_resol", ";mass resolution ( (gen-reco)/gen) );Entries", 100,-0.2,0.2);
    TH2D *h_mass_response = new TH2D("h_mass_response", ";mass(reco level);mass(gen level)", binnum, bins, binnum, bins);
 
+	TH1D *h_mass3bins_gen = new TH1D("h_mass3bins_gen", ";mass3bins(gen level);Entries", binnum3, bins3);
+	TH1D *h_mass3bins_reco = new TH1D("h_mass3bins_reco", ";mass3bins(reco level);Entries", binnum3, bins3);
+	TH1D *h_mass3bins_resol = new TH1D("h_mass3bins_resol", ";mass3bins resolution ( (gen-reco)/gen) );Entries", 100,-0.2,0.2);
+   TH2D *h_mass3bins_response = new TH2D("h_mass3bins_response", ";mass3bins(reco level);mass3bins(gen level)", binnum3, bins3, binnum3, bins3);
+
 	TH1D *h_pt_gen = new TH1D("h_pt_gen", ";pt(gen level);Entries", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_reco = new TH1D("h_pt_reco", ";pt(reco level);Entries", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_resol = new TH1D("h_pt_resol", ";pt resolution ( (gen-reco)/gen) );Entries", 100, -0.4, 0.4);
@@ -326,6 +331,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 						{
                      // fill gen histos
                      h_mass_gen->Fill( gen_M, TotWeight );
+                     h_mass3bins_gen->Fill( gen_M, TotWeight );
                      if (gen_M>60 && gen_M<120) {
                         h_pt_gen->Fill( gen_Pt, TotWeight );
                         h_phistar_gen->Fill( gen_Phistar, TotWeight );
@@ -340,6 +346,10 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 							h_mass_response->Fill( reco_M, gen_M, TotWeight );
 							Double_t resol = (gen_M - reco_M) / gen_M;
 							h_mass_resol->Fill( resol, TotWeight );
+
+							h_mass3bins_reco->Fill( reco_M, TotWeight );
+							h_mass3bins_response->Fill( reco_M, gen_M, TotWeight );
+							h_mass3bins_resol->Fill( resol, TotWeight );
 
                      if (reco_M>60 && reco_M<120) {
                         if (gen_M>60 && gen_M<120) {
@@ -396,22 +406,25 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
                            h_pt_response->Fill( -99, gen_Pt, TotWeight );
                            h_rap60120_response->Fill( -99, gen_Rap, TotWeight );
                            h_phistar_response->Fill( -99, gen_Phistar, TotWeight );
-                        } else if (gen_M>15 && gen_M<60)
+                        } else if (gen_M>15 && gen_M<60) {
                            h_rap1560_response->Fill( -99, gen_Rap, TotWeight );
                            h_pt1560_response->Fill( -99, gen_Pt, TotWeight );
                            h_phistar1560_response->Fill( -99, gen_Phistar, TotWeight );
+                        }
                      } // reco_M range
 						} // isPassAcc_GenLepton == kTrue
 						else { // -- No gen-level event within the acceptance, but reco event exists (= "Fake" events) -- //
                      h_mass_response->Fill( reco_M, -99, TotWeight );
+                     h_mass3bins_response->Fill( reco_M, -99, TotWeight );
                      if (reco_M>60 && reco_M<120) {
                         h_pt_response->Fill( reco_Pt, -99, TotWeight );
                         h_rap60120_response->Fill( reco_Rap, -99, TotWeight );
                         h_phistar_response->Fill( reco_Phistar, -99, TotWeight );
-                     } else if (reco_M>15 && reco_M<60)
+                     } else if (reco_M>15 && reco_M<60) {
                         h_rap1560_response->Fill( reco_Rap, -99, TotWeight );
                         h_pt1560_response->Fill( reco_Pt, -99, TotWeight );
                         h_phistar1560_response->Fill( reco_Phistar, -99, TotWeight );
+                     }
                   }
 					}
 				} // -- if( ntuple->isTriggered( analyzer->HLT ) ) -- // 
@@ -456,6 +469,22 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
       }
    }
    h_mass_response->Write();
+
+	h_mass3bins_gen->Write();
+	h_mass3bins_reco->Write();
+	h_mass3bins_resol->Write();
+
+   // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
+   for (int j=0; j<=h_mass3bins_response->GetNbinsY()+1; j++) { // include UF and OF
+      double genj = h_mass3bins_gen->GetBinContent(j);
+      if (genj>0) {
+         for (int i=0; i<=h_mass3bins_response->GetNbinsX()+1; i++) {
+            h_mass3bins_response->SetBinContent(i,j,h_mass3bins_response->GetBinContent(i,j)/genj);
+            h_mass3bins_response->SetBinError(i,j,h_mass3bins_response->GetBinError(i,j)/genj);
+         }
+      }
+   }
+   h_mass3bins_response->Write();
 
 	h_pt_gen->Write();
 	h_pt_reco->Write();

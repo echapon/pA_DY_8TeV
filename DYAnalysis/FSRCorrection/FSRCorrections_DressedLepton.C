@@ -179,6 +179,8 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
       if (!Tag[i_tup].Contains("DYMuMu")) continue;
 
       Bool_t doflip = (switcheta(STags[i_tup])<0);
+      Int_t  flipsign = doflip ? -1 : 1;
+      analyzer->sign = flipsign;
       if (run==1 && doflip) continue;
       if (run==2 && !doflip) continue;
 
@@ -195,7 +197,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
-		NtupleHandle *ntuple = new NtupleHandle( chain );
+		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_GenLepton();
 		ntuple->TurnOnBranches_GenOthers();
 
@@ -217,7 +219,12 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 		if( Sample == "Powheg" )
 			nEvents.push_back( NEvents );
 
-		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+      if (doflip)
+         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+      if (! Sample.Contains("Powheg")) // only Powheg has the 2 beam directions
+         norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 		// -- Event loop starts -- //
@@ -357,7 +364,7 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				Double_t rap_preFSR = Flag_PassAcc_preFSR ? tlv_preFSR.Rapidity() - rapshift : -99;
 				Double_t rap_postFSR = Flag_PassAcc_postFSR ? tlv_postFSR.Rapidity() - rapshift : -99;
 				Double_t phistar_preFSR = Flag_PassAcc_preFSR ? Object::phistar(genlep_preFSR1, genlep_preFSR2) : -99;
-				Double_t phistar_postFSR = Flag_PassAcc_postFSR ? Object::phistar(genlep_preFSR1, genlep_preFSR2) : -99;
+				Double_t phistar_postFSR = Flag_PassAcc_postFSR ? Object::phistar(genlep_postFSR1, genlep_postFSR2) : -99;
 
 				h_mass_preFSR->Fill( M_preFSR, TotWeight );
 				h_mass_postFSR->Fill( M_postFSR, TotWeight );
@@ -368,87 +375,149 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				Double_t phistar_ratio = (phistar_preFSR - phistar_postFSR ) / phistar_preFSR;
 				h_mass_ratio->Fill( mass_ratio, TotWeight );
 
-            // mass histos
-				h_mass_preFSR_tot->Fill( M_preFSR, TotWeight );
-				h_mass_postFSR_tot->Fill( M_postFSR, TotWeight );
-				h_mass_ratio_tot->Fill( mass_ratio, TotWeight );
-				h_mass_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
+            if( Flag_PassAcc_preFSR == kTRUE )
+            {
+               // fill gen histos
+               h_mass_preFSR_tot->Fill( M_preFSR, TotWeight );
+               h_mass_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
+               h_mass3bins_preFSR_tot->Fill( M_preFSR, TotWeight );
+               h_mass3bins_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
+               if (M_preFSR>60 && M_preFSR<120) {
+                  h_pt_preFSR_tot->Fill( pt_preFSR, TotWeight );
+                  h_pt_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
+                  h_phistar_preFSR_tot->Fill( phistar_preFSR, TotWeight );
+                  h_phistar_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
+                  h_rap60120_preFSR_tot->Fill( rap_preFSR, TotWeight );
+                  h_rap60120_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
+               } else if (M_preFSR>15 && M_preFSR<60) {
+                  h_rap1560_preFSR_tot->Fill( rap_preFSR, TotWeight );
+                  h_pt1560_preFSR_tot->Fill( pt_preFSR, TotWeight );
+                  h_phistar1560_preFSR_tot->Fill( phistar_preFSR, TotWeight );
+                  h_rap1560_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
+                  h_pt1560_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
+                  h_phistar1560_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
+               }
 
-				h_mass_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
-				h_mass_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
-				h_mass_bare_tot_fine->Fill( gen_M, TotWeight );
-				h_mass_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
+               h_mass_postFSR_tot->Fill( M_postFSR, TotWeight );
+               h_mass_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
+               h_mass_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
+               h_mass_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
+               Double_t resol = (M_preFSR - M_postFSR) / M_preFSR;
+               h_mass_ratio_tot->Fill( resol, TotWeight );
 
-            // mass3bins histos
-				h_mass3bins_preFSR_tot->Fill( M_preFSR, TotWeight );
-				h_mass3bins_postFSR_tot->Fill( M_postFSR, TotWeight );
-				h_mass3bins_ratio_tot->Fill( mass_ratio, TotWeight );
-				h_mass3bins_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
+               h_mass3bins_postFSR_tot->Fill( M_postFSR, TotWeight );
+               h_mass3bins_postpreFSR_tot->Fill( M_postFSR, M_preFSR, TotWeight );
+               h_mass3bins_ratio_tot->Fill( resol, TotWeight );
+               h_mass3bins_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
+               h_mass3bins_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
 
-				h_mass3bins_preFSR_tot_fine->Fill( M_preFSR, TotWeight );
-				h_mass3bins_postFSR_tot_fine->Fill( M_postFSR, TotWeight );
-				h_mass3bins_bare_tot_fine->Fill( gen_M, TotWeight );
-				h_mass3bins_postpreFSR_tot_fine->Fill( M_postFSR, M_preFSR, TotWeight );
+               if (M_postFSR>60 && M_postFSR<120) {
+                  if (M_preFSR>60 && M_preFSR<120) {
+                     h_pt_postFSR_tot->Fill( pt_postFSR, TotWeight );
+                     h_pt_postpreFSR_tot->Fill( pt_postFSR, pt_preFSR, TotWeight );
+                     h_pt_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
+                     h_pt_postpreFSR_tot_fine->Fill( pt_postFSR, pt_preFSR, TotWeight );
+                     resol = (pt_preFSR - pt_postFSR) / pt_preFSR;
+                     h_pt_ratio_tot->Fill( resol, TotWeight );
 
-            // pt histos
-				if (M_preFSR>60 && M_preFSR<120) h_pt_preFSR_tot->Fill( pt_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_pt_postFSR_tot->Fill( pt_postFSR, TotWeight );
-				if (M_preFSR>60 && M_preFSR<120) h_pt_ratio_tot->Fill( pt_ratio, TotWeight );
-				h_pt_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? pt_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? pt_preFSR : -99, TotWeight );
+                     h_phistar_postFSR_tot->Fill( phistar_postFSR, TotWeight );
+                     h_phistar_postpreFSR_tot->Fill( phistar_postFSR, phistar_preFSR, TotWeight );
+                     h_phistar_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
+                     h_phistar_postpreFSR_tot_fine->Fill( phistar_postFSR, phistar_preFSR, TotWeight );
+                     resol = (phistar_preFSR - phistar_postFSR);
+                     h_phistar_ratio_tot->Fill( resol, TotWeight );
 
-				if (M_preFSR>60 && M_preFSR<120) h_pt_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_pt_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
-				h_pt_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? pt_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? pt_preFSR : -99, TotWeight );
+                     h_rap60120_postFSR_tot->Fill( rap_postFSR, TotWeight );
+                     h_rap60120_postpreFSR_tot->Fill( rap_postFSR, rap_preFSR, TotWeight );
+                     h_rap60120_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
+                     h_rap60120_postpreFSR_tot_fine->Fill( rap_postFSR, rap_preFSR, TotWeight );
+                     resol = (rap_preFSR - rap_postFSR);
+                     h_rap60120_ratio_tot->Fill( resol, TotWeight );
+                  } else {
+                     if (M_preFSR>15 && M_preFSR<60) {
+                        h_rap1560_postpreFSR_tot->Fill( -99, rap_preFSR, TotWeight );
+                        h_pt1560_postpreFSR_tot->Fill( -99, pt_preFSR, TotWeight );
+                        h_phistar1560_postpreFSR_tot->Fill( -99, phistar_preFSR, TotWeight );
+                        h_rap1560_postpreFSR_tot_fine->Fill( -99, rap_preFSR, TotWeight );
+                        h_pt1560_postpreFSR_tot_fine->Fill( -99, pt_preFSR, TotWeight );
+                        h_phistar1560_postpreFSR_tot_fine->Fill( -99, phistar_preFSR, TotWeight );
+                     } 
+                     // h_pt_postpreFSR_tot->Fill( pt_postFSR, -99, TotWeight );
+                     // h_rap60120_postpreFSR_tot->Fill( rap_postFSR, -99, TotWeight );
+                     // h_phistar_postpreFSR_tot->Fill( phistar_postFSR, -99, TotWeight );
+                  } // M_preFSR range
+               } else if (M_postFSR>15 && M_postFSR<60) {
+                  if (M_preFSR>15 && M_preFSR<60) {
+                     h_rap1560_postFSR_tot->Fill( rap_postFSR, TotWeight );
+                     h_rap1560_postpreFSR_tot->Fill( rap_postFSR, rap_preFSR, TotWeight );
+                     h_rap1560_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
+                     h_rap1560_postpreFSR_tot_fine->Fill( rap_postFSR, rap_preFSR, TotWeight );
+                     resol = (rap_preFSR - rap_postFSR);
+                     h_rap1560_ratio_tot->Fill( resol, TotWeight );
 
-            // rap 15-60 histos
-				if (M_preFSR>15 && M_preFSR<60) h_rap1560_preFSR_tot->Fill( rap_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_rap1560_postFSR_tot->Fill( rap_postFSR, TotWeight );
-				if (M_preFSR>15 && M_preFSR<60) h_rap1560_ratio_tot->Fill( rap_ratio, TotWeight );
-				h_rap1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? rap_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? rap_preFSR : -99, TotWeight );
+                     h_pt1560_postFSR_tot->Fill( pt_postFSR, TotWeight );
+                     h_pt1560_postpreFSR_tot->Fill( pt_postFSR, pt_preFSR, TotWeight );
+                     h_pt1560_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
+                     h_pt1560_postpreFSR_tot_fine->Fill( pt_postFSR, pt_preFSR, TotWeight );
+                     resol = (pt_preFSR - pt_postFSR);
+                     h_pt1560_ratio_tot->Fill( resol, TotWeight );
 
-				if (M_preFSR>15 && M_preFSR<60) h_rap1560_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_rap1560_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
-				h_rap1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? rap_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? rap_preFSR : -99, TotWeight );
-
-            // rap 60-120 histos
-				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot->Fill( rap_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot->Fill( rap_postFSR, TotWeight );
-				if (M_preFSR>60 && M_preFSR<120) h_rap60120_ratio_tot->Fill( rap_ratio, TotWeight );
-				h_rap60120_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? rap_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? rap_preFSR : -99, TotWeight );
-
-				if (M_preFSR>60 && M_preFSR<120) h_rap60120_preFSR_tot_fine->Fill( rap_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_rap60120_postFSR_tot_fine->Fill( rap_postFSR, TotWeight );
-				h_rap60120_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? rap_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? rap_preFSR : -99, TotWeight );
-
-            // phistar histos
-				if (M_preFSR>60 && M_preFSR<120) h_phistar_preFSR_tot->Fill( phistar_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_phistar_postFSR_tot->Fill( phistar_postFSR, TotWeight );
-				if (M_preFSR>60 && M_preFSR<120) h_phistar_ratio_tot->Fill( phistar_ratio, TotWeight );
-				h_phistar_postpreFSR_tot->Fill( (M_postFSR>60 && M_postFSR<120) ? phistar_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? phistar_preFSR : -99, TotWeight );
-
-				if (M_preFSR>60 && M_preFSR<120) h_phistar_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
-				if (M_postFSR>60 && M_postFSR<120) h_phistar_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
-				h_phistar_postpreFSR_tot_fine->Fill( (M_postFSR>60 && M_postFSR<120) ? phistar_postFSR : -99, (M_preFSR>60 && M_preFSR<120) ? phistar_preFSR : -99, TotWeight );
-
-            // pt 15-60 histos
-				if (M_preFSR>15 && M_preFSR<60) h_pt1560_preFSR_tot->Fill( pt_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_pt1560_postFSR_tot->Fill( pt_postFSR, TotWeight );
-				if (M_preFSR>15 && M_preFSR<60) h_pt1560_ratio_tot->Fill( pt_ratio, TotWeight );
-				h_pt1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? pt_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? pt_preFSR : -99, TotWeight );
-
-				if (M_preFSR>15 && M_preFSR<60) h_pt1560_preFSR_tot_fine->Fill( pt_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_pt1560_postFSR_tot_fine->Fill( pt_postFSR, TotWeight );
-				h_pt1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? pt_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? pt_preFSR : -99, TotWeight );
-
-            // phistar 15-60 histos
-				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_preFSR_tot->Fill( phistar_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_phistar1560_postFSR_tot->Fill( phistar_postFSR, TotWeight );
-				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_ratio_tot->Fill( phistar_ratio, TotWeight );
-				h_phistar1560_postpreFSR_tot->Fill( (M_postFSR>15 && M_postFSR<60) ? phistar_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? phistar_preFSR : -99, TotWeight );
-
-				if (M_preFSR>15 && M_preFSR<60) h_phistar1560_preFSR_tot_fine->Fill( phistar_preFSR, TotWeight );
-				if (M_postFSR>15 && M_postFSR<60) h_phistar1560_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
-				h_phistar1560_postpreFSR_tot_fine->Fill( (M_postFSR>15 && M_postFSR<60) ? phistar_postFSR : -99, (M_preFSR>15 && M_preFSR<60) ? phistar_preFSR : -99, TotWeight );
+                     h_phistar1560_postFSR_tot->Fill( phistar_postFSR, TotWeight );
+                     h_phistar1560_postpreFSR_tot->Fill( phistar_postFSR, phistar_preFSR, TotWeight );
+                     h_phistar1560_postFSR_tot_fine->Fill( phistar_postFSR, TotWeight );
+                     h_phistar1560_postpreFSR_tot_fine->Fill( phistar_postFSR, phistar_preFSR, TotWeight );
+                     resol = (phistar_preFSR - phistar_postFSR);
+                     h_phistar1560_ratio_tot->Fill( resol, TotWeight );
+                  } else { 
+                     if (M_preFSR>60 && M_preFSR<120) {
+                        h_pt_postpreFSR_tot->Fill( -99, pt_preFSR, TotWeight );
+                        h_rap60120_postpreFSR_tot->Fill( -99, rap_preFSR, TotWeight );
+                        h_phistar_postpreFSR_tot->Fill( -99, phistar_preFSR, TotWeight );
+                        h_pt_postpreFSR_tot_fine->Fill( -99, pt_preFSR, TotWeight );
+                        h_rap60120_postpreFSR_tot_fine->Fill( -99, rap_preFSR, TotWeight );
+                        h_phistar_postpreFSR_tot_fine->Fill( -99, phistar_preFSR, TotWeight );
+                     } 
+                     // h_rap1560_postpreFSR_tot->Fill( rap_postFSR, -99, TotWeight );
+                  } // M_preFSR range
+               } else { // reco mass is neither in 15<M<60 nor 60<M<120 range
+                  if (M_preFSR>60 && M_preFSR<120) {
+                     h_pt_postpreFSR_tot->Fill( -99, pt_preFSR, TotWeight );
+                     h_rap60120_postpreFSR_tot->Fill( -99, rap_preFSR, TotWeight );
+                     h_phistar_postpreFSR_tot->Fill( -99, phistar_preFSR, TotWeight );
+                     h_pt_postpreFSR_tot_fine->Fill( -99, pt_preFSR, TotWeight );
+                     h_rap60120_postpreFSR_tot_fine->Fill( -99, rap_preFSR, TotWeight );
+                     h_phistar_postpreFSR_tot_fine->Fill( -99, phistar_preFSR, TotWeight );
+                  } else if (M_preFSR>15 && M_preFSR<60) {
+                     h_rap1560_postpreFSR_tot->Fill( -99, rap_preFSR, TotWeight );
+                     h_pt1560_postpreFSR_tot->Fill( -99, pt_preFSR, TotWeight );
+                     h_phistar1560_postpreFSR_tot->Fill( -99, phistar_preFSR, TotWeight );
+                     h_rap1560_postpreFSR_tot_fine->Fill( -99, rap_preFSR, TotWeight );
+                     h_pt1560_postpreFSR_tot_fine->Fill( -99, pt_preFSR, TotWeight );
+                     h_phistar1560_postpreFSR_tot_fine->Fill( -99, phistar_preFSR, TotWeight );
+                  }
+               } // M_postFSR range
+            } // isPassAcc_GenLepton == kTrue
+            else { // -- No gen-level event within the acceptance, but reco event exists (= "Fake" events) -- //
+               h_mass_postpreFSR_tot->Fill( M_postFSR, -99, TotWeight );
+               h_mass3bins_postpreFSR_tot->Fill( M_postFSR, -99, TotWeight );
+               h_mass_postpreFSR_tot_fine->Fill( M_postFSR, -99, TotWeight );
+               h_mass3bins_postpreFSR_tot_fine->Fill( M_postFSR, -99, TotWeight );
+               if (M_postFSR>60 && M_postFSR<120) {
+                  h_pt_postpreFSR_tot->Fill( pt_postFSR, -99, TotWeight );
+                  h_rap60120_postpreFSR_tot->Fill( rap_postFSR, -99, TotWeight );
+                  h_phistar_postpreFSR_tot->Fill( phistar_postFSR, -99, TotWeight );
+                  h_pt_postpreFSR_tot_fine->Fill( pt_postFSR, -99, TotWeight );
+                  h_rap60120_postpreFSR_tot_fine->Fill( rap_postFSR, -99, TotWeight );
+                  h_phistar_postpreFSR_tot_fine->Fill( phistar_postFSR, -99, TotWeight );
+               } else if (M_postFSR>15 && M_postFSR<60) {
+                  h_rap1560_postpreFSR_tot->Fill( rap_postFSR, -99, TotWeight );
+                  h_pt1560_postpreFSR_tot->Fill( pt_postFSR, -99, TotWeight );
+                  h_phistar1560_postpreFSR_tot->Fill( phistar_postFSR, -99, TotWeight );
+                  h_rap1560_postpreFSR_tot_fine->Fill( rap_postFSR, -99, TotWeight );
+                  h_pt1560_postpreFSR_tot_fine->Fill( pt_postFSR, -99, TotWeight );
+                  h_phistar1560_postpreFSR_tot_fine->Fill( phistar_postFSR, -99, TotWeight );
+               }
+            }
 			} // -- End of if( GenFlag == kTRUE ) -- //
 
 		} //End of event iteration
