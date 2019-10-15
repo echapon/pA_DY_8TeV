@@ -249,6 +249,17 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
          if (!correctforacc && thevar==var::rap1560) c1.SetYRange(0,10);
          if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,49);
+         if (thevar==var::mass && correctforacc) c1.SetYRange(2e-4,90);
+         if (thevar==var::mass && !correctforacc) c1.SetYRange(2e-4,20);
+         if (thevar==var::pt1560 && correctforacc) c1.SetYRange(5e-4,7e1);
+         if (thevar==var::pt1560 && !correctforacc) c1.SetYRange(2e-4,2);
+         if (thevar==var::phistar1560 && correctforacc) c1.SetYRange(2,3e3);
+         if (thevar==var::phistar1560 && !correctforacc) c1.SetYRange(4e-1,2e2);
+         if (thevar==var::pt && correctforacc) c1.SetYRange(8e-4,2e1);
+         if (thevar==var::pt && !correctforacc) c1.SetYRange(8e-4,9);
+         if (thevar==var::phistar && correctforacc) c1.SetYRange(3e-1,4e3);
+         if (thevar==var::phistar && !correctforacc) c1.SetYRange(2e-1,2e3);
+
          if (thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
             if (gth_CT14) fixXaxis(gth_CT14);
             if (gth_EPPS16) fixXaxis(gth_EPPS16);
@@ -259,11 +270,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          TFile *fFSR_CT14=NULL;
          TFile *fFSR_EPPS16=NULL;
          if (correctforacc) {
-            fFSR_CT14 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_CT14_0.root");
-            fFSR_EPPS16 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+            fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0.root");
+            fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
          } else {
-            fFSR_CT14 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_CT14_0_noacc.root");
-            fFSR_EPPS16 = TFile::Open("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_Powheg_0_noacc.root");
+            fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0_noacc.root");
+            fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0_noacc.root");
          }
          TH1D *hpreFSR_CT14 = (TH1D*) fFSR_CT14->Get(Form("h_%s_preFSR",varname(thevar)));
          hpreFSR_CT14->Scale(1e-3/lumi_all); // pb -> nb
@@ -321,6 +332,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       if (gth_EPPS16) gth_EPPS16->Write();
       hy->Write();
       hy_statonly->Write();
+
+      // write the ratio to file
+      TFile *fratio = TFile::Open("Plots/expthratios.root","UPDATE");
+      c1.g_ratio1->Write(Form("%s_CT14",varname(thevar)));
+      c1.g_ratio2->Write(Form("%s_EPPS16",varname(thevar)));
+      fratio->Close();
    }
 
    // close file

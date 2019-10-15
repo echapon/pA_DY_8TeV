@@ -56,6 +56,7 @@ public:
 	TH1D *h_ratio;
 	TH1D *h_ratio1; TH1D *h_ratio2; // -- for the canvas with multiple ratio plot -- //
 	TGraphAsymmErrors *g_ratio;
+	TGraphAsymmErrors *g_ratio1, *g_ratio2;
 	Double_t LowerEdge_Ratio;
 	Double_t UpperEdge_Ratio;
    Bool_t isRatioPadAttached;//added
@@ -562,12 +563,12 @@ public:
 		if( isLogX == kTRUE ) gPad->SetLogx();
 
 		// -- Make Ratio plot & Draw it -- //
-		TGraphAsymmErrors *g_ratio1 = (TGraphAsymmErrors*)g1->Clone();
+		g_ratio1 = (TGraphAsymmErrors*)g1->Clone();
 		MakeRatioGraph(g_ratio1, g1, g_ref);
 		g_ratio1->Draw("AEP");
 		g_ratio1->SetName("g_ratio1");
 
-		TGraphAsymmErrors *g_ratio2 = (TGraphAsymmErrors*)g2->Clone();
+		g_ratio2 = (TGraphAsymmErrors*)g2->Clone();
 		MakeRatioGraph(g_ratio2, g2, g_ref);
 		g_ratio2->Draw("EP");
 		g_ratio2->SetName("g_ratio2");

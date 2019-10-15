@@ -346,6 +346,11 @@ void dataMC(var thevar)
    c1->SetSelected(c1);
    c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
    c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
+
+   // save the ratio
+   TFile *fratio = TFile::Open("OfficialStyle/dataMCratios.root","UPDATE");
+   hratio->Write(thevarname);
+   fratio->Close();
 }
 
 void dataMC() {
