@@ -1,61 +1,54 @@
-// #include <TStyle.h>
-// #include "/home/kplee/CommonCodes/DrellYanAnalysis/tdrstyle.C"
-#include <src/RooUnfoldBayes.h>
-#include <src/RooUnfoldResponse.h>
-#include <DYAnalysis_80X/CommonCodes/MyCanvas.C>
+#include "TFile.h"
+#include "../Include/MyCanvas.C"
+#include "../BkgEst/interface/defs.h"
+#include "../Include/CMS_lumi.C"
+#include "../Include/PlotTools.h"
+#include "../Include/UnfoldUtils.h"
 
-#include <TFile.h>
-#include <TROOT.h>
-#include <TLatex.h>
+using namespace DYana;
+using unfold::gUnfold;
 
 void CalculateFractionPerBin(TH2D *h_nEvents, TH1* h_Truth, TH2D *h_Response);
 TH2D* Transpose( TH2D* h_2D );
 void MakeCanvas_RespM( TH2D *h_RespM );
+void DrawClosureTest(TFile *f, var thevar);
 
-void DrawClosureTest(TString version = "None")
-{
-	// gSystem->Load("/home/kplee/Unfolding/libRooUnfold.so");
-
-	gROOT->SetBatch(kTRUE);
-
+void DrawClosureTest(const char* matrixfile="ResponseMatrix/ROOTFile_ResponseMatrix_Powheg_MomUnCorr_0.root") {
+   TFile *f = TFile::Open(matrixfile);
+   for (int i=0; i<var::ALLvar; i++) {
+      var thevar_i = static_cast<var>(i);
+      DrawClosureTest(f, thevar_i);
+   }
+}
+void DrawClosureTest(TFile *f, var thevar) {
 	setTDRStyle();
 	gROOT->SetStyle( "tdrStyle" );
 
-	// -- Get root file containing the histograms -- //
-	TString FileLocation = "/home/kplee/CommonCodes/DrellYanAnalysis/Results_ROOTFiles_76X/" + version;
-	if( version == "None" ) FileLocation = ".";
-
-	TFile *f_input = new TFile(FileLocation + "/ROOTFile_Histogram_ResponseM_1D_aMCNLO_IsoMu20_OR_IsoTkMu20.root");
-
-	TString FileName = f_input->GetName();
-
-	TString Sample = "";
-	if( FileName.Contains("aMCNLO") )
-		Sample = "aMCNLO";
-	else if( FileName.Contains("Powheg") )
-		Sample = "Powheg";
+   // define the bins
+   const char* thevarname = varname(thevar);
+   int nbinsv = nbinsvar(thevar);
+   double* binsv = binsvar(thevar);
 
 	///////////////////////////
 	// -- Response Matrix -- //
 	///////////////////////////
-	TH1D *h_Truth_RooUnfold = (TH1D*)f_input->Get("h_Truth_RooUnfold")->Clone();
-	TH2D* h_nEvents = (TH2D*)f_input->Get("h_RespM_RooUnfold")->Clone();
+	TH1D *h_Truth_TUnfold = (TH1D*)f->Get(Form("h_%s_gen",thevarname))->Clone();
+	TH2D* h_nEvents = (TH2D*)f->Get(Form("h_%s_response",thevarname))->Clone();
 	TH2D* h_RespM = (TH2D*)h_nEvents->Clone();
-	CalculateFractionPerBin(h_nEvents, h_Truth_RooUnfold, h_RespM);
-	MakeCanvas_RespM( h_RespM );
+   // CalculateFractionPerBin(h_nEvents, h_Truth_TUnfold, h_RespM);
+   // MakeCanvas_RespM( h_RespM );
 
-	TH1D *h_Measured_RooUnfold = (TH1D*)f_input->Get("h_Measured_RooUnfold");
+	TH1D *h_Measured_TUnfold = (TH1D*)f->Get(Form("h_%s_reco",thevarname));
+
+   // do the unfolding
+   TH2D *histEmatTotal = NULL;
+   TH1D *h_unfolded = unfold::unfold_MLE(h_Measured_TUnfold,h_RespM,histEmatTotal);
 	
-	// TH1D *h_unfolded = (TH1D*)f_input->Get("h_unfoldedMC");
-	RooUnfoldResponse *UnfoldRes = (RooUnfoldResponse*)f_input->Get("h_RecoMass_h_GenMass")->Clone();
-	RooUnfoldBayes *UnfoldBayes = new RooUnfoldBayes(UnfoldRes, h_Measured_RooUnfold, 17);
-	TH1D *h_unfolded = (TH1D*)UnfoldBayes->Hreco();
-	
-	MyCanvas *myc = new MyCanvas("c_ClosureTest", "Dimuon Mass [GeV]", "Number of events");
+	MyCanvas *myc = new MyCanvas(Form("ResponseMatrix/c_ClosureTest_%s",thevarname), xaxistitle(thevar), "Number of events");
 	myc->SetLogx();
 	myc->SetLogy(0);
 	myc->SetRatioRange(0.7, 1.3);
-	myc->CanvasWithThreeHistogramsRatioPlot( h_Measured_RooUnfold, h_unfolded, h_Truth_RooUnfold, 
+	myc->CanvasWithThreeHistogramsRatioPlot( h_Measured_TUnfold, h_unfolded, h_Truth_TUnfold, 
 											 "Measured (Reco-Level)", "Unfolded", "Truth (Gen-Level)", "Ratio to Truth",
 											 kBlue, kGreen+1, kRed);
 	myc->PrintCanvas();
