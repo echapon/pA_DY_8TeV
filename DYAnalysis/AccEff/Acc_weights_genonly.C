@@ -27,7 +27,7 @@
 using namespace DYana;
 
 // number of gen weights (CT14: 284, EPPS16: 325
-const int nweights = 284;//325;//284;
+const int nweights = 325;//284;
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_weights_genonly(TString Sample) 
@@ -60,14 +60,6 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_rap60120_AccTotal_pre[nweights];
    TH1D* h_pt1560_AccTotal_pre[nweights];
    TH1D* h_phistar1560_AccTotal_pre[nweights];
-   TH1D* h_mass_AccTotal_post[nweights];
-   TH1D* h_mass3bins_AccTotal_post[nweights];
-   TH1D* h_pt_AccTotal_post[nweights];
-   TH1D* h_phistar_AccTotal_post[nweights];
-   TH1D* h_rap1560_AccTotal_post[nweights];
-   TH1D* h_rap60120_AccTotal_post[nweights];
-   TH1D* h_pt1560_AccTotal_post[nweights];
-   TH1D* h_phistar1560_AccTotal_post[nweights];
    TH1D* h_mass_AccPass[nweights];
    TH1D* h_mass3bins_AccPass[nweights];
    TH1D* h_pt_AccPass[nweights];
@@ -76,41 +68,74 @@ void Acc_weights_genonly(TString Sample)
    TH1D* h_rap60120_AccPass[nweights];
    TH1D* h_pt1560_AccPass[nweights];
    TH1D* h_phistar1560_AccPass[nweights];
+   TH1D* h_mass_AccPass_pre[nweights];
+   TH1D* h_mass3bins_AccPass_pre[nweights];
+   TH1D* h_pt_AccPass_pre[nweights];
+   TH1D* h_phistar_AccPass_pre[nweights];
+   TH1D* h_rap1560_AccPass_pre[nweights];
+   TH1D* h_rap60120_AccPass_pre[nweights];
+   TH1D* h_pt1560_AccPass_pre[nweights];
+   TH1D* h_phistar1560_AccPass_pre[nweights];
    
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccTotal_pre[i] = new TH1D(Form("h_mass_AccTotal_pre%d",i), "", binnum, bins);
-      h_mass_AccTotal_post[i] = new TH1D(Form("h_mass_AccTotal_post%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
+      h_mass_AccPass_pre[i] = new TH1D(Form("h_mass_AccPass_pre%d",i), "", binnum, bins);
       h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum3, bins3);
       h_mass3bins_AccTotal_pre[i] = new TH1D(Form("h_mass3bins_AccTotal_pre%d",i), "", binnum3, bins3);
-      h_mass3bins_AccTotal_post[i] = new TH1D(Form("h_mass3bins_AccTotal_post%d",i), "", binnum3, bins3);
       h_mass3bins_AccPass[i] = new TH1D(Form("h_mass3bins_AccPass%d",i), "", binnum3, bins3);
+      h_mass3bins_AccPass_pre[i] = new TH1D(Form("h_mass3bins_AccPass_pre%d",i), "", binnum3, bins3);
       h_pt_AccTotal[i] = new TH1D(Form("h_pt_AccTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccTotal_pre[i] = new TH1D(Form("h_pt_AccTotal_pre%d",i), "", ptbinnum_meas, ptbin_meas);
-      h_pt_AccTotal_post[i] = new TH1D(Form("h_pt_AccTotal_post%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccPass[i] = new TH1D(Form("h_pt_AccPass%d",i), "", ptbinnum_meas, ptbin_meas);
+      h_pt_AccPass_pre[i] = new TH1D(Form("h_pt_AccPass_pre%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_AccTotal[i] = new TH1D(Form("h_phistar_AccTotal%d",i), "", phistarnum, phistarbin);
       h_phistar_AccTotal_pre[i] = new TH1D(Form("h_phistar_AccTotal_pre%d",i), "", phistarnum, phistarbin);
-      h_phistar_AccTotal_post[i] = new TH1D(Form("h_phistar_AccTotal_post%d",i), "", phistarnum, phistarbin);
       h_phistar_AccPass[i] = new TH1D(Form("h_phistar_AccPass%d",i), "", phistarnum, phistarbin);
+      h_phistar_AccPass_pre[i] = new TH1D(Form("h_phistar_AccPass_pre%d",i), "", phistarnum, phistarbin);
       h_rap1560_AccTotal[i] = new TH1D(Form("h_rap1560_AccTotal%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap1560_AccTotal_pre[i] = new TH1D(Form("h_rap1560_AccTotal_pre%d",i), "", rapbinnum_1560, rapbin_1560);
-      h_rap1560_AccTotal_post[i] = new TH1D(Form("h_rap1560_AccTotal_post%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap1560_AccPass[i] = new TH1D(Form("h_rap1560_AccPass%d",i), "", rapbinnum_1560, rapbin_1560);
+      h_rap1560_AccPass_pre[i] = new TH1D(Form("h_rap1560_AccPass_pre%d",i), "", rapbinnum_1560, rapbin_1560);
       h_rap60120_AccTotal[i] = new TH1D(Form("h_rap60120_AccTotal%d",i), "", rapbinnum_60120, rapbin_60120);
       h_rap60120_AccTotal_pre[i] = new TH1D(Form("h_rap60120_AccTotal_pre%d",i), "", rapbinnum_60120, rapbin_60120);
-      h_rap60120_AccTotal_post[i] = new TH1D(Form("h_rap60120_AccTotal_post%d",i), "", rapbinnum_60120, rapbin_60120);
       h_rap60120_AccPass[i] = new TH1D(Form("h_rap60120_AccPass%d",i), "", rapbinnum_60120, rapbin_60120);
+      h_rap60120_AccPass_pre[i] = new TH1D(Form("h_rap60120_AccPass_pre%d",i), "", rapbinnum_60120, rapbin_60120);
       h_pt1560_AccTotal[i] = new TH1D(Form("h_pt1560_AccTotal%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
       h_pt1560_AccTotal_pre[i] = new TH1D(Form("h_pt1560_AccTotal_pre%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
-      h_pt1560_AccTotal_post[i] = new TH1D(Form("h_pt1560_AccTotal_post%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
       h_pt1560_AccPass[i] = new TH1D(Form("h_pt1560_AccPass%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
+      h_pt1560_AccPass_pre[i] = new TH1D(Form("h_pt1560_AccPass_pre%d",i), "", ptbinnum_meas_1560, ptbin_meas_1560);
       h_phistar1560_AccTotal[i] = new TH1D(Form("h_phistar1560_AccTotal%d",i), "", phistarnum_1560, phistarbin_1560);
       h_phistar1560_AccTotal_pre[i] = new TH1D(Form("h_phistar1560_AccTotal_pre%d",i), "", phistarnum_1560, phistarbin_1560);
-      h_phistar1560_AccTotal_post[i] = new TH1D(Form("h_phistar1560_AccTotal_post%d",i), "", phistarnum_1560, phistarbin_1560);
       h_phistar1560_AccPass[i] = new TH1D(Form("h_phistar1560_AccPass%d",i), "", phistarnum_1560, phistarbin_1560);
+      h_phistar1560_AccPass_pre[i] = new TH1D(Form("h_phistar1560_AccPass_pre%d",i), "", phistarnum_1560, phistarbin_1560);
    }
+
+   // let's also store stuff into a tree
+   TTree *tr = new TTree("tr","tree");
+   Double_t gen_M, gen_M_pre, gen_M_post;
+   Double_t gen_Rap, gen_Rap_pre, gen_Rap_post;
+   Double_t gen_Pt, gen_Pt_pre, gen_Pt_post;
+   Double_t gen_Phistar, gen_Phistar_pre, gen_Phistar_post;
+   Double_t TotWeight;
+   Bool_t Flag_PassAcc = kFALSE;
+   Bool_t Flag_PassAcc_pre = kFALSE;
+   tr->Branch("gen_M",&gen_M,"gen_M/D");
+   tr->Branch("gen_M_pre",&gen_M_pre,"gen_M_pre/D");
+   tr->Branch("gen_M_post",&gen_M_post,"gen_M_post/D");
+   tr->Branch("gen_Rap",&gen_Rap,"gen_Rap/D");
+   tr->Branch("gen_Rap_pre",&gen_Rap_pre,"gen_Rap_pre/D");
+   tr->Branch("gen_Rap_post",&gen_Rap_post,"gen_Rap_post/D");
+   tr->Branch("gen_Pt",&gen_Pt,"gen_Pt/D");
+   tr->Branch("gen_Pt_pre",&gen_Pt_pre,"gen_Pt_pre/D");
+   tr->Branch("gen_Pt_post",&gen_Pt_post,"gen_Pt_post/D");
+   tr->Branch("gen_Phistar",&gen_Phistar,"gen_Phistar/D");
+   tr->Branch("gen_Phistar_pre",&gen_Phistar_pre,"gen_Phistar_pre/D");
+   tr->Branch("gen_Phistar_post",&gen_Phistar_post,"gen_Phistar_post/D");
+   tr->Branch("TotWeight",&TotWeight,"TotWeight/D");
+   tr->Branch("Flag_PassAcc",&Flag_PassAcc,"Flag_PassAcc/O");
+   tr->Branch("Flag_PassAcc_pre",&Flag_PassAcc_pre,"Flag_PassAcc_pre/O");
 
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
@@ -198,7 +223,7 @@ void Acc_weights_genonly(TString Sample)
          // ADD HF weight !!
          Double_t PUWeight = 1.;
 
-         Double_t TotWeight = norm * GenWeight;
+         TotWeight = norm * GenWeight;
 
          Bool_t GenFlag = kFALSE;
          GenFlag = analyzer->SeparateDYLLSample_isHardProcess(Tag[i_tup], ntuple);
@@ -214,15 +239,18 @@ void Acc_weights_genonly(TString Sample)
             {
                GenLepton genlep;
                genlep.FillFromNtuple(ntuple, i_gen);
-               if( genlep.isMuon() && genlep.fromHardProcessFinalState )
+               if( genlep.isMuon() && genlep.isHardProcess )
                   GenLeptonCollection.push_back( genlep );
+
+               if( GenLeptonCollection.size() ==  2 )
+                  break;
             }
             GenLepton genlep1 = GenLeptonCollection[0];
             GenLepton genlep2 = GenLeptonCollection[1];
-            Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
-            Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
-            Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
-            Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
+            gen_M = (genlep1.Momentum + genlep2.Momentum).M();
+            gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
+            gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
+            gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // compute pre-FSR quantities 
             vector<GenLepton> GenLeptonCollection_FinalState;
@@ -254,24 +282,35 @@ void Acc_weights_genonly(TString Sample)
             // -- Mass, Pt, Rapidity Calculation -- //
             TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
             TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
-            Double_t gen_M_pre = tlv_preFSR.M();
-            Double_t gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
-            Double_t gen_Pt_pre = tlv_preFSR.Pt();
-            Double_t gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
-            Double_t gen_M_post = tlv_postFSR.M();
-            Double_t gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
-            Double_t gen_Pt_post = tlv_postFSR.Pt();
-            Double_t gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
-
+            gen_M_pre = tlv_preFSR.M();
+            gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
+            gen_Pt_pre = tlv_preFSR.Pt();
+            gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
+            gen_M_post = tlv_postFSR.M();
+            gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
+            gen_Pt_post = tlv_postFSR.Pt();
+            gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
 
             // -- Flags -- //
-            Bool_t Flag_PassAcc = kFALSE;
+            Flag_PassAcc = kFALSE;
+            Flag_PassAcc_pre = kFALSE;
+
+            // Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
+            Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
+            Flag_PassAcc_pre = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+
+            // fill tree
+            tr->Fill();
+
+            // the gen_M, etc. quantities are not very meaningful... replace them with post-FSR
+            gen_M = gen_M_post;
+            gen_Rap = gen_Rap_post;
+            gen_Pt = gen_Pt_post;
+            gen_Phistar = gen_Phistar_post;
 
             // -- Fill the mass histograms -- //
             h_mass->Fill( gen_M, TotWeight );
             h_mass_tot->Fill( gen_M, TotWeight );
-
-            Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
 
             // -- Acceptance Calculation -- //
             if (ttbar_w->size()!=nweights) cout << i << " -> " << ttbar_w->size() << " " << nweights << endl;
@@ -319,17 +358,19 @@ void Acc_weights_genonly(TString Sample)
                   h_pt1560_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
                   h_phistar1560_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
                }
-
-               h_mass_AccTotal_post[iwt]->Fill( gen_M_post, wt );
-               h_mass3bins_AccTotal_post[iwt]->Fill( gen_M_post, wt );
-               if (gen_M_post>60 && gen_M_post<120) {
-                  h_pt_AccTotal_post[iwt]->Fill( gen_Pt_post, wt );
-                  h_phistar_AccTotal_post[iwt]->Fill( gen_Phistar_post, wt );
-                  h_rap60120_AccTotal_post[iwt]->Fill( gen_Rap_post, wt );
-               } else if (gen_M_post>15 && gen_M_post<60) {
-                  h_rap1560_AccTotal_post[iwt]->Fill( gen_Rap_post, wt );
-                  h_pt1560_AccTotal_post[iwt]->Fill( gen_Pt_post, wt );
-                  h_phistar1560_AccTotal_post[iwt]->Fill( gen_Phistar_post, wt );
+               if( Flag_PassAcc_pre == kTRUE ) 
+               {
+                  h_mass_AccPass_pre[iwt]->Fill( gen_M_pre, wt );
+                  h_mass3bins_AccPass_pre[iwt]->Fill( gen_M_pre, wt );
+                  if (gen_M_pre>60 && gen_M_pre<120) {
+                     h_pt_AccPass_pre[iwt]->Fill( gen_Pt_pre, wt );
+                     h_phistar_AccPass_pre[iwt]->Fill( gen_Phistar_pre, wt );
+                     h_rap60120_AccPass_pre[iwt]->Fill( gen_Rap_pre, wt );
+                  } else if (gen_M_pre>15 && gen_M_pre<60) {
+                     h_rap1560_AccPass_pre[iwt]->Fill( gen_Rap_pre, wt );
+                     h_pt1560_AccPass_pre[iwt]->Fill( gen_Pt_pre, wt );
+                     h_phistar1560_AccPass_pre[iwt]->Fill( gen_Phistar_pre, wt );
+                  }
                }
             }
          } // -- End of if( GenFlag == kTRUE )
@@ -352,38 +393,39 @@ void Acc_weights_genonly(TString Sample)
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i]->Write();
       h_mass_AccTotal_pre[i]->Write();
-      h_mass_AccTotal_post[i]->Write();
       h_mass_AccPass[i]->Write();
+      h_mass_AccPass_pre[i]->Write();
       h_mass3bins_AccTotal[i]->Write();
       h_mass3bins_AccTotal_pre[i]->Write();
-      h_mass3bins_AccTotal_post[i]->Write();
       h_mass3bins_AccPass[i]->Write();
+      h_mass3bins_AccPass_pre[i]->Write();
       h_pt_AccTotal[i]->Write();
       h_phistar_AccTotal[i]->Write();
       h_pt_AccTotal_pre[i]->Write();
       h_phistar_AccTotal_pre[i]->Write();
-      h_pt_AccTotal_post[i]->Write();
-      h_phistar_AccTotal_post[i]->Write();
       h_pt_AccPass[i]->Write();
+      h_pt_AccPass_pre[i]->Write();
       h_phistar_AccPass[i]->Write();
+      h_phistar_AccPass_pre[i]->Write();
       h_rap1560_AccTotal[i]->Write();
       h_rap1560_AccTotal_pre[i]->Write();
-      h_rap1560_AccTotal_post[i]->Write();
       h_rap1560_AccPass[i]->Write();
+      h_rap1560_AccPass_pre[i]->Write();
       h_rap60120_AccTotal[i]->Write();
       h_rap60120_AccTotal_pre[i]->Write();
-      h_rap60120_AccTotal_post[i]->Write();
       h_rap60120_AccPass[i]->Write();
+      h_rap60120_AccPass_pre[i]->Write();
       h_pt1560_AccTotal[i]->Write();
       h_pt1560_AccTotal_pre[i]->Write();
-      h_pt1560_AccTotal_post[i]->Write();
       h_pt1560_AccPass[i]->Write();
+      h_pt1560_AccPass_pre[i]->Write();
       h_phistar1560_AccTotal[i]->Write();
       h_phistar1560_AccTotal_pre[i]->Write();
-      h_phistar1560_AccTotal_post[i]->Write();
       h_phistar1560_AccPass[i]->Write();
+      h_phistar1560_AccPass_pre[i]->Write();
    }
 
+   tr->Write();
    f->Close();
 
 
