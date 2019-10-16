@@ -68,6 +68,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       TGraphAsymmErrors* gres = NULL;
       TGraphAsymmErrors* gres_statonly = NULL;
       if (hy) {
+         cout << "bkgsub histo FOUND!" << endl;
          if (doxsec) {
             hy->Scale(1.e-3/lumi_all); // pb -> nb
             Obtain_dSigma_dX(hy);
@@ -126,6 +127,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             hy_statonly->SetBinError(i+1,(errl_stat+errh_stat)/2.);
          }
       } else {
+         cout << "bkg sub histo NOT FOUND! Will use unfolded histo instead." << endl;
          // if we haven't found the histo... maybe we're looking at the output of the FSR unfolding, and then everything is ready! just get the result.
          hy = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_%s",varname(thevar)));
          hy_statonly = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_statonly_%s",varname(thevar)));
@@ -201,7 +203,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
       vector<TH1D*> hth_EPPS16;
       int i=0;
-      const char* acceffstr = (correctforacc) ? "AccTotal_pre" : "AccPass";
+      const char* acceffstr = (correctforacc) ? (hy ? "AccTotal" : "AccTotal_pre") : (hy ? "AccPass" : "AccPass_pre");
+
       TGraphAsymmErrors *gth_EPPS16 = NULL;
       if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
          hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
@@ -266,24 +269,24 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             fixXaxis(gres);
          }
 
-         // let's take central values from pre-FSR, BUT the (n)PDF uncertainties are the ones we just obtained
-         TFile *fFSR_CT14=NULL;
-         TFile *fFSR_EPPS16=NULL;
-         if (correctforacc) {
-            fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0.root");
-            fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
-         } else {
-            fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0_noacc.root");
-            fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0_noacc.root");
-         }
-         TH1D *hpreFSR_CT14 = (TH1D*) fFSR_CT14->Get(Form("h_%s_preFSR",varname(thevar)));
-         hpreFSR_CT14->Scale(1e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hpreFSR_CT14);
-         TH1D *hpreFSR_EPPS16 = (TH1D*) fFSR_EPPS16->Get(Form("h_%s_preFSR",varname(thevar)));
-         hpreFSR_EPPS16->Scale(1e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hpreFSR_EPPS16);
-         replaceCentralValues(gth_CT14,hpreFSR_CT14);
-         replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
+         // // let's take central values from pre-FSR, BUT the (n)PDF uncertainties are the ones we just obtained
+         // TFile *fFSR_CT14=NULL;
+         // TFile *fFSR_EPPS16=NULL;
+         // if (correctforacc) {
+         //    fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0.root");
+         //    fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0.root");
+         // } else {
+         //    fFSR_CT14 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_CT14_0_noacc.root");
+         //    fFSR_EPPS16 = TFile::Open("FSRCorrection/nozptrew/ROOTFile_FSRCorrections_DressedLepton_Powheg_0_noacc.root");
+         // }
+         // TH1D *hpreFSR_CT14 = (TH1D*) fFSR_CT14->Get(Form("h_%s_preFSR",varname(thevar)));
+         // hpreFSR_CT14->Scale(1e-3/lumi_all); // pb -> nb
+         // Obtain_dSigma_dX(hpreFSR_CT14);
+         // TH1D *hpreFSR_EPPS16 = (TH1D*) fFSR_EPPS16->Get(Form("h_%s_preFSR",varname(thevar)));
+         // hpreFSR_EPPS16->Scale(1e-3/lumi_all); // pb -> nb
+         // Obtain_dSigma_dX(hpreFSR_EPPS16);
+         // replaceCentralValues(gth_CT14,hpreFSR_CT14);
+         // replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
 
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
@@ -318,6 +321,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          c1.PrintCanvas();
          c1.PrintCanvas_C();
 
+         // write the ratio to file
+         TFile *fratio = TFile::Open("Plots/results/expthratios.root","UPDATE");
+         c1.g_ratio1->Write(Form("%s_CT14",varname(thevar)));
+         c1.g_ratio2->Write(Form("%s_EPPS16",varname(thevar)));
+         fratio->Close();
+
          // print graph
          inittex(Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"),xtitle.Data(),ytitle.Data());
          printGraph(gres_statonly,gres,Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"));
@@ -332,12 +341,6 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       if (gth_EPPS16) gth_EPPS16->Write();
       hy->Write();
       hy_statonly->Write();
-
-      // write the ratio to file
-      TFile *fratio = TFile::Open("Plots/expthratios.root","UPDATE");
-      c1.g_ratio1->Write(Form("%s_CT14",varname(thevar)));
-      c1.g_ratio2->Write(Form("%s_EPPS16",varname(thevar)));
-      fratio->Close();
    }
 
    // close file
