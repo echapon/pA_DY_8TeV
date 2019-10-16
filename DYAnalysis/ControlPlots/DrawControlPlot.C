@@ -6,9 +6,10 @@ void DrawControlPlot(TString version="PAL3Mu12",
       TString MomCor = "MomCorr00",    // MomCorr or MomCorrH or MomUnCorr
       TString Rew = "rewboth",       // rewboth or norew or rewplus or rewminus
       bool    doTnpRew = true,         // apply tnp weights also when filling histos or not?
+      bool    doZptRew = true,         // apply Zpt rew?
       bool    PrintTex = false)
 {
-	DrawControlPlotTool *tool = new DrawControlPlotTool(version, DrawDataDriven, NormType, MomCor, Rew, doTnpRew);
+	DrawControlPlotTool *tool = new DrawControlPlotTool(version, DrawDataDriven, NormType, MomCor, Rew, doTnpRew, doZptRew);
    if (PrintTex) tool->SetTexOptions(true);
    tool->GenLevelMassSpectrum();
    tool->SetupHistogramNames();

@@ -33,6 +33,7 @@ public:
 	TString NormType;
    TString Rew;
    TString TnpRew;
+   TString ZptRew;
    TString MomCor;
    TString HLTname;
 
@@ -54,7 +55,7 @@ public:
 
 	double Nfactor_overall;
 	
-	DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew);
+	DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew, bool doZptRew);
 	virtual void SetupHistogramNames();
 	virtual void GenLevelMassSpectrum();
 	virtual void LoopForHistograms(Int_t nHist);
@@ -79,7 +80,7 @@ public:
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
-DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew)
+DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriven_arg, TString NormType_arg, TString MomCor_arg, TString Rew_arg, bool doTnpRew, bool doZptRew)
 {
 	if( !(NormType_arg == "Lumi" || NormType_arg == "Zpeak") )
 	{
@@ -117,14 +118,16 @@ DrawControlPlotTool::DrawControlPlotTool(TString HLTname_arg, Int_t DrawDataDriv
 
    TnpRew = "_notnprew";
    if (doTnpRew) TnpRew = "_tnprew";
+   ZptRew = "_noZptrew";
+   if (doZptRew) ZptRew = "";
 
-	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ".root");
+	f_input = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Powheg_" + MomCor + "_" + Rew + TnpRew + ZptRew + ".root");
 	f_input_Data = new TFile(FileLocation + "/ROOTFile_Histogram_InvMass_" + HLTname + "_Data_" + MomCor + "_noHFrew_notnprew.root");
    cout << f_input_Data->GetName() << endl;
    cout << f_input->GetName() << endl;
 	
 	// -- output file -- //
-	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ".root", "RECREATE");
+	f_output = new TFile("ROOTFile_YieldHistogram_" + MomCor + "_" + Rew + TnpRew + ZptRew + ".root", "RECREATE");
 
 	DYAnalyzer *analyzer = new DYAnalyzer( HLTname );
    analyzer->SetupMCsamples_v20180814("Powheg", &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
@@ -1009,7 +1012,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	f_output->cd();
 	h_SignalMC->Write();
 
-	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s",variable) + tagSS + "_" + MomCor + "_" + Rew + TnpRew + "_" + Type + ".root", "RECREATE");
+	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s",variable) + tagSS + "_" + MomCor + "_" + Rew + TnpRew + ZptRew + "_" + Type + ".root", "RECREATE");
 	f_output2->cd();
 
 	h_data->SetName("h_data");
