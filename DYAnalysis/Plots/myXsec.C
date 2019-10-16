@@ -67,6 +67,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       TH1D *hy_statonly;
       TGraphAsymmErrors* gres = NULL;
       TGraphAsymmErrors* gres_statonly = NULL;
+
+      bool preFSR = false;
+
       if (hy) {
          cout << "bkgsub histo FOUND!" << endl;
          if (doxsec) {
@@ -129,6 +132,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       } else {
          cout << "bkg sub histo NOT FOUND! Will use unfolded histo instead." << endl;
          // if we haven't found the histo... maybe we're looking at the output of the FSR unfolding, and then everything is ready! just get the result.
+         preFSR = true;
          hy = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_%s",varname(thevar)));
          hy_statonly = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_statonly_%s",varname(thevar)));
          // cout << hy->GetBinContent(1) << endl;
@@ -203,7 +207,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
       vector<TH1D*> hth_EPPS16;
       int i=0;
-      const char* acceffstr = (correctforacc) ? (hy ? "AccTotal" : "AccTotal_pre") : (hy ? "AccPass" : "AccPass_pre");
+      const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
 
       TGraphAsymmErrors *gth_EPPS16 = NULL;
       if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
