@@ -94,8 +94,8 @@ void printGraph(vector<TGraphAsymmErrors*> tg, vector<TGraphAsymmErrors*> tg_sys
       for (; itg!=tg.end(); itg++) {
          double errlow = (*itg)->GetErrorYlow(ibin);
          double errhigh = (*itg)->GetErrorYhigh(ibin);
-         double errlow_syst = (*itg_syst)->GetErrorYlow(ibin);
-         double errhigh_syst = (*itg_syst)->GetErrorYhigh(ibin);
+         double errlow_syst = sqrt(pow((*itg_syst)->GetErrorYlow(ibin),2) - pow(errlow,2));
+         double errhigh_syst = sqrt(pow((*itg_syst)->GetErrorYhigh(ibin),2) - pow(errhigh,2));
          if (fabs(errlow-errhigh)>1e-3) {
             file << " & $" << (*itg)->GetY()[ibin] << "_{-" << errlow << "}^{+" << errhigh << "}\\textrm{ (stat.)} ";
          } else {
