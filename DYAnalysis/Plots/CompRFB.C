@@ -27,7 +27,7 @@ void Obtain_dSigma_dX(TH1D *h);
 
 using namespace std;
 
-void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSRcor.root") {
+void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");
