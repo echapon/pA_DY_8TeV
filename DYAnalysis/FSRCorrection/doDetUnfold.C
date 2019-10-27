@@ -29,7 +29,7 @@
 using namespace DYana;
 using unfold::gUnfold;
 
-void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int run=0, var thevar = var::mass ) 
+void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int run=0, var thevar = var::mass, bool correctforacc = true ) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -54,8 +54,9 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    int nbinsv = nbinsvar(thevar);
    double* binsv = binsvar(thevar);
 
+   TString accstr = correctforacc ? "" : "_noacc";
 
-	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + ".root");
+	TFile *f = new TFile("FSRCorrection/ROOTFile_FSRCorrections_DressedLepton_" + Sample + "_" + Form("%d",run) + accstr + ".root");
    TH2D *h_postpreFSR_tot = (TH2D*) f->Get(Form("h_%s_postpreFSR_tot",thevarname));
    TH1D *h_preFSR = (TH1D*) f->Get(Form("h_%s_preFSR",thevarname));
    TH1D *h_postFSR = (TH1D*) f->Get(Form("h_%s_postFSR",thevarname));
@@ -81,9 +82,14 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    // errors larger or equal 10000 are fatal:
    // the data points specified as input are not sufficient to constrain the
    // unfolding process
-   // TFile *fdata = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run));
+   
+   TString filename = "Plots/results/xsec" + accstr + "_nom_detcor.root";
+   // if (Sample != "Powheg") filename = "Plots/results/xsec" + accstr + "_" + Sample + "_detcor.root";
+   TFile *fdata = new TFile(filename);
+   // TFile *fdata = new TFile(Form("Plots/results/xsec%s_detcor_noacc_rewNtracks.root",accstr.Data(),Sample.Data(),isApplyMomCorr.Data(),run));
    // TFile *fdata = TFile::Open("Plots/results/yields_nom_detcor_noacc.root");
-   TFile *fdata = TFile::Open("Plots/results/yields_nom_detcor.root");
+   // TFile *fdata = TFile::Open("Plots/results/yields_nom_detcor.root");
+
    if (!fdata || !fdata->IsOpen()) {
       cout << "Error, data file not found" << endl;
       return;
@@ -108,11 +114,12 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
    }
 
    // output
-   TFile *fout = TFile::Open(Form("FSRCorrection/xsec_FSRcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
+   TFile *fout = TFile::Open(Form("FSRCorrection/xsec%s_FSRcor_%s_%s_%d.root",accstr.Data(),Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
    fout->cd();
 
    // output
    TH1D *h_Measured_TUnfold = (TH1D*) histMdetData->Clone("h_Measured");
+   TH1D *h_Measured_TUnfold_statonly = (TH1D*) histMdetData_statonly->Clone("h_Measured_statonly");
    TH1D *histMunfold = NULL;
    TH1D *histMunfold_statonly = NULL;
    TH1D *histMdetFold = NULL;
@@ -356,27 +363,27 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", int ru
       //
       ////////////////////////////////////////////////////////////////////////////////////
 
-      histMunfold_statonly = unfold::unfold_MLE(h_Measured_TUnfold,h_postpreFSR_tot,histEmatTotal_statonly);
-      histMunfold_statonly->SetName(Form("%s_statonly_%s",histMunfold_statonly->GetName(),thevarname));
-      histEmatTotal_statonly->SetName(Form("%s_statonly_%s",histEmatTotal_statonly->GetName(),thevarname));
-
-      histMunfold_statonly->Write();
-      histEmatTotal_statonly->Write();
-
       histMunfold = unfold::unfold_MLE(h_Measured_TUnfold,h_postpreFSR_tot,histEmatTotal);
 
       histMunfold->Write(Form("%s_%s",histMunfold->GetName(),thevarname));
       h_postpreFSR_tot->Write(Form("%s_%s",h_postpreFSR_tot->GetName(),thevarname));
       histEmatTotal->Write(Form("%s_%s",histEmatTotal->GetName(),thevarname));
 
+      histMunfold_statonly = unfold::unfold_MLE(h_Measured_TUnfold_statonly,h_postpreFSR_tot,histEmatTotal_statonly);
+      histMunfold_statonly->SetName(Form("%s_statonly_%s",histMunfold->GetName(),thevarname));
+      histEmatTotal_statonly->SetName(Form("%s_statonly_%s",histEmatTotal->GetName(),thevarname));
+
+      histMunfold_statonly->Write();
+      histEmatTotal_statonly->Write();
+
       histMdetFold = unfold::fold_MLE(histMunfold,h_postpreFSR_tot);
       histMdetFold->Write(Form("%s_%s",histMdetFold->GetName(),thevarname));
    }
 
    // compare data before and after unfolding
-   MyCanvas c1D(Form("FSRCorrection/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
-   MyCanvas c_cov(Form("FSRCorrection/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
-   MyCanvas c_cor(Form("FSRCorrection/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c1D(Form("FSRCorrection/c_unfoldData%s_%s_beforeafter",accstr.Data(),thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c_cov(Form("FSRCorrection/c_unfoldData%s_%s_totCovMat",accstr.Data(),thevarname),xaxistitle(thevar),"Entries",800,800);
+   MyCanvas c_cor(Form("FSRCorrection/c_unfoldData%s_%s_totCorMat",accstr.Data(),thevarname),xaxistitle(thevar),"Entries",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c_cov.SetLogx();
@@ -438,5 +445,11 @@ void doDetUnfold_all() {
       doDetUnfold(kTRUE, "Pyquen", 0, thevar_i);
       doDetUnfold(kTRUE, "Powheg", 1, thevar_i);
       doDetUnfold(kTRUE, "Powheg", 2, thevar_i);
+
+      doDetUnfold(kTRUE, "Powheg", 0, thevar_i, false);
+      doDetUnfold(kFALSE, "Powheg", 0, thevar_i, false);
+      doDetUnfold(kTRUE, "Pyquen", 0, thevar_i, false);
+      doDetUnfold(kTRUE, "Powheg", 1, thevar_i, false);
+      doDetUnfold(kTRUE, "Powheg", 2, thevar_i, false);
    }
 }
