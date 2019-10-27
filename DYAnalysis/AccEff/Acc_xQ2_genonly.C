@@ -22,9 +22,8 @@
 #include <utility>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
-#include <Include/DYAnalyzer.h>
-#include <Include/tnp_weight.h>
-#include <BkgEst/interface/defs.h>
+#include "../Include/DYAnalyzer.h"
+#include "../BkgEst/interface/defs.h"
 
 using namespace DYana;
 
@@ -45,6 +44,8 @@ void Acc_xQ2_genonly(TString Sample)
 
    TH2D *h_mass_AccTotal = new TH2D("h_mass_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass)), binnum, bins,50,-5,0);
    TH2D *h_mass_AccPass = new TH2D("h_mass_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass)), binnum, bins,50,-5,0);
+   TH2D *h_mass3bins_AccTotal = new TH2D("h_mass3bins_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,50,-5,0);
+   TH2D *h_mass3bins_AccPass = new TH2D("h_mass3bins_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,50,-5,0);
    TH2D *h_pt_AccTotal = new TH2D("h_pt_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,50,-5,0);
    TH2D *h_pt_AccPass = new TH2D("h_pt_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,50,-5,0);
    TH2D *h_phistar_AccTotal = new TH2D("h_phistar_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,50,-5,0);
@@ -56,6 +57,8 @@ void Acc_xQ2_genonly(TString Sample)
 
    TProfile *p_mass_AccTotal = new TProfile("p_mass_AccTotal", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::mass)), binnum, bins,1e-6,1,"s");
    TProfile *p_mass_AccPass = new TProfile("p_mass_AccPass", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::mass)), binnum, bins,1e-6,1,"s");
+   TProfile *p_mass3bins_AccTotal = new TProfile("p_mass3bins_AccTotal", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,1e-6,1,"s");
+   TProfile *p_mass3bins_AccPass = new TProfile("p_mass3bins_AccPass", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,1e-6,1,"s");
    TProfile *p_pt_AccTotal = new TProfile("p_pt_AccTotal", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,1e-6,1,"s");
    TProfile *p_pt_AccPass = new TProfile("p_pt_AccPass", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,1e-6,1,"s");
    TProfile *p_phistar_AccTotal = new TProfile("p_phistar_AccTotal", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,1e-6,1,"s");
@@ -66,6 +69,8 @@ void Acc_xQ2_genonly(TString Sample)
    TProfile *p_rap60120_AccPass = new TProfile("p_rap60120_AccPass", Form(";%s;x_{Pb}",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,1e-6,1,"s");
    TProfile *plog_mass_AccTotal = new TProfile("plog_mass_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass)), binnum, bins,-10,0,"s");
    TProfile *plog_mass_AccPass = new TProfile("plog_mass_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass)), binnum, bins,-10,0,"s");
+   TProfile *plog_mass3bins_AccTotal = new TProfile("plog_mass3bins_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,-10,0,"s");
+   TProfile *plog_mass3bins_AccPass = new TProfile("plog_mass3bins_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,-10,0,"s");
    TProfile *plog_pt_AccTotal = new TProfile("plog_pt_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,-10,0,"s");
    TProfile *plog_pt_AccPass = new TProfile("plog_pt_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,-10,0,"s");
    TProfile *plog_phistar_AccTotal = new TProfile("plog_phistar_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,-10,0,"s");
@@ -80,7 +85,7 @@ void Acc_xQ2_genonly(TString Sample)
 		// -- GenWeights are already taken into account in nEvents -- //
 	vector< TString > ntupleDirectory; vector< TString > Tag; vector< Double_t > Xsec; vector< Double_t > nEvents; vector< SampleTag > STags;
 
-   analyzer->SetupMCsamples_v20180111(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
+   analyzer->SetupMCsamples_v20180814(Sample, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
 
 	// -- Loop for all samples -- //
 	const Int_t Ntup = ntupleDirectory.size();
@@ -213,6 +218,9 @@ void Acc_xQ2_genonly(TString Sample)
             h_mass_AccTotal->Fill( gen_M, log_xPb, TotWeight );
             plog_mass_AccTotal->Fill( gen_M, log_xPb, TotWeight );
             p_mass_AccTotal->Fill( gen_M, xPb, TotWeight );
+            h_mass3bins_AccTotal->Fill( gen_M, log_xPb, TotWeight );
+            plog_mass3bins_AccTotal->Fill( gen_M, log_xPb, TotWeight );
+            p_mass3bins_AccTotal->Fill( gen_M, xPb, TotWeight );
             if (gen_M>60 && gen_M<120) {
                h_pt_AccTotal->Fill( gen_Pt, log_xPb, TotWeight );
                h_phistar_AccTotal->Fill( gen_Phistar, log_xPb, TotWeight );
@@ -233,6 +241,9 @@ void Acc_xQ2_genonly(TString Sample)
                h_mass_AccPass->Fill( gen_M, log_xPb, TotWeight );
                plog_mass_AccPass->Fill( gen_M, log_xPb, TotWeight );
                p_mass_AccPass->Fill( gen_M, xPb, TotWeight );
+               h_mass3bins_AccPass->Fill( gen_M, log_xPb, TotWeight );
+               plog_mass3bins_AccPass->Fill( gen_M, log_xPb, TotWeight );
+               p_mass3bins_AccPass->Fill( gen_M, xPb, TotWeight );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccPass->Fill( gen_Pt, log_xPb, TotWeight );
                   h_phistar_AccPass->Fill( gen_Phistar, log_xPb, TotWeight );
@@ -268,6 +279,8 @@ void Acc_xQ2_genonly(TString Sample)
 
    h_mass_AccTotal->Write();
    h_mass_AccPass->Write();
+   h_mass3bins_AccTotal->Write();
+   h_mass3bins_AccPass->Write();
    h_pt_AccTotal->Write();
    h_phistar_AccTotal->Write();
    h_pt_AccPass->Write();
@@ -279,6 +292,8 @@ void Acc_xQ2_genonly(TString Sample)
 
    plog_mass_AccTotal->Write();
    plog_mass_AccPass->Write();
+   plog_mass3bins_AccTotal->Write();
+   plog_mass3bins_AccPass->Write();
    plog_pt_AccTotal->Write();
    plog_phistar_AccTotal->Write();
    plog_pt_AccPass->Write();
@@ -290,6 +305,8 @@ void Acc_xQ2_genonly(TString Sample)
 
    p_mass_AccTotal->Write();
    p_mass_AccPass->Write();
+   p_mass3bins_AccTotal->Write();
+   p_mass3bins_AccPass->Write();
    p_pt_AccTotal->Write();
    p_phistar_AccTotal->Write();
    p_pt_AccPass->Write();
