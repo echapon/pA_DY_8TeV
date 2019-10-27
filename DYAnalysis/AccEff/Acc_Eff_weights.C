@@ -447,6 +447,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                }
 					if( Flag_PassEff == kTRUE)
 					{
+                  double reco_M = (SelectedMuonCollection[0].Momentum+SelectedMuonCollection[1].Momentum).M();
                   for (unsigned int iwt=0; iwt<nweights; iwt++) {
                      double wt = 1;
                      // sometimes the last weight is missing... protect against this
@@ -455,11 +456,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
                      h_mass_EffPass[iwt]->Fill( gen_M, wt * PUWeight );
                      h_mass3bins_EffPass[iwt]->Fill( gen_M, wt * PUWeight );
-                     if (gen_M>60 && gen_M<120) {
+                     if (reco_M>60 && reco_M<120) {
                         h_pt_EffPass[iwt]->Fill( gen_Pt, wt * PUWeight );
                         h_phistar_EffPass[iwt]->Fill( gen_Phistar, wt * PUWeight );
                         h_rap60120_EffPass[iwt]->Fill( gen_Rap, wt * PUWeight );
-                     } else if (gen_M>15 && gen_M<60) {
+                     } else if (reco_M>15 && reco_M<60) {
                         h_rap1560_EffPass[iwt]->Fill( gen_Rap, wt * PUWeight );
                         h_pt1560_EffPass[iwt]->Fill( gen_Pt, wt * PUWeight );
                         h_phistar1560_EffPass[iwt]->Fill( gen_Phistar, wt * PUWeight );
@@ -509,11 +510,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, wt * PUWeight * TnpWeight );
                      h_mass3bins_EffPass_Corr_tnp[iwt]->Fill( gen_M, wt * PUWeight * TnpWeight );
-                     if (gen_M>60 && gen_M<120) {
+                     if (reco_M>60 && reco_M<120) {
                         h_pt_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, wt * PUWeight * TnpWeight );
                         h_phistar_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, wt * PUWeight * TnpWeight );
                         h_rap60120_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, wt * PUWeight * TnpWeight );
-                     } else if (gen_M>15 && gen_M<60) {
+                     } else if (reco_M>15 && reco_M<60) {
                         h_rap1560_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, wt * PUWeight * TnpWeight );
                         h_pt1560_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, wt * PUWeight * TnpWeight );
                         h_phistar1560_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, wt * PUWeight * TnpWeight );

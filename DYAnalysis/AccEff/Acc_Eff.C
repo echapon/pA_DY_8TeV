@@ -395,13 +395,14 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
                }
 					if( Flag_PassEff == kTRUE)
 					{
+                  double reco_M = (SelectedMuonCollection[0].Momentum+SelectedMuonCollection[1].Momentum).M();
                   h_mass_EffPass->Fill( gen_M, TotWeight * PUWeight );
                   h_mass3bins_EffPass->Fill( gen_M, TotWeight * PUWeight );
-                  if (gen_M>60 && gen_M<120) {
+                  if (reco_M>60 && reco_M<120) {
                      h_pt_EffPass->Fill( gen_Pt, TotWeight * PUWeight );
                      h_phistar_EffPass->Fill( gen_Phistar, TotWeight * PUWeight );
                      h_rap60120_EffPass->Fill( gen_Rap, TotWeight * PUWeight );
-                  } else if (gen_M>15 && gen_M<60) {
+                  } else if (reco_M>15 &&reco_M<60) {
                      h_rap1560_EffPass->Fill( gen_Rap, TotWeight * PUWeight );
                      h_pt1560_EffPass->Fill( gen_Pt, TotWeight * PUWeight );
                      h_phistar1560_EffPass->Fill( gen_Phistar, TotWeight * PUWeight );
@@ -473,11 +474,11 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 
                      h_mass_EffPass_Corr_tnp[iwt]->Fill( gen_M, TotWeight * PUWeight * TnpWeight );
                      h_mass3bins_EffPass_Corr_tnp[iwt]->Fill( gen_M, TotWeight * PUWeight * TnpWeight );
-                     if (gen_M>60 && gen_M<120) {
+                     if (reco_M>60 && reco_M<120) {
                         h_pt_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, TotWeight * PUWeight * TnpWeight );
                         h_phistar_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, TotWeight * PUWeight * TnpWeight );
                         h_rap60120_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, TotWeight * PUWeight * TnpWeight );
-                     } else if (gen_M>15 && gen_M<60) {
+                     } else if (reco_M>15 && reco_M<60) {
                         h_rap1560_EffPass_Corr_tnp[iwt]->Fill( gen_Rap, TotWeight * PUWeight * TnpWeight );
                         h_pt1560_EffPass_Corr_tnp[iwt]->Fill( gen_Pt, TotWeight * PUWeight * TnpWeight );
                         h_phistar1560_EffPass_Corr_tnp[iwt]->Fill( gen_Phistar, TotWeight * PUWeight * TnpWeight );
