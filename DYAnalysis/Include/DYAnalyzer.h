@@ -104,10 +104,10 @@ public:
 	Bool_t EventSelection_generic(vector< Muon > MuonCollection, NtupleHandle *ntuple, vector< Muon >* SelectedMuonCollection,
          TString trigger, int isotype, double isocut); // -- output: 2 muons passing event selection conditions -- //
 
-	Bool_t isPassAccCondition_Muon(Muon Mu1, Muon Mu2);
-	Bool_t isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2);
-	void CompareMuon(Muon *Mu1, Muon *Mu2, Muon *leadMu, Muon *subMu);
-	void CompareGenLepton(GenLepton *genlep1, GenLepton *genlep2, GenLepton *leadgenlep, GenLepton *subgenlep);
+	Bool_t isPassAccCondition_Muon(Muon Mu1, Muon Mu2); // legacy
+	Bool_t isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2); // legacy
+	Bool_t isPassAccCondition(Object Mu1, Object Mu2);
+	void CompareMuon(Object *Mu1, Object *Mu2, Object *leadMu, Object *subMu);
 	void DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2);
 
 	// -- for electron channel - //
@@ -115,7 +115,6 @@ public:
 	Bool_t EventSelection_ElectronChannel_NminusPFIso(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
 	Bool_t EventSelection_ElectronChannel(vector< Electron > ElectronCollection, NtupleHandle *ntuple, vector< Electron >* SelectedElectronCollection); // -- output: 2 electrons passing event selection conditions -- //
 	Bool_t isPassAccCondition_Electron(Electron Elec1, Electron Elec2);
-	Bool_t isPassAccCondition_GenLepton_ECALGAP(GenLepton genlep1, GenLepton genlep2);
 	void CompareElectron(Electron *Elec1, Electron *Elec2, Electron *leadElec, Electron *subElec);
 
 	// -- pre-FSR functions -- //
@@ -1283,42 +1282,32 @@ Bool_t DYAnalyzer::EventSelection_generic(vector< Muon > MuonCollection, NtupleH
 
 Bool_t DYAnalyzer::isPassAccCondition_Muon(Muon Mu1, Muon Mu2)
 {
+	return isPassAccCondition(Mu1,Mu2);
+}
+
+Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2)
+{
+	return isPassAccCondition(genlep1,genlep2);
+}
+
+Bool_t DYAnalyzer::isPassAccCondition(Object Mu1, Object Mu2)
+{
    using namespace DYana;
 	Bool_t isPassAcc = kFALSE;
-	Muon leadMu, subMu;
+	Object leadMu, subMu;
    double diRap = sign*(Mu1.Momentum+Mu2.Momentum).Rapidity()-rapshift;
    double diMass = (Mu1.Momentum+Mu2.Momentum).M();
 	CompareMuon(&Mu1, &Mu2, &leadMu, &subMu);
 	if( leadMu.Pt > LeadPtCut && fabs(leadMu.eta) < LeadEtaCut && 
 		subMu.Pt  > SubPtCut  && fabs(subMu.eta)  < SubEtaCut &&
-      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] &&
-      diMass>bins[0] && diMass<bins[binnum] )
+      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] )
 		isPassAcc = kTRUE;
 
 	return isPassAcc;
 }
 
-Bool_t DYAnalyzer::isPassAccCondition_GenLepton(GenLepton genlep1, GenLepton genlep2)
-{
-   using namespace DYana;
 
-	Bool_t isPassAcc = kFALSE;
-
-	GenLepton leadGenLep, subGenLep;
-   double diRap = sign*(genlep1.Momentum+genlep2.Momentum).Rapidity()-rapshift;
-   double diMass = (genlep1.Momentum+genlep2.Momentum).M();
-	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
-	
-	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut &&
-		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut  &&
-      diRap>rapbin_60120[0] && diRap<rapbin_60120[rapbinnum_60120] &&
-      diMass>bins[0] && diMass<bins[binnum] )
-		isPassAcc = 1;
-
-	return isPassAcc;
-}
-
-void DYAnalyzer::CompareMuon(Muon *Mu1, Muon *Mu2, Muon *leadMu, Muon *subMu)
+void DYAnalyzer::CompareMuon(Object *Mu1, Object *Mu2, Object *leadMu, Object *subMu)
 {
     if( Mu1->Pt > Mu2->Pt )
     {
@@ -1330,20 +1319,6 @@ void DYAnalyzer::CompareMuon(Muon *Mu1, Muon *Mu2, Muon *leadMu, Muon *subMu)
         *leadMu = *Mu2;
         *subMu = *Mu1;
     }
-}
-
-void DYAnalyzer::CompareGenLepton(GenLepton *genlep1, GenLepton *genlep2, GenLepton *leadgenlep, GenLepton *subgenlep)
-{
-	if( genlep1->Pt > genlep2->Pt )
-	{
-		*leadgenlep = *genlep1;
-		*subgenlep = *genlep2;
-	}
-	else
-	{
-		*leadgenlep = *genlep2;
-		*subgenlep = *genlep1;
-	}
 }
 
 void DYAnalyzer::DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2)
@@ -1521,20 +1496,6 @@ Bool_t DYAnalyzer::isPassAccCondition_Electron(Electron Elec1, Electron Elec2)
 	return isPassAcc;
 }
 
-
-Bool_t DYAnalyzer::isPassAccCondition_GenLepton_ECALGAP(GenLepton genlep1, GenLepton genlep2)
-{
-	Bool_t isPassAcc = kFALSE;
-
-	GenLepton leadGenLep, subGenLep;
-	CompareGenLepton(&genlep1, &genlep2, &leadGenLep, &subGenLep);
-	
-	if( leadGenLep.Pt > LeadPtCut && fabs(leadGenLep.eta) < LeadEtaCut && !( fabs(leadGenLep.eta) > 1.4442 && fabs(leadGenLep.eta) < 1.566 ) &&
-		subGenLep.Pt  > SubPtCut  && fabs(subGenLep.eta) < SubEtaCut && !( fabs(subGenLep.eta) > 1.4442 && fabs(subGenLep.eta) < 1.566 ) )
-		isPassAcc = 1;
-
-	return isPassAcc;
-}
 
 void DYAnalyzer::CompareElectron(Electron *Elec1, Electron *Elec2, Electron *leadElec, Electron *subElec)
 {
