@@ -877,7 +877,8 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
 
 			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-         if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
+         // if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
+         if( reco_M > 12 && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
          // if( reco_M > 30 && reco_M < 600 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 			{
 				isPassEventSelection = kTRUE;
@@ -944,7 +945,8 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
             Bool_t isOS = kFALSE;
             if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
 
-            if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
+            // if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
+            if( reco_M > 12 && VtxNormChi2_BestPair < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
                // if( reco_M > 30 && reco_M < 600 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
             {
                isPassEventSelection = kTRUE;
@@ -1085,7 +1087,8 @@ Bool_t DYAnalyzer::EventSelection_minusDimuonVtxCut(vector< Muon > MuonCollectio
 				Double_t Angle = reco_v1.Angle( reco_v2.Vect() );
 
 				// if( reco_M > 10 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
-				if( reco_M > bins[0] && Angle < TMath::Pi() - 0.005 )
+            // if( reco_M > bins[0] && Angle < TMath::Pi() - 0.005 )
+				if( reco_M > 12 && Angle < TMath::Pi() - 0.005 )
 				{
 					isPassEventSelection = kTRUE;
 					SelectedMuonCollection->push_back( mu1_BestPair );
@@ -1197,7 +1200,8 @@ Bool_t DYAnalyzer::EventSelection_generic(vector< Muon > MuonCollection, NtupleH
 			if( recolep1.charge != recolep2.charge ) isOS = kTRUE;
 
 			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
-         if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
+         // if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
+         if( reco_M > 12 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 )
          // if( reco_M > 30 && reco_M < 600 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 			{
 				isPassEventSelection = kTRUE;
@@ -1264,7 +1268,8 @@ Bool_t DYAnalyzer::EventSelection_generic(vector< Muon > MuonCollection, NtupleH
             Bool_t isOS = kFALSE;
             if( mu1_BestPair.charge != mu2_BestPair.charge ) isOS = kTRUE;
 
-            if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
+            // if( reco_M > bins[0] && reco_M < bins[binnum] && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
+            if( reco_M > 12 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 )
             // if( reco_M > 30 && reco_M < 600 && VtxNormChi2_BestPair < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
             {
                isPassEventSelection = kTRUE;
