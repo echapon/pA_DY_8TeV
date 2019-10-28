@@ -293,15 +293,16 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             // Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
             // we want the acceptanc correction to be PRE-FSR
             Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+            Double_t gen_M_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).M();
 
             // -- Acceptance Calculation -- //
             h_mass_AccTotal->Fill( gen_M, TotWeight );
             h_mass3bins_AccTotal->Fill( gen_M, TotWeight );
-            if (gen_M>60 && gen_M<120) {
+            if (gen_M_preFSR>60 && gen_M_preFSR<120) {
                h_pt_AccTotal->Fill( gen_Pt, TotWeight );
                h_phistar_AccTotal->Fill( gen_Phistar, TotWeight );
                h_rap60120_AccTotal->Fill( gen_Rap, TotWeight );
-            } else if (gen_M>15 && gen_M<60) {
+            } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
                h_rap1560_AccTotal->Fill( gen_Rap, TotWeight );
                h_pt1560_AccTotal->Fill( gen_Pt, TotWeight );
                h_phistar1560_AccTotal->Fill( gen_Phistar, TotWeight );
@@ -310,11 +311,11 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             {
                h_mass_AccPass->Fill( gen_M, TotWeight );
                h_mass3bins_AccPass->Fill( gen_M, TotWeight );
-               if (gen_M>60 && gen_M<120) {
+               if (gen_M_preFSR>60 && gen_M_preFSR<120) {
                   h_pt_AccPass->Fill( gen_Pt, TotWeight );
                   h_phistar_AccPass->Fill( gen_Phistar, TotWeight );
                   h_rap60120_AccPass->Fill( gen_Rap, TotWeight );
-               } else if (gen_M>15 && gen_M<60) {
+               } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
                   h_rap1560_AccPass->Fill( gen_Rap, TotWeight );
                   h_pt1560_AccPass->Fill( gen_Pt, TotWeight );
                   h_phistar1560_AccPass->Fill( gen_Phistar, TotWeight );
@@ -398,11 +399,11 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             if (Flag_PassAcc == kTRUE) {
                h_mass_EffTotal->Fill( gen_M, TotWeight * PUWeight );
                h_mass3bins_EffTotal->Fill( gen_M, TotWeight * PUWeight );
-               if (gen_M>60 && gen_M<120) {
+               if (gen_M_preFSR>60 && gen_M_preFSR<120) {
                   h_pt_EffTotal->Fill( gen_Pt, TotWeight * PUWeight );
                   h_phistar_EffTotal->Fill( gen_Phistar, TotWeight * PUWeight );
                   h_rap60120_EffTotal->Fill( gen_Rap, TotWeight * PUWeight );
-               } else if (gen_M>15 && gen_M<60) {
+               } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
                   h_rap1560_EffTotal->Fill( gen_Rap, TotWeight * PUWeight );
                   h_pt1560_EffTotal->Fill( gen_Pt, TotWeight * PUWeight );
                   h_phistar1560_EffTotal->Fill( gen_Phistar, TotWeight * PUWeight );
