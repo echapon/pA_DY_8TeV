@@ -590,25 +590,39 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	TEfficiency *Acc_Phistar1560 = new TEfficiency(*h_phistar1560_AccPass, *h_phistar1560_AccTotal);
 	Acc_Phistar1560->SetName("TEff_Acc_Phistar1560");
 
-	TEfficiency *Eff_Mass = new TEfficiency(*h_mass_EffPass, *h_mass_EffTotal);
-	Eff_Mass->SetName("TEff_Eff_Mass");
-	TEfficiency *Eff_Mass3bins = new TEfficiency(*h_mass3bins_EffPass, *h_mass3bins_EffTotal);
-	Eff_Mass3bins->SetName("TEff_Eff_Mass3bins");
-	TEfficiency *Eff_Pt = new TEfficiency(*h_pt_EffPass, *h_pt_EffTotal);
-	Eff_Pt->SetName("TEff_Eff_Pt");
-	TEfficiency *Eff_Phistar = new TEfficiency(*h_phistar_EffPass, *h_phistar_EffTotal);
-	Eff_Phistar->SetName("TEff_Eff_Phistar");
-	TEfficiency *Eff_Rap1560 = new TEfficiency(*h_rap1560_EffPass, *h_rap1560_EffTotal);
-	Eff_Rap1560->SetName("TEff_Eff_Rap1560");
-	TEfficiency *Eff_Rap60120 = new TEfficiency(*h_rap60120_EffPass, *h_rap60120_EffTotal);
-	Eff_Rap60120->SetName("TEff_Eff_Rap60120");
-	TEfficiency *Eff_Pt1560 = new TEfficiency(*h_pt1560_EffPass, *h_pt1560_EffTotal);
-	Eff_Pt1560->SetName("TEff_Eff_Pt1560");
-	TEfficiency *Eff_Phistar1560 = new TEfficiency(*h_phistar1560_EffPass, *h_phistar1560_EffTotal);
-	Eff_Phistar1560->SetName("TEff_Eff_Phistar1560");
-
-	// TEfficiency *AccEff_Mass = new TEfficiency(*h_mass_EffPass, *h_mass_AccTotal);
-	// AccEff_Mass->SetName("TEff_AccEff_Mass");
+   // for efficiency... we need to cheat a bit (numerator not a subset of denominator)
+	TEfficiency *Eff_Mass = new TEfficiency("TEff_Eff_Mass","Efficiency for Mass",nbinsvar("mass"),binsvar("mass"));
+   Eff_Mass->SetUseWeightedEvents(true);
+   Eff_Mass->SetPassedHistogram(*h_mass_EffPass,"f");
+   Eff_Mass->SetTotalHistogram(*h_mass_EffTotal,"f");
+	TEfficiency *Eff_Mass3bins = new TEfficiency("TEff_Eff_Mass3bins","Efficiency for Mass3bins",nbinsvar("mass3bins"),binsvar("mass3bins"));
+   Eff_Mass3bins->SetUseWeightedEvents(true);
+   Eff_Mass3bins->SetPassedHistogram(*h_mass3bins_EffPass,"f");
+   Eff_Mass3bins->SetTotalHistogram(*h_mass3bins_EffTotal,"f");
+	TEfficiency *Eff_Rap1560 = new TEfficiency("TEff_Eff_Rap1560","Efficiency for Rap1560",nbinsvar("rap1560"),binsvar("rap1560"));
+   Eff_Rap1560->SetUseWeightedEvents(true);
+   Eff_Rap1560->SetPassedHistogram(*h_rap1560_EffPass,"f");
+   Eff_Rap1560->SetTotalHistogram(*h_rap1560_EffTotal,"f");
+	TEfficiency *Eff_Pt1560 = new TEfficiency("TEff_Eff_Pt1560","Efficiency for Pt1560",nbinsvar("pt1560"),binsvar("pt1560"));
+   Eff_Pt1560->SetUseWeightedEvents(true);
+   Eff_Pt1560->SetPassedHistogram(*h_pt1560_EffPass,"f");
+   Eff_Pt1560->SetTotalHistogram(*h_pt1560_EffTotal,"f");
+	TEfficiency *Eff_Phistar1560 = new TEfficiency("TEff_Eff_Phistar1560","Efficiency for Phistar1560",nbinsvar("phistar1560"),binsvar("phistar1560"));
+   Eff_Phistar1560->SetUseWeightedEvents(true);
+   Eff_Phistar1560->SetPassedHistogram(*h_phistar1560_EffPass,"f");
+   Eff_Phistar1560->SetTotalHistogram(*h_phistar1560_EffTotal,"f");
+	TEfficiency *Eff_Rap60120 = new TEfficiency("TEff_Eff_Rap60120","Efficiency for Rap60120",nbinsvar("rap60120"),binsvar("rap60120"));
+   Eff_Rap60120->SetUseWeightedEvents(true);
+   Eff_Rap60120->SetPassedHistogram(*h_rap60120_EffPass,"f");
+   Eff_Rap60120->SetTotalHistogram(*h_rap60120_EffTotal,"f");
+	TEfficiency *Eff_Pt = new TEfficiency("TEff_Eff_Pt","Efficiency for Pt",nbinsvar("pt"),binsvar("pt"));
+   Eff_Pt->SetUseWeightedEvents(true);
+   Eff_Pt->SetPassedHistogram(*h_pt_EffPass,"f");
+   Eff_Pt->SetTotalHistogram(*h_pt_EffTotal,"f");
+	TEfficiency *Eff_Phistar = new TEfficiency("TEff_Eff_Phistar","Efficiency for Phistar",nbinsvar("phistar"),binsvar("phistar"));
+   Eff_Phistar->SetUseWeightedEvents(true);
+   Eff_Phistar->SetPassedHistogram(*h_phistar_EffPass,"f");
+   Eff_Phistar->SetTotalHistogram(*h_phistar_EffTotal,"f");
 
    TGraphAsymmErrors *g_Eff_Mass_Corr_tnp_stat = NULL;
    TGraphAsymmErrors *g_Eff_Mass3bins_Corr_tnp_stat = NULL;
@@ -628,8 +642,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
    TEfficiency* Eff_Phistar1560_Corr_tnp[nweights];
    for (int i=0; i<nweights; i++) {
       // mass
-      Eff_Mass_Corr_tnp[i] = new TEfficiency(*h_mass_EffPass_Corr_tnp[i], *h_mass_EffTotal);
-      Eff_Mass_Corr_tnp[i]->SetName(Form("TEff_Eff_Mass_Corr_tnp%d",i));
+      Eff_Mass_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Mass_Corr_tnp%d",i),"Efficiency for Mass",nbinsvar("mass"),binsvar("mass"));
+      Eff_Mass_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Mass_Corr_tnp[i]->SetPassedHistogram(*h_mass_EffPass_Corr_tnp[i],"f");
+      Eff_Mass_Corr_tnp[i]->SetTotalHistogram(*h_mass_EffTotal,"f");
       Eff_Mass_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -643,8 +659,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // mass3bins
-      Eff_Mass3bins_Corr_tnp[i] = new TEfficiency(*h_mass3bins_EffPass_Corr_tnp[i], *h_mass3bins_EffTotal);
-      Eff_Mass3bins_Corr_tnp[i]->SetName(Form("TEff_Eff_Mass3bins_Corr_tnp%d",i));
+      Eff_Mass3bins_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Mass3bins_Corr_tnp%d",i),"Efficiency for Mass3bins",nbinsvar("mass3bins"),binsvar("mass3bins"));
+      Eff_Mass3bins_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Mass3bins_Corr_tnp[i]->SetPassedHistogram(*h_mass3bins_EffPass_Corr_tnp[i],"f");
+      Eff_Mass3bins_Corr_tnp[i]->SetTotalHistogram(*h_mass3bins_EffTotal,"f");
       Eff_Mass3bins_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -658,8 +676,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // pt
-      Eff_Pt_Corr_tnp[i] = new TEfficiency(*h_pt_EffPass_Corr_tnp[i], *h_pt_EffTotal);
-      Eff_Pt_Corr_tnp[i]->SetName(Form("TEff_Eff_Pt_Corr_tnp%d",i));
+      Eff_Pt_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Pt_Corr_tnp%d",i),"Efficiency for Pt",nbinsvar("pt"),binsvar("pt"));
+      Eff_Pt_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Pt_Corr_tnp[i]->SetPassedHistogram(*h_pt_EffPass_Corr_tnp[i],"f");
+      Eff_Pt_Corr_tnp[i]->SetTotalHistogram(*h_pt_EffTotal,"f");
       Eff_Pt_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -673,8 +693,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // phistar
-      Eff_Phistar_Corr_tnp[i] = new TEfficiency(*h_phistar_EffPass_Corr_tnp[i], *h_phistar_EffTotal);
-      Eff_Phistar_Corr_tnp[i]->SetName(Form("TEff_Eff_Phistar_Corr_tnp%d",i));
+      Eff_Phistar_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Phistar_Corr_tnp%d",i),"Efficiency for Phistar",nbinsvar("phistar"),binsvar("phistar"));
+      Eff_Phistar_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Phistar_Corr_tnp[i]->SetPassedHistogram(*h_phistar_EffPass_Corr_tnp[i],"f");
+      Eff_Phistar_Corr_tnp[i]->SetTotalHistogram(*h_phistar_EffTotal,"f");
       Eff_Phistar_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -688,8 +710,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // rap 15-60
-      Eff_Rap1560_Corr_tnp[i] = new TEfficiency(*h_rap1560_EffPass_Corr_tnp[i], *h_rap1560_EffTotal);
-      Eff_Rap1560_Corr_tnp[i]->SetName(Form("TEff_Eff_Rap1560_Corr_tnp%d",i));
+      Eff_Rap1560_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Rap1560_Corr_tnp%d",i),"Efficiency for Rap1560",nbinsvar("rap1560"),binsvar("rap1560"));
+      Eff_Rap1560_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Rap1560_Corr_tnp[i]->SetPassedHistogram(*h_rap1560_EffPass_Corr_tnp[i],"f");
+      Eff_Rap1560_Corr_tnp[i]->SetTotalHistogram(*h_rap1560_EffTotal,"f");
       Eff_Rap1560_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -703,8 +727,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // rap 60-120
-      Eff_Rap60120_Corr_tnp[i] = new TEfficiency(*h_rap60120_EffPass_Corr_tnp[i], *h_rap60120_EffTotal);
-      Eff_Rap60120_Corr_tnp[i]->SetName(Form("TEff_Eff_Rap60120_Corr_tnp%d",i));
+      Eff_Rap60120_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Rap60120_Corr_tnp%d",i),"Efficiency for Rap60120",nbinsvar("rap60120"),binsvar("rap60120"));
+      Eff_Rap60120_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Rap60120_Corr_tnp[i]->SetPassedHistogram(*h_rap60120_EffPass_Corr_tnp[i],"f");
+      Eff_Rap60120_Corr_tnp[i]->SetTotalHistogram(*h_rap60120_EffTotal,"f");
       Eff_Rap60120_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -718,8 +744,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // pt 15-60
-      Eff_Pt1560_Corr_tnp[i] = new TEfficiency(*h_pt1560_EffPass_Corr_tnp[i], *h_pt1560_EffTotal);
-      Eff_Pt1560_Corr_tnp[i]->SetName(Form("TEff_Eff_Pt1560_Corr_tnp%d",i));
+      Eff_Pt1560_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Pt1560_Corr_tnp%d",i),"Efficiency for Pt1560",nbinsvar("pt1560"),binsvar("pt1560"));
+      Eff_Pt1560_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Pt1560_Corr_tnp[i]->SetPassedHistogram(*h_pt1560_EffPass_Corr_tnp[i],"f");
+      Eff_Pt1560_Corr_tnp[i]->SetTotalHistogram(*h_pt1560_EffTotal,"f");
       Eff_Pt1560_Corr_tnp[i]->Write();
 
       if (i==0) {
@@ -733,8 +761,10 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
       }
 
       // phistar 15-60
-      Eff_Phistar1560_Corr_tnp[i] = new TEfficiency(*h_phistar1560_EffPass_Corr_tnp[i], *h_phistar1560_EffTotal);
-      Eff_Phistar1560_Corr_tnp[i]->SetName(Form("TEff_Eff_Phistar1560_Corr_tnp%d",i));
+      Eff_Phistar1560_Corr_tnp[i] = new TEfficiency(Form("TEff_Eff_Phistar1560_Corr_tnp%d",i),"Efficiency for Phistar1560",nbinsvar("phistar1560"),binsvar("phistar1560"));
+      Eff_Phistar1560_Corr_tnp[i]->SetUseWeightedEvents(true);
+      Eff_Phistar1560_Corr_tnp[i]->SetPassedHistogram(*h_phistar1560_EffPass_Corr_tnp[i],"f");
+      Eff_Phistar1560_Corr_tnp[i]->SetTotalHistogram(*h_phistar1560_EffTotal,"f");
       Eff_Phistar1560_Corr_tnp[i]->Write();
 
       if (i==0) {
