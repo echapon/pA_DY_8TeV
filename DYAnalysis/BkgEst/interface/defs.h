@@ -200,10 +200,17 @@ namespace DYana {
    double* binsvar(TString variable) {return binsvar(str2var(variable));}
 
    // Z pt rweighting
-   double zptWeight(double pt) {
-      double p0 = -0.37;
-      double p1 = -0.3703;
-      double p2 = 1.187;
+   double zptWeight(double pt, double mass=90) {
+      double p0 = -0.3465;//-0.37;
+      double p1 = -0.2569;//-0.3703;
+      double p2 = 1.294;//1.187;
+
+      if (mass<60) { // low mass
+         p0 = -0.2276;
+         p1 = 0.5204;
+         p2 = 1.076;
+      }
+
       double weight = (pt>0) ? p0*pow(pt,p1)+p2 : 0.5;
       if (weight<0.5) weight = 0.5; // do not allow too large weights
       return (1./weight); // we just computed the POWHEG/data ratio: return data/Powheg
