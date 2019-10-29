@@ -416,8 +416,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                      // L3Mu12 uses rel tk iso
                      // TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
                      //    *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
-                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_iso_ppb(pt1,aeta1,0)
-                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_iso_ppb(pt2,aeta2,0);
+                     TnpWeight = tnp_weight_muid_ppb(pt1,eta1,0)*tnp_weight_isotk_ppb(pt1,aeta1,0)
+                        *tnp_weight_muid_ppb(pt2,eta2,0)*tnp_weight_isotk_ppb(pt2,aeta2,0);
                   } else {
                      cerr << "ERROR trigger should be L1DoubleMuOpen or L3Mu12" << endl;
                      TnpWeight = 1.;
@@ -443,36 +443,37 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                   TnpWeight = TnpWeight * sf_trg;
                }
 
-               Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, GenWeight*PUWeight*TnpWeight);
-               Plots_MET->FillHistograms_MET(GenWeight*PUWeight*TnpWeight);
+               double TotWeight = (isMC) ? GenWeight*PUWeight*TnpWeight : 1.;
+               Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, TotWeight);
+               Plots_MET->FillHistograms_MET(TotWeight);
 
                Int_t PU = ntuple->nPileUp;
                h_PU->Fill( PU, PUWeight*TnpWeight );
 
                Int_t nVertices = ntuple->nVertices;
-               h_nVertices_before->Fill(nVertices, GenWeight*TnpWeight);
-               h_nVertices_after->Fill(nVertices, GenWeight*PUWeight*TnpWeight);
+               h_nVertices_before->Fill(nVertices, isMC ? GenWeight*TnpWeight : 1.);
+               h_nVertices_after->Fill(nVertices, TotWeight);
 
-               h_hiHF->Fill(ntuple->hiHF,GenWeight*PUWeight*TnpWeight);
-               h_hiHFplus->Fill(ntuple->hiHFplus,GenWeight*PUWeight*TnpWeight);
-               h_hiHFminus->Fill(ntuple->hiHFminus,GenWeight*PUWeight*TnpWeight);
-               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,GenWeight*PUWeight*TnpWeight);
-               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,GenWeight*PUWeight*TnpWeight);
-               h_hiHFhit->Fill(ntuple->hiHFhit,GenWeight*PUWeight*TnpWeight);
-               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,GenWeight*PUWeight*TnpWeight);
-               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,GenWeight*PUWeight*TnpWeight);
-               h_hiET->Fill(ntuple->hiET,GenWeight*PUWeight*TnpWeight);
-               h_hiEE->Fill(ntuple->hiEE,GenWeight*PUWeight*TnpWeight);
-               h_hiEB->Fill(ntuple->hiEB,GenWeight*PUWeight*TnpWeight);
-               h_hiEEplus->Fill(ntuple->hiEEplus,GenWeight*PUWeight*TnpWeight);
-               h_hiEEminus->Fill(ntuple->hiEEminus,GenWeight*PUWeight*TnpWeight);
-               h_hiNpix->Fill(ntuple->hiNpix,GenWeight*PUWeight*TnpWeight);
-               h_hiNtracks->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
-               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,GenWeight*PUWeight*TnpWeight);
+               h_hiHF->Fill(ntuple->hiHF,TotWeight);
+               h_hiHFplus->Fill(ntuple->hiHFplus,TotWeight);
+               h_hiHFminus->Fill(ntuple->hiHFminus,TotWeight);
+               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,TotWeight);
+               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,TotWeight);
+               h_hiHFhit->Fill(ntuple->hiHFhit,TotWeight);
+               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,TotWeight);
+               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,TotWeight);
+               h_hiET->Fill(ntuple->hiET,TotWeight);
+               h_hiEE->Fill(ntuple->hiEE,TotWeight);
+               h_hiEB->Fill(ntuple->hiEB,TotWeight);
+               h_hiEEplus->Fill(ntuple->hiEEplus,TotWeight);
+               h_hiEEminus->Fill(ntuple->hiEEminus,TotWeight);
+               h_hiNpix->Fill(ntuple->hiNpix,TotWeight);
+               h_hiNtracks->Fill(ntuple->hiNtracks,TotWeight);
+               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,TotWeight);
                TLorentzVector dimu = mu1.Momentum+mu2.Momentum; 
                double mass = dimu.M();
-               if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
-               else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,GenWeight*PUWeight*TnpWeight);
+               if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,TotWeight);
+               else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,TotWeight);
             }
             if (filltree && isPassEventSelection_noiso) {
                hiHF = ntuple->hiHF;
