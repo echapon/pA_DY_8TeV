@@ -49,7 +49,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       const char* outputfile="Plots/results/xsec_nom_detcor_FSRcor.root",                        // where to write the output xsec
       bool forsyst=false,                                        // if true, don't print canvases and tables
       bool doxsec=true,                                          // if false, don't do dxsec/dxxx, just correct for acc eff
-      bool correctforacc=true) {                                 // if flase, do not correct for acceptance, only efficiency
+      bool correctforacc=true,                                   // if false, do not correct for acceptance, only efficiency
+      bool preFSR=true) {                                        // true for preFSR, false for postFSR (ie before FSR unfolding)
    TFile *fy = TFile::Open(datafile);
    TFile *fae = TFile::Open(accefffile);
 
@@ -68,7 +69,6 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       TGraphAsymmErrors* gres = NULL;
       TGraphAsymmErrors* gres_statonly = NULL;
 
-      bool preFSR = false;
 
       if (hy) {
          cout << "bkgsub histo FOUND!" << endl;
@@ -85,7 +85,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          TEfficiency *TEff_Acc = (TEfficiency*)fae->Get(Form("TEff_Acc_%s",Varname(thevar)));
          TGraphAsymmErrors *ga = (TGraphAsymmErrors*)TEff_Acc->CreateGraph()->Clone();
 
-         TEfficiency *TEff_Eff = (TEfficiency*)fae->Get(Form("TEff_Eff_%s",Varname(thevar)));
+         TEfficiency *TEff_Eff = (TEfficiency*)fae->Get(Form("TEff_Eff_%s_Corr_tnp0",Varname(thevar)));
          TGraphAsymmErrors *ge = (TGraphAsymmErrors*)TEff_Eff->CreateGraph()->Clone();
 
          gres = (TGraphAsymmErrors*) ga->Clone(Form("gres_%s",varname(thevar)));
@@ -132,7 +132,6 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       } else {
          cout << "bkg sub histo NOT FOUND! Will use unfolded histo instead." << endl;
          // if we haven't found the histo... maybe we're looking at the output of the FSR unfolding, and then everything is ready! just get the result.
-         preFSR = true;
          hy = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_%s",varname(thevar)));
          hy_statonly = (TH1D*) fy->Get(Form("h_Measured_unfoldedMLE_statonly_%s",varname(thevar)));
          // cout << hy->GetBinContent(1) << endl;
