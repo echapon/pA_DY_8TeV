@@ -72,7 +72,7 @@ void dataMC(var thevar)
    TopPad->SetFrameBorderMode(0);
 
    TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_noZptrew_All.root",thevarname));
-   // TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_notnprew_All.root",thevarname));
+   // TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_All.root",thevarname));
    f1->cd();
 
    TH1D* h_data = (TH1D*) f1->Get("h_data");
@@ -198,8 +198,8 @@ void dataMC(var thevar)
       yaxismin = 0;
       h_data->SetMaximum(8150);
    } else if (thevar == var::phistar) {
-      yaxismin = 10;
-      h_data->SetMaximum(9e5);
+      yaxismin = 90;
+      h_data->SetMaximum(3e6);
    } else if (thevar == var::phistar1560) {
       yaxismin = 10;
       h_data->SetMaximum(5e5);
@@ -250,6 +250,28 @@ void dataMC(var thevar)
    // ptitle->Draw("0");
    CMS_lumi( TopPad, 111, 0 );
    TopPad->RedrawAxis();
+
+   // add label
+   TLatex latex;
+   latex.SetNDC();
+   latex.SetTextSize(0.03);
+   double xlatex=.17, ylatex=0.9, dylatex=0.04;
+   if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.9;
+   latex.SetTextAlign(12);  //centered
+   if (thevar!=rap1560 && thevar!=rap60120) {
+      latex.DrawLatex(xlatex,ylatex,"-2.87 < |y_{CM}| < 1.93");
+      ylatex -= dylatex;
+   }
+   if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
+      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+      ylatex -= dylatex;
+   }
+   if (thevar==pt || thevar==phistar || thevar==rap60120) {
+      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+      ylatex -= dylatex;
+   }
+   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
+   ylatex -= dylatex;
 
 // ------------>Primitives in pad: bottomPad
    TPad *bottomPad = new TPad("bottomPad", "bottomPad",0.01,0.01,0.99,0.3);
