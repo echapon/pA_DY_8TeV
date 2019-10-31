@@ -847,11 +847,32 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 			else
 				h_DYTauTau_emu->Add( h_MC[i_MC] );
 		}
-		if( Tag[i_MC] == "TT" ) h_ttbar_emu = (TH1D*)h_MC[i_MC]->Clone(Form("h_%s_TTMC_",variable)+Type);
+		if( Tag[i_MC] == "TT" || Tag[i_MC] == "TW" || Tag[i_MC] == "TbarW" ) {
+			if( h_ttbar_emu == NULL )
+				h_ttbar_emu = (TH1D*)h_MC[i_MC]->Clone(Form("h_%s_TTMC_",variable)+Type);
+			else
+				h_ttbar_emu->Add( h_MC[i_MC] );
+      }
 		if( Tag[i_MC] == "WW" ) h_WW_emu = (TH1D*)h_MC[i_MC]->Clone(Form("h_%s_WWMC_",variable)+Type);
 		if( Tag[i_MC] == "WZ" ) h_WZ_emu = (TH1D*)h_MC[i_MC]->Clone(Form("h_%s_WZMC_",variable)+Type);
 		if( Tag[i_MC] == "ZZ" ) h_ZZ_emu = (TH1D*)h_MC[i_MC]->Clone(Form("h_%s_ZZMC_",variable)+Type);
 	}
+
+	///////////////////////////////////////////////////////
+	// -- Undo the shape change due to HF reweighting -- //
+	///////////////////////////////////////////////////////
+   TFile *fae = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth_noZptrew.root");
+   TH1D *h_AccPass = (TH1D*) fae->Get(Form("h_%s_AccPass",variable));
+   TH1D *h_EffTotal_HFrew = (TH1D*) fae->Get(Form("h_%s_EffTotal_HFrew",variable));
+   TH1D *hratio = h_AccPass;
+   hratio->Divide(h_EffTotal_HFrew);
+
+   h_SignalMC->Multiply(hratio);
+   h_DYTauTau_emu->Multiply(hratio);
+   h_ttbar_emu->Multiply(hratio);
+   h_WW_emu->Multiply(hratio);
+   h_WZ_emu->Multiply(hratio);
+   h_ZZ_emu->Multiply(hratio);
 
 	////////////////////////////////////////////////////////////////
 	// -- Bring the histograms estimated by data-driven method -- //
