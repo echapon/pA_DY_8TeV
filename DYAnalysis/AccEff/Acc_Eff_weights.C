@@ -223,6 +223,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
+		ntuple->TurnOnBranches_GenOthers();
 		ntuple->TurnOnBranches_HI();
 
       vector<float>   *ttbar_w = 0;
@@ -305,7 +306,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // -- Z pt reweighting -- //
-            if (zptrew) TotWeight *= zptWeight(gen_Pt);
+            if (zptrew) TotWeight *= zptWeight(gen_Pt,gen_M);
 
             // -- Flags -- //
             Bool_t Flag_PassAcc = kFALSE;
@@ -331,6 +332,10 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             // Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
             // we want the acceptanc correction to be PRE-FSR
             Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+            Double_t gen_M_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).M();
+            Double_t gen_Rap_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).Rapidity()-rapshift;
+               
+            Bool_t Flag_PassTotal_preFSR = (gen_Rap_preFSR > rapbin_60120[0] && gen_Rap_preFSR<rapbin_60120[rapbinnum_60120] );
 
             // -- Acceptance Calculation -- //
             if (ttbar_w->size()!=nweights) cout << i << " -> " << ttbar_w->size() << " " << nweights << endl;
@@ -340,26 +345,28 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
-               h_mass_AccTotal[iwt]->Fill( gen_M, wt );
-               h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
-               if (gen_M>60 && gen_M<120) {
-                  h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
-                  h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
-                  h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
-               } else if (gen_M>15 && gen_M<60) {
-                  h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
-                  h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
-                  h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
+               if (Flag_PassTotal_preFSR) {
+                  h_mass_AccTotal[iwt]->Fill( gen_M, wt );
+                  h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
+                  if (gen_M_preFSR>60 && gen_M_preFSR<120) {
+                     h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
+                     h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
+                     h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
+                  } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
+                     h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
+                     h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
+                     h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
+                  }
                }
                if( Flag_PassAcc == kTRUE ) 
                {
                   h_mass_AccPass[iwt]->Fill( gen_M, wt );
                   h_mass3bins_AccPass[iwt]->Fill( gen_M, wt );
-                  if (gen_M>60 && gen_M<120) {
+                  if (gen_M_preFSR>60 && gen_M_preFSR<120) {
                      h_pt_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar_AccPass[iwt]->Fill( gen_Phistar, wt );
                      h_rap60120_AccPass[iwt]->Fill( gen_Rap, wt );
-                  } else if (gen_M>15 && gen_M<60) {
+                  } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
                      h_rap1560_AccPass[iwt]->Fill( gen_Rap, wt );
                      h_pt1560_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar1560_AccPass[iwt]->Fill( gen_Phistar, wt );
@@ -449,11 +456,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
                   h_mass_EffTotal[iwt]->Fill( gen_M, wt * PUWeight );
                   h_mass3bins_EffTotal[iwt]->Fill( gen_M, wt * PUWeight );
-                  if (gen_M>60 && gen_M<120) {
+                  if (gen_M_preFSR>60 && gen_M_preFSR<120) {
                      h_pt_EffTotal[iwt]->Fill( gen_Pt, wt * PUWeight );
                      h_phistar_EffTotal[iwt]->Fill( gen_Phistar, wt * PUWeight );
                      h_rap60120_EffTotal[iwt]->Fill( gen_Rap, wt * PUWeight );
-                  } else if (gen_M>15 && gen_M<60) {
+                  } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
                      h_rap1560_EffTotal[iwt]->Fill( gen_Rap, wt * PUWeight );
                      h_pt1560_EffTotal[iwt]->Fill( gen_Pt, wt * PUWeight );
                      h_phistar1560_EffTotal[iwt]->Fill( gen_Phistar, wt * PUWeight );

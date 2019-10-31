@@ -190,6 +190,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
+		ntuple->TurnOnBranches_GenOthers();
 		ntuple->TurnOnBranches_HI();
 
       RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
@@ -267,7 +268,7 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // -- Z pt reweighting -- //
-            if (zptrew) TotWeight *= zptWeight(gen_Pt);
+            if (zptrew) TotWeight *= zptWeight(gen_Pt,gen_M);
 
             // -- Flags -- //
             Bool_t Flag_PassAcc = kFALSE;
@@ -294,18 +295,23 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
             // we want the acceptanc correction to be PRE-FSR
             Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
             Double_t gen_M_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).M();
+            Double_t gen_Rap_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).Rapidity()-rapshift;
+               
+            Bool_t Flag_PassTotal_preFSR = (gen_Rap_preFSR > rapbin_60120[0] && gen_Rap_preFSR<rapbin_60120[rapbinnum_60120] );
 
             // -- Acceptance Calculation -- //
-            h_mass_AccTotal->Fill( gen_M, TotWeight );
-            h_mass3bins_AccTotal->Fill( gen_M, TotWeight );
-            if (gen_M_preFSR>60 && gen_M_preFSR<120) {
-               h_pt_AccTotal->Fill( gen_Pt, TotWeight );
-               h_phistar_AccTotal->Fill( gen_Phistar, TotWeight );
-               h_rap60120_AccTotal->Fill( gen_Rap, TotWeight );
-            } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
-               h_rap1560_AccTotal->Fill( gen_Rap, TotWeight );
-               h_pt1560_AccTotal->Fill( gen_Pt, TotWeight );
-               h_phistar1560_AccTotal->Fill( gen_Phistar, TotWeight );
+            if (Flag_PassTotal_preFSR) {
+               h_mass_AccTotal->Fill( gen_M, TotWeight );
+               h_mass3bins_AccTotal->Fill( gen_M, TotWeight );
+               if (gen_M_preFSR>60 && gen_M_preFSR<120) {
+                  h_pt_AccTotal->Fill( gen_Pt, TotWeight );
+                  h_phistar_AccTotal->Fill( gen_Phistar, TotWeight );
+                  h_rap60120_AccTotal->Fill( gen_Rap, TotWeight );
+               } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
+                  h_rap1560_AccTotal->Fill( gen_Rap, TotWeight );
+                  h_pt1560_AccTotal->Fill( gen_Pt, TotWeight );
+                  h_phistar1560_AccTotal->Fill( gen_Phistar, TotWeight );
+               }
             }
             if( Flag_PassAcc == kTRUE ) 
             {

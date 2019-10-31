@@ -27,7 +27,7 @@
 using namespace DYana;
 
 // number of gen weights (CT14: 284, EPPS16: 325
-const int nweights = 284;//325;//284;
+const int nweights = 325;//284;
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_weights_genonly(TString Sample) 
@@ -193,9 +193,9 @@ void Acc_weights_genonly(TString Sample)
       // // default norm
       // Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
       // fancy norm with pPb / PbP mix
-		Double_t norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
       if (doflip)
-         norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
       if (Sample.Contains("CT14")) // we only have 1 beam direction for CT14
             norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 
@@ -267,29 +267,30 @@ void Acc_weights_genonly(TString Sample)
                }
             }
 
+            GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
+            GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
+            TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
+            gen_M_post = tlv_postFSR.M();
+            gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
+            gen_Pt_post = tlv_postFSR.Pt();
+            gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
+
             Double_t dRCut = 0.1;
 
-            GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
             GenLepton genlep_preFSR1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
             vector< GenOthers > GenPhotonCollection1;
             analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
 
-            GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
             GenLepton genlep_preFSR2 = genlep_postFSR2; // -- Copy the values of member variables -- // 
             vector< GenOthers > GenPhotonCollection2;
             analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
 
             // -- Mass, Pt, Rapidity Calculation -- //
             TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
-            TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
             gen_M_pre = tlv_preFSR.M();
             gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
             gen_Pt_pre = tlv_preFSR.Pt();
             gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
-            gen_M_post = tlv_postFSR.M();
-            gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
-            gen_Pt_post = tlv_postFSR.Pt();
-            gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
 
             // -- Flags -- //
             Flag_PassAcc = kFALSE;
@@ -298,6 +299,8 @@ void Acc_weights_genonly(TString Sample)
             // Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
             Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_postFSR1, genlep_postFSR2);
             Flag_PassAcc_pre = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
+            Bool_t Flag_PassTotal_pre = (gen_Rap_pre > rapbin_60120[0] && gen_Rap_pre<rapbin_60120[rapbinnum_60120] );
+            Bool_t Flag_PassTotal_post = (gen_Rap_post > rapbin_60120[0] && gen_Rap_post<rapbin_60120[rapbinnum_60120] );
 
             // fill tree
             tr->Fill();
@@ -321,42 +324,46 @@ void Acc_weights_genonly(TString Sample)
                if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
-               h_mass_AccTotal[iwt]->Fill( gen_M, wt );
-               h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
-               if (gen_M>60 && gen_M<120) {
-                  h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
-                  h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
-                  h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
-               } else if (gen_M>15 && gen_M<60) {
-                  h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
-                  h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
-                  h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
+               if (Flag_PassTotal_pre) {
+                  h_mass_AccTotal[iwt]->Fill( gen_M, wt );
+                  h_mass3bins_AccTotal[iwt]->Fill( gen_M, wt );
+                  if (gen_M_pre>60 && gen_M_pre<120) {
+                     h_pt_AccTotal[iwt]->Fill( gen_Pt, wt );
+                     h_phistar_AccTotal[iwt]->Fill( gen_Phistar, wt );
+                     h_rap60120_AccTotal[iwt]->Fill( gen_Rap, wt );
+                  } else if (gen_M_pre>15 && gen_M_pre<60) {
+                     h_rap1560_AccTotal[iwt]->Fill( gen_Rap, wt );
+                     h_pt1560_AccTotal[iwt]->Fill( gen_Pt, wt );
+                     h_phistar1560_AccTotal[iwt]->Fill( gen_Phistar, wt );
+                  }
                }
-               if( Flag_PassAcc == kTRUE ) 
+               if( Flag_PassAcc_pre == kTRUE ) 
                {
                   h_mass_AccPass[iwt]->Fill( gen_M, wt );
                   h_mass3bins_AccPass[iwt]->Fill( gen_M, wt );
-                  if (gen_M>60 && gen_M<120) {
+                  if (gen_M_pre>60 && gen_M_pre<120) {
                      h_pt_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar_AccPass[iwt]->Fill( gen_Phistar, wt );
                      h_rap60120_AccPass[iwt]->Fill( gen_Rap, wt );
-                  } else if (gen_M>15 && gen_M<60) {
+                  } else if (gen_M_pre>15 && gen_M_pre<60) {
                      h_rap1560_AccPass[iwt]->Fill( gen_Rap, wt );
                      h_pt1560_AccPass[iwt]->Fill( gen_Pt, wt );
                      h_phistar1560_AccPass[iwt]->Fill( gen_Phistar, wt );
                   }
                }
 
-               h_mass_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
-               h_mass3bins_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
-               if (gen_M_pre>60 && gen_M_pre<120) {
-                  h_pt_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
-                  h_phistar_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
-                  h_rap60120_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
-               } else if (gen_M_pre>15 && gen_M_pre<60) {
-                  h_rap1560_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
-                  h_pt1560_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
-                  h_phistar1560_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
+               if (Flag_PassTotal_pre) {
+                  h_mass_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
+                  h_mass3bins_AccTotal_pre[iwt]->Fill( gen_M_pre, wt );
+                  if (gen_M_pre>60 && gen_M_pre<120) {
+                     h_pt_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
+                     h_phistar_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
+                     h_rap60120_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
+                  } else if (gen_M_pre>15 && gen_M_pre<60) {
+                     h_rap1560_AccTotal_pre[iwt]->Fill( gen_Rap_pre, wt );
+                     h_pt1560_AccTotal_pre[iwt]->Fill( gen_Pt_pre, wt );
+                     h_phistar1560_AccTotal_pre[iwt]->Fill( gen_Phistar_pre, wt );
+                  }
                }
                if( Flag_PassAcc_pre == kTRUE ) 
                {
