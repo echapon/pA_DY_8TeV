@@ -600,14 +600,23 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar1560_AccPass[i]->Write();
 
       // substitute AccPass to EffTotal
-      h_mass_AccPass[i]->Write(Form("h_mass_EffTotal%d",i));
-      h_mass3bins_AccPass[i]->Write(Form("h_mass3bins_EffTotal%d",i));
-      h_pt_AccPass[i]->Write(Form("h_pt_EffTotal%d",i));
-      h_phistar_AccPass[i]->Write(Form("h_phistar_EffTotal%d",i));
-      h_rap1560_AccPass[i]->Write(Form("h_rap1560_EffTotal%d",i));
-      h_rap60120_AccPass[i]->Write(Form("h_rap60120_EffTotal%d",i));
-      h_pt1560_AccPass[i]->Write(Form("h_pt1560_EffTotal%d",i));
-      h_phistar1560_AccPass[i]->Write(Form("h_phistar1560_EffTotal%d",i));
+      h_mass_EffTotal[i] = (TH1D*) h_mass_AccPass[i]->Clone(Form("h_mass_EffTotal%d",i));
+      h_mass3bins_EffTotal[i] = (TH1D*) h_mass3bins_AccPass[i]->Clone(Form("h_mass3bins_EffTotal%d",i));
+      h_pt_EffTotal[i] = (TH1D*) h_pt_AccPass[i]->Clone(Form("h_pt_EffTotal%d",i));
+      h_phistar_EffTotal[i] = (TH1D*) h_phistar_AccPass[i]->Clone(Form("h_phistar_EffTotal%d",i));
+      h_rap1560_EffTotal[i] = (TH1D*) h_rap1560_AccPass[i]->Clone(Form("h_rap1560_EffTotal%d",i));
+      h_rap60120_EffTotal[i] = (TH1D*) h_rap60120_AccPass[i]->Clone(Form("h_rap60120_EffTotal%d",i));
+      h_pt1560_EffTotal[i] = (TH1D*) h_pt1560_AccPass[i]->Clone(Form("h_pt1560_EffTotal%d",i));
+      h_phistar1560_EffTotal[i] = (TH1D*) h_phistar1560_AccPass[i]->Clone(Form("h_phistar1560_EffTotal%d",i));
+
+      h_mass_EffTotal[i]->Write();
+      h_mass3bins_EffTotal[i]->Write();
+      h_pt_EffTotal[i]->Write();
+      h_phistar_EffTotal[i]->Write();
+      h_rap1560_EffTotal[i]->Write();
+      h_pt1560_EffTotal[i]->Write();
+      h_phistar1560_EffTotal[i]->Write();
+      h_rap60120_EffTotal[i]->Write();
 
       h_mass_EffPass[i]->Write();
       h_mass3bins_EffPass[i]->Write();
