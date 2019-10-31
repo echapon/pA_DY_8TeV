@@ -78,41 +78,49 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	TH1D *h_mass_gen = new TH1D("h_mass_gen", ";mass(gen level);Entries", binnum, bins);
 	TH1D *h_mass_reco = new TH1D("h_mass_reco", ";mass(reco level);Entries", binnum, bins);
+	TH1D *h_mass_recoAll = new TH1D("h_mass_recoAll", ";mass(recoAll level);Entries", binnum, bins);
 	TH1D *h_mass_resol = new TH1D("h_mass_resol", ";mass resolution ( (gen-reco)/gen) );Entries", 100,-0.2,0.2);
    TH2D *h_mass_response = new TH2D("h_mass_response", ";mass(reco level);mass(gen level)", binnum, bins, binnum, bins);
 
 	TH1D *h_mass3bins_gen = new TH1D("h_mass3bins_gen", ";mass3bins(gen level);Entries", binnum3, bins3);
 	TH1D *h_mass3bins_reco = new TH1D("h_mass3bins_reco", ";mass3bins(reco level);Entries", binnum3, bins3);
+	TH1D *h_mass3bins_recoAll = new TH1D("h_mass3bins_recoAll", ";mass3bins(recoAll level);Entries", binnum3, bins3);
 	TH1D *h_mass3bins_resol = new TH1D("h_mass3bins_resol", ";mass3bins resolution ( (gen-reco)/gen) );Entries", 100,-0.2,0.2);
    TH2D *h_mass3bins_response = new TH2D("h_mass3bins_response", ";mass3bins(reco level);mass3bins(gen level)", binnum3, bins3, binnum3, bins3);
 
 	TH1D *h_pt_gen = new TH1D("h_pt_gen", ";pt(gen level);Entries", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_reco = new TH1D("h_pt_reco", ";pt(reco level);Entries", ptbinnum_meas, ptbin_meas);
+	TH1D *h_pt_recoAll = new TH1D("h_pt_recoAll", ";pt(recoAll level);Entries", ptbinnum_meas, ptbin_meas);
 	TH1D *h_pt_resol = new TH1D("h_pt_resol", ";pt resolution ( (gen-reco)/gen) );Entries", 100, -0.4, 0.4);
    TH2D *h_pt_response = new TH2D("h_pt_response", ";pt(reco level);pt(gen level)", ptbinnum_meas, ptbin_meas, ptbinnum_meas, ptbin_meas);
 
 	TH1D *h_rap1560_gen = new TH1D("h_rap1560_gen", ";rap1560(gen level);Entries", rapbinnum_1560, rapbin_1560);
 	TH1D *h_rap1560_reco = new TH1D("h_rap1560_reco", ";rap1560(reco level);Entries", rapbinnum_1560, rapbin_1560);
+	TH1D *h_rap1560_recoAll = new TH1D("h_rap1560_recoAll", ";rap1560(recoAll level);Entries", rapbinnum_1560, rapbin_1560);
 	TH1D *h_rap1560_resol = new TH1D("h_rap1560_resol", ";rap1560 resolution ( (gen-reco)/gen) );Entries", 100, -0.1, 0.1);
    TH2D *h_rap1560_response = new TH2D("h_rap1560_response", ";rap1560(reco level);rap1560(gen level)", rapbinnum_1560, rapbin_1560, rapbinnum_1560, rapbin_1560);
 
 	TH1D *h_rap60120_gen = new TH1D("h_rap60120_gen", ";rap60120(gen level);Entries", rapbinnum_60120, rapbin_60120);
 	TH1D *h_rap60120_reco = new TH1D("h_rap60120_reco", ";rap60120(reco level);Entries", rapbinnum_60120, rapbin_60120);
+	TH1D *h_rap60120_recoAll = new TH1D("h_rap60120_recoAll", ";rap60120(recoAll level);Entries", rapbinnum_60120, rapbin_60120);
 	TH1D *h_rap60120_resol = new TH1D("h_rap60120_resol", ";rap60120 resolution ( (gen-reco)/gen) );Entries", 100, -0.1, 0.1);
    TH2D *h_rap60120_response = new TH2D("h_rap60120_response", ";rap60120(reco level);rap60120(gen level)", rapbinnum_60120, rapbin_60120, rapbinnum_60120, rapbin_60120);
 
 	TH1D *h_phistar_gen = new TH1D("h_phistar_gen", ";phistar(gen level);Entries", phistarnum, phistarbin);
 	TH1D *h_phistar_reco = new TH1D("h_phistar_reco", ";phistar(reco level);Entries", phistarnum, phistarbin);
+	TH1D *h_phistar_recoAll = new TH1D("h_phistar_recoAll", ";phistar(recoAll level);Entries", phistarnum, phistarbin);
 	TH1D *h_phistar_resol = new TH1D("h_phistar_resol", ";phistar resolution ( (gen-reco)/gen) );Entries", 100, -0.02, 0.02);
    TH2D *h_phistar_response = new TH2D("h_phistar_response", ";phistar(reco level);phistar(gen level)", phistarnum, phistarbin, phistarnum, phistarbin);
 
 	TH1D *h_pt1560_gen = new TH1D("h_pt1560_gen", ";pt1560(gen level);Entries", ptbinnum_meas_1560, ptbin_meas_1560);
 	TH1D *h_pt1560_reco = new TH1D("h_pt1560_reco", ";pt1560(reco level);Entries", ptbinnum_meas_1560, ptbin_meas_1560);
+	TH1D *h_pt1560_recoAll = new TH1D("h_pt1560_recoAll", ";pt1560(recoAll level);Entries", ptbinnum_meas_1560, ptbin_meas_1560);
 	TH1D *h_pt1560_resol = new TH1D("h_pt1560_resol", ";pt1560 resolution ( (gen-reco)/gen) );Entries", 100, -0.8, 0.8);
    TH2D *h_pt1560_response = new TH2D("h_pt1560_response", ";pt1560(reco level);pt1560(gen level)", ptbinnum_meas_1560, ptbin_meas_1560, ptbinnum_meas_1560, ptbin_meas_1560);
 
 	TH1D *h_phistar1560_gen = new TH1D("h_phistar1560_gen", ";phistar1560(gen level);Entries", phistarnum_1560, phistarbin_1560);
 	TH1D *h_phistar1560_reco = new TH1D("h_phistar1560_reco", ";phistar1560(reco level);Entries", phistarnum_1560, phistarbin_1560);
+	TH1D *h_phistar1560_recoAll = new TH1D("h_phistar1560_recoAll", ";phistar1560(recoAll level);Entries", phistarnum_1560, phistarbin_1560);
 	TH1D *h_phistar1560_resol = new TH1D("h_phistar1560_resol", ";phistar1560 resolution ( (gen-reco)/gen) );Entries", 100, -0.02, 0.02);
    TH2D *h_phistar1560_response = new TH2D("h_phistar1560_response", ";phistar1560(reco level);phistar1560(gen level)", phistarnum_1560, phistarbin_1560, phistarnum_1560, phistarbin_1560);
 
@@ -169,7 +177,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 		TChain *chain = new TChain("recoTree/DYTree");
 		chain->Add(BaseLocation+"/"+ntupleDirectory[i_tup]+"/ntuple_*.root");
 		
-		NtupleHandle *ntuple = new NtupleHandle( chain );
+		NtupleHandle *ntuple = new NtupleHandle( chain, doflip );
 		ntuple->TurnOnBranches_Muon();
 		ntuple->TurnOnBranches_HLT();
 		ntuple->TurnOnBranches_GenLepton();
@@ -196,7 +204,9 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 		if( Sample == "Powheg" )
 			nEvents.push_back( NEvents );
 
-		Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+      if (doflip)
+         norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
 
 		// -- Event loop starts -- //
@@ -253,8 +263,15 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 				Bool_t isPassAcc_GenLepton = kFALSE;
 				isPassAcc_GenLepton = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
 
+            // if (!isPassAcc_GenLepton) {
+            //    gen_M = -99;
+            //    gen_Pt = -99;
+            //    gen_Rap = -99;
+            //    gen_Phistar = -99;
+            // }
+
             // -- Z pt reweighting -- //
-            TotWeight *= zptWeight(gen_Pt);
+            TotWeight *= zptWeight(gen_Pt,gen_M);
 
 				///////////////////////////////////////////
 				// -- Reconstruction level selection -- //
@@ -319,114 +336,86 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 					isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection);
 
 					if( isPassEventSelection == kTRUE )
-					{
-						Muon Mu1 = SelectedMuonCollection[0];
-						Muon Mu2 = SelectedMuonCollection[1];
-						Double_t reco_M = ( Mu1.Momentum + Mu2.Momentum ).M();
+               {
+                  Muon Mu1 = SelectedMuonCollection[0];
+                  Muon Mu2 = SelectedMuonCollection[1];
+                  Double_t reco_M = ( Mu1.Momentum + Mu2.Momentum ).M();
                   Double_t reco_Pt = (Mu1.Momentum + Mu2.Momentum).Pt();
                   Double_t reco_Rap = (Mu1.Momentum + Mu2.Momentum).Rapidity() - rapshift;
                   Double_t reco_Phistar = Object::phistar(Mu1, Mu2);
 
-						if( isPassAcc_GenLepton == kTRUE )
-						{
+                  h_mass_recoAll->Fill( reco_M, TotWeight );
+                  h_mass3bins_recoAll->Fill( reco_M, TotWeight );
+                  if (reco_M>60 && reco_M<120) {
+                     h_rap60120_recoAll->Fill( reco_Rap, TotWeight );
+                     h_pt_recoAll->Fill( reco_Pt, TotWeight );
+                     h_phistar_recoAll->Fill( reco_Phistar, TotWeight );
+                  } else if (reco_M>15 && reco_M<60) {
+                     h_rap1560_recoAll->Fill( reco_Rap, TotWeight );
+                     h_pt1560_recoAll->Fill( reco_Pt, TotWeight );
+                     h_phistar1560_recoAll->Fill( reco_Phistar, TotWeight );
+                  }
+
+                  // if( isPassAcc_GenLepton == kTRUE )
+                  // {
                      // fill gen histos
                      h_mass_gen->Fill( gen_M, TotWeight );
                      h_mass3bins_gen->Fill( gen_M, TotWeight );
-                     if (gen_M>60 && gen_M<120) {
+                     if (reco_M>60 && reco_M<120) {
                         h_pt_gen->Fill( gen_Pt, TotWeight );
                         h_phistar_gen->Fill( gen_Phistar, TotWeight );
                         h_rap60120_gen->Fill( gen_Rap, TotWeight );
-                     } else if (gen_M>15 && gen_M<60) {
+                     } else if (reco_M>15 && reco_M<60) {
                         h_rap1560_gen->Fill( gen_Rap, TotWeight );
                         h_pt1560_gen->Fill( gen_Pt, TotWeight );
                         h_phistar1560_gen->Fill( gen_Phistar, TotWeight );
                      }
+                  // }
 
-							h_mass_reco->Fill( reco_M, TotWeight );
-							h_mass_response->Fill( reco_M, gen_M, TotWeight );
-							Double_t resol = (gen_M - reco_M) / gen_M;
-							h_mass_resol->Fill( resol, TotWeight );
+                  h_mass_reco->Fill( reco_M, TotWeight );
+                  h_mass_response->Fill( reco_M, gen_M, TotWeight );
+                  Double_t resol = (gen_M - reco_M) / gen_M;
+                  h_mass_resol->Fill( resol, TotWeight );
 
-							h_mass3bins_reco->Fill( reco_M, TotWeight );
-							h_mass3bins_response->Fill( reco_M, gen_M, TotWeight );
-							h_mass3bins_resol->Fill( resol, TotWeight );
+                  h_mass3bins_reco->Fill( reco_M, TotWeight );
+                  h_mass3bins_response->Fill( reco_M, gen_M, TotWeight );
+                  h_mass3bins_resol->Fill( resol, TotWeight );
 
-                     if (reco_M>60 && reco_M<120) {
-                        if (gen_M>60 && gen_M<120) {
-                           h_pt_reco->Fill( reco_Pt, TotWeight );
-                           h_pt_response->Fill( reco_Pt, gen_Pt, TotWeight );
-                           resol = (gen_Pt - reco_Pt) / gen_Pt;
-                           h_pt_resol->Fill( resol, TotWeight );
+                  if (reco_M>60 && reco_M<120) {
+                     h_pt_reco->Fill( reco_Pt, TotWeight );
+                     h_pt_response->Fill( reco_Pt, gen_Pt, TotWeight );
+                     resol = (gen_Pt - reco_Pt) / gen_Pt;
+                     h_pt_resol->Fill( resol, TotWeight );
 
-                           h_phistar_reco->Fill( reco_Phistar, TotWeight );
-                           h_phistar_response->Fill( reco_Phistar, gen_Phistar, TotWeight );
-                           resol = (gen_Phistar - reco_Phistar);
-                           h_phistar_resol->Fill( resol, TotWeight );
+                     h_phistar_reco->Fill( reco_Phistar, TotWeight );
+                     h_phistar_response->Fill( reco_Phistar, gen_Phistar, TotWeight );
+                     resol = (gen_Phistar - reco_Phistar);
+                     h_phistar_resol->Fill( resol, TotWeight );
 
-                           h_rap60120_reco->Fill( reco_Rap, TotWeight );
-                           h_rap60120_response->Fill( reco_Rap, gen_Rap, TotWeight );
-                           resol = (gen_Rap - reco_Rap);
-                           h_rap60120_resol->Fill( resol, TotWeight );
-                        } else {
-                           if (gen_M>15 && gen_M<60) {
-                              h_rap1560_response->Fill( -99, gen_Rap, TotWeight );
-                              h_pt1560_response->Fill( -99, gen_Pt, TotWeight );
-                              h_phistar1560_response->Fill( -99, gen_Phistar, TotWeight );
-                           } 
-                           // h_pt_response->Fill( reco_Pt, -99, TotWeight );
-                           // h_rap60120_response->Fill( reco_Rap, -99, TotWeight );
-                           // h_phistar_response->Fill( reco_Phistar, -99, TotWeight );
-                        } // gen_M range
-                     } else if (reco_M>15 && reco_M<60) {
-                        if (gen_M>15 && gen_M<60) {
-                           h_rap1560_reco->Fill( reco_Rap, TotWeight );
-                           h_rap1560_response->Fill( reco_Rap, gen_Rap, TotWeight );
-                           resol = (gen_Rap - reco_Rap);
-                           h_rap1560_resol->Fill( resol, TotWeight );
+                     h_rap60120_reco->Fill( reco_Rap, TotWeight );
+                     h_rap60120_response->Fill( reco_Rap, gen_Rap, TotWeight );
+                     resol = (gen_Rap - reco_Rap);
+                     h_rap60120_resol->Fill( resol, TotWeight );
+                     // h_pt_response->Fill( reco_Pt, -99, TotWeight );
+                     // h_rap60120_response->Fill( reco_Rap, -99, TotWeight );
+                     // h_phistar_response->Fill( reco_Phistar, -99, TotWeight );
+                  } else if (reco_M>15 && reco_M<60) {
+                     h_rap1560_reco->Fill( reco_Rap, TotWeight );
+                     h_rap1560_response->Fill( reco_Rap, gen_Rap, TotWeight );
+                     resol = (gen_Rap - reco_Rap);
+                     h_rap1560_resol->Fill( resol, TotWeight );
 
-                           h_pt1560_reco->Fill( reco_Pt, TotWeight );
-                           h_pt1560_response->Fill( reco_Pt, gen_Pt, TotWeight );
-                           resol = (gen_Pt - reco_Pt);
-                           h_pt1560_resol->Fill( resol, TotWeight );
+                     h_pt1560_reco->Fill( reco_Pt, TotWeight );
+                     h_pt1560_response->Fill( reco_Pt, gen_Pt, TotWeight );
+                     resol = (gen_Pt - reco_Pt);
+                     h_pt1560_resol->Fill( resol, TotWeight );
 
-                           h_phistar1560_reco->Fill( reco_Phistar, TotWeight );
-                           h_phistar1560_response->Fill( reco_Phistar, gen_Phistar, TotWeight );
-                           resol = (gen_Phistar - reco_Phistar);
-                           h_phistar1560_resol->Fill( resol, TotWeight );
-                        } else { 
-                           if (gen_M>60 && gen_M<120) {
-                              h_pt_response->Fill( -99, gen_Pt, TotWeight );
-                              h_rap60120_response->Fill( -99, gen_Rap, TotWeight );
-                              h_phistar_response->Fill( -99, gen_Phistar, TotWeight );
-                           } 
-                           // h_rap1560_response->Fill( reco_Rap, -99, TotWeight );
-                        } // gen_M range
-                     } else { // reco mass is neither in 15<M<60 nor 60<M<120 range
-                        if (gen_M>60 && gen_M<120) {
-                           h_pt_response->Fill( -99, gen_Pt, TotWeight );
-                           h_rap60120_response->Fill( -99, gen_Rap, TotWeight );
-                           h_phistar_response->Fill( -99, gen_Phistar, TotWeight );
-                        } else if (gen_M>15 && gen_M<60) {
-                           h_rap1560_response->Fill( -99, gen_Rap, TotWeight );
-                           h_pt1560_response->Fill( -99, gen_Pt, TotWeight );
-                           h_phistar1560_response->Fill( -99, gen_Phistar, TotWeight );
-                        }
-                     } // reco_M range
-						} // isPassAcc_GenLepton == kTrue
-						else { // -- No gen-level event within the acceptance, but reco event exists (= "Fake" events) -- //
-                     h_mass_response->Fill( reco_M, -99, TotWeight );
-                     h_mass3bins_response->Fill( reco_M, -99, TotWeight );
-                     if (reco_M>60 && reco_M<120) {
-                        h_pt_response->Fill( reco_Pt, -99, TotWeight );
-                        h_rap60120_response->Fill( reco_Rap, -99, TotWeight );
-                        h_phistar_response->Fill( reco_Phistar, -99, TotWeight );
-                     } else if (reco_M>15 && reco_M<60) {
-                        h_rap1560_response->Fill( reco_Rap, -99, TotWeight );
-                        h_pt1560_response->Fill( reco_Pt, -99, TotWeight );
-                        h_phistar1560_response->Fill( reco_Phistar, -99, TotWeight );
-                     }
-                  }
-					}
+                     h_phistar1560_reco->Fill( reco_Phistar, TotWeight );
+                     h_phistar1560_response->Fill( reco_Phistar, gen_Phistar, TotWeight );
+                     resol = (gen_Phistar - reco_Phistar);
+                     h_phistar1560_resol->Fill( resol, TotWeight );
+                  } // reco_M range
+               }
 				} // -- if( ntuple->isTriggered( analyzer->HLT ) ) -- // 
 
             // if( isPassAcc_GenLepton == kTRUE && isPassEventSelection == kFALSE) { // -- gen-level event exists in gen-level, but there is no reco-level event -- //
@@ -456,6 +445,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 	f->cd();
 	h_mass_gen->Write();
 	h_mass_reco->Write();
+	h_mass_recoAll->Write();
 	h_mass_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -472,6 +462,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_mass3bins_gen->Write();
 	h_mass3bins_reco->Write();
+	h_mass3bins_recoAll->Write();
 	h_mass3bins_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -488,6 +479,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_pt_gen->Write();
 	h_pt_reco->Write();
+	h_pt_recoAll->Write();
 	h_pt_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -504,6 +496,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_rap1560_gen->Write();
 	h_rap1560_reco->Write();
+	h_rap1560_recoAll->Write();
 	h_rap1560_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -520,6 +513,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_rap60120_gen->Write();
 	h_rap60120_reco->Write();
+	h_rap60120_recoAll->Write();
 	h_rap60120_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -536,6 +530,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_phistar_gen->Write();
 	h_phistar_reco->Write();
+	h_phistar_recoAll->Write();
 	h_phistar_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -552,6 +547,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_pt1560_gen->Write();
 	h_pt1560_reco->Write();
+	h_pt1560_recoAll->Write();
 	h_pt1560_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j
@@ -568,6 +564,7 @@ void MuonResponseMatrix_1D(Bool_t isCorrected = kFALSE, TString Sample = "Powheg
 
 	h_phistar1560_gen->Write();
 	h_phistar1560_reco->Write();
+	h_phistar1560_recoAll->Write();
 	h_phistar1560_resol->Write();
 
    // normalise: divide each R_ij element of the response matrix by gen_j the number of generated events in gen bin j

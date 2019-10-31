@@ -45,7 +45,12 @@ void DrawClosureTest(TFile *f, var thevar) {
    TH1D *h_unfolded = unfold::unfold_MLE(h_Measured_TUnfold,h_RespM,histEmatTotal);
 	
 	MyCanvas *myc = new MyCanvas(Form("ResponseMatrix/c_ClosureTest_%s",thevarname), xaxistitle(thevar), "Number of events");
-	myc->SetLogx();
+	if (thevar != rap60120 && thevar != rap1560) {
+      myc->SetLogx();
+      fixXaxis(h_Measured_TUnfold);
+      fixXaxis(h_unfolded);
+      fixXaxis(h_Truth_TUnfold);
+   }
 	myc->SetLogy(0);
 	myc->SetRatioRange(0.7, 1.3);
 	myc->CanvasWithThreeHistogramsRatioPlot( h_Measured_TUnfold, h_unfolded, h_Truth_TUnfold, 

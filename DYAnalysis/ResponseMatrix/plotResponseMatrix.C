@@ -32,13 +32,13 @@ void plotResponseMatrix(TFile *f, var thevar) {
    MyCanvas c1D(Form("ResponseMatrix/c_%s_1D",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas cres(Form("ResponseMatrix/c_%s_resol",thevarname),Form("%s ((gen-reco) / gen)",xaxistitle(thevar)),"Entries",800,800);
    MyCanvas c2D(Form("ResponseMatrix/c_%s_response",thevarname),xaxistitle(thevar),"Entries",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c2D.SetLogx();
       c2D.SetLogy();
       c2D.SetLogz();
    }
-   if (thevar==var::mass) c1D.SetRatioRange(0.8,1.2);
+   if (thevar==var::mass || thevar==var::mass3bins) c1D.SetRatioRange(0.8,1.2);
    else if (thevar==var::pt) c1D.SetRatioRange(0.9,1.1);
    else c1D.SetRatioRange(0.95,1.05);
 

@@ -95,6 +95,8 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       cout << "Error, histo " << Form("h_%s_bkgsub_DataDrivenBkg_All1",thevarname)<< " not found" << endl;
       return;
    }
+   // TFile* fdata = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_noZptrew_All.root",thevarname));
+   // TH1D* histMdetData = (TH1D*) fdata->Get("h_SignalMC");
 
    // output
    TFile *fout = new TFile(Form("ResponseMatrix/yields_detcor_%s_%s_%d.root",Sample.Data(),isApplyMomCorr.Data(),run),"UPDATE");
@@ -197,7 +199,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    h_response->SetMaximum(1);
    h_response->GetXaxis()->SetTitle(Form("%s (reco level)", xaxistitle(thevar)));
    h_response->GetYaxis()->SetTitle(Form("%s (gen level)", xaxistitle(thevar)));
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       gPad->SetLogx();
       gPad->SetLogy();
    }
@@ -358,7 +360,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
    MyCanvas c1D(Form("ResponseMatrix/c_unfoldData_%s_beforeafter",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cov(Form("ResponseMatrix/c_unfoldData_%s_totCovMat",thevarname),xaxistitle(thevar),"Entries",800,800);
    MyCanvas c_cor(Form("ResponseMatrix/c_unfoldData_%s_totCorMat",thevarname),xaxistitle(thevar),"Entries",800,800);
-   if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
+   if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c1D.SetLogx();
       c_cov.SetLogx();
       c_cov.SetLogy();
@@ -367,7 +369,7 @@ void doDetUnfold( Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TStrin
       fixXaxis(histMunfold);
       fixXaxis(h_Measured_TUnfold);
    }
-   if (thevar==var::mass) c1D.SetRatioRange(0.7,1.3);
+   if (thevar==var::mass || thevar==var::mass3bins) c1D.SetRatioRange(0.7,1.3);
    else if (thevar==var::pt) c1D.SetRatioRange(0.8,1.2);
    else c1D.SetRatioRange(0.9,1.1);
 
