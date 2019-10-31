@@ -219,9 +219,9 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 		if( Sample == "Powheg" )
 			nEvents.push_back( NEvents );
 
-		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
       if (doflip)
-         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+         norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
       if (! Sample.Contains("Powheg")) // only Powheg has the 2 beam directions
          norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 
