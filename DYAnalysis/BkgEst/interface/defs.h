@@ -15,20 +15,33 @@
 #include "samples_v20180814_Pyquen.h"
 #include "samples_v20180814_CT14.h"
 
-// UPDATED IN 2017
-// 1st part, PbP
-// // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-const double lumi_part1 = 62587.059e-6; // mub-1 -> pb-1
+// // UPDATED IN 2017
+// // 1st part, PbP
+// // // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+// const double lumi_part1 = 62587.059e-6; // mub-1 -> pb-1
 
-// brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-// const double lumi_part1 = 62645.773675534e-3; // nb-1 -> pb-1
+// // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285479-285832_HI8TeV_PromptReco_pPb_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+// // const double lumi_part1 = 62645.773675534e-3; // nb-1 -> pb-1
+
+// // 2nd part, pPb
+// // // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+// const double lumi_part2 = 111912.220e-6; // mub-1 -> pb-1
+
+// // brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /nb -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
+// // const double lumi_part2 = 111.916064819e-3; // nb-1 -> pb-1
+
+/////////////////////////////////////////////////////////////
+// Oct 31, 2019
+/////////////////////////////////////////////////////////////
+
+// 1st part, PbP
+// brilcalc lumi -c offsite  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_1stpart.txt --hltpath HLT_PAL3Mu12_v1
+const double lumi_part1 = 60743.013024032e-6; // mub-1 -> pb-1
 
 // 2nd part, pPb
-// // brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_HI2016.json -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-const double lumi_part2 = 111912.220e-6; // mub-1 -> pb-1
+// brilcalc lumi -c offsite  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_2ndpart.txt --hltpath HLT_PAL3Mu12_v1
+const double lumi_part2 = 97290.113858200e-6; // mub-1 -> pb-1
 
-// brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /nb -i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/HI/Cert_285952-286496_HI8TeV_PromptReco_Pbp_Collisions16_JSON_NoL1T.txt --hltpath HLT_PAL3Mu12_v1
-// const double lumi_part2 = 111.916064819e-3; // nb-1 -> pb-1
 const double lumi_all = lumi_part1 + lumi_part2;
 
 const int runcut = 285900;
@@ -204,16 +217,18 @@ namespace DYana {
       double p0 = -0.3465;//-0.37;
       double p1 = -0.2569;//-0.3703;
       double p2 = 1.294;//1.187;
+      double globalweight = 1.1013274; // this is to avoid a normalisation change
 
       if (mass<60) { // low mass
-         p0 = -0.2276;
+         p0 = -0.02276;
          p1 = 0.5204;
          p2 = 1.076;
+         globalweight = 1.0106581;
       }
 
       double weight = (pt>0) ? p0*pow(pt,p1)+p2 : 0.5;
       if (weight<0.5) weight = 0.5; // do not allow too large weights
-      return (1./weight); // we just computed the POWHEG/data ratio: return data/Powheg
+      return globalweight * (1./weight); // we just computed the POWHEG/data ratio: return data/Powheg
    }
 };
 
