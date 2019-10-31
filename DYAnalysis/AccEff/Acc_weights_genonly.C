@@ -27,7 +27,7 @@
 using namespace DYana;
 
 // number of gen weights (CT14: 284, EPPS16: 325
-const int nweights = 325;//284;
+const int nweights = 284;//325;//284;
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_weights_genonly(TString Sample) 
@@ -193,9 +193,9 @@ void Acc_weights_genonly(TString Sample)
       // // default norm
       // Double_t norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
       // fancy norm with pPb / PbP mix
-		Double_t norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
+		Double_t norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
       if (doflip)
-         norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
+         norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
       if (Sample.Contains("CT14")) // we only have 1 beam direction for CT14
             norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 
