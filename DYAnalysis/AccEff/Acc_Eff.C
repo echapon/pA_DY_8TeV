@@ -536,6 +536,26 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	f->cd();
 	h_mass_tot->Write();
 
+   // cancel the effect of HF reweighting
+   h_mass_EffPass->Multiply(h_mass_AccPass); h_mass_EffPass->Divide(h_mass_EffTotal);
+   h_mass3bins_EffPass->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass->Divide(h_mass3bins_EffTotal);
+   h_pt_EffPass->Multiply(h_pt_AccPass); h_pt_EffPass->Divide(h_pt_EffTotal);
+   h_phistar_EffPass->Multiply(h_phistar_AccPass); h_phistar_EffPass->Divide(h_phistar_EffTotal);
+   h_rap1560_EffPass->Multiply(h_rap1560_AccPass); h_rap1560_EffPass->Divide(h_rap1560_EffTotal);
+   h_rap60120_EffPass->Multiply(h_rap60120_AccPass); h_rap60120_EffPass->Divide(h_rap60120_EffTotal);
+   h_pt1560_EffPass->Multiply(h_pt1560_AccPass); h_pt1560_EffPass->Divide(h_pt1560_EffTotal);
+   h_phistar1560_EffPass->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass->Divide(h_phistar1560_EffTotal);
+	for (int i=0; i<nweights; i++) {
+      h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal);
+      h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal);
+      h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal);
+      h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal);
+      h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal);
+      h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal);
+      h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal);
+      h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal);
+   }
+
 	h_mass_AccTotal->Write();
 	h_mass_AccPass->Write();
 	h_mass3bins_AccTotal->Write();

@@ -563,6 +563,25 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 	h_mass_tot->Write();
 
    for (int i=0; i<nweights; i++) {
+      // cancel the effect of HF reweighting
+      h_mass_EffPass[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass[i]->Divide(h_mass_EffTotal[i]);
+      h_mass3bins_EffPass[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass[i]->Divide(h_mass3bins_EffTotal[i]);
+      h_pt_EffPass[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass[i]->Divide(h_pt_EffTotal[i]);
+      h_phistar_EffPass[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass[i]->Divide(h_phistar_EffTotal[i]);
+      h_rap1560_EffPass[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass[i]->Divide(h_rap1560_EffTotal[i]);
+      h_rap60120_EffPass[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass[i]->Divide(h_rap60120_EffTotal[i]);
+      h_pt1560_EffPass[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass[i]->Divide(h_pt1560_EffTotal[i]);
+      h_phistar1560_EffPass[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass[i]->Divide(h_phistar1560_EffTotal[i]);
+
+      h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal[i]);
+      h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal[i]);
+      h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal[i]);
+      h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal[i]);
+      h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal[i]);
+      h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal[i]);
+      h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal[i]);
+      h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal[i]);
+
       h_mass_AccTotal[i]->Write();
       h_mass_AccPass[i]->Write();
       h_mass3bins_AccTotal[i]->Write();
