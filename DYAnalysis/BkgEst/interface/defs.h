@@ -31,16 +31,16 @@
 // // const double lumi_part2 = 111.916064819e-3; // nb-1 -> pb-1
 
 /////////////////////////////////////////////////////////////
-// Oct 31, 2019
+// Dec 19, 2019
 /////////////////////////////////////////////////////////////
 
 // 1st part, PbP
-// brilcalc lumi -c offsite  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_1stpart.txt --hltpath HLT_PAL3Mu12_v1
-const double lumi_part1 = 60743.013024032e-6; // mub-1 -> pb-1
+// brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_1stpart_20191211.json --hltpath HLT_PAL3Mu12_v1
+const double lumi_part1 = 62645.773675534e-6; // mub-1 -> pb-1
 
 // 2nd part, pPb
-// brilcalc lumi -c offsite  --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_2ndpart.txt --hltpath HLT_PAL3Mu12_v1
-const double lumi_part2 = 97290.113858200e-6; // mub-1 -> pb-1
+// brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -i /afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/processedLumis_2ndpart_20191217.json --hltpath HLT_PAL3Mu12_v1
+const double lumi_part2 = 110682.255063346e-6; // mub-1 -> pb-1
 
 const double lumi_all = lumi_part1 + lumi_part2;
 
