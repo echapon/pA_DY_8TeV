@@ -80,8 +80,8 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 	//Each ntuple directory & corresponding Tags
 	vector<TString> ntupleDirectory; vector<TString> Tag; vector<Double_t> Xsec; vector<Double_t> nEvents; vector< DYana::SampleTag > STags;
 
-	if( !doData )
-	{
+   // if( !doData )
+   // {
 		analyzer->SetupMCsamples_v20180814(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
       // add QCD
       SampleTag tag=QCD;
@@ -91,20 +91,20 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
       nEvents.push_back(Nevts(tag));
       DYana_v20180814::SampleTag tag_Powheg = DYana_v20180814::SampleTag::QCD;
       STags.push_back(tag_Powheg);
-	}
-	else
-	{
-      using DYana::SampleTag;
-      if (HLTname.Contains("L3Mu12")) {
-            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); 
-            ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); 
-      } else {
-            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_1stpart_2010604/180604_092521/0000/" ); 
-            ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_2ndpart_2010604/180604_093537/0000/" ); 
-      }
-      Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
-      Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
-	}
+   // }
+   // else
+   // {
+   //    using DYana::SampleTag;
+   //    if (HLTname.Contains("L3Mu12")) {
+   //          ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_1stpart_20170518/170517_220343/0000/" ); 
+   //          ntupleDirectory.push_back( "PASingleMuon/crab_PASingleMuon_DYtuple_PAL3Mu12_2ndpart_20170518/170517_220714/0000/" ); 
+   //    } else {
+   //          ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_1stpart_2010604/180604_092521/0000/" ); 
+   //          ntupleDirectory.push_back( "PADoubleMuon/crab_PADoubleMuon_DYtuple_PAL1DoubleMu0_2ndpart_2010604/180604_093537/0000/" ); 
+   //    }
+   //    Tag.push_back( "Data1" ); STags.push_back(SampleTag::Data1);
+   //    Tag.push_back( "Data2" ); STags.push_back(SampleTag::Data2);
+   // }
 
    // initialise the HF reweighting tool
    HFweight hftool;
@@ -113,6 +113,9 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
 	const Int_t Ntup = ntupleDirectory.size();
 	for(Int_t i_tup = 0; i_tup<Ntup; i_tup++)
 	{
+      if (!doData && IsData(STags[i_tup])) continue;
+      if (doData && !IsData(STags[i_tup])) continue;
+
       // if (!(Tag[i_tup].Contains("DYMuMu30"))) continue;
 		TStopwatch looptime;
 		looptime.Start();
