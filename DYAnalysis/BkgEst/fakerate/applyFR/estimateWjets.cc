@@ -43,9 +43,13 @@ const double lumi_sf = 1.;//0.92;
 // const double sf_fit_1[3] = {1.1464e+00,9.6762e-01,8.4521e-01}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
 // const double sf_fit_2[3] = {1.1503e+00,9.7400e-01,1.0749e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
 
-// values from 2019 10/09
-const double sf_fit_1[3] = {1.1619e+00,9.7863e-01,1.3484e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
-const double sf_fit_2[3] = {1.1484e+00,9.7525e-01,1.0788e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
+// // values from 2019 10/09
+// const double sf_fit_1[3] = {1.1619e+00,9.7863e-01,1.3484e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
+// const double sf_fit_2[3] = {1.1484e+00,9.7525e-01,1.0788e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
+
+// values from 2020 02/04
+const double sf_fit_1[3] = {1.2823e+00,9.9027e-01,1.4497e+00}; // MC, QCD, Wjets; from fit_wjets.cc(1,"massMET")
+const double sf_fit_2[3] = {1.2670e+00,9.8466e-01,1.2040e+00}; // MC, QCD, Wjets; from fit_wjets.cc(2,"massMET")
 
 
 void estimateWjets();
