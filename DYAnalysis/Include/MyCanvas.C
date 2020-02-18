@@ -57,6 +57,7 @@ public:
 	TH1D *h_ratio1; TH1D *h_ratio2; // -- for the canvas with multiple ratio plot -- //
 	TGraphAsymmErrors *g_ratio;
 	TGraphAsymmErrors *g_ratio1, *g_ratio2;
+   TGraphAsymmErrors *g_ratio_refAtOne; // -- for putting the ref uncertainties around 1 if requested -- //
 	Double_t LowerEdge_Ratio;
 	Double_t UpperEdge_Ratio;
    Bool_t isRatioPadAttached;//added
@@ -479,7 +480,8 @@ public:
 	void CanvasWithThreeGraphsRatioPlot(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TGraphAsymmErrors* g_ref, 
 											TString Name1, TString Name2, TString Name_ref, TString Name_Ratio,
 											Int_t color1 = kBlue, Int_t color2 = kGreen+1, Int_t color_ref = kRed,
-											TString DrawOp1 = "5", TString DrawOp2 = "5", TString DrawOp_ref = "EP")
+											TString DrawOp1 = "5", TString DrawOp2 = "5", TString DrawOp_ref = "EP",
+                                 bool refErrorAtOne = false)
 	{
 		c->cd();
 		// -- Top Pad -- //
@@ -564,16 +566,23 @@ public:
 
 		// -- Make Ratio plot & Draw it -- //
 		g_ratio1 = (TGraphAsymmErrors*)g1->Clone();
-		MakeRatioGraph(g_ratio1, g1, g_ref);
-		g_ratio1->Draw("AEP");
+		MakeRatioGraph(g_ratio1, g1, g_ref, refErrorAtOne);
+		g_ratio1->Draw("A" + DrawOp1);
 		g_ratio1->SetName("g_ratio1");
 
 		g_ratio2 = (TGraphAsymmErrors*)g2->Clone();
-		MakeRatioGraph(g_ratio2, g2, g_ref);
-		g_ratio2->Draw("EP");
+		MakeRatioGraph(g_ratio2, g2, g_ref, refErrorAtOne);
+		g_ratio2->Draw(DrawOp2);
 		g_ratio2->SetName("g_ratio2");
 
-		g_ratio1->Draw("EP");
+      if (refErrorAtOne) {
+         g_ratio_refAtOne = (TGraphAsymmErrors*) g_ref->Clone();
+         MakeRatioGraph(g_ratio_refAtOne, g_ref, g_ref, true);
+         g_ratio_refAtOne->Draw(DrawOp_ref);
+         g_ratio_refAtOne->SetName("g_ratio_refAtOne");
+      }
+
+      // g_ratio1->Draw("EP");
 
 		// -- General Setting for 1st ratio plot -- //
 		g_ratio1->SetLineColor(color1);
@@ -611,8 +620,21 @@ public:
 		f_line->SetLineWidth(1);
 		f_line->Draw("SAME");
 
-		g_ratio1->Draw("EP");
-		g_ratio2->Draw("EP");
+      if (refErrorAtOne) g_ratio_refAtOne->Draw(DrawOp_ref);
+      g_ratio1->Draw(DrawOp1);
+      g_ratio2->Draw(DrawOp2);
+
+      if (refErrorAtOne) {
+         // legend
+         TLegend *tleg_ratio = new TLegend(0.2,0.82,0.9,0.92);
+         tleg_ratio->SetFillColor(0);
+         tleg_ratio->SetBorderSize(0);
+         tleg_ratio->SetNColumns(3);
+         tleg_ratio->AddEntry(g_ratio_refAtOne,"Data (stat. + syst.)","lp");
+         tleg_ratio->AddEntry(g_ratio1,"CT14","f");
+         tleg_ratio->AddEntry(g_ratio2,"CT14+EPPS16","f");
+         tleg_ratio->Draw();
+      }
 
       CMS_lumi( TopPad, 111, 0 );
 	}
@@ -866,7 +888,7 @@ public:
       CMS_lumi( TopPad, 111, 0 );
 	}
 
-	void MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2)
+	void MakeRatioGraph(TGraphAsymmErrors *g_ratio, TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, bool ignoreErrorsDenominator = false)
 	{
 		g_ratio->Set(0); // -- Remove all points (reset) -- //
 
@@ -910,6 +932,9 @@ public:
 			Double_t error_Xhigh = g1->GetErrorXhigh(i_p);
 			g_ratio->SetPointError(i_p, error_XLow, error_Xhigh, ratio_error, ratio_error);
 
+         if (ignoreErrorsDenominator && ratio != 0) {
+            g_ratio->SetPointError(i_p, error_XLow, error_Xhigh, g1->GetErrorYlow(i_p) / y2, g1->GetErrorYhigh(i_p) / y2);
+         }
 		}
 	}
 
