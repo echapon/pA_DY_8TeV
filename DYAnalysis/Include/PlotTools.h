@@ -1119,7 +1119,7 @@ void fixXaxis(TGraphAsymmErrors *g) {
    if (fabs(g->GetX()[0]-g->GetEXlow()[0])<1e-10) {
       double eyl = g->GetEYlow()[0];
       double eyh = g->GetEYhigh()[0];
-      double exl = g->GetEXlow()[0]/2.;
+      double exl = g->GetEXlow()[0]*0.45;
       double exh = g->GetEXhigh()[0];
       g->SetPointError(0,exl,exh,eyl,eyh);
    }
@@ -1132,7 +1132,7 @@ void fixXaxis(TH1 *h) {
       for (int i=1; i<nbins+1; i++) {
          newbins[i] = h->GetBinLowEdge(i)+h->GetBinWidth(i);
       }
-      newbins[0] = 0.5*newbins[1];
+      newbins[0] = 0.45*newbins[1];
       h->SetBins(nbins,newbins);
       delete[] newbins;
    }
