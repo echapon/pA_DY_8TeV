@@ -71,7 +71,9 @@ void dataMC(var thevar)
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
 
+   // This is default: no Zpt rew
    TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_noZptrew_All.root",thevarname));
+   // This is for test: with Zpt rew
    // TFile* f1 = new TFile(Form("ControlPlots/root/ROOTFile_Histograms_%s_MomCorr00_rewboth_tnprew_All.root",thevarname));
    f1->cd();
 
@@ -208,8 +210,8 @@ void dataMC(var thevar)
    h_data->Draw("E1P");
    if (thevar==var::pt) h_data->GetXaxis()->SetRangeUser(0.5,ptbin_meas[ptbinnum_meas-1]);
    if (thevar==var::pt1560) h_data->GetXaxis()->SetRangeUser(0.5,ptbin_meas_1560[ptbinnum_meas_1560-1]);
-   if (thevar==var::phistar) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
-   if (thevar==var::phistar1560) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
+   // if (thevar==var::phistar) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
+   // if (thevar==var::phistar1560) h_data->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
@@ -222,7 +224,7 @@ void dataMC(var thevar)
      grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
-   TLegend *leg = new TLegend(0.70,0.70,0.90,0.90,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.725,0.72,0.92,0.92,NULL,"brNDC");
    leg->SetBorderSize(0);
    leg->SetTextFont(62);
    leg->SetLineColor(1);
@@ -255,7 +257,7 @@ void dataMC(var thevar)
    TLatex latex;
    latex.SetNDC();
    latex.SetTextSize(0.03);
-   double xlatex=.17, ylatex=0.9, dylatex=0.04;
+   double xlatex=.17, ylatex=0.91, dylatex=0.045;
    if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.9;
    latex.SetTextAlign(12);  //centered
    if (thevar!=rap1560 && thevar!=rap60120) {
@@ -328,8 +330,8 @@ void dataMC(var thevar)
    hratio->Draw("E1PL");
    if (thevar==var::pt) hratio->GetXaxis()->SetRangeUser(0.5,ptbin_meas[ptbinnum_meas-1]);
    if (thevar==var::pt1560) hratio->GetXaxis()->SetRangeUser(0.5,ptbin_meas_1560[ptbinnum_meas_1560-1]);
-   if (thevar==var::phistar) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
-   if (thevar==var::phistar1560) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
+   // if (thevar==var::phistar) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin[phistarnum-1]);
+   // if (thevar==var::phistar1560) hratio->GetXaxis()->SetRangeUser(0.001,phistarbin_1560[phistarnum_1560-1]);
    hratio->Draw("E1PL");
    
    TF1 *f_line1 = new TF1("f_line","1",-10000,10000);
@@ -355,12 +357,12 @@ void dataMC(var thevar)
    f_line1->Draw("SAME");
    hratio->Draw("E1PLsame");
 
-   TLine gridRatio;
-   gridRatio.SetLineColor(kGray+2);
-   gridRatio.SetLineStyle(2);
-   for( unsigned int ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
-     gridRatio.DrawLine(xAxis[ii],0.45,xAxis[ii],1.55);
-   }
+   // TLine gridRatio;
+   // gridRatio.SetLineColor(kGray+2);
+   // gridRatio.SetLineStyle(2);
+   // for( unsigned int ii=0; ii<hdata->GetNbinsX()+1; ii++ ) {
+   //   gridRatio.DrawLine(xAxis[ii],0.45,xAxis[ii],1.55);
+   // }
 
    c1->cd();
    c1->Modified();
