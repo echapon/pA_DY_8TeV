@@ -209,6 +209,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
 
       TGraphAsymmErrors *gth_EPPS16 = NULL;
+      TH2D *hth_EPPS16_cor = NULL;
       if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
          hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
@@ -226,8 +227,10 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
 
          gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+         hth_EPPS16_cor = pdfcorr(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
          gth_EPPS16->SetMarkerSize(0);
          gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+         hth_EPPS16_cor->SetName(Form("hth_EPPS16_cor_%s",varname(thevar)));
       }
 
       // CT14
@@ -235,6 +238,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       vector<TH1D*> hth_CT14;
       i=0;
       TGraphAsymmErrors *gth_CT14 = NULL;
+      TH2D *hth_CT14_cor = NULL;
       if (fth_CT14->IsOpen()) { // skip the theory part if we don't want dsigma/dX
          hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
          hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
@@ -246,8 +250,10 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          }
 
          gth_CT14 = pdfuncert(hth_CT14, "CT14nlo");
+         hth_CT14_cor = pdfcorr(hth_CT14, "CT14nlo");
          gth_CT14->SetMarkerSize(0);
          gth_CT14->SetName(Form("gth_CT14_%s",varname(thevar)));
+         hth_CT14_cor->SetName(Form("hth_CT14_cor_%s",varname(thevar)));
       }
 
 
@@ -334,6 +340,102 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          inittex(Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"),xtitle.Data(),ytitle.Data());
          printGraph(gres_statonly,gres,Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"));
          closetex(Form("Plots/results/tex/%s%s.tex",varname(thevar),correctforacc ? "" : "_noacc"));
+
+         //////////////////////////
+         //   chi2 computation   //
+         //////////////////////////
+
+         // chi2, no correlations
+         int nbins = nbinsvar(thevar);
+         double chi2_CT14_nocor = chi2(gres,gth_CT14);
+         double chi2_EPPS16_nocor = chi2(gres,gth_EPPS16);
+         cout << varname(thevar) << ", CT14, w/o cor: chi2/ndf = " << chi2_CT14_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_nocor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", EPPS16, w/o cor: chi2/ndf = " << chi2_EPPS16_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_nocor,nbins) << ")" << endl;
+
+         // chi2, with correlations
+         // data stat
+         TMatrixT<double> cov_stat = diag(Form("SysUncEstimation/csv/stat_%s.csv",varname(thevar)));
+         // data syst
+         TMatrixT<double> cov_syst = map2mat(readSyst_all_cov(thevar, "./", !correctforacc));
+         // what we have is in "%^2". Need to multiply by central values.
+         for (int i=0; i<nbins; i++) {
+            for (int j=0; j<nbins; j++) {
+               cov_stat[i][j] *= gres->GetY()[i] * gres->GetY()[j];
+               cov_syst[i][j] *= gres->GetY()[i] * gres->GetY()[j];
+            }
+         }
+         // data total
+         TMatrixT<double> cov_statsyst = cov_stat + cov_syst;
+         // CT14
+         TMatrixT<double> cov_CT14(nbins,nbins);
+         for (int i=0; i<nbins; i++) {
+            for (int j=0; j<nbins; j++) {
+               double eyli = gth_CT14->GetEYlow()[i];
+               double eylj = gth_CT14->GetEYlow()[j];
+               double eyhi = gth_CT14->GetEYhigh()[i];
+               double eyhj = gth_CT14->GetEYhigh()[j];
+               double eyi = (eyhi+eyli)/2.;
+               double eyj = (eyhj+eylj)/2.;
+               cov_CT14[i][j] = hth_CT14_cor->GetBinContent(i+1,j+1) * eyi * eyj;
+            }
+         }
+         // EPPS16
+         TMatrixT<double> cov_EPPS16(nbins,nbins);
+         for (int i=0; i<nbins; i++) {
+            for (int j=0; j<nbins; j++) {
+               double eyli = gth_EPPS16->GetEYlow()[i];
+               double eylj = gth_EPPS16->GetEYlow()[j];
+               double eyhi = gth_EPPS16->GetEYhigh()[i];
+               double eyhj = gth_EPPS16->GetEYhigh()[j];
+               double eyi = (eyhi+eyli)/2.;
+               double eyj = (eyhj+eylj)/2.;
+               cov_EPPS16[i][j] = hth_EPPS16_cor->GetBinContent(i+1,j+1) * eyi * eyj;
+            }
+         }
+
+         // compute chi2
+         double chi2_CT14_withcor = chi2(gres,gth_CT14,cov_statsyst,cov_CT14);
+         double chi2_EPPS16_withcor = chi2(gres,gth_EPPS16,cov_statsyst,cov_EPPS16);
+         cout << varname(thevar) << ", CT14, w/ cor: chi2/ndf = " << chi2_CT14_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_withcor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", EPPS16, w/ cor: chi2/ndf = " << chi2_EPPS16_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_withcor,nbins) << ")" << endl;
+
+         // // let's debug the details
+         // ofstream tmpfile(Form("debug_cov_%s.txt",varname(thevar)));
+         // for (int i=0; i<nbins; i++) {
+         //    tmpfile << i << ": " <<
+         //       "data: " << (gres->GetEYlow()[i] + gres->GetEYhigh()[i])/2. << " " << sqrt(cov_stat[i][i] + cov_syst[i][i]) << " (" << sqrt(cov_stat[i][i]) << ", " << sqrt(cov_syst[i][i]) << "); " <<
+         //       "CT14: " << (gth_CT14->GetEYlow()[i] + gth_CT14->GetEYhigh()[i])/2. << " " << sqrt(cov_CT14[i][i]) << "; " <<
+         //       "EPPS16: " << (gth_EPPS16->GetEYlow()[i] + gth_EPPS16->GetEYhigh()[i])/2. << " " << sqrt(cov_EPPS16[i][i]) << endl;
+         // }
+         // tmpfile << endl << "---------------------------------------" << endl;
+         // for (int i=0; i<nbins; i++) {
+         //    for (int j=0; j<nbins; j++) {
+         //       tmpfile << cov_stat[i][j] << " ";
+         //    }
+         //    tmpfile << endl;
+         // }
+         // tmpfile << endl << "---------------------------------------" << endl;
+         // for (int i=0; i<nbins; i++) {
+         //    for (int j=0; j<nbins; j++) {
+         //       tmpfile << cov_syst[i][j] << " ";
+         //    }
+         //    tmpfile << endl;
+         // }
+         // tmpfile << endl << "---------------------------------------" << endl;
+         // for (int i=0; i<nbins; i++) {
+         //    for (int j=0; j<nbins; j++) {
+         //       tmpfile << cov_CT14[i][j] << " ";
+         //    }
+         //    tmpfile << endl;
+         // }
+         // tmpfile << endl << "---------------------------------------" << endl;
+         // for (int i=0; i<nbins; i++) {
+         //    for (int j=0; j<nbins; j++) {
+         //       tmpfile << cov_EPPS16[i][j] << " ";
+         //    }
+         //    tmpfile << endl;
+         // }
+         // tmpfile.close();
       }
 
 

@@ -89,6 +89,19 @@ TH2D* pdfcorr(vector<TH1D*> h, const char* pdfname) {
    return ans;
 }
 
+TMatrixT<double> hist2mat(TH2D* thehist) {
+   int nbins = thehist->GetNbinsX();
+   TMatrixT<double> ans(nbins,nbins);
+
+   for (int i=0; i<nbins; i++) {
+      for (int j=0; j<nbins; j++) {
+         ans[i][j] = thehist->GetBinContent(i+1,j+1);
+      }
+   }
+
+   return ans;
+}
+
 TGraphAsymmErrors* hist2graph(TH1 *hist, double syst=0) {
    int n = hist->GetNbinsX();
    TGraphAsymmErrors *ans = new TGraphAsymmErrors(n);

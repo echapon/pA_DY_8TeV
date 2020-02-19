@@ -51,7 +51,8 @@ TMatrixT<double> readSyst_cor(const char* systfile) {
    tsystfile.ReplaceAll("csv/","cor/");
 
    int nbins=0;
-   if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
+   if (tsystfile.Contains("mass3bins")) nbins = DYana::nbinsvar("mass3bins");
+   else if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
    else if (tsystfile.Contains("pt")) nbins = DYana::nbinsvar("pt");
    else if (tsystfile.Contains("phistar1560")) nbins = DYana::nbinsvar("phistar1560");
    else if (tsystfile.Contains("pt1560")) nbins = DYana::nbinsvar("pt1560");
@@ -68,7 +69,7 @@ TMatrixT<double> readSyst_cor(const char* systfile) {
       for (int i=0; i<nbins; i++) ans[i][i] = 1;
 
       // in some cases the syst is 100% correlated
-      if (tsystfile.Contains("rewNtracks") || tsystfile.Contains("Unfold")) {
+      if (tsystfile.Contains("rewNtracks") || tsystfile.Contains("Unfold") || tsystfile.Contains("lumi")) {
          for (int i=0; i<nbins; i++) {
             for (int j=0; j<nbins; j++) {
                ans[i][j] = 1;
@@ -243,6 +244,7 @@ TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc) {
    else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
+   tags.push_back("lumi");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin2,syst> systmap;
@@ -270,6 +272,7 @@ map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix, bool noacc) {
    else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
+   tags.push_back("lumi");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin2,syst> systmap;
@@ -304,7 +307,9 @@ void printTex(vector< map<bin, syst> > theSysts, const char* texName) {
    file << "}" << endl;
    file << "\\hline" << endl;
    file << tvarname.Data();
-   for (unsigned int i=0; i<nsyst; i++) file << " & " << theSysts[i].begin()->second.name;
+   for (unsigned int i=0; i<nsyst; i++) {
+      file << " & " << theSysts[i].begin()->second.name;
+   }
    file<< "\\\\" << endl;
    file << "\\hline" << endl;
 
@@ -389,6 +394,7 @@ void smooth(const char* systfile, const char* systsuffix, int ntimes) {
 
    TString newsystname(systfile);
    newsystname.ReplaceAll("_mass.csv",Form("%s_mass.csv",systsuffix));
+   newsystname.ReplaceAll("_mass3bins.csv",Form("%s_mass3bins.csv",systsuffix));
    newsystname.ReplaceAll("_pt.csv",Form("%s_pt.csv",systsuffix));
    newsystname.ReplaceAll("_phistar.csv",Form("%s_phistar.csv",systsuffix));
    newsystname.ReplaceAll("_pt1560.csv",Form("%s_pt1560.csv",systsuffix));
@@ -448,6 +454,47 @@ void smoothstudy(const char* systfile, int nmax, const char* cname) {
       c1.PrintCanvas();
       c1.PrintCanvas_C();
    }
+}
+
+TMatrixT<double> map2mat(map<bin2, syst> themap) {
+   int nbins = sqrt(themap.size());
+   TMatrixT<double> ans(nbins,nbins);
+
+   // convert the covariance matrix to a plain TMatrix
+   map<bin2, syst>::const_iterator it;
+   int i=0, j=0;
+   for (it=themap.begin(); it!=themap.end(); it++) {
+      ans[i][j] = it->second.value;
+      j++;
+      if (j==nbins) {
+         j=0;
+         i++;
+      }
+   }
+
+   return ans;
+}
+
+TMatrixT<double> diag(const char* systfile) {
+   map<bin,syst> themap = readSyst(systfile);
+
+   int nbins = themap.size();
+   TMatrixT<double> ans(nbins,nbins);
+
+   for (int i=0; i<nbins; i++) {
+      for (int j=0; j<nbins; j++) {
+         ans[i][j] = 0;
+      }
+   }
+
+   map<bin, syst>::const_iterator it;
+   int i=0, j=0;
+   for (it=themap.begin(); it!=themap.end(); it++) {
+      ans[i][i] = pow(it->second.value,2);
+      i++;
+   }
+
+   return ans;
 }
 
 #endif // ifndef syst_C

@@ -1166,3 +1166,69 @@ TH2D* matrix2hist(TMatrixT<double> m, TString var="") {
 
    return ans;
 }
+
+double chi2(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2) {
+   double ans = 0;
+
+   if (g1->GetN() != g2->GetN()) {
+      cerr << "ERROR in chi2: g1 and g2 have different numbers of bins" << endl;
+      return 0;
+   }
+
+   double y1, y2, ey1l, ey1h, ey2l, ey2h;
+   for (int i=0; i<g1->GetN(); i++) {
+      y1 = g1->GetY()[i];
+      y2 = g2->GetY()[i];
+      ey1l = g1->GetEYlow()[i];
+      ey1h = g1->GetEYhigh()[i];
+      ey2l = g2->GetEYlow()[i];
+      ey2h = g2->GetEYhigh()[i];
+
+      if (y1<y2) {
+         ans += pow(y1-y2,2) / (ey1h*ey1h + ey2l*ey2l);
+      } else {
+         ans += pow(y1-y2,2) / (ey2h*ey2h + ey1l*ey1l);
+      }
+   }
+
+   return ans;
+}
+
+double chi2(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TMatrixT<double> cov1, TMatrixT<double> cov2) {
+   double ans = 0;
+
+   if (g1->GetN() != g2->GetN()) {
+      cerr << "ERROR in chi2: g1 and g2 have different numbers of bins" << endl;
+      return 0;
+   }
+
+   TMatrixT<double> covtot = cov1 + cov2;
+
+   // // TEST
+   // for (int i=0; i<g1->GetN(); i++)
+   //    for (int j=0; j<g1->GetN(); j++)
+   //       if (i!=j) covtot[i][j] = 0;
+   // // !TEST
+   TMatrixT<double> invcov = covtot.Invert();
+
+   double y1i, y1j, y2i, y2j, Vij;
+   for (int i=0; i<g1->GetN(); i++) {
+      // // TEST
+      // double ey1l = g1->GetEYlow()[i];
+      // double ey1h = g1->GetEYhigh()[i];
+      // double ey2l = g2->GetEYlow()[i];
+      // double ey2h = g2->GetEYhigh()[i];
+      // cout << 1./invcov[i][i] << " " << (ey1h*ey1h + ey2l*ey2l) << endl;
+      // // !TEST
+      for (int j=0; j<g2->GetN(); j++) {
+         y1i = g1->GetY()[i];
+         y1j = g1->GetY()[j];
+         y2i = g2->GetY()[i];
+         y2j = g2->GetY()[j];
+         Vij = invcov[i][j];
+         ans += (y1i - y2i) * Vij * (y1j - y2j);
+      }
+   }
+
+   return ans;
+}
