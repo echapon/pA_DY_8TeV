@@ -76,7 +76,7 @@ public:
 	virtual void SetAxisRange( TString Variable, TH1D* h_data);
 	virtual void SetRatioRangeLabelSize( TString Variable, Double_t &ratio_min, Double_t &ratio_max, Double_t &LabelSize );
 	virtual void ChangeHistError_StatOnlyError(TH1D *h_mass, TH1D *h_StatUnc);
-	virtual void DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS );
+	virtual void DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS, bool isHichi2=false );
 	virtual TH1D* MakeMassHistogram( TString HLTType, TString Type );
 };
 
@@ -215,6 +215,26 @@ void DrawControlPlotTool::SetupHistogramNames()
    HistNames.push_back( "h_Phistar2_SS_M15to60" );			Variables.push_back( "SSPhistarAnaBins1560" );		XTitles.push_back( "#phi^{*} (Same Sign, 15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap2_SS_M15to60" );			Variables.push_back( "SSdiRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, 15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap2_SS_M60to120" );			Variables.push_back( "SSdiRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, 60<M_{#mu#mu}<120 GeV)");
+
+	HistNames.push_back( "h_mass_Hichi2" );			Variables.push_back( "Hichi2Mass" );			XTitles.push_back( "Invariant Mass(Opposite Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_mass2_Hichi2" );			Variables.push_back( "Hichi2Mass_DYBin" );			XTitles.push_back( "Invariant Mass(Opposite Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_mass3bins_Hichi2" );			Variables.push_back( "Hichi2Mass3bins_DYBin" );			XTitles.push_back( "Invariant Mass(Opposite Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_diPt2_Hichi2_M60to120" );			Variables.push_back( "Hichi2diPtM60120" );				XTitles.push_back( "dimuon P_{T} (Opposite Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV) [GeV]");
+   HistNames.push_back( "h_diPt2_Hichi2_M15to60" );			Variables.push_back( "Hichi2diPtM1560" );				XTitles.push_back( "dimuon P_{T} (Opposite Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV) [GeV]");
+	HistNames.push_back( "h_Phistar2_Hichi2_M60to120" );			Variables.push_back( "Hichi2PhistarAnaBins" );		XTitles.push_back( "#phi^{*} (Opposite Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV)");
+   HistNames.push_back( "h_Phistar2_Hichi2_M15to60" );			Variables.push_back( "Hichi2PhistarAnaBins1560" );		XTitles.push_back( "#phi^{*} (Opposite Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_Hichi2_M15to60" );			Variables.push_back( "Hichi2diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Opposite Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_Hichi2_M60to120" );			Variables.push_back( "Hichi2diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Opposite Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV)");
+
+	HistNames.push_back( "h_mass_SS_Hichi2" );			Variables.push_back( "SS_Hichi2Mass" );			XTitles.push_back( "Invariant Mass(Same Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_mass2_SS_Hichi2" );			Variables.push_back( "SS_Hichi2Mass_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_mass3bins_SS_Hichi2" );			Variables.push_back( "SS_Hichi2Mass3bins_DYBin" );			XTitles.push_back( "Invariant Mass(Same Sign, high dimu #chi^{2}) [GeV]");
+	HistNames.push_back( "h_diPt2_SS_Hichi2_M60to120" );			Variables.push_back( "SS_Hichi2diPtM60120" );				XTitles.push_back( "dimuon P_{T} (Same Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV) [GeV]");
+   HistNames.push_back( "h_diPt2_SS_Hichi2_M15to60" );			Variables.push_back( "SS_Hichi2diPtM1560" );				XTitles.push_back( "dimuon P_{T} (Same Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV) [GeV]");
+	HistNames.push_back( "h_Phistar2_SS_Hichi2_M60to120" );			Variables.push_back( "SS_Hichi2PhistarAnaBins" );		XTitles.push_back( "#phi^{*} (Same Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV)");
+   HistNames.push_back( "h_Phistar2_SS_Hichi2_M15to60" );			Variables.push_back( "SS_Hichi2PhistarAnaBins1560" );		XTitles.push_back( "#phi^{*} (Same Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_SS_Hichi2_M15to60" );			Variables.push_back( "SS_Hichi2diRapidityM1560AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, high dimu #chi^{2}, 15<M_{#mu#mu}<60 GeV)");
+	HistNames.push_back( "h_diRap2_SS_Hichi2_M60to120" );			Variables.push_back( "SS_Hichi2diRapidityM60120AnaBins" );		XTitles.push_back( "dimuon Rapidity (CM) (Same Sign, high dimu #chi^{2}, 60<M_{#mu#mu}<120 GeV)");
 
 	HistNames.push_back( "h_Pt_minusCharge" );	Variables.push_back( "MinusChargePt" );		XTitles.push_back( "Muon(mu^{-}) P_{T} [GeV]");
 	HistNames.push_back( "h_Pt_plusCharge" );	Variables.push_back( "PlusChargePt" );		XTitles.push_back( "Muon(mu^{+}) P_{T} [GeV]");
@@ -434,6 +454,7 @@ void DrawControlPlotTool::LoopForHistograms(Int_t nHist)
 		if( Variables[i_hist].Contains("MassAnaBins") 
             || Variables[i_hist].Contains("Mass3bins")
             || Variables[i_hist].Contains("SSMass_DYBin")
+            || Variables[i_hist].Contains("Hichi2Mass_DYBin")
             || Variables[i_hist].Contains("diPtM60120")
             || Variables[i_hist].Contains("diPtM1560")
             || Variables[i_hist].Contains("diRapidityM1560AnaBins") || Variables[i_hist].Contains("diRapidityM60120AnaBins")
@@ -571,7 +592,7 @@ void DrawControlPlotTool::RebinHistograms( TH1D& h_data, vector< TH1D* > &h_MC, 
    // }
 }
 
-void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS )
+void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<TH1D*> h_bkgs, vector<TString> Names, TString variable, bool isSS, bool isHichi2 )
 {
 	///////////////////////////////////////////
 	// -- Make total background histogram -- //
@@ -664,11 +685,11 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	///////////////////////
 	// -- make canvas -- //
 	///////////////////////
-	TString CanvasName = "c_BkgRatio_DataDrivenBkg_"+Type+"_"+variable + ((isSS) ? "_SS" : "");
+	TString CanvasName = "c_BkgRatio_DataDrivenBkg_"+Type+"_"+variable + ((isSS) ? "_SS" : "") + ((isHichi2) ? "_Hichi2" : "");
 	TCanvas *c = new TCanvas(CanvasName, "", 800, 600);
 	c->cd();
 	if (!variable.Contains("rap")) gPad->SetLogx();
-	if (!isSS) gPad->SetLogy();
+	if (!isSS && !isHichi2) gPad->SetLogy();
 	gPad->SetGridx(kFALSE);
 	gPad->SetGridy(kFALSE);
 	gPad->SetLeftMargin(0.11);
@@ -696,7 +717,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
 	legend->Draw();
 
 	// -- axis settings -- //
-   if (!isSS) h_BkgRatio_totBkg->GetYaxis()->SetRangeUser(1e-5,1.);
+   if (!isSS && !isHichi2) h_BkgRatio_totBkg->GetYaxis()->SetRangeUser(1e-5,1.);
    else h_BkgRatio_totBkg->GetYaxis()->SetRangeUser(0.,2.);
 	h_BkgRatio_totBkg->GetYaxis()->SetLabelSize(0.05);
 	h_BkgRatio_totBkg->GetYaxis()->SetTitle("Fraction of backgrounds");
@@ -770,7 +791,7 @@ void DrawControlPlotTool::DrawBkgRatioPlot( TString Type, TH1D* h_data, vector<T
       }
    }
 
-   h_nonclosure_scale->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
+   if (isSS && !isHichi2) h_nonclosure_scale->SaveAs("ControlPlots/SSnonclosure/"+variable+".root");
 }
 
 void DrawControlPlotTool::StoreYieldHistogram( TH1D* h_data, vector< TH1D* > h_bkgs, TString Type )
@@ -904,11 +925,28 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    // f_input_bkg_wjets = new TFile(Form("/afs/cern.ch/work/h/hckim/public/DYFRfiles_w20190430/wjets_%s_opt1050_QCDopt2_reltrkisoR03muptlt10isomax0p5_L3Mu12_FRopt2.root",variable));
 
    bool isSS = TString(h_data->GetName()).Contains("SS");
+   bool isHichi2 = TString(h_data->GetName()).Contains("Hichi2");
    TString tagSS = isSS ? "_SS" : "";
-   TString dijettag = (isSS) ? "dijetSS_template" : "dijet";
-   TString wjetstag = (isSS) ? "wjetsSS_template" : "wjets";
-   // TString dijettag = (isSS) ? "dijetSS_ratio" : "dijet_ratio";
-   // TString wjetstag = (isSS) ? "wjetsSS_ratio" : "wjets_ratio";
+   TString tagHichi2 = isHichi2 ? "_Hichi2" : "";
+   TString dijettag;
+   TString wjetstag;
+   if (isSS) {
+      if (isHichi2) {
+         dijettag = "dijetSS_Hichi2_template";
+         wjetstag = "wjetsSS_Hichi2_template";
+      } else {
+         dijettag = "dijetSS_template";
+         wjetstag = "wjetsSS_template";
+      }
+   } else {
+      if (isHichi2) {
+         dijettag = "dijetHichi2_template";
+         wjetstag = "wjetsHichi2_template";
+      } else {
+         dijettag = "dijet_template";
+         wjetstag = "wjets_template";
+      }
+   }
 	TH1D *h_diJet_FR = (TH1D*)f_input_bkg_dijet->Get(dijettag)->Clone();
 	TH1D *h_WJets_FR = (TH1D*)f_input_bkg_wjets->Get(wjetstag)->Clone();
    TH1D *h_emu_ratio = (TH1D*)f_input_bkg_emu->Get("emu_ratio")->Clone();
@@ -974,7 +1012,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	/////////////////////////////////////////////////////////
 	// -- Make MC HStack & Set attributes: MC Histogram -- //
 	/////////////////////////////////////////////////////////
-	THStack *hs = new THStack(Form("hs_%s_DYBin_DataDrivenBkg_",variable)+tagSS+Type, "");
+	THStack *hs = new THStack(Form("hs_%s_DYBin_DataDrivenBkg_",variable)+tagSS+tagHichi2+Type, "");
 
 	Int_t nStackHists = (Int_t)StackHistos.size();
 	for(Int_t iter=0; iter<nStackHists; iter++)
@@ -991,7 +1029,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	// -- Set the legend -- //
 	//////////////////////////
 	Double_t xlow = 0.75, ylow = 0.70, xhigh = 0.99, yhigh = 0.94;
-	this->SetLegendPosition( Form("%s_DYBin_DataDrivenBkg",variable)+tagSS, xlow, ylow, xhigh, yhigh );
+	this->SetLegendPosition( Form("%s_DYBin_DataDrivenBkg",variable)+tagSS+tagHichi2, xlow, ylow, xhigh, yhigh );
 
 	TLegend *legend = new TLegend(xlow, ylow, xhigh, yhigh);
 	legend->SetFillStyle(0);
@@ -1011,7 +1049,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 			h_pred->Add( StackHistos[iter] );
 	}
 
-	this->DrawCanvas( Form("%s_DYBin_",variable)+tagSS+Type+"_DataDrivenBkg", h_data, h_pred, hs, legend, Form("%s (",variable)+Type+")" + tagSS);
+	this->DrawCanvas( Form("%s_DYBin_",variable)+tagSS+tagHichi2+Type+"_DataDrivenBkg", h_data, h_pred, hs, legend, Form("%s (",variable)+Type+")" + tagSS + tagHichi2);
 
 	// -- Store yield histogram -- //
 	vector< TH1D* > h_bkgs; vector< TString > Names;
@@ -1028,12 +1066,12 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    }
 	
 	this->StoreYieldHistogram( h_data, h_bkgs, "DataDrivenBkg_"+Type );
-	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names, variable, isSS );
+	this->DrawBkgRatioPlot( Type, h_data, h_bkgs, Names, variable, isSS, isHichi2 );
 
 	f_output->cd();
 	h_SignalMC->Write();
 
-	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s",variable) + tagSS + "_" + MomCor + "_" + Rew + TnpRew + ZptRew + "_" + Type + ".root", "RECREATE");
+	TFile *f_output2 = TFile::Open(Form("ControlPlots/root/ROOTFile_Histograms_%s",variable) + tagSS + tagHichi2 + "_" + MomCor + "_" + Rew + TnpRew + ZptRew + "_" + Type + ".root", "RECREATE");
 	f_output2->cd();
 
 	h_data->SetName("h_data");
