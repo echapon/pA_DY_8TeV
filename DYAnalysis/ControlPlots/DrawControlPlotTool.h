@@ -185,10 +185,13 @@ void DrawControlPlotTool::SetupHistogramNames()
    HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_massZ" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
+   HistNames.push_back( "h_diPt_M15to20" );			Variables.push_back( "diPt_M15to20" );				XTitles.push_back( "dimuon P_{T} [GeV] (15<M_{#mu#mu}<20 GeV)");
+   HistNames.push_back( "h_diRapidity_M15to20" );			Variables.push_back( "diRapidity_M15to20" );				XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<20 GeV)");
    HistNames.push_back( "h_Phistar_M60to120" );			Variables.push_back( "Phistar" );				XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV)");
 
 	HistNames.push_back( "h_diRap_M15to60" );			Variables.push_back( "diRapidityM1560" );		XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap_M60to120" );			Variables.push_back( "diRapidityM60120" );		XTitles.push_back( "dimuon Rapidity (lab) (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRapCM_coarse_M60to120" );			Variables.push_back( "diRapidityCMcoarseM60120" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV)");
 	HistNames.push_back( "h_diRap_M120to600" );			Variables.push_back( "diRapidityM120600" );		XTitles.push_back( "dimuon Rapidity (lab) (120<M_{#mu#mu}<600 GeV)");
 
 	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
