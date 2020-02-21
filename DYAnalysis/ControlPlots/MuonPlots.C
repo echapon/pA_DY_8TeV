@@ -408,7 +408,7 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             vector< Muon > SelectedMuonCollection_noiso;
             bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
             vector< Muon > SelectedMuonCollection;
-            Bool_t isPassEventSelection = kFALSE, isPassEventSelection_nochi2;
+            Bool_t isPassEventSelection = kFALSE, isPassEventSelection_nochi2 = kFALSE;
             if (isPassEventSelection_noiso) isPassEventSelection_nochi2 = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,false,1e99); 
             if (isPassEventSelection_nochi2) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection); 
 

@@ -34,15 +34,18 @@ public:
 	TH1D *h_mass3bins;
 	TH1D *h_massZ;
 	TH1D *h_diPt;
+	TH1D *h_diPt_M15to20;
 	TH1D *h_diPt2_M60to120;
 	TH1D *h_diPt2_M15to60;
 	TH1D *h_Phistar_M60to120;
 	TH1D *h_Phistar2_M60to120;
 	TH1D *h_Phistar2_M15to60;
 	TH1D *h_diRap;
+	TH1D *h_diRap_M15to20;
 
 	TH1D *h_diRap_M15to60;
 	TH1D *h_diRap_M60to120;
+	TH1D *h_diRapCM_coarse_M60to120;
 	TH1D *h_diRap_M120to600;
 	TH1D *h_diRap2_M15to60;
 	TH1D *h_diRap2_M60to120;
@@ -196,15 +199,18 @@ public:
 		h_mass3bins = new TH1D("h_mass3bins_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins );
 		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
 		h_diPt = new TH1D("h_diPt_"+Type, "", 100, 0, 500); Histo.push_back( h_diPt );
+		h_diPt_M15to20 = new TH1D("h_diPt_M15to20_"+Type, "", 10, 0, 50); Histo.push_back( h_diPt_M15to20 );
 		h_diPt2_M60to120 = new TH1D("h_diPt2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_M60to120 );
 		h_diPt2_M15to60 = new TH1D("h_diPt2_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_M15to60 );
 		h_Phistar_M60to120 = new TH1D("h_Phistar_M60to120_"+Type, "", 100,0,3.); Histo.push_back( h_Phistar_M60to120 );
 		h_Phistar2_M60to120 = new TH1D("h_Phistar2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_M60to120 );
 		h_Phistar2_M15to60 = new TH1D("h_Phistar2_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_M15to60 );
 		h_diRap = new TH1D("h_diRap_"+Type, "", 60, -3, 3); Histo.push_back( h_diRap );
+		h_diRap_M15to20 = new TH1D("h_diRap_M15to20_"+Type, "", 12, -3, 3); Histo.push_back( h_diRap_M15to20 );
 
 		h_diRap_M15to60 = new TH1D("h_diRap_M15to60_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M15to60 );
 		h_diRap_M60to120 = new TH1D("h_diRap_M60to120_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M60to120 );
+		h_diRapCM_coarse_M60to120 = new TH1D("h_diRapCM_coarse_M60to120_"+Type, "", 13, -3.2, 2.); Histo.push_back( h_diRapCM_coarse_M60to120 );
 		h_diRap_M120to600 = new TH1D("h_diRap_M120to600_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_diRap_M120to600 );
 		h_diRap2_M15to60 = new TH1D("h_diRap2_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_M15to60 );
 		h_diRap2_M60to120 = new TH1D("h_diRap2_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_M60to120 );
@@ -559,6 +565,10 @@ public:
 		h_massZ->Fill( reco_M, weight );
 		h_diPt->Fill( reco_Pt, weight );
 		h_diRap->Fill( reco_Rap, weight );
+      if ( reco_M >= 15 && reco_M < 20 ) {
+         h_diPt_M15to20->Fill( reco_Pt, weight );
+         h_diRap_M15to20->Fill( reco_Rap, weight );
+      }
 
 		// -- |y(ll)| distributions -- //
 		if( reco_M >= 15 && reco_M < 60 ) {
@@ -568,6 +578,7 @@ public:
          h_Phistar2_M15to60->Fill( Object::phistar(reco_v1,reco_v2), weight );
       } else if( reco_M >= 60 && reco_M < 120 ) {
 			h_diRap_M60to120->Fill( reco_Rap, weight);
+			h_diRapCM_coarse_M60to120->Fill( reco_Rap-rapshift, weight);
          h_diRap2_M60to120->Fill( reco_Rap-rapshift, weight);
          h_diPt2_M60to120->Fill( reco_Pt, weight );
          h_Phistar_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
