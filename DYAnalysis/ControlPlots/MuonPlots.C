@@ -84,12 +84,27 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
    // {
 		analyzer->SetupMCsamples_v20180814(Type, &ntupleDirectory, &Tag, &Xsec, &nEvents, &STags);
       // add QCD
-      SampleTag tag=QCD;
+      SampleTag tag=DYana_v20180814::SampleTag::QCD;
       ntupleDirectory.push_back(NtupleDir(tag));
       Tag.push_back(Name(tag));
       Xsec.push_back(DYana_v20180814::Xsec(tag));
       nEvents.push_back(Nevts(tag));
       DYana_v20180814::SampleTag tag_Powheg = DYana_v20180814::SampleTag::QCD;
+      STags.push_back(tag_Powheg);
+      // add data
+      tag=DYana_v20180814::SampleTag::Data1;
+      ntupleDirectory.push_back(NtupleDir(tag));
+      Tag.push_back(Name(tag));
+      Xsec.push_back(DYana_v20180814::Xsec(tag));
+      nEvents.push_back(Nevts(tag));
+      tag_Powheg = DYana_v20180814::SampleTag::Data1;
+      STags.push_back(tag_Powheg);
+      tag=DYana_v20180814::SampleTag::Data2;
+      ntupleDirectory.push_back(NtupleDir(tag));
+      Tag.push_back(Name(tag));
+      Xsec.push_back(DYana_v20180814::Xsec(tag));
+      nEvents.push_back(Nevts(tag));
+      tag_Powheg = DYana_v20180814::SampleTag::Data2;
       STags.push_back(tag_Powheg);
    // }
    // else
@@ -393,14 +408,15 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
             vector< Muon > SelectedMuonCollection_noiso;
             bool isPassEventSelection_noiso = !filltree || analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection_noiso,true,1e99,false);
             vector< Muon > SelectedMuonCollection;
-            Bool_t isPassEventSelection = kFALSE;
-            if (isPassEventSelection_noiso) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection); 
+            Bool_t isPassEventSelection = kFALSE, isPassEventSelection_nochi2;
+            if (isPassEventSelection_noiso) isPassEventSelection_nochi2 = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection,false,1e99); 
+            if (isPassEventSelection_nochi2) isPassEventSelection = analyzer->EventSelection(MuonCollection, ntuple, &SelectedMuonCollection); 
 
             Muon mu1;
             Muon mu2;
             TLorentzVector dimu; 
 
-            if( isPassEventSelection == kTRUE )
+            if( isPassEventSelection_nochi2 == kTRUE )
             {
                mu1 = SelectedMuonCollection[0];
                mu2 = SelectedMuonCollection[1];
@@ -448,36 +464,44 @@ void MuonPlots(Bool_t isCorrected = kTRUE,
                }
 
                double TotWeight = (isMC) ? GenWeight*PUWeight*TnpWeight : 1.;
-               Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, TotWeight);
-               Plots_MET->FillHistograms_MET(TotWeight);
 
-               Int_t PU = ntuple->nPileUp;
-               h_PU->Fill( PU, PUWeight*TnpWeight );
+               // low chi2 (nominal)
+               if (isPassEventSelection) {
+                  Plots->FillHistograms_DoubleMu(ntuple, mu1, mu2, TotWeight);
+                  Plots_MET->FillHistograms_MET(TotWeight);
 
-               Int_t nVertices = ntuple->nVertices;
-               h_nVertices_before->Fill(nVertices, isMC ? GenWeight*TnpWeight : 1.);
-               h_nVertices_after->Fill(nVertices, TotWeight);
+                  Int_t PU = ntuple->nPileUp;
+                  h_PU->Fill( PU, PUWeight*TnpWeight );
 
-               h_hiHF->Fill(ntuple->hiHF,TotWeight);
-               h_hiHFplus->Fill(ntuple->hiHFplus,TotWeight);
-               h_hiHFminus->Fill(ntuple->hiHFminus,TotWeight);
-               h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,TotWeight);
-               h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,TotWeight);
-               h_hiHFhit->Fill(ntuple->hiHFhit,TotWeight);
-               h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,TotWeight);
-               h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,TotWeight);
-               h_hiET->Fill(ntuple->hiET,TotWeight);
-               h_hiEE->Fill(ntuple->hiEE,TotWeight);
-               h_hiEB->Fill(ntuple->hiEB,TotWeight);
-               h_hiEEplus->Fill(ntuple->hiEEplus,TotWeight);
-               h_hiEEminus->Fill(ntuple->hiEEminus,TotWeight);
-               h_hiNpix->Fill(ntuple->hiNpix,TotWeight);
-               h_hiNtracks->Fill(ntuple->hiNtracks,TotWeight);
-               h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,TotWeight);
-               TLorentzVector dimu = mu1.Momentum+mu2.Momentum; 
-               double mass = dimu.M();
-               if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,TotWeight);
-               else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,TotWeight);
+                  Int_t nVertices = ntuple->nVertices;
+                  h_nVertices_before->Fill(nVertices, isMC ? GenWeight*TnpWeight : 1.);
+                  h_nVertices_after->Fill(nVertices, TotWeight);
+
+                  h_hiHF->Fill(ntuple->hiHF,TotWeight);
+                  h_hiHFplus->Fill(ntuple->hiHFplus,TotWeight);
+                  h_hiHFminus->Fill(ntuple->hiHFminus,TotWeight);
+                  h_hiHFplusEta4->Fill(ntuple->hiHFplusEta4,TotWeight);
+                  h_hiHFminusEta4->Fill(ntuple->hiHFminusEta4,TotWeight);
+                  h_hiHFhit->Fill(ntuple->hiHFhit,TotWeight);
+                  h_hiHFhitPlus->Fill(ntuple->hiHFhitPlus,TotWeight);
+                  h_hiHFhitMinus->Fill(ntuple->hiHFhitMinus,TotWeight);
+                  h_hiET->Fill(ntuple->hiET,TotWeight);
+                  h_hiEE->Fill(ntuple->hiEE,TotWeight);
+                  h_hiEB->Fill(ntuple->hiEB,TotWeight);
+                  h_hiEEplus->Fill(ntuple->hiEEplus,TotWeight);
+                  h_hiEEminus->Fill(ntuple->hiEEminus,TotWeight);
+                  h_hiNpix->Fill(ntuple->hiNpix,TotWeight);
+                  h_hiNtracks->Fill(ntuple->hiNtracks,TotWeight);
+                  h_hiNtracksPtCut->Fill(ntuple->hiNtracksPtCut,TotWeight);
+                  TLorentzVector dimu = mu1.Momentum+mu2.Momentum; 
+                  double mass = dimu.M();
+                  if (mass>=15 && mass<60) h_hiNtracks_M1560->Fill(ntuple->hiNtracks,TotWeight);
+                  else if (mass>=60 && mass<120) h_hiNtracks_M60120->Fill(ntuple->hiNtracks,TotWeight);
+               }
+               // high chi2 (control)
+               else {
+                  Plots->FillHistograms_Hichi2(ntuple, mu1, mu2, TotWeight);
+               }
             }
             if (filltree && isPassEventSelection_noiso) {
                hiHF = ntuple->hiHF;

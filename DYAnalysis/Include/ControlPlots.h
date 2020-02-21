@@ -75,6 +75,26 @@ public:
 	TH1D *h_diRap2_SS_M15to60;
 	TH1D *h_diRap2_SS_M60to120;
 
+	TH1D *h_mass_Hichi2;
+	TH1D *h_mass2_Hichi2;
+	TH1D *h_mass3bins_Hichi2;
+	TH1D *h_diPt2_Hichi2_M60to120;
+	TH1D *h_diPt2_Hichi2_M15to60;
+	TH1D *h_Phistar2_Hichi2_M60to120;
+	TH1D *h_Phistar2_Hichi2_M15to60;
+	TH1D *h_diRap2_Hichi2_M15to60;
+	TH1D *h_diRap2_Hichi2_M60to120;
+
+	TH1D *h_mass_SS_Hichi2;
+	TH1D *h_mass2_SS_Hichi2;
+	TH1D *h_mass3bins_SS_Hichi2;
+	TH1D *h_diPt2_SS_Hichi2_M60to120;
+	TH1D *h_diPt2_SS_Hichi2_M15to60;
+	TH1D *h_Phistar2_SS_Hichi2_M60to120;
+	TH1D *h_Phistar2_SS_Hichi2_M15to60;
+	TH1D *h_diRap2_SS_Hichi2_M15to60;
+	TH1D *h_diRap2_SS_Hichi2_M60to120;
+
 	TH1D *h_Pt_minusCharge;
 	TH1D *h_eta_minusCharge;
 	TH1D *h_phi_minusCharge;
@@ -216,6 +236,26 @@ public:
 		h_Phistar2_SS_M15to60 = new TH1D("h_Phistar2_SS_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_SS_M15to60 );
 		h_diRap2_SS_M15to60 = new TH1D("h_diRap2_SS_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_SS_M15to60 );
 		h_diRap2_SS_M60to120 = new TH1D("h_diRap2_SS_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_SS_M60to120 );
+
+		h_mass_Hichi2 = new TH1D("h_mass_Hichi2_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_Hichi2 );
+		h_mass2_Hichi2 = new TH1D("h_mass2_Hichi2_"+Type, "", binnum, bins); Histo.push_back( h_mass2_Hichi2 );
+		h_mass3bins_Hichi2 = new TH1D("h_mass3bins_Hichi2_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins_Hichi2 );
+		h_diPt2_Hichi2_M60to120 = new TH1D("h_diPt2_Hichi2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_Hichi2_M60to120 );
+		h_diPt2_Hichi2_M15to60 = new TH1D("h_diPt2_Hichi2_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_Hichi2_M15to60 );
+		h_Phistar2_Hichi2_M60to120 = new TH1D("h_Phistar2_Hichi2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_Hichi2_M60to120 );
+		h_Phistar2_Hichi2_M15to60 = new TH1D("h_Phistar2_Hichi2_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_Hichi2_M15to60 );
+		h_diRap2_Hichi2_M15to60 = new TH1D("h_diRap2_Hichi2_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_Hichi2_M15to60 );
+		h_diRap2_Hichi2_M60to120 = new TH1D("h_diRap2_Hichi2_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_Hichi2_M60to120 );
+
+		h_mass_SS_Hichi2 = new TH1D("h_mass_SS_Hichi2_"+Type, "", 120, 0, 600); Histo.push_back( h_mass_SS_Hichi2 );
+		h_mass2_SS_Hichi2 = new TH1D("h_mass2_SS_Hichi2_"+Type, "", binnum, bins); Histo.push_back( h_mass2_SS_Hichi2 );
+		h_mass3bins_SS_Hichi2 = new TH1D("h_mass3bins_SS_Hichi2_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins_SS_Hichi2 );
+		h_diPt2_SS_Hichi2_M60to120 = new TH1D("h_diPt2_SS_Hichi2_M60to120_"+Type, "", ptbinnum_meas, ptbin_meas); Histo.push_back( h_diPt2_SS_Hichi2_M60to120 );
+		h_diPt2_SS_Hichi2_M15to60 = new TH1D("h_diPt2_SS_Hichi2_M15to60_"+Type, "", ptbinnum_meas_1560, ptbin_meas_1560); Histo.push_back( h_diPt2_SS_Hichi2_M15to60 );
+		h_Phistar2_SS_Hichi2_M60to120 = new TH1D("h_Phistar2_SS_Hichi2_M60to120_"+Type, "", phistarnum, phistarbin); Histo.push_back( h_Phistar2_SS_Hichi2_M60to120 );
+		h_Phistar2_SS_Hichi2_M15to60 = new TH1D("h_Phistar2_SS_Hichi2_M15to60_"+Type, "", phistarnum_1560, phistarbin_1560); Histo.push_back( h_Phistar2_SS_Hichi2_M15to60 );
+		h_diRap2_SS_Hichi2_M15to60 = new TH1D("h_diRap2_SS_Hichi2_M15to60_"+Type, "", rapbinnum_1560, rapbin_1560); Histo.push_back( h_diRap2_SS_Hichi2_M15to60 );
+		h_diRap2_SS_Hichi2_M60to120 = new TH1D("h_diRap2_SS_Hichi2_M60to120_"+Type, "", rapbinnum_60120, rapbin_60120); Histo.push_back( h_diRap2_SS_Hichi2_M60to120 );
 
 		h_Pt_minusCharge = new TH1D("h_Pt_minusCharge_"+Type, "", 125, 0, 250); Histo.push_back( h_Pt_minusCharge );
 		h_eta_minusCharge = new TH1D("h_eta_minusCharge_"+Type, "", 60, -3, 3); Histo.push_back( h_eta_minusCharge );
@@ -623,6 +663,44 @@ public:
       // }
 		
 	}
+
+	void FillHistograms_Hichi2(NtupleHandle *ntuple, Muon recolep1, Muon recolep2, Double_t weight) {
+		TLorentzVector reco_v1 = recolep1.Momentum;
+		TLorentzVector reco_v2 = recolep2.Momentum;
+      TLorentzVector reco_v12 = reco_v1 + reco_v2;
+		Double_t reco_M = reco_v12.M();
+		Double_t reco_Rap = reco_v12.Rapidity();
+		Double_t reco_Pt = reco_v12.Pt();
+      Bool_t isOS = ( recolep1.charge != recolep2.charge );
+
+      if (!isOS) {
+			h_mass2_SS_Hichi2->Fill( reco_M, weight );
+			h_mass3bins_SS_Hichi2->Fill( reco_M, weight );
+
+         if( reco_M >= 15 && reco_M < 60 ) {
+            h_diRap2_SS_Hichi2_M15to60->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_SS_Hichi2_M15to60->Fill( reco_Pt, weight );
+            h_Phistar2_SS_Hichi2_M15to60->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         } else if( reco_M >= 60 && reco_M < 120 ) {
+            h_diRap2_SS_Hichi2_M60to120->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_SS_Hichi2_M60to120->Fill( reco_Pt, weight );
+            h_Phistar2_SS_Hichi2_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         }
+      } else {
+			h_mass2_Hichi2->Fill( reco_M, weight );
+			h_mass3bins_Hichi2->Fill( reco_M, weight );
+
+         if( reco_M >= 15 && reco_M < 60 ) {
+            h_diRap2_Hichi2_M15to60->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_Hichi2_M15to60->Fill( reco_Pt, weight );
+            h_Phistar2_Hichi2_M15to60->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         } else if( reco_M >= 60 && reco_M < 120 ) {
+            h_diRap2_Hichi2_M60to120->Fill( reco_Rap-rapshift, weight);
+            h_diPt2_Hichi2_M60to120->Fill( reco_Pt, weight );
+            h_Phistar2_Hichi2_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
+         }
+      }
+   }
 
 	void DimuonVertexProbNormChi2(NtupleHandle *ntuple, Double_t Pt1, Double_t Pt2, Double_t *VtxProb, Double_t *VtxNormChi2)
 	{
