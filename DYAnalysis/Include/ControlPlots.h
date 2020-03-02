@@ -6,6 +6,7 @@
 #pragma once
 
 #include <TH1D.h>
+#include <TH2D.h>
 #include <TLorentzVector.h>
 #include <TFile.h>
 
@@ -25,6 +26,7 @@ public:
 	DYAnalyzer *analyzer;
 	Bool_t isMC;
 	std::vector<TH1D*> Histo;
+	std::vector<TH2D*> Histo2D;
 
 	TH1D *h_Pt;
 	TH1D *h_eta;
@@ -55,6 +57,8 @@ public:
 	
 	TH1D *h_lead_eta;
 	TH1D *h_sub_eta;
+	TH1D *h_lead_eta_M80to100;
+	TH1D *h_sub_eta_M80to100;
 
 	TH1D *h_lead_phi;
 	TH1D *h_sub_phi;
@@ -164,6 +168,10 @@ public:
 	TH1D *h_RelTrkIso_fullrange;
 	TH1D *h_RelPFIso;
 
+   // 2D
+   TH2D* h_2D_leadEta_leadPhi;
+   TH2D* h_2D_leadEta_leadPt;
+
    // // iso plots
    // TH1D *h_maxRelTrkIso_OS;
    // TH1D *h_maxRelTrkIso_OS_M1560;
@@ -220,6 +228,8 @@ public:
 		
 		h_lead_eta = new TH1D("h_lead_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_lead_eta );
 		h_sub_eta = new TH1D("h_sub_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_sub_eta );
+		h_lead_eta_M80to100 = new TH1D("h_lead_eta_M80to100_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_lead_eta_M80to100 );
+		h_sub_eta_M80to100 = new TH1D("h_sub_eta_M80to100_"+Type, "", 24, -2.4, 2.4); Histo.push_back( h_sub_eta_M80to100 );
 
 		h_lead_phi = new TH1D("h_lead_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_lead_phi );
 		h_sub_phi = new TH1D("h_sub_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_sub_phi );
@@ -333,6 +343,10 @@ public:
 		h_RelTrkIso = new TH1D("h_RelTrkIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelTrkIso ); 
 		h_RelTrkIso_fullrange = new TH1D("h_RelTrkIso_fullrange_"+Type, "", 100, 0, 1); Histo.push_back( h_RelTrkIso_fullrange ); 
 		h_RelPFIso = new TH1D("h_RelPFIso_"+Type, "", 100, 0, 0.2); Histo.push_back( h_RelPFIso ); 
+
+      // 2D
+      h_2D_leadEta_leadPhi = new TH2D("h_2D_leadEta_leadPhi_"+Type, "", 24, -2.4, 2.4, 32, -TMath::Pi(), TMath::Pi()); Histo2D.push_back( h_2D_leadEta_leadPhi);
+      h_2D_leadEta_leadPt = new TH2D("h_2D_leadEta_leadPt_"+Type, "", 24, -2.4, 2.4, 50, 0, 100); Histo2D.push_back( h_2D_leadEta_leadPt);
 
       // h_maxRelTrkIso_OS = new TH1D("h_maxRelTrkIso_OS_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS );
       // h_maxRelTrkIso_OS_M1560 = new TH1D("h_maxRelTrkIso_OS_M1560_"+Type, "", 100, 0, 1); Histo.push_back( h_maxRelTrkIso_OS_M1560 );
@@ -583,6 +597,20 @@ public:
          h_diPt2_M60to120->Fill( reco_Pt, weight );
          h_Phistar_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
          h_Phistar2_M60to120->Fill( Object::phistar(reco_v1,reco_v2), weight );
+
+         if( reco_M >= 80 && reco_M < 100 && recolep1.Pt > 15 && recolep2.Pt > 15 ) { // mimick the selection in Fig. 105 of http://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2017/058
+            if( recolep1.Pt > recolep2.Pt ) {
+               h_lead_eta_M80to100->Fill( recolep1.eta, weight );
+               h_sub_eta_M80to100->Fill( recolep2.eta, weight );
+               h_2D_leadEta_leadPhi->Fill( recolep1.eta, recolep1.phi, weight );
+               h_2D_leadEta_leadPt->Fill( recolep1.eta, recolep1.Pt, weight );
+            } else {
+               h_lead_eta_M80to100->Fill( recolep2.eta, weight );
+               h_sub_eta_M80to100->Fill( recolep1.eta, weight );
+               h_2D_leadEta_leadPhi->Fill( recolep2.eta, recolep2.phi, weight );
+               h_2D_leadEta_leadPt->Fill( recolep2.eta, recolep2.Pt, weight );
+            }
+         }
       } else if( reco_M >= 120 && reco_M < 600 )
 			h_diRap_M120to600->Fill( reco_Rap, weight);
 
@@ -745,8 +773,12 @@ public:
 	void WriteHistograms(TFile *fout)
 	{
 		fout->cd();
-		for(Int_t i_hist=0; i_hist < (Int_t)Histo.size(); i_hist++)
+		for(Int_t i_hist=0; i_hist < (Int_t)Histo.size(); i_hist++) {
 			Histo[i_hist]->Write();
+      }
+		for(Int_t i_hist=0; i_hist < (Int_t)Histo2D.size(); i_hist++) {
+			Histo2D[i_hist]->Write();
+      }
 	}
 };
 
@@ -1613,7 +1645,7 @@ public:
 	void WriteHistograms(TFile *fout)
 	{
 		fout->cd();
-		for(Int_t i_hist=0; i_hist < (Int_t)Histo.size(); i_hist++)
+		for(Int_t i_hist=0; i_hist < (Int_t)Histo.size(); i_hist++) 
 			Histo[i_hist]->Write();
 	}
 };
