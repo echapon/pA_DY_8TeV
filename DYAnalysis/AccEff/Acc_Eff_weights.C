@@ -142,8 +142,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    for (int i=0; i<nweights; i++) {
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
-      h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum, bins);
-      h_mass3bins_AccPass[i] = new TH1D(Form("h_mass3bins_AccPass%d",i), "", binnum, bins);
+      h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum3, bins3);
+      h_mass3bins_AccPass[i] = new TH1D(Form("h_mass3bins_AccPass%d",i), "", binnum3, bins3);
       h_pt_AccTotal[i] = new TH1D(Form("h_pt_AccTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_pt_AccPass[i] = new TH1D(Form("h_pt_AccPass%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_AccTotal[i] = new TH1D(Form("h_phistar_AccTotal%d",i), "", phistarnum, phistarbin);
@@ -159,8 +159,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
       h_mass_EffPass[i] = new TH1D(Form("h_mass_EffPass%d",i), "", binnum, bins);	 
       h_mass_EffTotal[i] = new TH1D(Form("h_mass_EffTotal%d",i), "", binnum, bins);
-      h_mass3bins_EffPass[i] = new TH1D(Form("h_mass3bins_EffPass%d",i), "", binnum, bins);	 
-      h_mass3bins_EffTotal[i] = new TH1D(Form("h_mass3bins_EffTotal%d",i), "", binnum, bins);
+      h_mass3bins_EffPass[i] = new TH1D(Form("h_mass3bins_EffPass%d",i), "", binnum3, bins3);	 
+      h_mass3bins_EffTotal[i] = new TH1D(Form("h_mass3bins_EffTotal%d",i), "", binnum3, bins3);
       h_pt_EffPass[i] = new TH1D(Form("h_pt_EffPass%d",i), "", ptbinnum_meas, ptbin_meas);	 
       h_pt_EffTotal[i] = new TH1D(Form("h_pt_EffTotal%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_EffPass[i] = new TH1D(Form("h_phistar_EffPass%d",i), "", phistarnum, phistarbin);	 
@@ -175,7 +175,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar1560_EffTotal[i] = new TH1D(Form("h_phistar1560_EffTotal%d",i), "", phistarnum_1560, phistarbin_1560);
 
       h_mass_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass_EffPass_Corr_tnp%d",i), "", binnum, bins);
-      h_mass3bins_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass3bins_EffPass_Corr_tnp%d",i), "", binnum, bins);
+      h_mass3bins_EffPass_Corr_tnp[i] = new TH1D(Form("h_mass3bins_EffPass_Corr_tnp%d",i), "", binnum3, bins3);
       h_pt_EffPass_Corr_tnp[i] = new TH1D(Form("h_pt_EffPass_Corr_tnp%d",i), "", ptbinnum_meas, ptbin_meas);
       h_phistar_EffPass_Corr_tnp[i] = new TH1D(Form("h_phistar_EffPass_Corr_tnp%d",i), "", phistarnum, phistarbin);
       h_rap1560_EffPass_Corr_tnp[i] = new TH1D(Form("h_rap1560_EffPass_Corr_tnp%d",i), "", rapbinnum_1560, rapbin_1560);
