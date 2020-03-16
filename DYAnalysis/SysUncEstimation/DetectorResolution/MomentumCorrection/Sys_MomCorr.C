@@ -29,6 +29,7 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
 
    TString hname;
    if (thevar==var::mass) hname = "h_mass2";
+   else if (thevar==var::mass3bins) hname = "h_mass3bins";
    else if (thevar==var::pt) hname = "h_diPt2_M60to120";
    else if (thevar==var::pt1560) hname = "h_diPt2_M15to60";
    else if (thevar==var::rap1560) hname = "h_diRap2_M15to60";

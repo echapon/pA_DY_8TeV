@@ -568,6 +568,7 @@ protected:
 
       TString htag;
       if (thevar == DYana::var::mass) htag = "mass2";
+      else if (thevar == DYana::var::mass3bins) htag = "mass3bins";
       else if (thevar == DYana::var::pt) htag = "diPt2_M60to120";
       else if (thevar == DYana::var::pt1560) htag = "diPt2_M15to60";
       else if (thevar == DYana::var::phistar) htag = "Phistar2_M60to120";
