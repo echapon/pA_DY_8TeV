@@ -7,6 +7,7 @@
 #include "TGraphAsymmErrors.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TMatrix.h"
 
 #include "LHAPDF/PDFSet.h"
 #include "LHAPDF/PDF.h"
