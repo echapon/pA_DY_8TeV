@@ -878,7 +878,8 @@ Bool_t DYAnalyzer::EventSelection(vector< Muon > MuonCollection, NtupleHandle *n
 
 			// if( reco_M > 10 && isPassAcc == kTRUE && Chi2/ndof(VTX) < 20 && Angle < TMath::Pi() - 0.005 )
          // if( reco_M > bins[0] && reco_M < bins[binnum] && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
-         if( reco_M > 12 && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 )
+         if( reco_M > 12 && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 ) // NOMINAL 2020/03/10
+         // if( reco_M > 12 && reco_M<20 && isPassAcc == kTRUE && VtxNormChi2 < vtxChi2Cut && Angle < TMath::Pi() - 0.005 && (recolep1.charge * recolep1.Momentum.DeltaPhi(recolep2.Momentum) > 0) ) // FIXME TODO TEST!!!!
          // if( reco_M > 30 && reco_M < 600 && isPassAcc == kTRUE && VtxNormChi2 < 20 && Angle < TMath::Pi() - 0.005 && isOS == kTRUE )
 			{
 				isPassEventSelection = kTRUE;
