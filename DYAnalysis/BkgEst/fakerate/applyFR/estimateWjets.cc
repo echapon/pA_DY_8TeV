@@ -103,14 +103,24 @@ void estimateWjets(var thevar) {
 
     TH1D* wjets_template[NSamples+2];
     TH1D* wjetsSS_template[NSamples+2];
+    TH1D* wjetsHichi2_template[NSamples+2];
+    TH1D* wjetsSSHichi2_template[NSamples+2];
     TH1D* wjets_ratio[NSamples+2];
     TH1D* wjetsSS_ratio[NSamples+2];
+    TH1D* wjetsHichi2_ratio[NSamples+2];
+    TH1D* wjetsSSHichi2_ratio[NSamples+2];
     TH1D* dijet_template[NSamples+2];
     TH1D* dijetSS_template[NSamples+2];
+    TH1D* dijetHichi2_template[NSamples+2];
+    TH1D* dijetSSHichi2_template[NSamples+2];
     TH1D* dijet_ratio[NSamples+2];
     TH1D* dijetSS_ratio[NSamples+2];
+    TH1D* dijetHichi2_ratio[NSamples+2];
+    TH1D* dijetSSHichi2_ratio[NSamples+2];
     TH1D* DYsel[NSamples+2];
     TH1D* DYselSS[NSamples+2];
+    TH1D* DYselHichi2[NSamples+2];
+    TH1D* DYselSSHichi2[NSamples+2];
 
     double norm[NSamples+2];
 
@@ -146,6 +156,14 @@ void estimateWjets(var thevar) {
        wjetsSS_template[i]->Scale(norm[i]);
        wjetsSS_template[i]->SetStats(kFALSE);
 
+       wjetsHichi2_template[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "Hichi2WJets1");
+       wjetsHichi2_template[i]->Scale(norm[i]);
+       wjetsHichi2_template[i]->SetStats(kFALSE);
+
+       wjetsSSHichi2_template[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "SameHichi2WJets1");
+       wjetsSSHichi2_template[i]->Scale(norm[i]);
+       wjetsSSHichi2_template[i]->SetStats(kFALSE);
+
 
        wjets_ratio[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "WJets2");
        wjets_ratio[i]->Scale(norm[i]);
@@ -155,6 +173,14 @@ void estimateWjets(var thevar) {
        wjetsSS_ratio[i]->Scale(norm[i]);
        wjetsSS_ratio[i]->SetStats(kFALSE);
 
+       wjetsHichi2_ratio[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "Hichi2WJets2");
+       wjetsHichi2_ratio[i]->Scale(norm[i]);
+       wjetsHichi2_ratio[i]->SetStats(kFALSE);
+
+       wjetsSSHichi2_ratio[i] = (TH1D*)f[i]->Get("WJets/" + histtag + "SameHichi2WJets2");
+       wjetsSSHichi2_ratio[i]->Scale(norm[i]);
+       wjetsSSHichi2_ratio[i]->SetStats(kFALSE);
+
        dijet_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet1");
        dijet_template[i]->Scale(norm[i]);
        dijet_template[i]->SetStats(kFALSE);
@@ -162,6 +188,14 @@ void estimateWjets(var thevar) {
        dijetSS_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameDijet1");
        dijetSS_template[i]->Scale(norm[i]);
        dijetSS_template[i]->SetStats(kFALSE);
+
+       dijetHichi2_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Hichi2Dijet1");
+       dijetHichi2_template[i]->Scale(norm[i]);
+       dijetHichi2_template[i]->SetStats(kFALSE);
+
+       dijetSSHichi2_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameHichi2Dijet1");
+       dijetSSHichi2_template[i]->Scale(norm[i]);
+       dijetSSHichi2_template[i]->SetStats(kFALSE);
 
 
        dijet_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet2");
@@ -172,6 +206,14 @@ void estimateWjets(var thevar) {
        dijetSS_ratio[i]->Scale(norm[i]);
        dijetSS_ratio[i]->SetStats(kFALSE);
 
+       dijetHichi2_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Hichi2Dijet2");
+       dijetHichi2_ratio[i]->Scale(norm[i]);
+       dijetHichi2_ratio[i]->SetStats(kFALSE);
+
+       dijetSSHichi2_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameHichi2Dijet2");
+       dijetSSHichi2_ratio[i]->Scale(norm[i]);
+       dijetSSHichi2_ratio[i]->SetStats(kFALSE);
+
        DYsel[i] = (TH1D*)f[i]->Get("DYsel/" + histtag + "DYsel");
        DYsel[i]->Scale(norm[i]);
        DYsel[i]->SetStats(kFALSE);
@@ -180,11 +222,21 @@ void estimateWjets(var thevar) {
        DYselSS[i]->Scale(norm[i]);
        DYselSS[i]->SetStats(kFALSE);
 
+       DYselHichi2[i] = (TH1D*)f[i]->Get("DYsel/" + histtag + "Hichi2DYsel");
+       DYselHichi2[i]->Scale(norm[i]);
+       DYselHichi2[i]->SetStats(kFALSE);
+
+       DYselSSHichi2[i] = (TH1D*)f[i]->Get("DYsel/" + histtag + "SameHichi2DYsel");
+       DYselSSHichi2[i]->Scale(norm[i]);
+       DYselSSHichi2[i]->SetStats(kFALSE);
+
        // put histos in an array for easy style setting
-       TH1D* h[10] = {wjets_template[i], wjetsSS_template[i], wjets_ratio[i], wjetsSS_ratio[i],
-          dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i],
-          DYsel[i], DYselSS[i]};
-       for (int j=0; j<10; j++) {
+       TH1D* h[20] = {wjets_template[i], wjetsSS_template[i], wjetsHichi2_template[i], wjetsSSHichi2_template[i],
+          wjets_ratio[i], wjetsSS_ratio[i], wjetsHichi2_ratio[i], wjetsSSHichi2_ratio[i],
+          dijet_template[i], dijetSS_template[i], dijetHichi2_template[i], dijetSSHichi2_template[i],
+          dijet_ratio[i], dijetSS_ratio[i], dijetHichi2_ratio[i], dijetSSHichi2_ratio[i],
+          DYsel[i], DYselSS[i], DYselHichi2[i], DYselSSHichi2[i]};
+       for (int j=0; j<20; j++) {
           h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
           h[j]->GetYaxis()->SetTitleOffset(0.9);
           h[j]->GetYaxis()->SetTitle("Number of events");
@@ -208,7 +260,7 @@ void estimateWjets(var thevar) {
        SampleTag tagtoadd;
        if (IsDY(tag)) {
           // style 
-          for (int j=0; j<10; j++) {
+          for (int j=0; j<20; j++) {
              h[j]->SetFillColor(2);
              // h[j]->SetmarkerColor(2);
              // h[j]->SetmarkerStyle(22);
@@ -221,7 +273,7 @@ void estimateWjets(var thevar) {
        }
        if (IsData(tag)) {
           // style 
-          for (int j=0; j<8; j++) {
+          for (int j=0; j<20; j++) {
              h[j]->SetLineColor(1);
              h[j]->SetMarkerColor(1);
              h[j]->SetMarkerStyle(22);
@@ -234,7 +286,7 @@ void estimateWjets(var thevar) {
        }
        if (IsDiboson(tag)) {
           // style 
-          for (int j=0; j<10; j++) {
+          for (int j=0; j<20; j++) {
              h[j]->SetFillColor(3);
           }
 
@@ -245,7 +297,7 @@ void estimateWjets(var thevar) {
        }
        if (IsWjets(tag)) {
           // style 
-          for (int j=0; j<10; j++) {
+          for (int j=0; j<20; j++) {
              h[j]->SetFillColor(4);
           }
 
@@ -255,7 +307,7 @@ void estimateWjets(var thevar) {
           }
        }
        if (tag==TT) {
-          for (int j=0; j<10; j++) {
+          for (int j=0; j<20; j++) {
              h[j]->SetFillColor(6);
           }
        }
@@ -263,14 +315,24 @@ void estimateWjets(var thevar) {
        if (toadd) {
           wjets_template[tagtoadd]->Add(wjets_template[i]);
           wjetsSS_template[tagtoadd]->Add(wjetsSS_template[i]);
+          wjetsHichi2_template[tagtoadd]->Add(wjetsHichi2_template[i]);
+          wjetsSSHichi2_template[tagtoadd]->Add(wjetsSSHichi2_template[i]);
           wjets_ratio[tagtoadd]->Add(wjets_ratio[i]);
           wjetsSS_ratio[tagtoadd]->Add(wjetsSS_ratio[i]);
+          wjetsHichi2_ratio[tagtoadd]->Add(wjetsHichi2_ratio[i]);
+          wjetsSSHichi2_ratio[tagtoadd]->Add(wjetsSSHichi2_ratio[i]);
           dijet_template[tagtoadd]->Add(dijet_template[i]);
           dijetSS_template[tagtoadd]->Add(dijetSS_template[i]);
+          dijetHichi2_template[tagtoadd]->Add(dijetHichi2_template[i]);
+          dijetSSHichi2_template[tagtoadd]->Add(dijetSSHichi2_template[i]);
           dijet_ratio[tagtoadd]->Add(dijet_ratio[i]);
           dijetSS_ratio[tagtoadd]->Add(dijetSS_ratio[i]);
+          dijetHichi2_ratio[tagtoadd]->Add(dijetHichi2_ratio[i]);
+          dijetSSHichi2_ratio[tagtoadd]->Add(dijetSSHichi2_ratio[i]);
           DYsel[tagtoadd]->Add(DYsel[i]);
           DYselSS[tagtoadd]->Add(DYselSS[i]);
+          DYselHichi2[tagtoadd]->Add(DYselHichi2[i]);
+          DYselSSHichi2[tagtoadd]->Add(DYselSSHichi2[i]);
        }
     } // sample loop
 
@@ -290,6 +352,12 @@ void estimateWjets(var thevar) {
     wjetsSS_template[Data1]->Add(wjetsSS_template[DYFirst],-sf_fit_1[0]);
     wjetsSS_template[Data1]->Add(wjetsSS_template[TT],-sf_fit_1[0]);
     wjetsSS_template[Data1]->Add(wjetsSS_template[WW],-sf_fit_1[0]);
+    wjetsHichi2_template[Data1]->Add(wjetsHichi2_template[DYFirst],-sf_fit_1[0]);
+    wjetsHichi2_template[Data1]->Add(wjetsHichi2_template[TT],-sf_fit_1[0]);
+    wjetsHichi2_template[Data1]->Add(wjetsHichi2_template[WW],-sf_fit_1[0]);
+    wjetsSSHichi2_template[Data1]->Add(wjetsSSHichi2_template[DYFirst],-sf_fit_1[0]);
+    wjetsSSHichi2_template[Data1]->Add(wjetsSSHichi2_template[TT],-sf_fit_1[0]);
+    wjetsSSHichi2_template[Data1]->Add(wjetsSSHichi2_template[WW],-sf_fit_1[0]);
 
     wjets_ratio[Data1]->Add(wjets_ratio[DYFirst],-sf_fit_2[0]);
     wjets_ratio[Data1]->Add(wjets_ratio[TT],-sf_fit_2[0]);
@@ -297,6 +365,12 @@ void estimateWjets(var thevar) {
     wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[DYFirst],-sf_fit_2[0]);
     wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[TT],-sf_fit_2[0]);
     wjetsSS_ratio[Data1]->Add(wjetsSS_ratio[WW],-sf_fit_2[0]);
+    wjetsHichi2_ratio[Data1]->Add(wjetsHichi2_ratio[DYFirst],-sf_fit_2[0]);
+    wjetsHichi2_ratio[Data1]->Add(wjetsHichi2_ratio[TT],-sf_fit_2[0]);
+    wjetsHichi2_ratio[Data1]->Add(wjetsHichi2_ratio[WW],-sf_fit_2[0]);
+    wjetsSSHichi2_ratio[Data1]->Add(wjetsSSHichi2_ratio[DYFirst],-sf_fit_2[0]);
+    wjetsSSHichi2_ratio[Data1]->Add(wjetsSSHichi2_ratio[TT],-sf_fit_2[0]);
+    wjetsSSHichi2_ratio[Data1]->Add(wjetsSSHichi2_ratio[WW],-sf_fit_2[0]);
 
     // and subtract QCD
     TH1D *h_QCD_template = dijet_template[DataFirst];
@@ -311,6 +385,18 @@ void estimateWjets(var thevar) {
     h_QCDSS_template->Add(h_DYJets_DijetSS_template,-1.0);
     h_QCDSS_template->Add(h_ttbar_DijetSS_template,-1.0);
     wjetsSS_template[Data1]->Add(h_QCDSS_template,-2.*sf_fit_1[1]);
+    TH1D *h_QCDHichi2_template = dijetHichi2_template[DataFirst];
+    TH1D *h_DYJets_DijetHichi2_template = dijetHichi2_template[DYFirst];
+    TH1D *h_ttbar_DijetHichi2_template = dijetHichi2_template[TT];
+    h_QCDHichi2_template->Add(h_DYJets_DijetHichi2_template,-1.0);
+    h_QCDHichi2_template->Add(h_ttbar_DijetHichi2_template,-1.0);
+    wjetsHichi2_template[Data1]->Add(h_QCDHichi2_template,-2.*sf_fit_1[1]);
+    TH1D *h_QCDSSHichi2_template = dijetSSHichi2_template[DataFirst];
+    TH1D *h_DYJets_DijetSSHichi2_template = dijetSSHichi2_template[DYFirst];
+    TH1D *h_ttbar_DijetSSHichi2_template = dijetSSHichi2_template[TT];
+    h_QCDSSHichi2_template->Add(h_DYJets_DijetSSHichi2_template,-1.0);
+    h_QCDSSHichi2_template->Add(h_ttbar_DijetSSHichi2_template,-1.0);
+    wjetsSSHichi2_template[Data1]->Add(h_QCDSSHichi2_template,-2.*sf_fit_1[1]);
 
     TH1D *h_QCD_ratio = dijet_ratio[DataFirst];
     TH1D *h_DYJets_Dijet_ratio = dijet_ratio[DYFirst];
@@ -324,6 +410,18 @@ void estimateWjets(var thevar) {
     h_QCDSS_ratio->Add(h_DYJets_DijetSS_ratio,-1.0);
     h_QCDSS_ratio->Add(h_ttbar_DijetSS_ratio,-1.0);
     wjetsSS_ratio[Data1]->Add(h_QCDSS_ratio,-2.*sf_fit_2[1]);
+    TH1D *h_QCDHichi2_ratio = dijetHichi2_ratio[DataFirst];
+    TH1D *h_DYJets_DijetHichi2_ratio = dijetHichi2_ratio[DYFirst];
+    TH1D *h_ttbar_DijetHichi2_ratio = dijetHichi2_ratio[TT];
+    h_QCDHichi2_ratio->Add(h_DYJets_DijetHichi2_ratio,-1.0);
+    h_QCDHichi2_ratio->Add(h_ttbar_DijetHichi2_ratio,-1.0);
+    wjetsHichi2_ratio[Data1]->Add(h_QCDHichi2_ratio,-2.*sf_fit_2[1]);
+    TH1D *h_QCDSSHichi2_ratio = dijetSSHichi2_ratio[DataFirst];
+    TH1D *h_DYJets_DijetSSHichi2_ratio = dijetSSHichi2_ratio[DYFirst];
+    TH1D *h_ttbar_DijetSSHichi2_ratio = dijetSSHichi2_ratio[TT];
+    h_QCDSSHichi2_ratio->Add(h_DYJets_DijetSSHichi2_ratio,-1.0);
+    h_QCDSSHichi2_ratio->Add(h_ttbar_DijetSSHichi2_ratio,-1.0);
+    wjetsSSHichi2_ratio[Data1]->Add(h_QCDSSHichi2_ratio,-2.*sf_fit_2[1]);
 
     // remove negative bins
     for(int k=1; k<varNbins+3; k++) {
@@ -343,6 +441,22 @@ void estimateWjets(var thevar) {
           wjetsSS_ratio[Data1]->SetBinContent(k,0.0);
           wjetsSS_ratio[Data1]->SetBinError(k,0.0);
        }
+       if(wjetsHichi2_template[Data1]->GetBinContent(k) < 0) {
+          wjetsHichi2_template[Data1]->SetBinContent(k,0.0);
+          wjetsHichi2_template[Data1]->SetBinError(k,0.0);
+       }
+       if(wjetsHichi2_ratio[Data1]->GetBinContent(k) < 0) {
+          wjetsHichi2_ratio[Data1]->SetBinContent(k,0.0);
+          wjetsHichi2_ratio[Data1]->SetBinError(k,0.0);
+       }
+       if(wjetsSSHichi2_template[Data1]->GetBinContent(k) < 0) {
+          wjetsSSHichi2_template[Data1]->SetBinContent(k,0.0);
+          wjetsSSHichi2_template[Data1]->SetBinError(k,0.0);
+       }
+       if(wjetsSSHichi2_ratio[Data1]->GetBinContent(k) < 0) {
+          wjetsSSHichi2_ratio[Data1]->SetBinContent(k,0.0);
+          wjetsSSHichi2_ratio[Data1]->SetBinError(k,0.0);
+       }
     }
 
     /////////////////////////
@@ -351,6 +465,8 @@ void estimateWjets(var thevar) {
 
     DYsel[WFirst]->Scale(sf_fit_2[1]);
     DYselSS[WFirst]->Scale(sf_fit_2[1]);
+    DYselHichi2[WFirst]->Scale(sf_fit_2[1]);
+    DYselSSHichi2[WFirst]->Scale(sf_fit_2[1]);
 
     for(int i=1; i<varNbins+1; i++) {
         if(wjets_template[Data1]->GetBinContent(i) < 0) {
@@ -368,16 +484,28 @@ void estimateWjets(var thevar) {
     TH1D *wjets_ratio_nosmooth = (TH1D*) wjets_ratio[Data1]->Clone("wjets_ratio_nosmooth");
     TH1D *wjetsSS_template_nosmooth = (TH1D*) wjetsSS_template[Data1]->Clone("wjetsSS_template_nosmooth");
     TH1D *wjetsSS_ratio_nosmooth = (TH1D*) wjetsSS_ratio[Data1]->Clone("wjetsSS_ratio_nosmooth");
+    TH1D *wjetsHichi2_template_nosmooth = (TH1D*) wjetsHichi2_template[Data1]->Clone("wjetsHichi2_template_nosmooth");
+    TH1D *wjetsHichi2_ratio_nosmooth = (TH1D*) wjetsHichi2_ratio[Data1]->Clone("wjetsHichi2_ratio_nosmooth");
+    TH1D *wjetsSSHichi2_template_nosmooth = (TH1D*) wjetsSSHichi2_template[Data1]->Clone("wjetsSSHichi2_template_nosmooth");
+    TH1D *wjetsSSHichi2_ratio_nosmooth = (TH1D*) wjetsSSHichi2_ratio[Data1]->Clone("wjetsSSHichi2_ratio_nosmooth");
     if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) {
        wjets_template[Data1]->Smooth();
        wjets_ratio[Data1]->Smooth();
        wjetsSS_template[Data1]->Smooth();
        wjetsSS_ratio[Data1]->Smooth();
+       wjetsHichi2_template[Data1]->Smooth();
+       wjetsHichi2_ratio[Data1]->Smooth();
+       wjetsSSHichi2_template[Data1]->Smooth();
+       wjetsSSHichi2_ratio[Data1]->Smooth();
 
        wjets_template_nosmooth->SetLineStyle(2);
        wjets_ratio_nosmooth->SetLineStyle(2);
        wjetsSS_template_nosmooth->SetLineStyle(2);
        wjetsSS_ratio_nosmooth->SetLineStyle(2);
+       wjetsHichi2_template_nosmooth->SetLineStyle(2);
+       wjetsHichi2_ratio_nosmooth->SetLineStyle(2);
+       wjetsSSHichi2_template_nosmooth->SetLineStyle(2);
+       wjetsSSHichi2_ratio_nosmooth->SetLineStyle(2);
     }
     
     TLegend* legg = new TLegend(.6,.65,.95,.89);
@@ -416,6 +544,36 @@ void estimateWjets(var thevar) {
     canv->Print("print/wjetsSS_" + thevarname + ".pdf");
     canv->Clear();
 
+    wjetsHichi2_template[Data1]->Draw("EP");
+    CMS_lumi(canv,111,11);
+    canv->Update();
+    canv->RedrawAxis();
+    canv->GetFrame()->Draw();
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    wjetsHichi2_ratio[Data1]->Draw("HIST SAME");
+    DYselHichi2[WFirst]->Draw("hist same");
+    wjetsHichi2_template[Data1]->Draw("EP same");
+    wjetsHichi2_ratio[Data1]->Draw("HIST SAME");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) wjetsHichi2_template_nosmooth->Draw("HIST SAME");
+    legg->Draw("SAME");
+    canv->Print("print/wjetsHichi2_" + thevarname + ".pdf");
+    canv->Clear();
+
+    wjetsSSHichi2_template[Data1]->Draw("EP");
+    CMS_lumi(canv,111,11);
+    canv->Update();
+    canv->RedrawAxis();
+    canv->GetFrame()->Draw();
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    wjetsSSHichi2_ratio[Data1]->Draw("HIST SAME");
+    DYselSSHichi2[WFirst]->Draw("hist same");
+    wjetsSSHichi2_template[Data1]->Draw("EP same");
+    wjetsSSHichi2_ratio[Data1]->Draw("HIST SAME");
+    if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) wjetsSSHichi2_template_nosmooth->Draw("HIST SAME");
+    legg->Draw("SAME");
+    canv->Print("print/wjetsSSHichi2_" + thevarname + ".pdf");
+    canv->Clear();
+
     double error = 0;
     wjets_template[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(template) = "<<wjets_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
@@ -423,11 +581,23 @@ void estimateWjets(var thevar) {
     wjetsSS_template[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(template) SS = "<<wjetsSS_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
+    wjetsHichi2_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(template) Hichi2 = "<<wjetsHichi2_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    wjetsSSHichi2_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(template) SSHichi2 = "<<wjetsSSHichi2_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
     wjets_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(ratio) = "<<wjets_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
     wjetsSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"WJets(ratio) SS = "<<wjetsSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    wjetsHichi2_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(ratio) Hichi2 = "<<wjetsHichi2_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    wjetsSSHichi2_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"WJets(ratio) SSHichi2 = "<<wjetsSSHichi2_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
 
     TH1D* wjets = (TH1D*)wjets_template[Data1]->Clone();
     wjets->Sumw2();
@@ -463,8 +633,14 @@ void estimateWjets(var thevar) {
     wjets_template[DataFirst]->Write("wjets_template");
     wjetsSS_ratio[DataFirst]->Write("wjetsSS_ratio");
     wjetsSS_template[DataFirst]->Write("wjetsSS_template");
+    wjetsHichi2_ratio[DataFirst]->Write("wjetsHichi2_ratio");
+    wjetsHichi2_template[DataFirst]->Write("wjetsHichi2_template");
+    wjetsSSHichi2_ratio[DataFirst]->Write("wjetsSSHichi2_ratio");
+    wjetsSSHichi2_template[DataFirst]->Write("wjetsSSHichi2_template");
     DYsel[WFirst]->Write("wjetsMC");
     DYselSS[WFirst]->Write("wjetsSSMC");
+    DYselHichi2[WFirst]->Write("wjetsHichi2MC");
+    DYselSSHichi2[WFirst]->Write("wjetsSSHichi2MC");
     gg->Close();
 
     //wjets_systematic->Divide(wjets);

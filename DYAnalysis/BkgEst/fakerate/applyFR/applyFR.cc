@@ -65,12 +65,16 @@ void applyFR(SampleTag index) {
    TH1D* histSameDijet2 = new TH1D("histSameDijet2","",binnum,bins);
    TH1D* histHichi2Dijet1 = new TH1D("histHichi2Dijet1","",binnum,bins);
    TH1D* histHichi2Dijet2 = new TH1D("histHichi2Dijet2","",binnum,bins);
+   TH1D* histSameHichi2Dijet1 = new TH1D("histSameHichi2Dijet1","",binnum,bins);
+   TH1D* histSameHichi2Dijet2 = new TH1D("histSameHichi2Dijet2","",binnum,bins);
    TH1D* hist3binsDijet1 = new TH1D("hist3binsDijet1","",binnum3,bins3);
    TH1D* hist3binsDijet2 = new TH1D("hist3binsDijet2","",binnum3,bins3);
    TH1D* hist3binsSameDijet1 = new TH1D("hist3binsSameDijet1","",binnum3,bins3);
    TH1D* hist3binsSameDijet2 = new TH1D("hist3binsSameDijet2","",binnum3,bins3);
    TH1D* hist3binsHichi2Dijet1 = new TH1D("hist3binsHichi2Dijet1","",binnum3,bins3);
    TH1D* hist3binsHichi2Dijet2 = new TH1D("hist3binsHichi2Dijet2","",binnum3,bins3);
+   TH1D* hist3binsSameHichi2Dijet1 = new TH1D("hist3binsSameHichi2Dijet1","",binnum3,bins3);
+   TH1D* hist3binsSameHichi2Dijet2 = new TH1D("hist3binsSameHichi2Dijet2","",binnum3,bins3);
 
    TH1D* fitDijet1 = new TH1D("fitDijet1","",37,15,200);
    TH1D* fitDijet2 = new TH1D("fitDijet2","",37,15,200);
@@ -78,24 +82,32 @@ void applyFR(SampleTag index) {
    TH1D* fitSameDijet2 = new TH1D("fitSameDijet2","",37,15,200);
    TH1D* fitHichi2Dijet1 = new TH1D("fitHichi2Dijet1","",37,15,200);
    TH1D* fitHichi2Dijet2 = new TH1D("fitHichi2Dijet2","",37,15,200);
+   TH1D* fitSameHichi2Dijet1 = new TH1D("fitSameHichi2Dijet1","",37,15,200);
+   TH1D* fitSameHichi2Dijet2 = new TH1D("fitSameHichi2Dijet2","",37,15,200);
    TH1D* fitMETDijet1 = new TH1D("fitMETDijet1","",20,0,200);
    TH1D* fitMETDijet2 = new TH1D("fitMETDijet2","",20,0,200);
    TH1D* fitMETSameDijet1 = new TH1D("fitMETSameDijet1","",20,0,200);
    TH1D* fitMETSameDijet2 = new TH1D("fitMETSameDijet2","",20,0,200);
    TH1D* fitMETHichi2Dijet1 = new TH1D("fitMETHichi2Dijet1","",20,0,200);
    TH1D* fitMETHichi2Dijet2 = new TH1D("fitMETHichi2Dijet2","",20,0,200);
+   TH1D* fitMETSameHichi2Dijet1 = new TH1D("fitMETSameHichi2Dijet1","",20,0,200);
+   TH1D* fitMETSameHichi2Dijet2 = new TH1D("fitMETSameHichi2Dijet2","",20,0,200);
    TH1D* fitmassMETDijet1 = new TH1D("fitmassMETDijet1","",40,0,400);
    TH1D* fitmassMETDijet2 = new TH1D("fitmassMETDijet2","",40,0,400);
    TH1D* fitmassMETSameDijet1 = new TH1D("fitmassMETSameDijet1","",40,0,400);
    TH1D* fitmassMETSameDijet2 = new TH1D("fitmassMETSameDijet2","",40,0,400);
    TH1D* fitmassMETHichi2Dijet1 = new TH1D("fitmassMETHichi2Dijet1","",40,0,400);
    TH1D* fitmassMETHichi2Dijet2 = new TH1D("fitmassMETHichi2Dijet2","",40,0,400);
+   TH1D* fitmassMETSameHichi2Dijet1 = new TH1D("fitmassMETSameHichi2Dijet1","",40,0,400);
+   TH1D* fitmassMETSameHichi2Dijet2 = new TH1D("fitmassMETSameHichi2Dijet2","",40,0,400);
    TH1D* fitMtDijet1 = new TH1D("fitMtDijet1","",20,0,200);
    TH1D* fitMtDijet2 = new TH1D("fitMtDijet2","",20,0,200);
    TH1D* fitMtSameDijet1 = new TH1D("fitMtSameDijet1","",20,0,200);
    TH1D* fitMtSameDijet2 = new TH1D("fitMtSameDijet2","",20,0,200);
    TH1D* fitMtHichi2Dijet1 = new TH1D("fitMtHichi2Dijet1","",20,0,200);
    TH1D* fitMtHichi2Dijet2 = new TH1D("fitMtHichi2Dijet2","",20,0,200);
+   TH1D* fitMtSameHichi2Dijet1 = new TH1D("fitMtSameHichi2Dijet1","",20,0,200);
+   TH1D* fitMtSameHichi2Dijet2 = new TH1D("fitMtSameHichi2Dijet2","",20,0,200);
 
    TH1D* rapDijet1 = new TH1D("rapDijet1","",rapbinnum_60120,rapbin_60120);
    TH1D* rapDijet2 = new TH1D("rapDijet2","",rapbinnum_60120,rapbin_60120);
@@ -103,6 +115,8 @@ void applyFR(SampleTag index) {
    TH1D* rapSameDijet2 = new TH1D("rapSameDijet2","",rapbinnum_60120,rapbin_60120);
    TH1D* rapHichi2Dijet1 = new TH1D("rapHichi2Dijet1","",rapbinnum_60120,rapbin_60120);
    TH1D* rapHichi2Dijet2 = new TH1D("rapHichi2Dijet2","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameHichi2Dijet1 = new TH1D("rapSameHichi2Dijet1","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameHichi2Dijet2 = new TH1D("rapSameHichi2Dijet2","",rapbinnum_60120,rapbin_60120);
 
    // added
    TH1D* ZptDijet1 = new TH1D("ZptDijet1","",ptbinnum_meas,ptbin_meas);
@@ -111,6 +125,8 @@ void applyFR(SampleTag index) {
    TH1D* ZptSameDijet2 = new TH1D("ZptSameDijet2","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptHichi2Dijet1 = new TH1D("ZptHichi2Dijet1","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptHichi2Dijet2 = new TH1D("ZptHichi2Dijet2","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameHichi2Dijet1 = new TH1D("ZptSameHichi2Dijet1","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameHichi2Dijet2 = new TH1D("ZptSameHichi2Dijet2","",ptbinnum_meas,ptbin_meas);
 
    TH1D* lowMrapDijet1 = new TH1D("lowMrapDijet1","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapDijet2 = new TH1D("lowMrapDijet2","",rapbinnum_1560,rapbin_1560);
@@ -118,6 +134,8 @@ void applyFR(SampleTag index) {
    TH1D* lowMrapSameDijet2 = new TH1D("lowMrapSameDijet2","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapHichi2Dijet1 = new TH1D("lowMrapHichi2Dijet1","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapHichi2Dijet2 = new TH1D("lowMrapHichi2Dijet2","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameHichi2Dijet1 = new TH1D("lowMrapSameHichi2Dijet1","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameHichi2Dijet2 = new TH1D("lowMrapSameHichi2Dijet2","",rapbinnum_1560,rapbin_1560);
 
    TH1D* ZphistarDijet1 = new TH1D("ZphistarDijet1","",phistarnum,phistarbin);
    TH1D* ZphistarDijet2 = new TH1D("ZphistarDijet2","",phistarnum,phistarbin);
@@ -125,6 +143,8 @@ void applyFR(SampleTag index) {
    TH1D* ZphistarSameDijet2 = new TH1D("ZphistarSameDijet2","",phistarnum,phistarbin);
    TH1D* ZphistarHichi2Dijet1 = new TH1D("ZphistarHichi2Dijet1","",phistarnum,phistarbin);
    TH1D* ZphistarHichi2Dijet2 = new TH1D("ZphistarHichi2Dijet2","",phistarnum,phistarbin);
+   TH1D* ZphistarSameHichi2Dijet1 = new TH1D("ZphistarSameHichi2Dijet1","",phistarnum,phistarbin);
+   TH1D* ZphistarSameHichi2Dijet2 = new TH1D("ZphistarSameHichi2Dijet2","",phistarnum,phistarbin);
 
    TH1D* Zpt1560Dijet1 = new TH1D("Zpt1560Dijet1","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Dijet2 = new TH1D("Zpt1560Dijet2","",ptbinnum_meas_1560,ptbin_meas_1560);
@@ -132,6 +152,8 @@ void applyFR(SampleTag index) {
    TH1D* Zpt1560SameDijet2 = new TH1D("Zpt1560SameDijet2","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Hichi2Dijet1 = new TH1D("Zpt1560Hichi2Dijet1","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Hichi2Dijet2 = new TH1D("Zpt1560Hichi2Dijet2","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameHichi2Dijet1 = new TH1D("Zpt1560SameHichi2Dijet1","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameHichi2Dijet2 = new TH1D("Zpt1560SameHichi2Dijet2","",ptbinnum_meas_1560,ptbin_meas_1560);
 
    TH1D* Zphistar1560Dijet1 = new TH1D("Zphistar1560Dijet1","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Dijet2 = new TH1D("Zphistar1560Dijet2","",phistarnum_1560,phistarbin_1560);
@@ -139,6 +161,8 @@ void applyFR(SampleTag index) {
    TH1D* Zphistar1560SameDijet2 = new TH1D("Zphistar1560SameDijet2","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Hichi2Dijet1 = new TH1D("Zphistar1560Hichi2Dijet1","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Hichi2Dijet2 = new TH1D("Zphistar1560Hichi2Dijet2","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameHichi2Dijet1 = new TH1D("Zphistar1560SameHichi2Dijet1","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameHichi2Dijet2 = new TH1D("Zphistar1560SameHichi2Dijet2","",phistarnum_1560,phistarbin_1560);
 
 
 
@@ -151,12 +175,16 @@ void applyFR(SampleTag index) {
    TH1D* histSameWJets2 = new TH1D("histSameWJets2","",binnum,bins);
    TH1D* histHichi2WJets1 = new TH1D("histHichi2WJets1","",binnum,bins);
    TH1D* histHichi2WJets2 = new TH1D("histHichi2WJets2","",binnum,bins);
+   TH1D* histSameHichi2WJets1 = new TH1D("histSameHichi2WJets1","",binnum,bins);
+   TH1D* histSameHichi2WJets2 = new TH1D("histSameHichi2WJets2","",binnum,bins);
    TH1D* hist3binsWJets1 = new TH1D("hist3binsWJets1","",binnum3,bins3);
    TH1D* hist3binsWJets2 = new TH1D("hist3binsWJets2","",binnum3,bins3);
    TH1D* hist3binsSameWJets1 = new TH1D("hist3binsSameWJets1","",binnum3,bins3);
    TH1D* hist3binsSameWJets2 = new TH1D("hist3binsSameWJets2","",binnum3,bins3);
    TH1D* hist3binsHichi2WJets1 = new TH1D("hist3binsHichi2WJets1","",binnum3,bins3);
    TH1D* hist3binsHichi2WJets2 = new TH1D("hist3binsHichi2WJets2","",binnum3,bins3);
+   TH1D* hist3binsSameHichi2WJets1 = new TH1D("hist3binsSameHichi2WJets1","",binnum3,bins3);
+   TH1D* hist3binsSameHichi2WJets2 = new TH1D("hist3binsSameHichi2WJets2","",binnum3,bins3);
 
    TH1D* fitWJets1 = new TH1D("fitWJets1","",37,15,200);
    TH1D* fitWJets2 = new TH1D("fitWJets2","",37,15,200);
@@ -164,24 +192,32 @@ void applyFR(SampleTag index) {
    TH1D* fitSameWJets2 = new TH1D("fitSameWJets2","",37,15,200);
    TH1D* fitHichi2WJets1 = new TH1D("fitHichi2WJets1","",37,15,200);
    TH1D* fitHichi2WJets2 = new TH1D("fitHichi2WJets2","",37,15,200);
+   TH1D* fitSameHichi2WJets1 = new TH1D("fitSameHichi2WJets1","",37,15,200);
+   TH1D* fitSameHichi2WJets2 = new TH1D("fitSameHichi2WJets2","",37,15,200);
    TH1D* fitMETWJets1 = new TH1D("fitMETWJets1","",20,0,200);
    TH1D* fitMETWJets2 = new TH1D("fitMETWJets2","",20,0,200);
    TH1D* fitMETSameWJets1 = new TH1D("fitMETSameWJets1","",20,0,200);
    TH1D* fitMETSameWJets2 = new TH1D("fitMETSameWJets2","",20,0,200);
    TH1D* fitMETHichi2WJets1 = new TH1D("fitMETHichi2WJets1","",20,0,200);
    TH1D* fitMETHichi2WJets2 = new TH1D("fitMETHichi2WJets2","",20,0,200);
+   TH1D* fitMETSameHichi2WJets1 = new TH1D("fitMETSameHichi2WJets1","",20,0,200);
+   TH1D* fitMETSameHichi2WJets2 = new TH1D("fitMETSameHichi2WJets2","",20,0,200);
    TH1D* fitmassMETWJets1 = new TH1D("fitmassMETWJets1","",40,0,400);
    TH1D* fitmassMETWJets2 = new TH1D("fitmassMETWJets2","",40,0,400);
    TH1D* fitmassMETSameWJets1 = new TH1D("fitmassMETSameWJets1","",40,0,400);
    TH1D* fitmassMETSameWJets2 = new TH1D("fitmassMETSameWJets2","",40,0,400);
    TH1D* fitmassMETHichi2WJets1 = new TH1D("fitmassMETHichi2WJets1","",40,0,400);
    TH1D* fitmassMETHichi2WJets2 = new TH1D("fitmassMETHichi2WJets2","",40,0,400);
+   TH1D* fitmassMETSameHichi2WJets1 = new TH1D("fitmassMETSameHichi2WJets1","",40,0,400);
+   TH1D* fitmassMETSameHichi2WJets2 = new TH1D("fitmassMETSameHichi2WJets2","",40,0,400);
    TH1D* fitMtWJets1 = new TH1D("fitMtWJets1","",20,0,200);
    TH1D* fitMtWJets2 = new TH1D("fitMtWJets2","",20,0,200);
    TH1D* fitMtSameWJets1 = new TH1D("fitMtSameWJets1","",20,0,200);
    TH1D* fitMtSameWJets2 = new TH1D("fitMtSameWJets2","",20,0,200);
    TH1D* fitMtHichi2WJets1 = new TH1D("fitMtHichi2WJets1","",20,0,200);
    TH1D* fitMtHichi2WJets2 = new TH1D("fitMtHichi2WJets2","",20,0,200);
+   TH1D* fitMtSameHichi2WJets1 = new TH1D("fitMtSameHichi2WJets1","",20,0,200);
+   TH1D* fitMtSameHichi2WJets2 = new TH1D("fitMtSameHichi2WJets2","",20,0,200);
 
    TH1D* rapWJets1 = new TH1D("rapWJets1","",rapbinnum_60120,rapbin_60120);
    TH1D* rapWJets2 = new TH1D("rapWJets2","",rapbinnum_60120,rapbin_60120);
@@ -189,6 +225,8 @@ void applyFR(SampleTag index) {
    TH1D* rapSameWJets2 = new TH1D("rapSameWJets2","",rapbinnum_60120,rapbin_60120);
    TH1D* rapHichi2WJets1 = new TH1D("rapHichi2WJets1","",rapbinnum_60120,rapbin_60120);
    TH1D* rapHichi2WJets2 = new TH1D("rapHichi2WJets2","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameHichi2WJets1 = new TH1D("rapSameHichi2WJets1","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameHichi2WJets2 = new TH1D("rapSameHichi2WJets2","",rapbinnum_60120,rapbin_60120);
 
    // added
    TH1D* ZptWJets1 = new TH1D("ZptWJets1","",ptbinnum_meas,ptbin_meas);
@@ -197,6 +235,8 @@ void applyFR(SampleTag index) {
    TH1D* ZptSameWJets2 = new TH1D("ZptSameWJets2","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptHichi2WJets1 = new TH1D("ZptHichi2WJets1","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptHichi2WJets2 = new TH1D("ZptHichi2WJets2","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameHichi2WJets1 = new TH1D("ZptSameHichi2WJets1","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameHichi2WJets2 = new TH1D("ZptSameHichi2WJets2","",ptbinnum_meas,ptbin_meas);
 
    TH1D* lowMrapWJets1 = new TH1D("lowMrapWJets1","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapWJets2 = new TH1D("lowMrapWJets2","",rapbinnum_1560,rapbin_1560);
@@ -204,6 +244,8 @@ void applyFR(SampleTag index) {
    TH1D* lowMrapSameWJets2 = new TH1D("lowMrapSameWJets2","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapHichi2WJets1 = new TH1D("lowMrapHichi2WJets1","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapHichi2WJets2 = new TH1D("lowMrapHichi2WJets2","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameHichi2WJets1 = new TH1D("lowMrapSameHichi2WJets1","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameHichi2WJets2 = new TH1D("lowMrapSameHichi2WJets2","",rapbinnum_1560,rapbin_1560);
 
    TH1D* ZphistarWJets1 = new TH1D("ZphistarWJets1","",phistarnum,phistarbin);
    TH1D* ZphistarWJets2 = new TH1D("ZphistarWJets2","",phistarnum,phistarbin);
@@ -211,6 +253,8 @@ void applyFR(SampleTag index) {
    TH1D* ZphistarSameWJets2 = new TH1D("ZphistarSameWJets2","",phistarnum,phistarbin);
    TH1D* ZphistarHichi2WJets1 = new TH1D("ZphistarHichi2WJets1","",phistarnum,phistarbin);
    TH1D* ZphistarHichi2WJets2 = new TH1D("ZphistarHichi2WJets2","",phistarnum,phistarbin);
+   TH1D* ZphistarSameHichi2WJets1 = new TH1D("ZphistarSameHichi2WJets1","",phistarnum,phistarbin);
+   TH1D* ZphistarSameHichi2WJets2 = new TH1D("ZphistarSameHichi2WJets2","",phistarnum,phistarbin);
 
    TH1D* Zpt1560WJets1 = new TH1D("Zpt1560WJets1","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560WJets2 = new TH1D("Zpt1560WJets2","",ptbinnum_meas_1560,ptbin_meas_1560);
@@ -218,6 +262,8 @@ void applyFR(SampleTag index) {
    TH1D* Zpt1560SameWJets2 = new TH1D("Zpt1560SameWJets2","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Hichi2WJets1 = new TH1D("Zpt1560Hichi2WJets1","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Hichi2WJets2 = new TH1D("Zpt1560Hichi2WJets2","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameHichi2WJets1 = new TH1D("Zpt1560SameHichi2WJets1","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameHichi2WJets2 = new TH1D("Zpt1560SameHichi2WJets2","",ptbinnum_meas_1560,ptbin_meas_1560);
 
    TH1D* Zphistar1560WJets1 = new TH1D("Zphistar1560WJets1","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560WJets2 = new TH1D("Zphistar1560WJets2","",phistarnum_1560,phistarbin_1560);
@@ -225,6 +271,8 @@ void applyFR(SampleTag index) {
    TH1D* Zphistar1560SameWJets2 = new TH1D("Zphistar1560SameWJets2","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Hichi2WJets1 = new TH1D("Zphistar1560Hichi2WJets1","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Hichi2WJets2 = new TH1D("Zphistar1560Hichi2WJets2","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameHichi2WJets1 = new TH1D("Zphistar1560SameHichi2WJets1","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameHichi2WJets2 = new TH1D("Zphistar1560SameHichi2WJets2","",phistarnum_1560,phistarbin_1560);
 
 
    f->cd();
@@ -233,47 +281,59 @@ void applyFR(SampleTag index) {
    TH1D* histDYsel = new TH1D("histDYsel","",binnum,bins);
    TH1D* histSameDYsel = new TH1D("histSameDYsel","",binnum,bins);
    TH1D* histHichi2DYsel = new TH1D("histHichi2DYsel","",binnum,bins);
+   TH1D* histSameHichi2DYsel = new TH1D("histSameHichi2DYsel","",binnum,bins);
    TH1D* hist3binsDYsel = new TH1D("hist3binsDYsel","",binnum3,bins3);
    TH1D* hist3binsSameDYsel = new TH1D("hist3binsSameDYsel","",binnum3,bins3);
    TH1D* hist3binsHichi2DYsel = new TH1D("hist3binsHichi2DYsel","",binnum3,bins3);
+   TH1D* hist3binsSameHichi2DYsel = new TH1D("hist3binsSameHichi2DYsel","",binnum3,bins3);
 
    TH1D* fitDYsel = new TH1D("fitDYsel","",37,15,200);
    TH1D* fitSameDYsel = new TH1D("fitSameDYsel","",37,15,200);
    TH1D* fitHichi2DYsel = new TH1D("fitHichi2DYsel","",37,15,200);
+   TH1D* fitSameHichi2DYsel = new TH1D("fitSameHichi2DYsel","",37,15,200);
    TH1D* fitMETDYsel = new TH1D("fitMETDYsel","",20,0,200);
    TH1D* fitMETSameDYsel = new TH1D("fitMETSameDYsel","",20,0,200);
    TH1D* fitMETHichi2DYsel = new TH1D("fitMETHichi2DYsel","",20,0,200);
+   TH1D* fitMETSameHichi2DYsel = new TH1D("fitMETSameHichi2DYsel","",20,0,200);
    TH1D* fitmassMETDYsel = new TH1D("fitmassMETDYsel","",40,0,400);
    TH1D* fitmassMETSameDYsel = new TH1D("fitmassMETSameDYsel","",40,0,400);
    TH1D* fitmassMETHichi2DYsel = new TH1D("fitmassMETHichi2DYsel","",40,0,400);
+   TH1D* fitmassMETSameHichi2DYsel = new TH1D("fitmassMETSameHichi2DYsel","",40,0,400);
    TH1D* fitMtDYsel = new TH1D("fitMtDYsel","",20,0,200);
    TH1D* fitMtSameDYsel = new TH1D("fitMtSameDYsel","",20,0,200);
    TH1D* fitMtHichi2DYsel = new TH1D("fitMtHichi2DYsel","",20,0,200);
+   TH1D* fitMtSameHichi2DYsel = new TH1D("fitMtSameHichi2DYsel","",20,0,200);
 
    TH1D* rapDYsel = new TH1D("rapDYsel","",rapbinnum_60120,rapbin_60120);
    TH1D* rapSameDYsel = new TH1D("rapSameDYsel","",rapbinnum_60120,rapbin_60120);
    TH1D* rapHichi2DYsel = new TH1D("rapHichi2DYsel","",rapbinnum_60120,rapbin_60120);
+   TH1D* rapSameHichi2DYsel = new TH1D("rapSameHichi2DYsel","",rapbinnum_60120,rapbin_60120);
 
    // added
    TH1D* ZptDYsel = new TH1D("ZptDYsel","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptSameDYsel = new TH1D("ZptSameDYsel","",ptbinnum_meas,ptbin_meas);
    TH1D* ZptHichi2DYsel = new TH1D("ZptHichi2DYsel","",ptbinnum_meas,ptbin_meas);
+   TH1D* ZptSameHichi2DYsel = new TH1D("ZptSameHichi2DYsel","",ptbinnum_meas,ptbin_meas);
 
    TH1D* lowMrapDYsel = new TH1D("lowMrapDYsel","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapSameDYsel = new TH1D("lowMrapSameDYsel","",rapbinnum_1560,rapbin_1560);
    TH1D* lowMrapHichi2DYsel = new TH1D("lowMrapHichi2DYsel","",rapbinnum_1560,rapbin_1560);
+   TH1D* lowMrapSameHichi2DYsel = new TH1D("lowMrapSameHichi2DYsel","",rapbinnum_1560,rapbin_1560);
 
    TH1D* ZphistarDYsel = new TH1D("ZphistarDYsel","",phistarnum,phistarbin);
    TH1D* ZphistarSameDYsel = new TH1D("ZphistarSameDYsel","",phistarnum,phistarbin);
    TH1D* ZphistarHichi2DYsel = new TH1D("ZphistarHichi2DYsel","",phistarnum,phistarbin);
+   TH1D* ZphistarSameHichi2DYsel = new TH1D("ZphistarSameHichi2DYsel","",phistarnum,phistarbin);
 
    TH1D* Zpt1560DYsel = new TH1D("Zpt1560DYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560SameDYsel = new TH1D("Zpt1560SameDYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
    TH1D* Zpt1560Hichi2DYsel = new TH1D("Zpt1560Hichi2DYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
+   TH1D* Zpt1560SameHichi2DYsel = new TH1D("Zpt1560SameHichi2DYsel","",ptbinnum_meas_1560,ptbin_meas_1560);
 
    TH1D* Zphistar1560DYsel = new TH1D("Zphistar1560DYsel","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560SameDYsel = new TH1D("Zphistar1560SameDYsel","",phistarnum_1560,phistarbin_1560);
    TH1D* Zphistar1560Hichi2DYsel = new TH1D("Zphistar1560Hichi2DYsel","",phistarnum_1560,phistarbin_1560);
+   TH1D* Zphistar1560SameHichi2DYsel = new TH1D("Zphistar1560SameHichi2DYsel","",phistarnum_1560,phistarbin_1560);
 
 
    f->cd();
@@ -517,6 +577,39 @@ void applyFR(SampleTag index) {
                   Zphistar1560Hichi2Dijet2->Fill(phistar, weight_ratio);
                }
             }
+            // SAME-SIGN
+            else {
+               if( mass > bins[0] && mass < bins[binnum-1]) {
+                  histSameHichi2Dijet1->Fill(mass, weight_template);
+                  histSameHichi2Dijet2->Fill(mass, weight_ratio);
+                  hist3binsSameHichi2Dijet1->Fill(mass, weight_template);
+                  hist3binsSameHichi2Dijet2->Fill(mass, weight_ratio);
+                  fitSameHichi2Dijet1->Fill(mass, weight2_template);
+                  fitSameHichi2Dijet2->Fill(mass, weight2_ratio);
+                  fitMETSameHichi2Dijet1->Fill(MET, weight2_template);
+                  fitMETSameHichi2Dijet2->Fill(MET, weight2_ratio);
+                  fitmassMETSameHichi2Dijet1->Fill(massMET, weight2_template);
+                  fitmassMETSameHichi2Dijet2->Fill(massMET, weight2_ratio);
+                  fitMtSameHichi2Dijet1->Fill(maxMt, weight2_template);
+                  fitMtSameHichi2Dijet2->Fill(maxMt, weight2_ratio);
+               }
+               if( mass > 60 && mass < 120) {
+                  rapSameHichi2Dijet1->Fill(rap, weight_template);
+                  rapSameHichi2Dijet2->Fill(rap, weight_ratio);
+                  ZptSameHichi2Dijet1->Fill(dimu_pt, weight_template);
+                  ZptSameHichi2Dijet2->Fill(dimu_pt, weight_ratio);
+                  ZphistarSameHichi2Dijet1->Fill(phistar, weight_template);
+                  ZphistarSameHichi2Dijet2->Fill(phistar, weight_ratio);
+               }
+               if ( mass > 15 && mass < 60) {
+                  lowMrapSameHichi2Dijet1->Fill(rap, weight_template);
+                  lowMrapSameHichi2Dijet2->Fill(rap, weight_ratio);
+                  Zpt1560SameHichi2Dijet1->Fill(dimu_pt, weight_template);
+                  Zpt1560SameHichi2Dijet2->Fill(dimu_pt, weight_ratio);
+                  Zphistar1560SameHichi2Dijet1->Fill(phistar, weight_template);
+                  Zphistar1560SameHichi2Dijet2->Fill(phistar, weight_ratio);
+               }
+            }
          }
       ///////////////////////////
       //     W+JETS  (1P1F)    //
@@ -673,6 +766,41 @@ void applyFR(SampleTag index) {
                   Zphistar1560Hichi2WJets2->Fill(phistar, weight_ratio);
                }
             }
+            // SAME-SIGN
+            else {
+               if( mass > bins[0] && mass < bins[binnum-1]) {
+                  histSameHichi2WJets1->Fill(mass, weight_template);
+                  histSameHichi2WJets2->Fill(mass, weight_ratio);
+                  hist3binsSameHichi2WJets1->Fill(mass, weight_template);
+                  hist3binsSameHichi2WJets2->Fill(mass, weight_ratio);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitSameHichi2WJets1->Fill(mass, wt);
+                     fitSameHichi2WJets2->Fill(mass, wt);
+                     fitMETSameHichi2WJets1->Fill(MET, wt);
+                     fitMETSameHichi2WJets2->Fill(MET, wt);
+                     fitmassMETSameHichi2WJets1->Fill(massMET, wt);
+                     fitmassMETSameHichi2WJets2->Fill(massMET, wt);
+                     fitMtSameHichi2WJets1->Fill(maxMt, wt);
+                     fitMtSameHichi2WJets2->Fill(maxMt, wt);
+                  // }
+               }
+               if( mass > 60 && mass < 120) {
+                  rapSameHichi2WJets1->Fill(rap, weight_template);
+                  rapSameHichi2WJets2->Fill(rap, weight_ratio);
+                  ZptSameHichi2WJets1->Fill(dimu_pt, weight_template);
+                  ZptSameHichi2WJets2->Fill(dimu_pt, weight_ratio);
+                  ZphistarSameHichi2WJets1->Fill(phistar, weight_template);
+                  ZphistarSameHichi2WJets2->Fill(phistar, weight_ratio);
+               }
+               if ( mass > 15 && mass < 60) {
+                  lowMrapSameHichi2WJets1->Fill(rap, weight_template);
+                  lowMrapSameHichi2WJets2->Fill(rap, weight_ratio);
+                  Zpt1560SameHichi2WJets1->Fill(dimu_pt, weight_template);
+                  Zpt1560SameHichi2WJets2->Fill(dimu_pt, weight_ratio);
+                  Zphistar1560SameHichi2WJets1->Fill(phistar, weight_template);
+                  Zphistar1560SameHichi2WJets2->Fill(phistar, weight_ratio);
+               }
+            }
          }
       ///////////////////////////
       //       DY (2P0F)       //
@@ -783,6 +911,29 @@ void applyFR(SampleTag index) {
                   lowMrapHichi2DYsel->Fill(rap, wt);
                   Zpt1560Hichi2DYsel->Fill(dimu_pt, wt);
                   Zphistar1560Hichi2DYsel->Fill(phistar, wt);
+               }
+            }
+            // SAME-SIGN
+            else {
+               if( mass > bins[0] && mass < bins[binnum-1]) {
+                  histSameHichi2DYsel->Fill(mass, wt);
+                  hist3binsSameHichi2DYsel->Fill(mass, wt);
+                  // if (passingMuons->at(0).first.isolation(0.15)) {
+                     fitSameHichi2DYsel->Fill(mass, wt);
+                     fitMETSameHichi2DYsel->Fill(MET, wt);
+                     fitmassMETSameHichi2DYsel->Fill(massMET, wt);
+                     fitMtSameHichi2DYsel->Fill(maxMt, wt);
+                  // }
+               }
+               if( mass > 60 && mass < 120) {
+                  rapSameHichi2DYsel->Fill(rap, wt);
+                  ZptSameHichi2DYsel->Fill(dimu_pt, wt);
+                  ZphistarSameHichi2DYsel->Fill(phistar, wt);
+               }
+               if ( mass > 15 && mass < 60) {
+                  lowMrapSameHichi2DYsel->Fill(rap, wt);
+                  Zpt1560SameHichi2DYsel->Fill(dimu_pt, wt);
+                  Zphistar1560SameHichi2DYsel->Fill(phistar, wt);
                }
             }
          }

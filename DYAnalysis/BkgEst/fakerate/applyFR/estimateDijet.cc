@@ -90,8 +90,12 @@ void estimateDijet(var thevar) {
 
     TH1D* dijet_template[NSamples+2];
     TH1D* dijetSS_template[NSamples+2];
+    TH1D* dijetHichi2_template[NSamples+2];
+    TH1D* dijetSSHichi2_template[NSamples+2];
     TH1D* dijet_ratio[NSamples+2];
     TH1D* dijetSS_ratio[NSamples+2];
+    TH1D* dijetHichi2_ratio[NSamples+2];
+    TH1D* dijetSSHichi2_ratio[NSamples+2];
     double norm[NSamples+2];
 
     TString histtag;
@@ -121,6 +125,14 @@ void estimateDijet(var thevar) {
        dijetSS_template[i]->Scale(norm[i]);
        dijetSS_template[i]->SetStats(kFALSE);
 
+       dijetHichi2_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Hichi2Dijet1");
+       dijetHichi2_template[i]->Scale(norm[i]);
+       dijetHichi2_template[i]->SetStats(kFALSE);
+
+       dijetSSHichi2_template[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameHichi2Dijet1");
+       dijetSSHichi2_template[i]->Scale(norm[i]);
+       dijetSSHichi2_template[i]->SetStats(kFALSE);
+
 
        dijet_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Dijet2");
        dijet_ratio[i]->Scale(norm[i]);
@@ -130,9 +142,18 @@ void estimateDijet(var thevar) {
        dijetSS_ratio[i]->Scale(norm[i]);
        dijetSS_ratio[i]->SetStats(kFALSE);
 
+       dijetHichi2_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "Hichi2Dijet2");
+       dijetHichi2_ratio[i]->Scale(norm[i]);
+       dijetHichi2_ratio[i]->SetStats(kFALSE);
+
+       dijetSSHichi2_ratio[i] = (TH1D*)f[i]->Get("Dijet/" + histtag + "SameHichi2Dijet2");
+       dijetSSHichi2_ratio[i]->Scale(norm[i]);
+       dijetSSHichi2_ratio[i]->SetStats(kFALSE);
+
        // put histos in an array for easy style setting
-       TH1D* h[4] = {dijet_template[i], dijetSS_template[i], dijet_ratio[i], dijetSS_ratio[i]};
-       for (int j=0; j<4; j++) {
+       TH1D* h[8] = {dijet_template[i], dijetSS_template[i], dijetHichi2_template[i], dijetSSHichi2_template[i],
+          dijet_ratio[i], dijetSS_ratio[i], dijetHichi2_ratio[i], dijetSSHichi2_ratio[i]};
+       for (int j=0; j<8; j++) {
           h[j]->GetXaxis()->SetTitle(xaxistitle(thevar));
           h[j]->GetYaxis()->SetTitleOffset(0.9);
           h[j]->GetYaxis()->SetTitle("Number of events");
@@ -156,7 +177,7 @@ void estimateDijet(var thevar) {
        SampleTag tagtoadd;
        if (IsDY(tag)) {
           // style 
-          for (int j=0; j<4; j++) {
+          for (int j=0; j<8; j++) {
              h[j]->SetFillColor(2);
              // h[j]->SetmarkerColor(2);
              // h[j]->SetmarkerStyle(22);
@@ -169,7 +190,7 @@ void estimateDijet(var thevar) {
        }
        if (IsData(tag)) {
           // style 
-          for (int j=0; j<4; j++) {
+          for (int j=0; j<8; j++) {
              h[j]->SetLineColor(1);
              h[j]->SetMarkerColor(1);
              h[j]->SetMarkerStyle(22);
@@ -182,7 +203,7 @@ void estimateDijet(var thevar) {
        }
        if (IsDiboson(tag)) {
           // style 
-          for (int j=0; j<4; j++) {
+          for (int j=0; j<8; j++) {
              h[j]->SetFillColor(3);
           }
 
@@ -193,7 +214,7 @@ void estimateDijet(var thevar) {
        }
        if (IsWjets(tag)) {
           // style 
-          for (int j=0; j<4; j++) {
+          for (int j=0; j<8; j++) {
              h[j]->SetFillColor(4);
           }
 
@@ -203,7 +224,7 @@ void estimateDijet(var thevar) {
           }
        }
        if (tag==TT) {
-          for (int j=0; j<4; j++) {
+          for (int j=0; j<8; j++) {
              h[j]->SetFillColor(6);
           }
        }
@@ -211,8 +232,12 @@ void estimateDijet(var thevar) {
        if (toadd) {
           dijet_template[tagtoadd]->Add(dijet_template[i]);
           dijetSS_template[tagtoadd]->Add(dijetSS_template[i]);
+          dijetHichi2_template[tagtoadd]->Add(dijetHichi2_template[i]);
+          dijetSSHichi2_template[tagtoadd]->Add(dijetSSHichi2_template[i]);
           dijet_ratio[tagtoadd]->Add(dijet_ratio[i]);
           dijetSS_ratio[tagtoadd]->Add(dijetSS_ratio[i]);
+          dijetHichi2_ratio[tagtoadd]->Add(dijetHichi2_ratio[i]);
+          dijetSSHichi2_ratio[tagtoadd]->Add(dijetSSHichi2_ratio[i]);
        }
     } // sample loop
 
@@ -248,6 +273,22 @@ void estimateDijet(var thevar) {
     dijetSS_ratio[Data1]->Add(dijetSS_ratio[TT],-1.0);
     dijetSS_ratio[Data1]->Add(dijetSS_ratio[WW],-1.0);
 
+    dijetHichi2_template[Data1]->Add(dijetHichi2_template[DYFirst],-1.0);
+    dijetHichi2_template[Data1]->Add(dijetHichi2_template[TT],-1.0);
+    dijetHichi2_template[Data1]->Add(dijetHichi2_template[WW],-1.0);
+
+    dijetHichi2_ratio[Data1]->Add(dijetHichi2_ratio[DYFirst],-1.0);
+    dijetHichi2_ratio[Data1]->Add(dijetHichi2_ratio[TT],-1.0);
+    dijetHichi2_ratio[Data1]->Add(dijetHichi2_ratio[WW],-1.0);
+
+    dijetSSHichi2_template[Data1]->Add(dijetSSHichi2_template[DYFirst],-1.0);
+    dijetSSHichi2_template[Data1]->Add(dijetSSHichi2_template[TT],-1.0);
+    dijetSSHichi2_template[Data1]->Add(dijetSSHichi2_template[WW],-1.0);
+
+    dijetSSHichi2_ratio[Data1]->Add(dijetSSHichi2_ratio[DYFirst],-1.0);
+    dijetSSHichi2_ratio[Data1]->Add(dijetSSHichi2_ratio[TT],-1.0);
+    dijetSSHichi2_ratio[Data1]->Add(dijetSSHichi2_ratio[WW],-1.0);
+
     // remove negative bins
     for(int k=1; k<varNbins+3; k++) {
        if(dijet_template[Data1]->GetBinContent(k) < 0) {
@@ -265,6 +306,22 @@ void estimateDijet(var thevar) {
        if(dijetSS_ratio[Data1]->GetBinContent(k) < 0) {
           dijetSS_ratio[Data1]->SetBinContent(k,0.0);
           dijetSS_ratio[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetHichi2_template[Data1]->GetBinContent(k) < 0) {
+          dijetHichi2_template[Data1]->SetBinContent(k,0.0);
+          dijetHichi2_template[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetHichi2_ratio[Data1]->GetBinContent(k) < 0) {
+          dijetHichi2_ratio[Data1]->SetBinContent(k,0.0);
+          dijetHichi2_ratio[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetSSHichi2_template[Data1]->GetBinContent(k) < 0) {
+          dijetSSHichi2_template[Data1]->SetBinContent(k,0.0);
+          dijetSSHichi2_template[Data1]->SetBinError(k,0.0);
+       }
+       if(dijetSSHichi2_ratio[Data1]->GetBinContent(k) < 0) {
+          dijetSSHichi2_ratio[Data1]->SetBinContent(k,0.0);
+          dijetSSHichi2_ratio[Data1]->SetBinError(k,0.0);
        }
     }
 
@@ -300,6 +357,30 @@ void estimateDijet(var thevar) {
     canv->Print("print/dijetSS_" + thevarname + ".pdf");
     canv->Clear();
 
+    dijetHichi2_template[Data1]->Draw("EP");
+    dijetHichi2_template[Data1]->SetMaximum(2.*dijetHichi2_template[Data1]->GetMaximum());
+    CMS_lumi(canv,111,11);
+    canv->Update();
+    canv->RedrawAxis();
+    canv->GetFrame()->Draw();
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    dijetHichi2_ratio[Data1]->Draw("HIST SAME");
+    legg->Draw("SAME");
+    canv->Print("print/dijetHichi2_" + thevarname + ".pdf");
+    canv->Clear();
+
+    dijetSSHichi2_template[Data1]->Draw("EP");
+    dijetSSHichi2_template[Data1]->SetMaximum(2.*dijetSSHichi2_template[Data1]->GetMaximum());
+    CMS_lumi(canv,111,11);
+    canv->Update();
+    canv->RedrawAxis();
+    canv->GetFrame()->Draw();
+    if (thevar != rap1560 && thevar != rap60120) canv->SetLogx();
+    dijetSSHichi2_ratio[Data1]->Draw("HIST SAME");
+    legg->Draw("SAME");
+    canv->Print("print/dijetSSHichi2_" + thevarname + ".pdf");
+    canv->Clear();
+
     double error = 0;
     dijet_template[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(template) = "<<dijet_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
@@ -307,11 +388,23 @@ void estimateDijet(var thevar) {
     dijetSS_template[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(template) SS = "<<dijetSS_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
+    dijetHichi2_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(template) Hichi2 = "<<dijetHichi2_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    dijetSSHichi2_template[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(template) SSHichi2 = "<<dijetSSHichi2_template[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
     dijet_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(ratio) = "<<dijet_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
     error = 0;
     dijetSS_ratio[Data1]->IntegralAndError(1,45,error);
     cout<<"QCD(ratio) SS = "<<dijetSS_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    dijetHichi2_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(ratio) Hichi2 = "<<dijetHichi2_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
+    error = 0;
+    dijetSSHichi2_ratio[Data1]->IntegralAndError(1,45,error);
+    cout<<"QCD(ratio) SSHichi2 = "<<dijetSSHichi2_ratio[Data1]->Integral(1,45)<<"+-"<<error<<endl;
 
     for(int i=1; i<varNbins+1; i++) {
         if(dijet_template[Data1]->GetBinContent(i) < 0) {
@@ -358,6 +451,10 @@ void estimateDijet(var thevar) {
     dijet_ratio[DataFirst]->Write("dijet_ratio");
     dijetSS_template[DataFirst]->Write("dijetSS_template");
     dijetSS_ratio[DataFirst]->Write("dijetSS_ratio");
+    dijetHichi2_template[DataFirst]->Write("dijetHichi2_template");
+    dijetHichi2_ratio[DataFirst]->Write("dijetHichi2_ratio");
+    dijetSSHichi2_template[DataFirst]->Write("dijetSSHichi2_template");
+    dijetSSHichi2_ratio[DataFirst]->Write("dijetSSHichi2_ratio");
     gg->Close();
 
     //wjets_systematic->Divide(wjets);
