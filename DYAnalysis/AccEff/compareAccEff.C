@@ -5,7 +5,7 @@
 
 void setStyle(TEfficiency *e, Color_t color=kBlack, Style_t markerstyle=kFullCircle);
 
-void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 | Phistar
+void compareAccEff(TString variable="Mass") { // Mass | Mass3bins | Pt | Rap1560 | Rap60120 | Phistar
    TFile *fnom = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fmomcor = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomUnCorr_Powheg_PAL3Mu12_0_rewboth.root");
    TFile *fnorew = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_norew.root");
@@ -47,14 +47,18 @@ void compareAccEff(TString variable="Mass") { // Mass | Pt | Rap1560 | Rap60120 
 
    // axes
    TString xtitle; double x_min=0, x_max=0;
-   if (variable=="Mass") {
+   if (variable.Contains("Mass")) {
       xtitle="Gen-Level Dimuon Mass (post-FSR) [GeV]";
       x_min=15.;
       x_max=600.;
+   } else if (variable.Contains("Pt1560")) {
+      xtitle="Gen-Level Dimuon p_{T} (post-FSR) [GeV]";
+      x_min=0.3;
+      x_max=200.;
    } else if (variable.Contains("Pt")) {
       xtitle="Gen-Level Dimuon p_{T} (post-FSR) [GeV]";
       x_min=0.3;
-      x_max=600.;
+      x_max=300.;
    } else if (variable.Contains("Rap")) {
       xtitle="Gen-Level Dimuon y_{CM} (post-FSR)";
       x_min=-2.87;

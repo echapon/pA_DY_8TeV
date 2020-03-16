@@ -21,7 +21,7 @@ Double_t Error_PropagatedAtimesB(Double_t A, Double_t sigma_A, Double_t B, Doubl
 // void Correction_AccEff(TH1D *h_yield_AccEff, TH1D *h_yield, TGraphAsymmErrors *g_AccEff);
 
 void DrawAccEffPlot(TString HLTname = "PAL3Mu12", 
-      TString variable = "Mass", // variable = Mass | Pt | Rap1560 | Rap60120 | Phistar | Pt1560 | Phistar1560
+      TString variable = "Mass", // variable = Mass | Mass3bins | Pt | Rap1560 | Rap60120 | Phistar | Pt1560 | Phistar1560
       TString MomCor = "MomCorr00", // MomCorr or MomUnCorr
       TString Rew = "rewboth", // rewboth or norew or rewplus or rewminus
       TString Generator = "Powheg") 
@@ -68,7 +68,7 @@ void DrawAccEffPlot(TString HLTname = "PAL3Mu12",
    if (!variable.Contains("Rap")) {
       gPad->SetLogx();
    }
-   if (variable=="Mass") {
+   if (variable.Contains("Mass")) {
       gPad->SetLogy();
    }
 
@@ -95,7 +95,7 @@ void DrawAccEffPlot(TString HLTname = "PAL3Mu12",
 	g_Eff->SetFillColorAlpha(kWhite, 0);
 	g_AccEff->SetFillColorAlpha(kWhite, 0);
 
-   if (variable=="Mass") {
+   if (variable.Contains("Mass")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
    } else if (variable.Contains("Pt")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
@@ -222,7 +222,7 @@ void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmE
 	TCanvas *c_compare_corr = new TCanvas(CanvasName, "", 800, 600);
 	c_compare_corr->cd();
 	if (!variable.Contains("Rap")) gPad->SetLogx();
-   if (variable=="Mass") gPad->SetLogy();
+   if (variable.Contains("Mass")) gPad->SetLogy();
 
 	g_Acc->Draw("AP");
 	g_Eff_Corr->Draw("PSAME");
@@ -247,7 +247,7 @@ void DrawAccEffDist(TString Type, TString Sample, TString variable, TGraphAsymmE
 	g_Eff_Corr->SetFillColorAlpha(kWhite, 0);
 	g_AccEff_Corr->SetFillColorAlpha(kWhite, 0);
 
-   if (variable=="Mass") {
+   if (variable.Contains("Mass")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Mass (post-FSR) [GeV]");
    } else if (variable.Contains("Pt")) {
       g_Acc->GetXaxis()->SetTitle( "Gen-Level Dimuon Pt (post-FSR) [GeV]");
