@@ -213,7 +213,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
       // EPPS16
       // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth_EPPS16.root");
-      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
       vector<TH1D*> hth_EPPS16;
       int i=0;
       const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
@@ -244,7 +245,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       }
 
       // CT14
-      TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+      TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
       vector<TH1D*> hth_CT14;
       i=0;
       TGraphAsymmErrors *gth_CT14 = NULL;
