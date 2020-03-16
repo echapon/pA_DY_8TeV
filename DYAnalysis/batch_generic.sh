@@ -20,5 +20,12 @@ uname -a
 which root
 
 
-echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
-root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+# echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+# root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+
+# echo root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
+# root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
+
+arg='(kTRUE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both,0,0)'
+echo root -l -b -q AccEff/Acc_Eff_weights.C+${arg}
+root -l -b -q AccEff/Acc_Eff_weights.C+${arg}
