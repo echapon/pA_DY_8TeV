@@ -186,18 +186,26 @@ void DrawControlPlotTool::SetupHistogramNames()
    HistNames.push_back( "h_massZ" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
    HistNames.push_back( "h_diPt_M15to20" );			Variables.push_back( "diPt_M15to20" );				XTitles.push_back( "dimuon P_{T} [GeV] (15<M_{#mu#mu}<20 GeV)");
-   HistNames.push_back( "h_diRapidity_M15to20" );			Variables.push_back( "diRapidity_M15to20" );				XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<20 GeV)");
+   HistNames.push_back( "h_diRap_M15to20" );			Variables.push_back( "diRapidity_M15to20" );				XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<20 GeV)");
    HistNames.push_back( "h_Phistar_M60to120" );			Variables.push_back( "Phistar" );				XTitles.push_back( "#phi^{*} (60<M_{#mu#mu}<120 GeV)");
 
 	HistNames.push_back( "h_diRap_M15to60" );			Variables.push_back( "diRapidityM1560" );		XTitles.push_back( "dimuon Rapidity (lab) (15<M_{#mu#mu}<60 GeV)");
 	HistNames.push_back( "h_diRap_M60to120" );			Variables.push_back( "diRapidityM60120" );		XTitles.push_back( "dimuon Rapidity (lab) (60<M_{#mu#mu}<120 GeV)");
 	HistNames.push_back( "h_diRapCM_coarse_M60to120" );			Variables.push_back( "diRapidityCMcoarseM60120" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV)");
+	HistNames.push_back( "h_diRapCM_coarse_M60to120" );			Variables.push_back( "diRapidityCMcoarseM60120_part1" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV) (PbP)");
+	HistNames.push_back( "h_diRapCM_coarse_M60to120" );			Variables.push_back( "diRapidityCMcoarseM60120_part2" );		XTitles.push_back( "dimuon Rapidity (CM) (60<M_{#mu#mu}<120 GeV) (pPb)");
 	HistNames.push_back( "h_diRap_M120to600" );			Variables.push_back( "diRapidityM120600" );		XTitles.push_back( "dimuon Rapidity (lab) (120<M_{#mu#mu}<600 GeV)");
 
 	HistNames.push_back( "h_lead_Pt" );			Variables.push_back( "LeadPt" );			XTitles.push_back( "Leading Muon P_{T} [GeV]");
 	HistNames.push_back( "h_sub_Pt" );			Variables.push_back( "SubPt" );				XTitles.push_back( "sub-leading Muon P_{T} [GeV]");
 	HistNames.push_back( "h_lead_eta" );		Variables.push_back( "LeadEta" );			XTitles.push_back( "Leading Muon #eta_{lab}");
 	HistNames.push_back( "h_sub_eta" );			Variables.push_back( "SubEta" );			XTitles.push_back( "sub-leading Muon #eta_{lab}");
+	HistNames.push_back( "h_lead_eta_M80to100" );		Variables.push_back( "LeadEta_M80to100" );			XTitles.push_back( "Leading Muon #eta_{lab} (60<M<120 GeV)");
+	HistNames.push_back( "h_sub_eta_M80to100" );			Variables.push_back( "SubEta_M80to100" );			XTitles.push_back( "sub-leading Muon #eta_{lab} (60<M<120 GeV)");
+	HistNames.push_back( "h_lead_eta_M80to100" );		Variables.push_back( "LeadEta_M80to100_part1" );			XTitles.push_back( "Leading Muon #eta_{lab} (60<M<120 GeV) (PbP)");
+	HistNames.push_back( "h_sub_eta_M80to100" );			Variables.push_back( "SubEta_M80to100_part1" );			XTitles.push_back( "sub-leading Muon #eta_{lab} (60<M<120 GeV) (PbP)");
+	HistNames.push_back( "h_lead_eta_M80to100" );		Variables.push_back( "LeadEta_M80to100_part2" );			XTitles.push_back( "Leading Muon #eta_{lab} (60<M<120 GeV) (pPb)");
+	HistNames.push_back( "h_sub_eta_M80to100" );			Variables.push_back( "SubEta_M80to100_part2" );			XTitles.push_back( "sub-leading Muon #eta_{lab} (60<M<120 GeV) (pPb)");
 	HistNames.push_back( "h_lead_phi" );		Variables.push_back( "LeadPhi" );			XTitles.push_back( "Leading Muon #phi");
 	HistNames.push_back( "h_sub_phi" );			Variables.push_back( "SubPhi" );			XTitles.push_back( "sub-leading Muon #phi");
 
@@ -935,8 +943,10 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    TString wjetstag;
    if (isSS) {
       if (isHichi2) {
-         dijettag = "dijetSS_Hichi2_template";
-         wjetstag = "wjetsSS_Hichi2_template";
+         dijettag = "dijetSSHichi2_template"; 
+         wjetstag = "wjetsSSHichi2_template"; 
+         // dijettag = "dijetSS_template";
+         // wjetstag = "wjetsSS_template";
       } else {
          dijettag = "dijetSS_template";
          wjetstag = "wjetsSS_template";
@@ -1177,7 +1187,11 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
     c1_1->UseCurrentStyle();
     c1_1->SetRightMargin(0.045);
     c1_1->SetBottomMargin(0.3);
-    c1_1->SetLogy();
+    bool setlogy = false;
+    if (!(Variable.Contains("Rap") || Variable.Contains("rap") || Variable.Contains("Eta") || Variable.Contains("eta"))) {
+       c1_1->SetLogy();
+       setlogy = true;
+    }
 
     h_data->GetXaxis()->SetLabelSize(0.000);
     h_data->GetYaxis()->SetTitle("Entry");
@@ -1194,6 +1208,7 @@ void DrawControlPlotTool::DrawCanvas( TString Variable, TH1D* h_data, TH1D* h_pr
     else MaxValue = MaxValue_totMC;
 
     Double_t UpperEdge = MaxValue * 4;
+    if (!setlogy) UpperEdge = MaxValue * 1.2;
     h_data->GetYaxis()->SetRangeUser(0.05, UpperEdge);
 
     // -- Set the axis range by hand -- //
