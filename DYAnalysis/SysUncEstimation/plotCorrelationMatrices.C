@@ -20,6 +20,16 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
 
    TString cormatname = (noacc) ? "cormat_noacc" : "cormat";
 
+
+   // better for the correlation matrix
+   const Int_t Number = 3;
+   Double_t Red[Number]    = { 0.00, 1.00, 1.00};
+   Double_t Green[Number]  = { 0.00, 1.00, 0.00};
+   Double_t Blue[Number]   = { 1.00, 1.00, 0.00};
+   Double_t Length[Number] = { 0.00, 0.50, 1.00 };
+   Int_t nb=50;
+   TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
+
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       TString systfilename = "./csv/" + *it + "_" + TString(varname(thevar)) + ".csv";
       cout << systfilename << endl;
@@ -30,7 +40,10 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
          c.SetLogx();
          c.SetLogy();
       }
+      c.SetZRange(-1,1);
+      TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
       c.CanvasWith2DHistogram(hm,"COLZ");
+      CMS_lumi(c.c, 111, 0);
       c.PrintCanvas();
    }
 
@@ -42,7 +55,10 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
       c.SetLogx();
       c.SetLogy();
    }
+   c.SetZRange(-1,1);
+   TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
    c.CanvasWith2DHistogram(hm,"COLZ");
+   CMS_lumi(c.c, 111, 0);
    c.PrintCanvas();
 }
 
