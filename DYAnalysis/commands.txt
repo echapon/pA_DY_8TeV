@@ -26,7 +26,7 @@ root -l -b -q estimateWjet.cc
 
 
 # draw the plots. for instance:
-root -l  -b -q ControlPlots/DrawControlPlot.C+'("None",kTRUE,"Lumi","MomCorr00","rewboth",true)'
+root -l  -b -q ControlPlots/DrawControlPlot.C+'("PAL3Mu12",1,"Lumi","MomCorr00","rewboth",true)'
 
 # make the plots in official style
 root -l -b -q OfficialStyle/dataMC.C
