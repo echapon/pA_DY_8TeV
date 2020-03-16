@@ -95,7 +95,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
          kBlue,kRed,kBlack,
-         "5","5","EP");
+         "5","5","EP",true);
    c_1560.TopPad->cd();
    TLatex latex;
    latex.SetNDC();
@@ -109,7 +109,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
          kBlue,kRed,kBlack,
-         "5","5","EP");
+         "5","5","EP",true);
    c_60120.TopPad->cd();
    ylatex=0.9;
    latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");

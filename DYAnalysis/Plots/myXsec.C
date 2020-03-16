@@ -56,6 +56,16 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
    TFile *fout = TFile::Open(outputfile,"RECREATE");
 
+   ofstream chi2file(Form("Plots/results/tex/chi2%s.tex",correctforacc ? "" : "_noacc"));
+   ofstream chi2file_nocor(Form("Plots/results/tex/chi2_nocor%s.tex",correctforacc ? "" : "_noacc"));
+   chi2file << "\\begin{tabular}{lcccccc}" << endl;
+   chi2file << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{CT14} & \\multicolumn{3}{c}{CT14+EPPS16} \\\\" << endl;
+   chi2file << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
+   chi2file << "\\hline" << endl;
+   chi2file_nocor << "\\begin{tabular}{lcccccc}" << endl;
+   chi2file_nocor << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{CT14} & \\multicolumn{3}{c}{CT14+EPPS16} \\\\" << endl;
+   chi2file_nocor << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
+   chi2file_nocor << "\\hline" << endl;
 
    // loop on the variables
    for (int ivar=0; ivar<ALLvar; ivar++) {
@@ -181,12 +191,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          logx = true; logy=true;
       } else if (thevar==rap60120) {
          ytitle = "d#sigma/dy [nb]";
-         xtitle_tex = "\\ylab";
-         ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
+         xtitle_tex = "\\yCM";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\yCM$ (nb)";
       } else if (thevar==rap1560) {
          ytitle = "d#sigma/dy [nb]";
-         xtitle_tex = "\\ylab";
-         ytitle_tex = "$\\dd\\sigma/\\dd\\ylab$ (nb)";
+         xtitle_tex = "\\yCM";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\yCM$ (nb)";
       }
 
       MyCanvas c1(Form("Plots/results/plots/result%s_%s",correctforacc ? "" : "_noacc",varname(thevar)),xtitle,ytitle,lx,ly);
@@ -436,6 +446,21 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          //    tmpfile << endl;
          // }
          // tmpfile.close();
+
+         // print those chi2's to tex
+         chi2file << xtitle_tex;
+         chi2file_nocor << xtitle_tex;
+         if (thevar==var::rap1560 || thevar==pt1560 || thevar==phistar1560) {
+            chi2file << " ($15 < \\mmumu < 60\\GeVcc$)";
+            chi2file_nocor << " ($15 < \\mmumu < 60\\GeVcc$)";
+         } else if (thevar==var::rap60120 || thevar==pt || thevar==phistar) {
+            chi2file << " ($60 < \\mmumu < 120\\GeVcc$)";
+            chi2file_nocor << " ($60 < \\mmumu < 120\\GeVcc$)";
+         }
+         chi2file << " & " << chi2_CT14_withcor << " & " << nbins << " & " << TMath::Prob(chi2_CT14_withcor,nbins)*100.
+            << " & " << chi2_EPPS16_withcor << " & " << nbins << " & " << TMath::Prob(chi2_EPPS16_withcor,nbins)*100. << " \\\\" << endl;
+         chi2file_nocor << " & " << chi2_CT14_nocor << " & " << nbins << " & " << TMath::Prob(chi2_CT14_nocor,nbins)*100.
+            << " & " << chi2_EPPS16_nocor << " & " << nbins << " & " << TMath::Prob(chi2_EPPS16_nocor,nbins)*100. << " \\\\" << endl;
       }
 
 
@@ -453,6 +478,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
    fout->Close();
    fy->Close();
    fae->Close();
+
+   // close chi2 tex files
+   chi2file << "\\end{tabular}" << endl;
+   chi2file.close();
+   chi2file_nocor << "\\end{tabular}" << endl;
+   chi2file_nocor.close();
 }
 
 void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist) {
