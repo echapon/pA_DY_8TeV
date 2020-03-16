@@ -174,7 +174,8 @@ namespace DYana {
    const char* xaxistitle(var thevar) {
       if (thevar==var::mass || thevar==var::mass3bins) return "M [GeV/c^{2}]";
       else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV/c]";
-      else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
+      else if (thevar==var::phistar || thevar==var::phistar1560) return "#lower[0.1]{#phi}#lower[-0.1]{#scale[0.8]{*}}";
+      // else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
       else return "y_{CM}";
    };
 
