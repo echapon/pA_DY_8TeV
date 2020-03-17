@@ -19,7 +19,7 @@
 
    // setup LHAPDF for lxplus
    if (TString(gSystem->Getenv("HOSTNAME")).Contains("lxplus")) {
-      gROOT->ProcessLine(".include /afs/cern.ch/work/e/echapon/public/xFitter/deps/lhapdf/include/");
-      gSystem->Load("/afs/cern.ch/work/e/echapon/public/xFitter/deps/lhapdf/lib/libLHAPDF.so");
+      gROOT->ProcessLine(".include /afs/cern.ch/work/e/echapon/public/LHAPDF/6.2.3/include/");
+      gSystem->Load("/afs/cern.ch/work/e/echapon/public/LHAPDF/6.2.3/lib/libLHAPDF.so");
    }
 }
