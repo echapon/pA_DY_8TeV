@@ -233,6 +233,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       chainGen->SetBranchStatus("ttbar_w",1);
 
       RoccoR  rmcor("Include/roccor.2016.v3/rcdata.2016.v3"); //directory path as input for now; initialize only once, contains all variations
+      // set the seed
+      gRandom = new TRandom3(1);
 
 		Bool_t isNLO = 0;
 		if( Sample=="Powheg" && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
@@ -563,24 +565,24 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 	h_mass_tot->Write();
 
    for (int i=0; i<nweights; i++) {
-      // cancel the effect of HF reweighting
-      h_mass_EffPass[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass[i]->Divide(h_mass_EffTotal[i]);
-      h_mass3bins_EffPass[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass[i]->Divide(h_mass3bins_EffTotal[i]);
-      h_pt_EffPass[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass[i]->Divide(h_pt_EffTotal[i]);
-      h_phistar_EffPass[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass[i]->Divide(h_phistar_EffTotal[i]);
-      h_rap1560_EffPass[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass[i]->Divide(h_rap1560_EffTotal[i]);
-      h_rap60120_EffPass[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass[i]->Divide(h_rap60120_EffTotal[i]);
-      h_pt1560_EffPass[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass[i]->Divide(h_pt1560_EffTotal[i]);
-      h_phistar1560_EffPass[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass[i]->Divide(h_phistar1560_EffTotal[i]);
+      // // cancel the effect of HF reweighting
+      // h_mass_EffPass[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass[i]->Divide(h_mass_EffTotal[i]);
+      // h_mass3bins_EffPass[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass[i]->Divide(h_mass3bins_EffTotal[i]);
+      // h_pt_EffPass[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass[i]->Divide(h_pt_EffTotal[i]);
+      // h_phistar_EffPass[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass[i]->Divide(h_phistar_EffTotal[i]);
+      // h_rap1560_EffPass[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass[i]->Divide(h_rap1560_EffTotal[i]);
+      // h_rap60120_EffPass[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass[i]->Divide(h_rap60120_EffTotal[i]);
+      // h_pt1560_EffPass[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass[i]->Divide(h_pt1560_EffTotal[i]);
+      // h_phistar1560_EffPass[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass[i]->Divide(h_phistar1560_EffTotal[i]);
 
-      h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal[i]);
-      h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal[i]);
-      h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal[i]);
-      h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal[i]);
-      h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal[i]);
-      h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal[i]);
-      h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal[i]);
-      h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal[i]);
+      // h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass[i]); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal[i]);
+      // h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass[i]); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal[i]);
+      // h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass[i]); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal[i]);
+      // h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass[i]); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal[i]);
+      // h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass[i]); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal[i]);
+      // h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass[i]); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal[i]);
+      // h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal[i]);
+      // h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal[i]);
 
       h_mass_AccTotal[i]->Write();
       h_mass_AccPass[i]->Write();
@@ -599,15 +601,15 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       h_phistar1560_AccTotal[i]->Write();
       h_phistar1560_AccPass[i]->Write();
 
-      // substitute AccPass to EffTotal
-      h_mass_EffTotal[i] = (TH1D*) h_mass_AccPass[i]->Clone(Form("h_mass_EffTotal%d",i));
-      h_mass3bins_EffTotal[i] = (TH1D*) h_mass3bins_AccPass[i]->Clone(Form("h_mass3bins_EffTotal%d",i));
-      h_pt_EffTotal[i] = (TH1D*) h_pt_AccPass[i]->Clone(Form("h_pt_EffTotal%d",i));
-      h_phistar_EffTotal[i] = (TH1D*) h_phistar_AccPass[i]->Clone(Form("h_phistar_EffTotal%d",i));
-      h_rap1560_EffTotal[i] = (TH1D*) h_rap1560_AccPass[i]->Clone(Form("h_rap1560_EffTotal%d",i));
-      h_rap60120_EffTotal[i] = (TH1D*) h_rap60120_AccPass[i]->Clone(Form("h_rap60120_EffTotal%d",i));
-      h_pt1560_EffTotal[i] = (TH1D*) h_pt1560_AccPass[i]->Clone(Form("h_pt1560_EffTotal%d",i));
-      h_phistar1560_EffTotal[i] = (TH1D*) h_phistar1560_AccPass[i]->Clone(Form("h_phistar1560_EffTotal%d",i));
+      // // substitute AccPass to EffTotal
+      // h_mass_EffTotal[i] = (TH1D*) h_mass_AccPass[i]->Clone(Form("h_mass_EffTotal%d",i));
+      // h_mass3bins_EffTotal[i] = (TH1D*) h_mass3bins_AccPass[i]->Clone(Form("h_mass3bins_EffTotal%d",i));
+      // h_pt_EffTotal[i] = (TH1D*) h_pt_AccPass[i]->Clone(Form("h_pt_EffTotal%d",i));
+      // h_phistar_EffTotal[i] = (TH1D*) h_phistar_AccPass[i]->Clone(Form("h_phistar_EffTotal%d",i));
+      // h_rap1560_EffTotal[i] = (TH1D*) h_rap1560_AccPass[i]->Clone(Form("h_rap1560_EffTotal%d",i));
+      // h_rap60120_EffTotal[i] = (TH1D*) h_rap60120_AccPass[i]->Clone(Form("h_rap60120_EffTotal%d",i));
+      // h_pt1560_EffTotal[i] = (TH1D*) h_pt1560_AccPass[i]->Clone(Form("h_pt1560_EffTotal%d",i));
+      // h_phistar1560_EffTotal[i] = (TH1D*) h_phistar1560_AccPass[i]->Clone(Form("h_phistar1560_EffTotal%d",i));
 
       h_mass_EffTotal[i]->Write();
       h_mass3bins_EffTotal[i]->Write();

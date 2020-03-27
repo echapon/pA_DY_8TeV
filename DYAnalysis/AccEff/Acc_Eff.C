@@ -537,24 +537,24 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_mass_tot->Write();
 
    // cancel the effect of HF reweighting
-   h_mass_EffPass->Multiply(h_mass_AccPass); h_mass_EffPass->Divide(h_mass_EffTotal);
-   h_mass3bins_EffPass->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass->Divide(h_mass3bins_EffTotal);
-   h_pt_EffPass->Multiply(h_pt_AccPass); h_pt_EffPass->Divide(h_pt_EffTotal);
-   h_phistar_EffPass->Multiply(h_phistar_AccPass); h_phistar_EffPass->Divide(h_phistar_EffTotal);
-   h_rap1560_EffPass->Multiply(h_rap1560_AccPass); h_rap1560_EffPass->Divide(h_rap1560_EffTotal);
-   h_rap60120_EffPass->Multiply(h_rap60120_AccPass); h_rap60120_EffPass->Divide(h_rap60120_EffTotal);
-   h_pt1560_EffPass->Multiply(h_pt1560_AccPass); h_pt1560_EffPass->Divide(h_pt1560_EffTotal);
-   h_phistar1560_EffPass->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass->Divide(h_phistar1560_EffTotal);
-	for (int i=0; i<nweights; i++) {
-      h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal);
-      h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal);
-      h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal);
-      h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal);
-      h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal);
-      h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal);
-      h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal);
-      h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal);
-   }
+   // h_mass_EffPass->Multiply(h_mass_AccPass); h_mass_EffPass->Divide(h_mass_EffTotal);
+   // h_mass3bins_EffPass->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass->Divide(h_mass3bins_EffTotal);
+   // h_pt_EffPass->Multiply(h_pt_AccPass); h_pt_EffPass->Divide(h_pt_EffTotal);
+   // h_phistar_EffPass->Multiply(h_phistar_AccPass); h_phistar_EffPass->Divide(h_phistar_EffTotal);
+   // h_rap1560_EffPass->Multiply(h_rap1560_AccPass); h_rap1560_EffPass->Divide(h_rap1560_EffTotal);
+   // h_rap60120_EffPass->Multiply(h_rap60120_AccPass); h_rap60120_EffPass->Divide(h_rap60120_EffTotal);
+   // h_pt1560_EffPass->Multiply(h_pt1560_AccPass); h_pt1560_EffPass->Divide(h_pt1560_EffTotal);
+   // h_phistar1560_EffPass->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass->Divide(h_phistar1560_EffTotal);
+   // for (int i=0; i<nweights; i++) {
+   //    h_mass_EffPass_Corr_tnp[i]->Multiply(h_mass_AccPass); h_mass_EffPass_Corr_tnp[i]->Divide(h_mass_EffTotal);
+   //    h_mass3bins_EffPass_Corr_tnp[i]->Multiply(h_mass3bins_AccPass); h_mass3bins_EffPass_Corr_tnp[i]->Divide(h_mass3bins_EffTotal);
+   //    h_pt_EffPass_Corr_tnp[i]->Multiply(h_pt_AccPass); h_pt_EffPass_Corr_tnp[i]->Divide(h_pt_EffTotal);
+   //    h_phistar_EffPass_Corr_tnp[i]->Multiply(h_phistar_AccPass); h_phistar_EffPass_Corr_tnp[i]->Divide(h_phistar_EffTotal);
+   //    h_rap1560_EffPass_Corr_tnp[i]->Multiply(h_rap1560_AccPass); h_rap1560_EffPass_Corr_tnp[i]->Divide(h_rap1560_EffTotal);
+   //    h_rap60120_EffPass_Corr_tnp[i]->Multiply(h_rap60120_AccPass); h_rap60120_EffPass_Corr_tnp[i]->Divide(h_rap60120_EffTotal);
+   //    h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal);
+   //    h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal);
+   // }
 
 	h_mass_AccTotal->Write();
 	h_mass_AccPass->Write();
@@ -573,24 +573,24 @@ void Acc_Eff(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TString HLT
 	h_phistar1560_AccTotal->Write();
 	h_phistar1560_AccPass->Write();
 
-   // substitute AccPass to EffTotal
-   h_mass_EffTotal->Write("h_mass_EffTotal_HFrew");
-   h_mass3bins_EffTotal->Write("h_mass3bins_EffTotal_HFrew");
-   h_pt_EffTotal->Write("h_pt_EffTotal_HFrew");
-   h_phistar_EffTotal->Write("h_phistar_EffTotal_HFrew");
-   h_rap1560_EffTotal->Write("h_rap1560_EffTotal_HFrew");
-   h_rap60120_EffTotal->Write("h_rap60120_EffTotal_HFrew");
-   h_pt1560_EffTotal->Write("h_pt1560_EffTotal_HFrew");
-   h_phistar1560_EffTotal->Write("h_phistar1560_EffTotal_HFrew");
+   // // substitute AccPass to EffTotal
+   // h_mass_EffTotal->Write("h_mass_EffTotal_HFrew");
+   // h_mass3bins_EffTotal->Write("h_mass3bins_EffTotal_HFrew");
+   // h_pt_EffTotal->Write("h_pt_EffTotal_HFrew");
+   // h_phistar_EffTotal->Write("h_phistar_EffTotal_HFrew");
+   // h_rap1560_EffTotal->Write("h_rap1560_EffTotal_HFrew");
+   // h_rap60120_EffTotal->Write("h_rap60120_EffTotal_HFrew");
+   // h_pt1560_EffTotal->Write("h_pt1560_EffTotal_HFrew");
+   // h_phistar1560_EffTotal->Write("h_phistar1560_EffTotal_HFrew");
 
-	h_mass_EffTotal = (TH1D*) h_mass_AccPass->Clone("h_mass_EffTotal");
-	h_mass3bins_EffTotal = (TH1D*) h_mass3bins_AccPass->Clone("h_mass3bins_EffTotal");
-	h_pt_EffTotal = (TH1D*) h_pt_AccPass->Clone("h_pt_EffTotal");
-	h_phistar_EffTotal = (TH1D*) h_phistar_AccPass->Clone("h_phistar_EffTotal");
-	h_rap1560_EffTotal = (TH1D*) h_rap1560_AccPass->Clone("h_rap1560_EffTotal");
-	h_rap60120_EffTotal = (TH1D*) h_rap60120_AccPass->Clone("h_rap60120_EffTotal");
-	h_pt1560_EffTotal = (TH1D*) h_pt1560_AccPass->Clone("h_pt1560_EffTotal");
-	h_phistar1560_EffTotal = (TH1D*) h_phistar1560_AccPass->Clone("h_phistar1560_EffTotal");
+   // h_mass_EffTotal = (TH1D*) h_mass_AccPass->Clone("h_mass_EffTotal");
+   // h_mass3bins_EffTotal = (TH1D*) h_mass3bins_AccPass->Clone("h_mass3bins_EffTotal");
+   // h_pt_EffTotal = (TH1D*) h_pt_AccPass->Clone("h_pt_EffTotal");
+   // h_phistar_EffTotal = (TH1D*) h_phistar_AccPass->Clone("h_phistar_EffTotal");
+   // h_rap1560_EffTotal = (TH1D*) h_rap1560_AccPass->Clone("h_rap1560_EffTotal");
+   // h_rap60120_EffTotal = (TH1D*) h_rap60120_AccPass->Clone("h_rap60120_EffTotal");
+   // h_pt1560_EffTotal = (TH1D*) h_pt1560_AccPass->Clone("h_pt1560_EffTotal");
+   // h_phistar1560_EffTotal = (TH1D*) h_phistar1560_AccPass->Clone("h_phistar1560_EffTotal");
 
 	h_mass_EffTotal->Write();
 	h_mass3bins_EffTotal->Write();
