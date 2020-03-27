@@ -988,9 +988,9 @@ public:
 		
 		c->cd();
 		gPad->SetLeftMargin(0.14);
-		gPad->SetRightMargin(0.12);
-		gPad->SetTopMargin(0.03);
-		gPad->SetBottomMargin(0.10);
+		gPad->SetRightMargin(0.15);//0.12 (Hyunchul)
+		gPad->SetTopMargin(0.08);// 0.03 (Hyunchul)
+		gPad->SetBottomMargin(0.12);// 0.10 (Hyunchul)
 		// gPad->SetLeftMargin(0.12);
 		// gPad->SetRightMargin(0.15);
 
