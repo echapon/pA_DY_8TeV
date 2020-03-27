@@ -4,6 +4,7 @@
 #include "../../Include/lhapdf_utils.h"
 #include "../../Include/PlotTools.h"
 #include "../syst.C"
+#include "../../AccEff/DrawAccEffPlot.C"
 
 #include "TFile.h"
 #include "TH1.h"
@@ -48,8 +49,8 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff->SetName("gEff_scales");
    checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
-   gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
-   gAccEff->SetName("gAccEff_scales");
+   gAccEff = (TGraphAsymmErrors*) gAcc->Clone("gAccEff_scales");
+   MakeAccEffGraph(gAccEff,gAcc,gEff);
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
 
@@ -64,6 +65,7 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
       checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
+      MakeAccEffGraph(gAccEffTmp,gAccTmp,gEffTmp);
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
 
@@ -168,6 +170,7 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    gEff->SetName("gEff_alphas");
    checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
+   MakeAccEffGraph(gAccEff,gAcc,gEff);
    gAccEff->SetName("gAccEff_alphas");
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
@@ -183,6 +186,7 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
       TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
       checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
+      MakeAccEffGraph(gAccEffTmp,gAccTmp,gEffTmp);
       gAccEffs.push_back(gAccEffTmp);
       graphNames.push_back(gn[i]);
 
@@ -279,46 +283,59 @@ TH2D* Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
 
    int i=0;
    hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-   hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+   // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
    hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-   hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+   // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
+   // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
    hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-   hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+   hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+   hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
    hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
    histNames.push_back(Form("%d",i));
 
    for (i=285; i<=324; i++) {
       hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
       hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
+      // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
       hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
       hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-284));
    }
 
    for (i=112; i<=167; i++) {
       hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
       hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
+      // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
       hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
       hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-111+40));
    }
 
-   gAcc = pdfuncert(hAcc, "EPPS16nlo_CT14nlo_Pb208");
-   gEff = pdfuncert(hEff, "EPPS16nlo_CT14nlo_Pb208");
+   // gAcc = pdfuncert(hAcc, "EPPS16nlo_CT14nlo_Pb208");
+   // gEff = pdfuncert(hEff, "EPPS16nlo_CT14nlo_Pb208");
    gAccEff = pdfuncert(hAccEff, "EPPS16nlo_CT14nlo_Pb208");
 
    // compute ratio to first graph
    for (vector<TH1D*>::iterator it=hAccEff.begin()+1; it!=hAccEff.end(); it++) (*it)->Divide(hAccEff[0]);
    hAccEff[0]->Divide(hAccEff[0]);
 
+   // for (vector<TH1D*>::iterator it=hAcc.begin()+1; it!=hAcc.end(); it++) (*it)->Divide(hAcc[0]);
+   // hAcc[0]->Divide(hAcc[0]);
+
+   // for (vector<TH1D*>::iterator it=hEff.begin()+1; it!=hEff.end(); it++) (*it)->Divide(hEff[0]);
+   // hEff[0]->Divide(hEff[0]);
+
    c1.SetYRange(0.90,1.10);
    c1.CanvasWithMultipleHistograms(hAccEff, histNames, "HIST LP");
+   // c1.CanvasWithMultipleHistograms(hEff, histNames, "HIST LP");
    c1.PrintCanvas();
    c1.PrintCanvas_C();
 
@@ -356,6 +373,7 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
    gEff->SetName("gEff_Zpt");
    checkNumDen(hEffPass_Corr_tnp[0],hAccTotal[0]);
    gAccEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hAccTotal[0]);
+   MakeAccEffGraph(gAccEff,gAcc,gEff);
    gAccEff->SetName("gAccEff_Zpt");
    gAccEffs.push_back(gAccEff);
    graphNames.push_back(gn[0]);
@@ -372,10 +390,11 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
    TGraphAsymmErrors *gEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hEffTotal[i]);
    checkNumDen(hEffPass_Corr_tnp[i],hAccTotal[i]);
    TGraphAsymmErrors *gAccEffTmp = new TGraphAsymmErrors(hEffPass_Corr_tnp[i],hAccTotal[i]);
+   MakeAccEffGraph(gAccEffTmp,gAccTmp,gEffTmp);
    gAccEffs.push_back(gAccEffTmp);
    graphNames.push_back(gn[i]);
 
-   for (int j=0; j<gAccTmp->GetN(); j++) {
+   for (int j=0; j<nbins; j++) {
       if (i==1) {
          gAcc->SetPointEYlow(j,0);
          gAcc->SetPointEYhigh(j,0);
@@ -390,13 +409,31 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
       gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
       gAccEff->SetPointEYlow(j,-min(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],-gAccEff->GetEYlow()[j]));
       gAccEff->SetPointEYhigh(j,max(gAccEffTmp->GetY()[j]-gAccEff->GetY()[j],gAccEff->GetEYhigh()[j]));
+   } // loop on bins
 
-      double diffj = gAccTmp->GetY()[j]-gAcc->GetY()[j];
+   // remove bins with tiny variation, ie "dips" in the variations ("smooth")
+   for (int j=1; j<nbins-1; j++) {
+      double acceffNm1 = fabs(gAccEffTmp->GetY()[j-1] - gAccEff->GetY()[j-1]);
+      double acceffN = fabs(gAccEffTmp->GetY()[j] - gAccEff->GetY()[j]);
+      double acceffNp1 = fabs(gAccEffTmp->GetY()[j+1] - gAccEff->GetY()[j+1]);
+
+      if (acceffN < acceffNm1 && acceffN < acceffNp1) {
+         cout << "!!!!!!!!!! " <<  j << endl;
+         double avgdiff = 0.5*(acceffNm1+acceffNp1);
+         gAccEffTmp->SetPoint(j, gAccEff->GetX()[j], gAccEff->GetY()[j]+avgdiff);
+         gAccEff->SetPointEYlow(j,avgdiff);
+         gAccEff->SetPointEYhigh(j,avgdiff);
+      }
+   }
+
+   // make the 2D histo
+   for (int j=0; j<nbins; j++) {
+      double diffj = gAccEffTmp->GetY()[j]-gAccEff->GetY()[j];
       for (int k=0; k<nbins; k++) {
-         double diffk = gAccTmp->GetY()[k]-gAcc->GetY()[k];
+         double diffk = gAccEffTmp->GetY()[k]-gAccEff->GetY()[k];
          ans->SetBinContent(j+1,k+1,diffj*diffk);
       }
-   } // loop on bins
+   }
 
    // turn the cov matrix into a correlation matrix
    for (int j=0; j<nbins; j++) {
