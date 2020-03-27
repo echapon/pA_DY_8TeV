@@ -292,20 +292,37 @@ TH2D* Sys_Eff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    gEffs.push_back(gEffTmp);
    graphNames.push_back(gn[i]);
 
-   for (int j=0; j<gEffTmp->GetN(); j++) {
+   for (int j=0; j<nbins; j++) {
       if (i==1) {
          gEff->SetPointEYlow(j,0);
          gEff->SetPointEYhigh(j,0);
       }
       gEff->SetPointEYlow(j,-min(gEffTmp->GetY()[j]-gEff->GetY()[j],-gEff->GetEYlow()[j]));
       gEff->SetPointEYhigh(j,max(gEffTmp->GetY()[j]-gEff->GetY()[j],gEff->GetEYhigh()[j]));
+   } // loop on bins
 
+   // remove bins with tiny variation, ie "dips" in the variations ("smooth")
+   for (int j=1; j<nbins-1; j++) {
+      double effNm1 = fabs(gEffTmp->GetY()[j-1] - gEff->GetY()[j-1]);
+      double effN = fabs(gEffTmp->GetY()[j] - gEff->GetY()[j]);
+      double effNp1 = fabs(gEffTmp->GetY()[j+1] - gEff->GetY()[j+1]);
+
+      if (effN < effNm1 && effN < effNp1) {
+         double avgdiff = 0.5*(effNm1+effNp1);
+         gEffTmp->SetPoint(j, gEff->GetX()[j], gEff->GetY()[j]+avgdiff);
+         gEff->SetPointEYlow(j,avgdiff);
+         gEff->SetPointEYhigh(j,avgdiff);
+      }
+   }
+
+   // make the 2D histo
+   for (int j=0; j<nbins; j++) {
       double diffj = gEffTmp->GetY()[j]-gEff->GetY()[j];
       for (int k=0; k<nbins; k++) {
          double diffk = gEffTmp->GetY()[k]-gEff->GetY()[k];
          ans->SetBinContent(j+1,k+1,diffj*diffk);
       }
-   } // loop on bins
+   }
 
    // turn the cov matrix into a correlation matrix
    for (int j=0; j<nbins; j++) {
