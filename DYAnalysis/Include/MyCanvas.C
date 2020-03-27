@@ -83,10 +83,10 @@ public:
 		UpperEdge_Y	= 0;
 		LowerEdge_Z = 0;
 		UpperEdge_Z	= 0;
-		Legend_x1 = 0.65;
-		Legend_y1 = 0.85;
-		Legend_x2 = 0.95;
-		Legend_y2 = 0.95;
+		Legend_x1 = 0.63;//0.65 (Hyunchul)
+		Legend_y1 = 0.80;//0.85 (Hyunchul)
+		Legend_x2 = 0.95;//0.95 (Hyunchul)
+		Legend_y2 = 0.90;//0.95 (Hyunchul)
 
 		LowerEdge_Ratio = 0.45;
 		UpperEdge_Ratio = 1.55;
@@ -498,6 +498,7 @@ public:
 		// -- ensure additional space at the bottom side for ratio plot -- //
 		TopPad->SetBottomMargin(0.32);
 		TopPad->SetRightMargin(0.05);
+		TopPad->SetTopMargin(0.08); // added by Hyunchul
 
 		g1->Draw("A" + DrawOp1);
 		g2->Draw(DrawOp2);
