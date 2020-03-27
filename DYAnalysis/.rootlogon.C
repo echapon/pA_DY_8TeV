@@ -18,7 +18,7 @@
    // gSystem->AddLinkedLibs("/cvmfs/cms.cern.ch/slc6_amd64_gcc530/external/lhapdf/6.1.6-ikhhed/lib/libLHAPDF.so");
 
    // setup LHAPDF for lxplus
-   if (TString(gSystem->Getenv("HOSTNAME")).Contains("lxplus")) {
+   if (TString(gSystem->Getenv("HOSTNAME")).Contains("cern")) {
       gROOT->ProcessLine(".include /afs/cern.ch/work/e/echapon/public/LHAPDF/6.2.3/include/");
       gSystem->Load("/afs/cern.ch/work/e/echapon/public/LHAPDF/6.2.3/lib/libLHAPDF.so");
    }
