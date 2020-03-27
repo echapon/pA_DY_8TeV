@@ -418,7 +418,6 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
       double acceffNp1 = fabs(gAccEffTmp->GetY()[j+1] - gAccEff->GetY()[j+1]);
 
       if (acceffN < acceffNm1 && acceffN < acceffNp1) {
-         cout << "!!!!!!!!!! " <<  j << endl;
          double avgdiff = 0.5*(acceffNm1+acceffNp1);
          gAccEffTmp->SetPoint(j, gAccEff->GetX()[j], gAccEff->GetY()[j]+avgdiff);
          gAccEff->SetPointEYlow(j,avgdiff);
