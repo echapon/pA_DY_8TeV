@@ -895,7 +895,7 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	///////////////////////////////////////////////////////
    TFile *fae = TFile::Open("ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth_noZptrew.root");
    TH1D *h_AccPass = (TH1D*) fae->Get(Form("h_%s_AccPass",variable));
-   TH1D *h_EffTotal_HFrew = (TH1D*) fae->Get(Form("h_%s_EffTotal_HFrew",variable));
+   TH1D *h_EffTotal_HFrew = (TH1D*) fae->Get(Form("h_%s_EffTotal",variable));
    TH1D *hratio = h_AccPass;
    hratio->Divide(h_EffTotal_HFrew);
 
