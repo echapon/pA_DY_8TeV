@@ -418,8 +418,8 @@ void applyFR(SampleTag index) {
             // set an upper limit of 5 to weights, so that things don't explode
             weight_template = min(5.,wt*FR1_template*FR2_template/((1-FR1_template)*(1-FR2_template)));
             weight_ratio = min(5.,wt*FR1_ratio*FR2_ratio/((1-FR1_ratio)*(1-FR2_ratio)));
-            weight2_template = min(5.,wt*(FR1_template/(1-FR1_template) + FR2_template/(1-FR2_template)));
-            weight2_ratio = min(5.,wt*(FR1_ratio/(1-FR1_ratio) + FR2_ratio/(1-FR2_ratio)));
+            weight2_template = min(5.,wt*(FR1_template/(1-FR1_template) + FR2_template/(1-FR2_template) - (FR1_template/(1-FR1_template))*(FR2_template/(1-FR2_template))));
+            weight2_ratio = min(5.,wt*(FR1_ratio/(1-FR1_ratio) + FR2_ratio/(1-FR2_ratio) - (FR1_ratio/(1-FR1_ratio))*(FR2_ratio/(1-FR2_ratio))));
             /*
                if(weight_template > 1 || weight_ratio > 1 ) {
                cout<<"wt_temp = "<<weight_template<<", wt_ratio= "<<weight_ratio<<endl;
@@ -520,8 +520,8 @@ void applyFR(SampleTag index) {
             // set an upper limit of 5 to weights, so that things don't explode
             weight_template = min(5.,wt*FR1_template*FR2_template/((1-FR1_template)*(1-FR2_template)));
             weight_ratio = min(5.,wt*FR1_ratio*FR2_ratio/((1-FR1_ratio)*(1-FR2_ratio)));
-            weight2_template = min(5.,wt*(FR1_template/(1-FR1_template) + FR2_template/(1-FR2_template)));
-            weight2_ratio = min(5.,wt*(FR1_ratio/(1-FR1_ratio) + FR2_ratio/(1-FR2_ratio)));
+            weight2_template = min(5.,wt*(FR1_template/(1-FR1_template) + FR2_template/(1-FR2_template) - (FR1_template/(1-FR1_template))*(FR2_template/(1-FR2_template))));
+            weight2_ratio = min(5.,wt*(FR1_ratio/(1-FR1_ratio) + FR2_ratio/(1-FR2_ratio) - (FR1_ratio/(1-FR1_ratio))*(FR2_ratio/(1-FR2_ratio))));
             /*
                if(weight_template > 1 || weight_ratio > 1 ) {
                cout<<"wt_temp = "<<weight_template<<", wt_ratio= "<<weight_ratio<<endl;
