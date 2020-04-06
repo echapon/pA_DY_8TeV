@@ -28,6 +28,31 @@
 #include "../BkgEst/interface/defs.h"
 #include "../HIstuff/HFweight.h"
 
+// -- SWITCH BETWEEN CONSTANT BINS AND NOMINAL BINS -- //
+// Uncomment the following line for CONSTANT bins 
+// (LEAVE COMMENTED FOR NOMINAL)
+// #define MCFMBINS
+
+#ifdef MCFMBINS
+#define MASSBINS 60, 0, 600
+#define MASS3BINS 80, 70, 110
+#define RAP60120BINS 60, -6, 6
+#define PTBINS 25, 0, 50
+#define PHISTARBINS 60, 0, 3
+#define RAP1560BINS 60, -6, 6
+#define PT1560BINS 25, 0, 50
+#define PHISTAR1560BINS 60, 0, 3
+#else
+#define MASSBINS binnum, bins
+#define MASS3BINS binnum3, bins3
+#define PTBINS ptbinnum_meas, ptbin_meas
+#define PHISTARBINS phistarnum, phistarbin
+#define RAP1560BINS rapbinnum_1560, rapbin_1560
+#define RAP60120BINS rapbinnum_60120, rapbin_60120
+#define PT1560BINS ptbinnum_meas_1560, ptbin_meas_1560
+#define PHISTAR1560BINS phistarnum_1560, phistarbin_1560
+#endif // #ifdef MCFMBINS
+
 using namespace DYana;
 
 // number of gen weights
@@ -97,6 +122,24 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
+   // MCFM histos
+   TDirectory *dMCFM = f->mkdir("MCFM","histos for comparison with MCFM");
+   dMCFM->cd();
+   TH1D *h_m34_1[nweights];
+   TH1D *h_m34_2[nweights];
+   TH1D *h_y34lM[nweights];
+   TH1D *h_pt34lM[nweights];
+   TH1D *h_phist34lM_1[nweights];
+   TH1D *h_phist34lM_2[nweights];
+   TH1D *h_y34hM[nweights];
+   TH1D *h_pt34hM[nweights];
+   TH1D *h_phist34hM_1[nweights];
+   TH1D *h_phist34hM_2[nweights];
+   TH1D *h_m34cut_1[nweights];
+   TH1D *h_m34cut_2[nweights];
+
+   // histos for acc eff
+   f->cd();
    TH1D* h_mass_AccTotal[nweights];
    TH1D* h_mass3bins_AccTotal[nweights];
    TH1D* h_pt_AccTotal[nweights];
@@ -140,6 +183,21 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
    TH1D* h_pt1560_EffPass_Corr_tnp[nweights];
    TH1D* h_phistar1560_EffPass_Corr_tnp[nweights];
    for (int i=0; i<nweights; i++) {
+      dMCFM->cd();
+      h_m34_1[i] = new TH1D(Form("h_m34_1_%d",i),"",60,60,120);
+      h_m34_2[i] = new TH1D(Form("h_m34_2_%d",i),"",60,0,300);
+      h_y34lM[i] = new TH1D(Form("h_y34lM_%d",i),"",60,-6,6);
+      h_pt34lM[i] = new TH1D(Form("h_pt34lM_%d",i),"",25,0,50);
+      h_phist34lM_1[i] = new TH1D(Form("h_phist34lM_1_%d",i),"",100,0,1);
+      h_phist34lM_2[i] = new TH1D(Form("h_phist34lM_2_%d",i),"",60,0,3);
+      h_y34hM[i] = new TH1D(Form("h_y34hM_%d",i),"",60,-6,6);
+      h_pt34hM[i] = new TH1D(Form("h_pt34hM_%d",i),"",25,0,50);
+      h_phist34hM_1[i] = new TH1D(Form("h_phist34hM_1_%d",i),"",100,0,1);
+      h_phist34hM_2[i] = new TH1D(Form("h_phist34hM_2_%d",i),"",60,0,3);
+      h_m34cut_1[i] = new TH1D(Form("h_m34cut_1_%d",i),"",60,0,600);
+      h_m34cut_2[i] = new TH1D(Form("h_m34cut_2_%d",i),"",80,70,110);
+
+      f->cd();
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
       h_mass3bins_AccTotal[i] = new TH1D(Form("h_mass3bins_AccTotal%d",i), "", binnum3, bins3);
@@ -302,9 +360,10 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             }
             GenLepton genlep1 = GenLeptonCollection[0];
             GenLepton genlep2 = GenLeptonCollection[1];
-            Double_t gen_M = (genlep1.Momentum + genlep2.Momentum).M();
-            Double_t gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
-            Double_t gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
+            TLorentzVector genlep12 = genlep1.Momentum + genlep2.Momentum;
+            Double_t gen_M = genlep12.M();
+            Double_t gen_Rap = genlep12.Rapidity()-rapshift;
+            Double_t gen_Pt = genlep12.Pt();
             Double_t gen_Phistar = Object::phistar(genlep1,genlep2);
 
             // -- Z pt reweighting -- //
@@ -334,8 +393,11 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             // Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep1, genlep2);
             // we want the acceptanc correction to be PRE-FSR
             Flag_PassAcc = analyzer->isPassAccCondition_GenLepton(genlep_preFSR1, genlep_preFSR2);
-            Double_t gen_M_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).M();
-            Double_t gen_Rap_preFSR = (genlep_preFSR1.Momentum + genlep_preFSR2.Momentum).Rapidity()-rapshift;
+            TLorentzVector genlep_preFSR12 = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
+            Double_t gen_M_preFSR = genlep_preFSR12.M();
+            Double_t gen_Rap_preFSR = genlep_preFSR12.Rapidity()-rapshift;
+            Double_t gen_Pt_preFSR = genlep_preFSR12.Pt();
+            Double_t gen_Phistar_preFSR = Object::phistar(genlep_preFSR1,genlep_preFSR2);
                
             Bool_t Flag_PassTotal_preFSR = (gen_Rap_preFSR > rapbin_60120[0] && gen_Rap_preFSR<rapbin_60120[rapbinnum_60120] );
 
@@ -346,6 +408,25 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                // sometimes the last weight is missing... protect against this
                if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
+               // MCFM histos
+               h_m34_1[iwt]->Fill(gen_M_preFSR, wt);
+               h_m34_2[iwt]->Fill(gen_M_preFSR, wt);
+               if (gen_M_preFSR>60 && gen_M_preFSR<120) {
+                  h_y34hM[iwt]->Fill(gen_Rap_preFSR, wt);
+                  h_pt34hM[iwt]->Fill(gen_Pt_preFSR, wt);
+                  h_phist34hM_1[iwt]->Fill(gen_Phistar_preFSR, wt);
+                  h_phist34hM_2[iwt]->Fill(gen_Phistar_preFSR, wt);
+               } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
+                  h_y34lM[iwt]->Fill(gen_Rap_preFSR, wt);
+                  h_pt34lM[iwt]->Fill(gen_Pt_preFSR, wt);
+                  h_phist34lM_1[iwt]->Fill(gen_Phistar_preFSR, wt);
+                  h_phist34lM_2[iwt]->Fill(gen_Phistar_preFSR, wt);
+               }
+               if (Flag_PassTotal_preFSR) {
+                  h_m34cut_1[iwt]->Fill(gen_M_preFSR, wt);
+                  h_m34cut_2[iwt]->Fill(gen_M_preFSR, wt);
+               };
 
                if (Flag_PassTotal_preFSR) {
                   h_mass_AccTotal[iwt]->Fill( gen_M, wt );
@@ -584,6 +665,22 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
       // h_pt1560_EffPass_Corr_tnp[i]->Multiply(h_pt1560_AccPass[i]); h_pt1560_EffPass_Corr_tnp[i]->Divide(h_pt1560_EffTotal[i]);
       // h_phistar1560_EffPass_Corr_tnp[i]->Multiply(h_phistar1560_AccPass[i]); h_phistar1560_EffPass_Corr_tnp[i]->Divide(h_phistar1560_EffTotal[i]);
 
+      // MCFM
+      dMCFM->cd();
+      h_m34_1[i]->Write();
+      h_m34_2[i]->Write();
+      h_y34lM[i]->Write();
+      h_pt34lM[i]->Write();
+      h_phist34lM_1[i]->Write();
+      h_phist34lM_2[i]->Write();
+      h_y34hM[i]->Write();
+      h_pt34hM[i]->Write();
+      h_phist34hM_1[i]->Write();
+      h_phist34hM_2[i]->Write();
+      h_m34cut_1[i]->Write();
+      h_m34cut_2[i]->Write();
+
+      f->cd();
       h_mass_AccTotal[i]->Write();
       h_mass_AccPass[i]->Write();
       h_mass3bins_AccTotal[i]->Write();
