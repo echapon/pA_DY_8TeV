@@ -349,7 +349,7 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             SumWeights_Separated += GenWeight;
 
             // -- Collect gen-level information -- //
-            vector<GenLepton> GenLeptonCollection;
+            vector<GenLepton> GenLeptonCollection, GenLeptonCollectionBeforeAnyFSR;
             Int_t NGenLeptons = ntuple->gnpair; 
             for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
             {
@@ -357,6 +357,8 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                genlep.FillFromNtuple(ntuple, i_gen);
                if( genlep.isMuon() && genlep.fromHardProcessFinalState )
                   GenLeptonCollection.push_back( genlep );
+               if( genlep.isMuon() && genlep.isHardProcess )
+                  GenLeptonCollectionBeforeAnyFSR.push_back( genlep );
             }
             GenLepton genlep1 = GenLeptonCollection[0];
             GenLepton genlep2 = GenLeptonCollection[1];
@@ -398,6 +400,15 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
             Double_t gen_Rap_preFSR = genlep_preFSR12.Rapidity()-rapshift;
             Double_t gen_Pt_preFSR = genlep_preFSR12.Pt();
             Double_t gen_Phistar_preFSR = Object::phistar(genlep_preFSR1,genlep_preFSR2);
+
+            // quantities before any FSR, just for comparison with MCFM
+            GenLepton genlep_beforeAnyFSR1 = GenLeptonCollectionBeforeAnyFSR[0];
+            GenLepton genlep_beforeAnyFSR2 = GenLeptonCollectionBeforeAnyFSR[1];
+            TLorentzVector genlep_beforeAnyFSR12 = genlep_beforeAnyFSR1.Momentum + genlep_beforeAnyFSR2.Momentum;
+            Double_t gen_M_beforeAnyFSR = genlep_beforeAnyFSR12.M();
+            Double_t gen_Rap_beforeAnyFSR = genlep_beforeAnyFSR12.Rapidity()-rapshift;
+            Double_t gen_Pt_beforeAnyFSR = genlep_beforeAnyFSR12.Pt();
+            Double_t gen_Phistar_beforeAnyFSR = Object::phistar(genlep_beforeAnyFSR1,genlep_beforeAnyFSR2);
                
             Bool_t Flag_PassTotal_preFSR = (gen_Rap_preFSR > rapbin_60120[0] && gen_Rap_preFSR<rapbin_60120[rapbinnum_60120] );
 
@@ -410,22 +421,22 @@ void Acc_Eff_weights(Bool_t isCorrected = kFALSE, TString Sample = "Powheg", TSt
                else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
 
                // MCFM histos
-               h_m34_1[iwt]->Fill(gen_M_preFSR, wt);
-               h_m34_2[iwt]->Fill(gen_M_preFSR, wt);
-               if (gen_M_preFSR>60 && gen_M_preFSR<120) {
-                  h_y34hM[iwt]->Fill(gen_Rap_preFSR, wt);
-                  h_pt34hM[iwt]->Fill(gen_Pt_preFSR, wt);
-                  h_phist34hM_1[iwt]->Fill(gen_Phistar_preFSR, wt);
-                  h_phist34hM_2[iwt]->Fill(gen_Phistar_preFSR, wt);
-               } else if (gen_M_preFSR>15 && gen_M_preFSR<60) {
-                  h_y34lM[iwt]->Fill(gen_Rap_preFSR, wt);
-                  h_pt34lM[iwt]->Fill(gen_Pt_preFSR, wt);
-                  h_phist34lM_1[iwt]->Fill(gen_Phistar_preFSR, wt);
-                  h_phist34lM_2[iwt]->Fill(gen_Phistar_preFSR, wt);
+               h_m34_1[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+               h_m34_2[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+               if (gen_M_beforeAnyFSR>60 && gen_M_beforeAnyFSR<120) {
+                  h_y34hM[iwt]->Fill(gen_Rap_beforeAnyFSR, wt);
+                  h_pt34hM[iwt]->Fill(gen_Pt_beforeAnyFSR, wt);
+                  h_phist34hM_1[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+                  h_phist34hM_2[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+               } else if (gen_M_beforeAnyFSR>15 && gen_M_beforeAnyFSR<60) {
+                  h_y34lM[iwt]->Fill(gen_Rap_beforeAnyFSR, wt);
+                  h_pt34lM[iwt]->Fill(gen_Pt_beforeAnyFSR, wt);
+                  h_phist34lM_1[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+                  h_phist34lM_2[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
                }
                if (Flag_PassTotal_preFSR) {
-                  h_m34cut_1[iwt]->Fill(gen_M_preFSR, wt);
-                  h_m34cut_2[iwt]->Fill(gen_M_preFSR, wt);
+                  h_m34cut_1[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+                  h_m34cut_2[iwt]->Fill(gen_M_beforeAnyFSR, wt);
                };
 
                if (Flag_PassTotal_preFSR) {
