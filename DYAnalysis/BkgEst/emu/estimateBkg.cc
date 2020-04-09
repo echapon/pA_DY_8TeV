@@ -220,7 +220,7 @@ void estimateBkg(const char* var="mass", // var = mass | mass3bins | pt | phista
     emu_QCD->SetFillColor(7);
 
     double RR = 0.607; // from the formula, with the latest value of chibar
-    if (syst_RR==1) RR = 0.4358; // from MC, with cuts
+    if (syst_RR==1) RR = 0.418; // from MC, with cuts
     if (syst_RR==2) RR = 0.5365; // from MC, no cuts
 
     emu_QCD->Scale(1/RR);
