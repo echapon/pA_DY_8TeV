@@ -183,6 +183,7 @@ void DrawControlPlotTool::SetupHistogramNames()
    HistNames.push_back( "h_eta" );				Variables.push_back( "Eta" );				XTitles.push_back( "Muon #eta_{lab}");
    HistNames.push_back( "h_phi" );				Variables.push_back( "Phi" );				XTitles.push_back( "Muon #phi");
    HistNames.push_back( "h_mass" );			Variables.push_back( "Mass" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
+   HistNames.push_back( "h_mass_Higgs" );			Variables.push_back( "Mass_Higgs" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_massZ" );			Variables.push_back( "MassZPeak" );				XTitles.push_back( "Invariant Mass(#mu#mu) [GeV]");
    HistNames.push_back( "h_diPt" );			Variables.push_back( "diPt" );				XTitles.push_back( "dimuon P_{T} [GeV]");
    HistNames.push_back( "h_diPt_M15to20" );			Variables.push_back( "diPt_M15to20" );				XTitles.push_back( "dimuon P_{T} [GeV] (15<M_{#mu#mu}<20 GeV)");
@@ -276,6 +277,7 @@ void DrawControlPlotTool::SetupHistogramNames()
 	HistNames.push_back( "h_nMatches" );			Variables.push_back( "nMatches" );			XTitles.push_back( "# Matched Stations");
 	HistNames.push_back( "h_RelPtError" );			Variables.push_back( "RelPtError" );		XTitles.push_back( "P_{T} Error / P_{T}");
 	HistNames.push_back( "h_dxyVTX" );				Variables.push_back( "dxyVTX" );			XTitles.push_back( "dxy(PV) [cm]");
+	HistNames.push_back( "h_dxyVTX_zoom" );				Variables.push_back( "dxyVTX_zoom" );			XTitles.push_back( "dxy(PV) [cm]");
 	HistNames.push_back( "h_dzVTX" );				Variables.push_back( "dzVTX" );				XTitles.push_back( "dz(PV) [cm]");
 	HistNames.push_back( "h_pixelHits" );			Variables.push_back( "PixelHits" );			XTitles.push_back( "# muon Pixel Hits");
 	HistNames.push_back( "h_trackerLayers" );		Variables.push_back( "TrackerLayers" );		XTitles.push_back( "# Tracker Layers");
