@@ -366,6 +366,30 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // chi2, with correlations
          // data stat
          TMatrixT<double> cov_stat = diag(Form("SysUncEstimation/csv/stat_%s.csv",varname(thevar)));
+         
+         // need to account for correlations arising from unfoldings
+         // detector resolution
+         TFile *fdetres = TFile::Open("ResponseMatrix/yields_detcor_Powheg_MomCorr00_0.root");
+         TH2D *hcor_detres = (TH2D*) fdetres->Get("h_Measured_unfoldedMLE_cov_"+TString(varname(thevar)));
+         // normalise the covariance matrix
+         for (int i=1; i<=nbins; i++)
+            for (int j=1; j<=nbins; j++)
+               if (i!=j) hcor_detres->SetBinContent(i,j,hcor_detres->GetBinContent(i,j)/sqrt(hcor_detres->GetBinContent(i,i)*hcor_detres->GetBinContent(j,j)));
+         for (int i=1; i<=nbins; i++) hcor_detres->SetBinContent(i,i,1);
+         TMatrixT<double> cor_stat_detres = hist2mat(hcor_detres);
+
+         // FSR
+         TFile *fFSR = TFile::Open(Form("FSRCorrection/xsec%s_FSRcor_Powheg_MomCorr00_0.root", correctforacc ? "" : "_noacc"));
+         TH2D *hcor_FSR = (TH2D*) fFSR->Get("h_Measured_unfoldedMLE_cov_statonly_"+TString(varname(thevar)));
+         // normalise the covariance matrix
+         for (int i=1; i<=nbins; i++)
+            for (int j=1; j<=nbins; j++)
+               if (i!=j) hcor_FSR->SetBinContent(i,j,hcor_FSR->GetBinContent(i,j)/sqrt(hcor_FSR->GetBinContent(i,i)*hcor_FSR->GetBinContent(j,j)));
+         for (int i=1; i<=nbins; i++) hcor_FSR->SetBinContent(i,i,1);
+         TMatrixT<double> cor_stat_FSR = hist2mat(hcor_FSR);
+
+         cov_stat = cov_stat * cor_stat_detres * cor_stat_FSR;
+
          // data syst
          TMatrixT<double> cov_syst = map2mat(readSyst_all_cov(thevar, "./", !correctforacc));
          // what we have is in "%^2". Need to multiply by central values.
@@ -462,6 +486,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             << " & " << chi2_EPPS16_withcor << " & " << nbins << " & " << TMath::Prob(chi2_EPPS16_withcor,nbins)*100. << " \\\\" << endl;
          chi2file_nocor << " & " << chi2_CT14_nocor << " & " << nbins << " & " << TMath::Prob(chi2_CT14_nocor,nbins)*100.
             << " & " << chi2_EPPS16_nocor << " & " << nbins << " & " << TMath::Prob(chi2_EPPS16_nocor,nbins)*100. << " \\\\" << endl;
+
+         fdetres->Close();
+         fFSR->Close();
       }
 
 
