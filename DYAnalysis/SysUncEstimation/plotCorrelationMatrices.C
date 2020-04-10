@@ -47,8 +47,8 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
       c.PrintCanvas();
    }
 
-   // and finally the total correlation matrix
-   TH2D *hm = matrix2hist(readSyst_all_cor(thevar,"../",noacc),varname(thevar));
+   // and finally the total correlation matrix. DO NOT INCLUDE LUMI HERE
+   TH2D *hm = matrix2hist(readSyst_all_cor(thevar,"../",noacc,false),varname(thevar));
 
    MyCanvas c("correlation_matrices/"+cormatname+"_total_"+TString(varname(thevar)),xaxistitle(thevar),xaxistitle(thevar));
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {

@@ -230,7 +230,7 @@ map<bin, syst> readSyst_all(var thevar, bool doPrintTex, const char* texName, TS
    return ans;
 };
 
-TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc) {
+TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc, bool withlumi) {
    vector< map<bin2, syst> > systmap_all;
 
    vector<TString> tags;
@@ -244,7 +244,7 @@ TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc) {
    else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
-   tags.push_back("lumi");
+   if (withlumi) tags.push_back("lumi");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin2,syst> systmap;
@@ -258,7 +258,7 @@ TMatrixT<double> readSyst_all_cor(var thevar, TString prefix, bool noacc) {
    return ans;
 }
 
-map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix, bool noacc) {
+map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix, bool noacc, bool withlumi) {
    vector< map<bin2, syst> > systmap_all;
 
    vector<TString> tags;
@@ -272,7 +272,7 @@ map<bin2, syst>  readSyst_all_cov(var thevar, TString prefix, bool noacc) {
    else tags.push_back("Eff_theory");
    tags.push_back("DetResUnfold_smooth");
    tags.push_back("FSRUnfold_smooth");
-   tags.push_back("lumi");
+   if (withlumi) tags.push_back("lumi");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
       map<bin2,syst> systmap;
