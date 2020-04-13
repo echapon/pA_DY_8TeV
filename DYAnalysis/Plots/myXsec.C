@@ -276,7 +276,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          if (thevar==var::mass && !correctforacc) c1.SetYRange(2e-4,20);
          if (thevar==var::pt1560 && correctforacc) c1.SetYRange(5e-4,7e1);
          if (thevar==var::pt1560 && !correctforacc) c1.SetYRange(2e-4,2);
-         if (thevar==var::phistar1560 && correctforacc) c1.SetYRange(2,3e3);
+         if (thevar==var::phistar1560 && correctforacc) c1.SetYRange(2,2e3);
          if (thevar==var::phistar1560 && !correctforacc) c1.SetYRange(4e-1,2e2);
          if (thevar==var::pt && correctforacc) c1.SetYRange(8e-4,2e1);
          if (thevar==var::pt && !correctforacc) c1.SetYRange(8e-4,9);
@@ -287,6 +287,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             if (gth_CT14) fixXaxis(gth_CT14);
             if (gth_EPPS16) fixXaxis(gth_EPPS16);
             fixXaxis(gres);
+
+            int nbins = nbinsvar(thevar);
+            double xmin = gres->GetX()[0] - gres->GetEXlow()[0];
+            double xmax = gres->GetX()[nbins-1] + gres->GetEXhigh()[nbins-1];
+            c1.SetXRange(xmin,xmax);
          }
 
          // // let's take central values from pre-FSR, BUT the (n)PDF uncertainties are the ones we just obtained
@@ -308,6 +313,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // replaceCentralValues(gth_CT14,hpreFSR_CT14);
          // replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
 
+         c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
                kBlue,kRed,kBlack,
