@@ -32,6 +32,7 @@ public:
 	TH1D *h_eta;
 	TH1D *h_phi;
 	TH1D *h_mass;
+	TH1D *h_mass_Higgs;
 	TH1D *h_mass2;
 	TH1D *h_mass3bins;
 	TH1D *h_massZ;
@@ -161,6 +162,7 @@ public:
 	TH1D *h_nMatches;
 	TH1D *h_RelPtError;
 	TH1D *h_dxyVTX;
+	TH1D *h_dxyVTX_zoom;
 	TH1D *h_dzVTX;
 	TH1D *h_pixelHits;
 	TH1D *h_trackerLayers;
@@ -203,6 +205,7 @@ public:
 		h_eta = new TH1D("h_eta_"+Type, "", 60, -3, 3); Histo.push_back( h_eta );
 		h_phi = new TH1D("h_phi_"+Type, "", 80, -4, 4); Histo.push_back( h_phi );
 		h_mass = new TH1D("h_mass_"+Type, "", 120, 0, 600); Histo.push_back( h_mass );
+		h_mass_Higgs = new TH1D("h_mass_Higgs_"+Type, "", 20, 110, 150); Histo.push_back( h_mass_Higgs );
 		h_mass2 = new TH1D("h_mass2_"+Type, "", binnum, bins); Histo.push_back( h_mass2 );
 		h_mass3bins = new TH1D("h_mass3bins_"+Type, "", binnum3, bins3); Histo.push_back( h_mass3bins );
 		h_massZ = new TH1D("h_massZ_"+Type, "", 60, 60, 120); Histo.push_back( h_massZ );
@@ -337,6 +340,7 @@ public:
 		h_nMatches = new TH1D("h_nMatches_"+Type, "", 7, 0, 7); Histo.push_back( h_nMatches );
 		h_RelPtError = new TH1D("h_RelPtError_"+Type, "", 50, 0, 0.5); Histo.push_back( h_RelPtError );
 		h_dxyVTX = new TH1D("h_dxyVTX_"+Type, "", 100, -0.3, 0.3); Histo.push_back( h_dxyVTX );
+		h_dxyVTX_zoom = new TH1D("h_dxyVTX_zoom_"+Type, "", 100, -0.05, 0.05); Histo.push_back( h_dxyVTX_zoom );
 		h_dzVTX = new TH1D("h_dzVTX_"+Type, "", 500, -1.0, 1.0); Histo.push_back( h_dzVTX );
 		h_pixelHits = new TH1D("h_pixelHits_"+Type, "", 15, 0, 15); Histo.push_back( h_pixelHits );
 		h_trackerLayers = new TH1D("h_trackerLayers_"+Type, "", 20, 0, 20); Histo.push_back( h_trackerLayers );
@@ -515,6 +519,7 @@ public:
 		h_nMatches->Fill( recolep.nMatches, weight );
 		h_RelPtError->Fill( recolep.Best_pTError / recolep.Best_pT, weight );
 		h_dxyVTX->Fill( recolep.dxyVTX, weight );
+		h_dxyVTX_zoom->Fill( recolep.dxyVTX, weight );
 		h_dzVTX->Fill( recolep.dzVTX, weight );
 		h_pixelHits->Fill( recolep.pixelHits, weight );
 		h_trackerLayers->Fill( recolep.trackerLayers, weight );
@@ -574,6 +579,7 @@ public:
 
 		//Dimuon Mass/Pt/Rapidity
 		h_mass->Fill( reco_M, weight );
+		h_mass_Higgs->Fill( reco_M, weight );
 		h_mass2->Fill( reco_M, weight );
 		h_mass3bins->Fill( reco_M, weight );
 		h_massZ->Fill( reco_M, weight );
