@@ -101,7 +101,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    latex.SetNDC();
    latex.SetTextSize(0.03);
    double xlatex=.2, ylatex=0.9, dylatex=0.04;
-   latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+   latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
    c_1560.PrintCanvas();
 
    MyCanvas c_60120("Plots/grfbp_rap60120","|y|","R_{FB}",800,800);
@@ -112,13 +112,13 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
          "5","5","EP",true);
    c_60120.TopPad->cd();
    ylatex=0.9;
-   latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+   latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
    c_60120.PrintCanvas();
 }
 
 TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<double> mcov) {
-   TH1D* f_rap1560_temp = new TH1D("f_rap1560_temp",";|y_{CM}| (15<M<60 (GeV/c^{2}));Forward/Backward (Xsec)",rfb_rapbinnum_1560,rfb_rapbin_1560);
-   TH1D* b_rap1560_temp = new TH1D("b_rap1560_temp",";|y_{CM}| (15<M<60 (GeV/c^{2}));Forward/Backward (Xsec)",rfb_rapbinnum_1560,rfb_rapbin_1560);
+   TH1D* f_rap1560_temp = new TH1D("f_rap1560_temp",";|y_{CM}| (15<M<60 (GeV));Forward/Backward (Xsec)",rfb_rapbinnum_1560,rfb_rapbin_1560);
+   TH1D* b_rap1560_temp = new TH1D("b_rap1560_temp",";|y_{CM}| (15<M<60 (GeV));Forward/Backward (Xsec)",rfb_rapbinnum_1560,rfb_rapbin_1560);
 
    // arrays to hold stat uncertainties and correlation
    double *f_stat = new double[rfb_rapbinnum_1560];
@@ -176,8 +176,8 @@ TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<doub
 }
 
 TGraphAsymmErrors *RFB_60120(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<double> mcov) {
-   TH1D* f_rap60120_temp = new TH1D("f_rap60120_temp",";|y_{CM}| (60<M<120 (GeV/c^{2}));Forward/Backward (Xsec)",rfb_rapbinnum_60120,rfb_rapbin_60120);
-   TH1D* b_rap60120_temp = new TH1D("b_rap60120_temp",";|y_{CM}| (60<M<120 (GeV/c^{2}));Forward/Backward (Xsec)",rfb_rapbinnum_60120,rfb_rapbin_60120);
+   TH1D* f_rap60120_temp = new TH1D("f_rap60120_temp",";|y_{CM}| (60<M<120 (GeV));Forward/Backward (Xsec)",rfb_rapbinnum_60120,rfb_rapbin_60120);
+   TH1D* b_rap60120_temp = new TH1D("b_rap60120_temp",";|y_{CM}| (60<M<120 (GeV));Forward/Backward (Xsec)",rfb_rapbinnum_60120,rfb_rapbin_60120);
 
    // arrays to hold stat uncertainties and correlation
    double *f_stat = new double[rfb_rapbinnum_60120];

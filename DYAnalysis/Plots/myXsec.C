@@ -313,7 +313,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // replaceCentralValues(gth_CT14,hpreFSR_CT14);
          // replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
 
-         c1.PrintVariables();
+         // c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
                kBlue,kRed,kBlack,
