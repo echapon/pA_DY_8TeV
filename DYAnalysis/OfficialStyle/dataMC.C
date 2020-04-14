@@ -174,9 +174,10 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetLabelSize(0);
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
-   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
-   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
-   else h_data->GetYaxis()->SetTitle("Entries / 1");
+   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
+   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
+   else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
+   else h_data->GetYaxis()->SetTitle("Entries / unit y");
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035);
    h_data->GetYaxis()->SetTitleSize(0.06);
@@ -265,14 +266,14 @@ void dataMC(var thevar)
       ylatex -= dylatex;
    }
    if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
       ylatex -= dylatex;
    }
    if (thevar==pt || thevar==phistar || thevar==rap60120) {
-      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
       ylatex -= dylatex;
    }
-   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
+   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
    ylatex -= dylatex;
 
 // ------------>Primitives in pad: bottomPad

@@ -172,16 +172,16 @@ namespace DYana {
    };
 
    const char* xaxistitle(var thevar) {
-      if (thevar==var::mass || thevar==var::mass3bins) return "M [GeV/c^{2}]";
-      else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV/c]";
+      if (thevar==var::mass || thevar==var::mass3bins) return "M [GeV]";
+      else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV]";
       else if (thevar==var::phistar || thevar==var::phistar1560) return "#lower[0.1]{#phi}#lower[-0.1]{#scale[0.8]{*}}";
       // else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
       else return "y_{CM}";
    };
 
    const char* xaxistitletex(var thevar) {
-      if (thevar==var::mass || thevar==var::mass3bins) return "\\mmumu [\\GeVcc]";
-      else if (thevar==var::pt || thevar==var::pt1560) return "\\pt [\\GeVc]";
+      if (thevar==var::mass || thevar==var::mass3bins) return "\\mmumu [\\GeV]";
+      else if (thevar==var::pt || thevar==var::pt1560) return "\\pt [\\GeV]";
       else if (thevar==var::phistar || thevar==var::phistar1560) return "\\phistar";
       else return "$y_\\text{CM}$";
    };
