@@ -175,14 +175,14 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       int lx=800, ly=800;
 
       if (thevar==mass) {
-         ytitle = "d#sigma/dM [nb/GeV/c^{2}]";
-         xtitle_tex = "\\mmumu (\\GeVcc)";
-         ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeVcc)";
+         ytitle = "d#sigma/dM [nb/GeV]";
+         xtitle_tex = "\\mmumu (\\GeV)";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeV)";
          logx= true; logy=true;
       } else if (thevar==pt || thevar==pt1560) {
-         ytitle = "d#sigma/dp_{T} [nb/GeV/c]";
-         xtitle_tex = "\\pt (\\GeVc)";
-         ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeVc)";
+         ytitle = "d#sigma/dp_{T} [nb/GeV]";
+         xtitle_tex = "\\pt (\\GeV)";
+         ytitle_tex = "$\\dd\\sigma/\\dd\\pt$ (nb/\\GeV)";
          logx = true; logy=true;
       } else if (thevar==phistar || thevar==phistar1560) {
          ytitle = "d#sigma/d#phi^{*} [nb]";
@@ -332,15 +332,15 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             ylatex -= dylatex;
          }
          if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-            latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+            latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
             ylatex -= dylatex;
          }
          if (thevar==pt || thevar==phistar || thevar==rap60120) {
-            latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+            latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
             ylatex -= dylatex;
          }
          if (!correctforacc) {
-            latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
+            latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
             ylatex -= dylatex;
          }
 
@@ -482,11 +482,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          chi2file << xtitle_tex;
          chi2file_nocor << xtitle_tex;
          if (thevar==var::rap1560 || thevar==pt1560 || thevar==phistar1560) {
-            chi2file << " ($15 < \\mmumu < 60\\GeVcc$)";
-            chi2file_nocor << " ($15 < \\mmumu < 60\\GeVcc$)";
+            chi2file << " ($15 < \\mmumu < 60\\GeV$)";
+            chi2file_nocor << " ($15 < \\mmumu < 60\\GeV$)";
          } else if (thevar==var::rap60120 || thevar==pt || thevar==phistar) {
-            chi2file << " ($60 < \\mmumu < 120\\GeVcc$)";
-            chi2file_nocor << " ($60 < \\mmumu < 120\\GeVcc$)";
+            chi2file << " ($60 < \\mmumu < 120\\GeV$)";
+            chi2file_nocor << " ($60 < \\mmumu < 120\\GeV$)";
          }
          chi2file << " & " << chi2_CT14_withcor << " & " << nbins << " & " << TMath::Prob(chi2_CT14_withcor,nbins)*100.
             << " & " << chi2_EPPS16_withcor << " & " << nbins << " & " << TMath::Prob(chi2_EPPS16_withcor,nbins)*100. << " \\\\" << endl;
