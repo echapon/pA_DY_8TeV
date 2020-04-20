@@ -224,6 +224,8 @@ public:
 		if( isRatioPadAttached == kTRUE) TopPad->SetBottomMargin(0.00);
       // else TopPad->SetBottomMargin(0.05);
 
+		TopPad->SetTopMargin(0.08); // added by Hyunchul
+
 		h1->Draw(DrawOp1);
 		h2->Draw(DrawOp2);
 		//h1->Draw("AXISSAME");
@@ -329,6 +331,8 @@ public:
 		f_line->Draw("SAME");
 
 		h_ratio->Draw("EPSAME");
+
+		CMS_lumi( TopPad, 111, 0 );
 	}
 
 	void CanvasWithThreeHistogramsRatioPlot(TH1D *h1, TH1D *h2, TH1D* h_ref, 
@@ -537,13 +541,13 @@ public:
 		haxes->GetXaxis()->SetLabelSize(0);
 		haxes->GetXaxis()->SetTitleSize(0);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetNoExponent(); haxes->GetXaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g1->GetYaxis()->SetTitleSize(0.06);
 		g1->GetYaxis()->SetTitleOffset(1.25);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0))  g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		// -- Add Legend -- //
 		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
@@ -553,10 +557,6 @@ public:
 		legend->AddEntry(g1, Name1);
 		legend->AddEntry(g2, Name2);
 		legend->Draw();
-
-      // update the full thing
-      TopPad->RedrawAxis();
-      TopPad->Update();
 
 		// -- Bottom Pad -- //
 		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
@@ -611,7 +611,6 @@ public:
 		haxes->GetXaxis()->SetLabelOffset(0.007);
 		haxes->GetXaxis()->SetLabelSize(0.15);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetMoreLogLabels(); haxes->GetXaxis()->SetNoExponent(); }
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
@@ -642,10 +641,6 @@ public:
          tleg_ratio->Draw();
       }
 
-      // update the full thing
-      BottomPad->RedrawAxis();
-      BottomPad->Update();
-
       CMS_lumi( TopPad, 111, 0 );
 	}
 
@@ -660,8 +655,14 @@ public:
 		}
 
 		c->cd();
+		// -- Top Pad -- //
+		TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
+		TopPad->Draw();
+		TopPad->cd();
 
-		gPad->SetRightMargin(0.05);
+
+		TopPad->SetRightMargin(0.05);
+		TopPad->SetTopMargin(0.08); // added by Hyunchul
 		if( isLogX == kTRUE ) gPad->SetLogx();
 		if( isLogY == kTRUE ) gPad->SetLogy();
 
@@ -720,7 +721,7 @@ public:
 		}
 		legend->Draw();
 
-
+		CMS_lumi( TopPad, 111, 0 );//addedby Hyunchul
 	}
 
 	void CanvasWithMultipleGraphs(vector< TGraphAsymmErrors* > Graphs, vector< TString > Names, TString DrawOp = "EP")
