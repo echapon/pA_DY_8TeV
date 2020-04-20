@@ -41,16 +41,19 @@ void dataMC(var thevar)
    c1->SetTicky(1);
    c1->SetLeftMargin(0.16);
    c1->SetRightMargin(0.02);
-   c1->SetTopMargin(0.08);
+   c1->SetTopMargin(0.10);//0.08
    c1->SetBottomMargin(0.14);
    c1->SetFrameFillStyle(0);
    c1->SetFrameBorderMode(0);
   
 // ------------>Primitives in pad: TopPad
    TPad *TopPad = new TPad("TopPad", "TopPad",0.01,0.01,0.99,0.99);
+//###   TPad *TopPad = new TPad("TopPad", "TopPad",0.01,0.30,0.99,0.99);
+
+
    TopPad->Draw();
    TopPad->cd();
-   TopPad->Range(0.7100599,-11.71078,3.622756,3.443786);
+//   TopPad->Range(0.7100599,-11.71078,3.622756,3.443786);
    TopPad->SetFillColor(0);
    TopPad->SetBorderMode(0);
    TopPad->SetBorderSize(2);
@@ -64,8 +67,8 @@ void dataMC(var thevar)
    TopPad->SetTicky(1);
    TopPad->SetLeftMargin(0.13);
    TopPad->SetRightMargin(0.05);
-   TopPad->SetTopMargin(0.05);
-   TopPad->SetBottomMargin(0.32);
+   TopPad->SetTopMargin(0.08);//0.05
+   TopPad->SetBottomMargin(0.32);//0.32
    TopPad->SetFrameFillStyle(0);
    TopPad->SetFrameBorderMode(0);
    TopPad->SetFrameFillStyle(0);
@@ -174,10 +177,9 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetLabelSize(0);
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
-   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
-   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
-   else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
-   else h_data->GetYaxis()->SetTitle("Entries / unit y");
+   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
+   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
+   else h_data->GetYaxis()->SetTitle("Entries / 1");
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035);
    h_data->GetYaxis()->SetTitleSize(0.06);
@@ -225,7 +227,7 @@ void dataMC(var thevar)
      grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
-   TLegend *leg = new TLegend(0.725,0.72,0.92,0.92,NULL,"brNDC");
+   TLegend *leg = new TLegend(0.725,0.72,0.92,0.90,NULL,"brNDC");//0.92
    leg->SetBorderSize(0);
    leg->SetTextFont(62);
    leg->SetLineColor(1);
@@ -258,7 +260,8 @@ void dataMC(var thevar)
    TLatex latex;
    latex.SetNDC();
    latex.SetTextSize(0.03);
-   double xlatex=.17, ylatex=0.91, dylatex=0.045;
+   double xlatex=.17, ylatex=0.89;//0.89
+	double dylatex=0.045;
    if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.9;
    latex.SetTextAlign(12);  //centered
    if (thevar!=rap1560 && thevar!=rap60120) {
@@ -266,14 +269,14 @@ void dataMC(var thevar)
       ylatex -= dylatex;
    }
    if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
+      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
       ylatex -= dylatex;
    }
    if (thevar==pt || thevar==phistar || thevar==rap60120) {
-      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
+      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
       ylatex -= dylatex;
    }
-   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
+   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
    ylatex -= dylatex;
 
 // ------------>Primitives in pad: bottomPad
@@ -291,7 +294,7 @@ void dataMC(var thevar)
    bottomPad->SetTicky(1);
    bottomPad->SetLeftMargin(0.122);
    bottomPad->SetRightMargin(0.04);
-   bottomPad->SetTopMargin(0.05);
+   bottomPad->SetTopMargin(0.05);//0.05
    bottomPad->SetBottomMargin(0.4);
    bottomPad->SetFrameFillStyle(0);
    bottomPad->SetFrameBorderMode(0);
@@ -369,11 +372,11 @@ void dataMC(var thevar)
    c1->Modified();
    c1->cd();
    c1->SetSelected(c1);
-   c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
-   c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
+   c1->SaveAs(Form("OfficialStyle/%s_test.C",thevarname));
+   c1->SaveAs(Form("OfficialStyle/%s_test.pdf",thevarname));
 
    // save the ratio
-   TFile *fratio = TFile::Open("OfficialStyle/dataMCratios.root","UPDATE");
+   TFile *fratio = TFile::Open("OfficialStyle/dataMCratios_test.root","UPDATE");
    hratio->Write(thevarname);
    fratio->Close();
 }
