@@ -349,33 +349,33 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c11("CompNew_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
+		  MyCanvas c11("CompNew_cross_mass_oribin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
 		  c11.isLogX=kTRUE;
 		  c11.isLogY=kTRUE;
-		  c11.TitleX="M [GeV/c^{2}]";
-		  c11.TitleY="d#sigma/dM [nb/(GeV/c^{2})]";
+		  c11.TitleX="M (GeV)";
+		  c11.TitleY="d#sigma/dM (nb/GeV)";
 		  c11.LowerEdge_Y=0.00003;
 		  c11.UpperEdge_Y=2000.0;
-		  c11.Legend_x1=0.50;
+		  c11.Legend_x1=0.30;//0.50
 		  c11.Legend_y1=0.80;
 		  c11.Legend_x2=0.95;
 		  c11.Legend_y2=0.90;
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
-		  MyCanvas c12("CompNew_cross_mass_rebin_detcor_FSRcor","M [GeV/c^{2}]","d#sigma/dM",800,1000);
+		  MyCanvas c12("CompNew_cross_mass_rebin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,1000);
    	  c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
-		  c12.TitleX="M [GeV/c^{2}]";
-		  c12.TitleY="d#sigma/dM [nb/(GeV/c^{2})]";
+		  c12.TitleX="M (GeV)";
+		  c12.TitleY="d#sigma/dM (nb/GeV)";
 		  c12.LowerEdge_Y=0.0007;
 		  c12.UpperEdge_Y=500.0;
-		  c12.Legend_x1=0.50;
+		  c12.Legend_x1=0.30;//0.50
 		  c12.Legend_y1=0.80;
 		  c12.Legend_x2=0.95;
 		  c12.Legend_y2=0.90;
@@ -419,7 +419,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c21("CompNew_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c21("CompNew_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -435,12 +435,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c21.PrintCanvas();
 
-		  MyCanvas c22("CompNew_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c22("CompNew_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
 	     c22.isLogX=kFALSE;
         c22.isLogY=kTRUE;
 		  c22.isRatioPadAttached=kTRUE;
 		  c22.TitleX="y_{CM}";
-		  c22.TitleY="d#sigma/dy_{CM} [nb]";
+		  c22.TitleY="d#sigma/dy_{CM} (nb)";
         c22.RatioStandard=1.0;
 		  c22.LowerEdge_Ratio=0.0;
 		  c22.UpperEdge_Ratio=2.0;
@@ -493,7 +493,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(1.0);
 
-		  MyCanvas c31("CompNew_cross_pt_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c31("CompNew_cross_pt_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -510,7 +510,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c31.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c31.PrintCanvas();
 
-		  MyCanvas c32("CompNew_cross_pt_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c32("CompNew_cross_pt_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
 	     c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
@@ -523,8 +523,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c32.Legend_y1=0.80;
 		  c32.Legend_x2=0.95;
 		  c32.Legend_y2=0.90;
-		  c32.TitleX="p_{T} [GeV/c]";
-		  c32.TitleY="d#sigma/dp_{T} [nb/(GeV/c)]";
+		  c32.TitleX="p_{T} (GeV)";
+		  c32.TitleY="d#sigma/dp_{T} (nb/GeV)";
 		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "DY in pPb@8.16 TeV", "Z in pPb@5.02 TeV, PLB 759 (2016) 36", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c32.PrintCanvas();
 
@@ -569,7 +569,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("CompNew_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
+		  MyCanvas c41("CompNew_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -585,12 +585,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c41.PrintCanvas();
 
-		  MyCanvas c42("CompNew_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
+		  MyCanvas c42("CompNew_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,1000);
 	     c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
 		  c42.TitleX="#phi^{*}";
-		  c42.TitleY="d#sigma/d#phi^{*} [nb]";
+		  c42.TitleY="d#sigma/d#phi^{*} (nb)";
         c42.RatioStandard=3.5;
 		  c42.LowerEdge_Ratio=3.0;
 		  c42.UpperEdge_Ratio=0.5;
@@ -726,7 +726,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208*0.001);
 
-		  MyCanvas c51("CompNew_cross_pt2_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c51("CompNew_cross_pt2_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -742,15 +742,15 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c51.PrintCanvas();
 
-		  MyCanvas c52("CompNew_cross_pt2_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c52("CompNew_cross_pt2_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
 	     c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
         c52.RatioStandard=3.0;
 		  c52.LowerEdge_Ratio=-0.7;
 		  c52.UpperEdge_Ratio=2.2;
-		  c52.TitleX="p_{T} [GeV/c]";
-		  c52.TitleY="d#sigma/dp_{T} [nb/(GeV/c)]";
+		  c52.TitleX="p_{T} (GeV)";
+		  c52.TitleY="d#sigma/dp_{T} (nb/GeV)";
 		  c52.LowerEdge_X=0.5;
 		  c52.UpperEdge_X=200.0;
 		  c52.LowerEdge_Y=0.005;
@@ -798,7 +798,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c61("CompNew_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c61("CompNew_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -815,12 +815,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c61.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c61.PrintCanvas();
 
-		  MyCanvas c62("CompNew_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c62("CompNew_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
 	     c62.isLogX=kFALSE;
         c62.isLogY=kTRUE;
 		  c62.isRatioPadAttached=kTRUE;
 		  c62.TitleX="y_{CM}";
-		  c62.TitleY="d#sigma/dy_{CM} [nb]";
+		  c62.TitleY="d#sigma/dy_{CM} (nb)";
         c62.RatioStandard=200.0;
 		  c62.LowerEdge_Ratio=-100.0;
 		  c62.UpperEdge_Ratio=100.0;
@@ -834,14 +834,14 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c62.PrintCanvas();
 		  std::cout << "################# CHECK CLEAR" << std::endl;
 	
-//		  temph1->Clear();
-//		  temph2->Clear();
+		  temph1->Clear();
+		  temph2->Clear();
 
-//		  vh.clear();
-//		  vhistnames.clear();
+		  vh.clear();
+		  vhistnames.clear();
 		  std::cout << "**********#################### CHECK CLEAR" << std::endl;
-//		  vh.empty();
-//			vhistnames.empty();
+		  vh.empty();
+			vhistnames.empty();
 
 
 }
