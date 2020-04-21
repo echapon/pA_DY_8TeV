@@ -173,7 +173,9 @@ void mergehist(int tempbinnum,double tempbin[],TH1D* tempbefh,TH1D* temphist, do
 
 
 //void CompRpPb(const char* infile="results/xsec_nom.root") {
-void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
+//void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
+void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
+
 
 		  TFile* finacc = TFile::Open("../ROOTFile_Histogram_Acc_Eff_MomCorr00_Powheg_PAL3Mu12_0_rewboth.root");
 		  TEfficiency *TEff_Acc_Mass = (TEfficiency*)finacc->Get("TEff_Acc_Mass");
@@ -194,7 +196,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  TGraphAsymmErrors* gaeres_rap60120 = (TGraphAsymmErrors*)fin->Get("gres_rap60120");
 		  TGraphAsymmErrors* gaeres_phistar = (TGraphAsymmErrors*)fin->Get("gres_phistar");
 
-		  // HIN-15-002, Z boson analysis in pPb collision(http://hepdata.cedar.ac.uk/view/ins1410832), 5.02 TeV
+		  // HIN-15-002, Z boson analysis in pPb collision(http://hepdata.cedar.ac.uk/view/ins1410832), 5.02 TeV - PLB 759 (2016) 36
 		  double ZpPb_cross_pt_bin[14]={0.0, 2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 20.0, 30.0, 40.0, 50.0, 70.0, 100.0, 150.0};
 		  double ZpPb_cross_pt_val[13]={2.948,4.706,3.812,3.273,2.376,1.780,1.211,0.7593,0.3810,0.2450,0.09426,0.03765, 0.007902};
 		  double ZpPb_cross_pt_staterr[13]={0.175,0.197,0.185,0.177,0.154,0.139,0.070,0.0393,0.0282,0.0239,0.00994,0.00515,0.001721};
@@ -221,7 +223,13 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  double DYpp_cross_rap60120_val[]={339.0,338.0,336.2,335.10,334.63,331.38,329.38,325.00,320.23,312.08,300.68,287.81,273.00,256.66,236.71,216.40,192.85,167.84,142.33,116.38,88.29,62.37,36.93,12.37};
 		  double DYpp_cross_rap60120_err[]={1.2,1.2,1.1,0.96,0.93,0.93,0.91,0.86,0.83,0.85,0.81,0.77,0.74,0.74,0.72,0.71,0.73,0.68,0.61,0.54,0.52,0.41,0.30,0.18};
 
-		  
+			  //### SMP-14-012 : Z boson 8 TeV (https://www.hepdata.net/record/77221)
+		  //mass - unit : pb
+		  double DYpp_cross_pt60120_bin[]={0.0,2.5,5.0,7.5,10.0,12.5,15.0,17.5,20.0,30.0,40.0,50.0,70.0,90.0,110.0,150.0,190.0,250.0,600.0};
+		  double DYpp_cross_pt60120_val[]={184.5,75.0,35.9,19.72,11.81,7.32,4.97,3.591,2.750,2.342,2.177,2.243,2.623,3.889,9.31,85.7,103.1,8.71,2.961,1.552,0.983,0.649,0.4453,0.3101,0.2135,0.1501,0.1061,0.0738,0.0536,0.0351,0.02404,0.01532,0.00909,0.00491,0.00221, 0.001034, 0.000476, 0.000221, 0.0000471, 0.00000309, 0.00000029};
+		  double DYpp_cross_pt60120_err[]={8.8,3.2,1.5,0.81,0.39,0.22,0.14,0.094,0.068,0.056,0.049,0.049,0.055,0.075,0.20,1.4,1.6,0.17,0.053,0.029,0.019,0.014,0.0100,0.0075,0.0056,0.0043,0.0033,0.0025,0.0019,0.0014,0.00098,0.00067,0.00043,0.00025,0.00012,0.000071,0.000038,0.000021,0.0000048,0.00000084,0.00000015};	
+
+	  
 		  // SMP-13-013 : here are 81.0-101.0, need to check mass range 60-120? 2D, http://hepdata.cedar.ac.uk/view/ins1359450
 		  // pb/GeV
 		  double cross_absyrap_ptbin[]={0.0,20.0,40.0,60.0,80.0,100.0,120.0,140.0,170.0,200.0,1000.0};
@@ -274,9 +282,10 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  const int DYComp_cross_mass_binnum=13;
 		  double DYComp_cross_mass_bin[DYComp_cross_mass_binnum+1]={15.0,20.0,30.0,40.0,50.0,60.0,76.0,86.0,96.0,106.0,120.0,150.0,200.0,600.0};
 		  const int DYComp_cross_pt_binnum=7;
-		  double DYComp_cross_pt_bin[DYComp_cross_pt_binnum+1] = {0.0,10.0,20.0,30.0,40.0,50.0,70.0,100.0};
+		  double DYComp_cross_pt_bin[DYComp_cross_pt_binnum+1] = {0.0,10.0,20.0,30.0,40.0,50.0,70.0,150.0};
 		  const int DYComp_cross_2rap60120_binnum=11;
 		  double DYComp_cross_2rap60120_bin[DYComp_cross_2rap60120_binnum+1] = {-2.87,-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
+
 		  //###const int DYComp_cross_rap60120_binnum=9;
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
 		  const int DYComp_cross_rap60120_binnum=22;
@@ -285,15 +294,22 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
 		  //###const int DYComp_cross_rap60120_binnum=21;
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
+		  const int DYComp_cross_phistar_binnum=17;
+		  double DYComp_cross_phistar_bin[DYComp_cross_phistar_binnum+1] = {0,0.008,0.016,0.024,0.034,0.045,0.057,0.072,0.091,0.114,0.145,0.189,0.258,0.391,0.695,1.153,1.947,3.277};
 
+//##################################################################
+/*		  // HIN-15-002, Z boson analysis in pPb collision(http://hepdata.cedar.ac.uk/view/ins1410832), 5.02 TeV
+		  double ZpPb_cross_ycm_bin[13]={-2.8,-2.4,-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
+		  double ZpPb_rfb_absycm_bin[6]={0.0,0.4,0.8,1.2,1.6,2.0};
 
-
-
-		  const int DYComp_cross_phistar_binnum=1;
-		  double DYComp_cross_phistar_bin[DYComp_cross_phistar_binnum+1] = {0.0,3.277};
-
-
-
+		  //yrap, Mass : 60-120 unit : pb-1
+		  double DYpp_cross_rap60120_bin[]={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4};
+		  
+		  // SMP-13-013 : here are 81.0-101.0, need to check mass range 60-120? 2D, http://hepdata.cedar.ac.uk/view/ins1359450
+		  // pb/GeV
+		  double cross_absyrap_ptbin[]={0.0,20.0,40.0,60.0,80.0,100.0,120.0,140.0,170.0,200.0,1000.0};
+*/
+//############################################################################
 
 		  //		  const int DYComp_cross_phistar_binnum=10;
 		  //		  double DYComp_cross_phistar_bin[DYComp_cross_phistar_binnum+1] = {0.0,0.01,0.03,0.05,0.07,0.1,0.15,0.2,0.3,0.5,3.0};
@@ -333,11 +349,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c11("Comp_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
+		  MyCanvas c11("CompNew_cross_mass_oribin_detcor_FSRcor","M (GeV/c^{2})","d#sigma/dM [nb/(GeV/c^{2})]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
 		  c11.isLogX=kTRUE;
 		  c11.isLogY=kTRUE;
 		  c11.TitleX="M [GeV/c^{2}]";
@@ -351,7 +367,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
-		  MyCanvas c12("Comp_cross_mass_rebin_detcor_FSRcor","M [GeV/c^{2}]","d#sigma/dM",800,1000);
+		  MyCanvas c12("CompNew_cross_mass_rebin_detcor_FSRcor","M [GeV/c^{2}]","d#sigma/dM",800,1000);
    	  c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
@@ -363,7 +379,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c12.Legend_y1=0.80;
 		  c12.Legend_x2=0.95;
 		  c12.Legend_y2=0.90;
-		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"DY in pPb@8.16 TeV", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c12.PrintCanvas();
 
 		  temph1->Clear();
@@ -403,11 +419,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c21("Comp_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c21("CompNew_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
 	     c21.isLogX=kFALSE;
         c21.isLogY=kTRUE;
 		  c21.LowerEdge_Y=4.0;
@@ -419,7 +435,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c21.PrintCanvas();
 
-		  MyCanvas c22("Comp_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c22("CompNew_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c22.isLogX=kFALSE;
         c22.isLogY=kTRUE;
 		  c22.isRatioPadAttached=kTRUE;
@@ -434,7 +450,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c22.Legend_y1=0.80;
 		  c22.Legend_x2=0.95;
 		  c22.Legend_y2=0.90;
-		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "DY in pPb@8.16 TeV", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c22.PrintCanvas();
 
 		  temph1->Clear();
@@ -477,11 +493,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(1.0);
 
-		  MyCanvas c31("Comp_cross_pt_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c31("CompNew_cross_pt_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb 8.16 TeV");
-		  vhistnames.push_back("Z in pPb 5.02 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("Z in pPb@5.02 TeV, PLB 759 (2016) 36");
 	     c31.isLogX=kTRUE;
         c31.isLogY=kTRUE;
 		  c31.LowerEdge_Y=0.005;
@@ -494,7 +510,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c31.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c31.PrintCanvas();
 
-		  MyCanvas c32("Comp_cross_pt_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c32("CompNew_cross_pt_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
@@ -509,7 +525,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c32.Legend_y2=0.90;
 		  c32.TitleX="p_{T} [GeV/c]";
 		  c32.TitleY="d#sigma/dp_{T} [nb/(GeV/c)]";
-		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "DY in pPb 8.16 TeV", "Z in pPb, 5.02 TeV", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "DY in pPb@8.16 TeV", "Z in pPb@5.02 TeV, PLB 759 (2016) 36", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c32.PrintCanvas();
 
 		  temph1->Clear();
@@ -553,11 +569,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("Comp_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
+		  MyCanvas c41("CompNew_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesDY in pp, 8 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("208#timesDY in pp@8 TeV, JHEP 03 (2018) 172");
 	     c41.isLogX=kTRUE;
         c41.isLogY=kTRUE;
 		  c41.LowerEdge_Y=0.2;
@@ -569,15 +585,15 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c41.PrintCanvas();
 
-		  MyCanvas c42("Comp_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
+		  MyCanvas c42("CompNew_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} [nb]",800,1000);
 	     c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
 		  c42.TitleX="#phi^{*}";
 		  c42.TitleY="d#sigma/d#phi^{*} [nb]";
-        c42.RatioStandard=1.0;
-		  c42.LowerEdge_Ratio=0.9;
-		  c42.UpperEdge_Ratio=1.1;
+        c42.RatioStandard=3.5;
+		  c42.LowerEdge_Ratio=3.0;
+		  c42.UpperEdge_Ratio=0.5;
 		  c42.LowerEdge_Y=9.0;
 		  c42.UpperEdge_Y=90.0;
 		  c42.LowerEdge_Y=0.2;
@@ -586,7 +602,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c42.Legend_y1=0.80;
 		  c42.Legend_x2=0.95;
 		  c42.Legend_y2=0.90;
-		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "DY in pPb, 8.16 TeV", "208#timesDY in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "DY in pPb@8.16 TeV", "208#timesDY in pp@8 TeV, JHEP 03 (2018) 172", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c42.PrintCanvas();
 
 		  temph1->Clear();
@@ -710,11 +726,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208*0.001);
 
-		  MyCanvas c51("Comp_cross_pt2_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
+		  MyCanvas c51("CompNew_cross_pt2_oribin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesZ in pp, 8 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("208#timesZ in pp@8 TeV, PLB 749 (2015) 187");
 	     c51.isLogX=kTRUE;
         c51.isLogY=kTRUE;
 		  c51.LowerEdge_Y=0.005;
@@ -726,7 +742,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c51.PrintCanvas();
 
-		  MyCanvas c52("Comp_cross_pt2_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
+		  MyCanvas c52("CompNew_cross_pt2_rebin_detcor_FSRcor","p_{T} [GeV/c]","d#sigma/dp_{T} [nb/(GeV/c)]",800,1000);
 	     c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
@@ -743,7 +759,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c52.Legend_y1=0.80;
 		  c52.Legend_x2=0.95;
 		  c52.Legend_y2=0.90;
-		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "DY in pPb@8.16 TeV", "208#timesZ in pp@8 TeV, PLB 749 (2015) 187", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c52.PrintCanvas();
 
 		  temph1->Clear();
@@ -782,11 +798,11 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c61("Comp_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
+		  MyCanvas c61("CompNew_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb, 8.16 TeV");
-		  vhistnames.push_back("208#timesZ in pp, 8 TeV");
+		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("208#timesZ in pp@8 TeV, PLB 749 (2015) 187");
 	     c61.isLogX=kFALSE;
         c61.isLogY=kTRUE;
 		  c61.LowerEdge_Y=0.08;
@@ -799,7 +815,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 	     c61.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c61.PrintCanvas();
 
-		  MyCanvas c62("Comp_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
+		  MyCanvas c62("CompNew_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} [nb]",800,1000);
 	     c62.isLogX=kFALSE;
         c62.isLogY=kTRUE;
 		  c62.isRatioPadAttached=kTRUE;
@@ -814,17 +830,18 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSRcor.root") {
 		  c62.Legend_y1=0.80;
 		  c62.Legend_x2=0.95;
 		  c62.Legend_y2=0.90;
-		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "DY in pPb, 8.16 TeV", "208#timesZ in pp, 8 TeV", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "DY in pPb@8.16 TeV", "208#timesZ in pp@8 TeV, PLB 749 (2015) 187", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c62.PrintCanvas();
+		  std::cout << "################# CHECK CLEAR" << std::endl;
+	
+//		  temph1->Clear();
+//		  temph2->Clear();
 
-		  temph1->Clear();
-		  temph2->Clear();
-
-		  vh.clear();
-		  vhistnames.clear();
-		  std::cout << "********** CHECK CLEAR" << std::endl;
-		  vh.empty();
-		  vhistnames.empty();
+//		  vh.clear();
+//		  vhistnames.clear();
+		  std::cout << "**********#################### CHECK CLEAR" << std::endl;
+//		  vh.empty();
+//			vhistnames.empty();
 
 
 }
