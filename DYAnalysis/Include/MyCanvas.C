@@ -541,13 +541,13 @@ public:
 		haxes->GetXaxis()->SetLabelSize(0);
 		haxes->GetXaxis()->SetTitleSize(0);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetNoExponent(); haxes->GetXaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g1->GetYaxis()->SetTitleSize(0.06);
 		g1->GetYaxis()->SetTitleOffset(1.25);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
-		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
+		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0)) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
 		// -- Add Legend -- //
 		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
@@ -557,6 +557,10 @@ public:
 		legend->AddEntry(g1, Name1);
 		legend->AddEntry(g2, Name2);
 		legend->Draw();
+
+// update the full thing
+       TopPad->RedrawAxis();
+       TopPad->Update();
 
 		// -- Bottom Pad -- //
 		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
@@ -611,6 +615,7 @@ public:
 		haxes->GetXaxis()->SetLabelOffset(0.007);
 		haxes->GetXaxis()->SetLabelSize(0.15);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetMoreLogLabels(); haxes->GetXaxis()->SetNoExponent(); }
+		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
@@ -640,6 +645,10 @@ public:
          tleg_ratio->AddEntry(g_ratio2,"CT14+EPPS16","f");
          tleg_ratio->Draw();
       }
+
+// update the full thing
+       BottomPad->RedrawAxis();
+       BottomPad->Update();
 
       CMS_lumi( TopPad, 111, 0 );
 	}
@@ -674,6 +683,7 @@ public:
 		double maxval=0.0;
 		double minval=0.0;
 		for(Int_t i_hist=0; i_hist<nHist; i_hist++){
+			std::cout << "i_hist : " << i_hist << " , Max: " << Histos[i_hist]->GetMaximum() << " , Min: " << Histos[i_hist]->GetMinimum() << std::endl; 
 			if (i_hist==0) {maxval=Histos[i_hist]->GetMaximum();minval=Histos[i_hist]->GetMinimum();}
 			else if (maxval<Histos[i_hist]->GetMaximum()) maxval=Histos[i_hist]->GetMaximum();
 			else if (minval>Histos[i_hist]->GetMaximum()) minval=Histos[i_hist]->GetMinimum();
@@ -718,6 +728,7 @@ public:
 
 			legend->AddEntry( h, Names[i_hist] );
 
+			//if (i_hist == 0) h->Draw(DrawOp); else h->Draw(DrawOp+"SAME");
 		}
 		legend->Draw();
 
