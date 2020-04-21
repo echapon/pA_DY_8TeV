@@ -12,6 +12,7 @@
 
 
 TH1D *g2h(TGraphAsymmErrors *g) {
+			std::cout << "g2h ----------------" << std::endl;
 		  const int nbins = g->GetN();
 		  double bins[nbins+1];
 
@@ -47,7 +48,7 @@ TH1D *g2hcor(TGraphAsymmErrors *g, TEfficiency *e) {
 
 
 TH1D *array2h(int tempsize,double tempbin[],double tempval[],double temperr[]) {
-
+std::cout << "######## array2h ----------------" << std::endl;
 		  int temph2binnum = tempsize/sizeof(double);
 		  std::cout << "####" << temph2binnum << std::endl;
 		  TH1D *temph = new TH1D("temph","",temph2binnum-1,tempbin);	
@@ -214,9 +215,13 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  //### SMP-14-003 : Drell-Yan 8 TeV (http://hepdata.cedar.ac.uk/view/ins1332509)
 		  //mass - unit : pb
-		  double DYpp_cross_mass_bin[]={15.0,20.0,25.0,30.0,35.0,40.0,45.0,50.0,55.0,60.0,64.0,68.0,72.0,76.0,81.0,86.0,91.0,96.0,101.0,106.0,110.0,115.0,120.0,126.0,133.0,141.0,150.0,160.0,171.0,185.0,200.0,220.0,243.0,273.0,320.0,380.0,440.0,510.0,600.0,1000.0,1500.0,2000.0};
+/*		  double DYpp_cross_mass_bin[]={15.0,20.0,25.0,30.0,35.0,40.0,45.0,50.0,55.0,60.0,64.0,68.0,72.0,76.0,81.0,86.0,91.0,96.0,101.0,106.0,110.0,115.0,120.0,126.0,133.0,141.0,150.0,160.0,171.0,185.0,200.0,220.0,243.0,273.0,320.0,380.0,440.0,510.0,600.0,1000.0,1500.0,2000.0};
 		  double DYpp_cross_mass_val[]={184.5,75.0,35.9,19.72,11.81,7.32,4.97,3.591,2.750,2.342,2.177,2.243,2.623,3.889,9.31,85.7,103.1,8.71,2.961,1.552,0.983,0.649,0.4453,0.3101,0.2135,0.1501,0.1061,0.0738,0.0536,0.0351,0.02404,0.01532,0.00909,0.00491,0.00221, 0.001034, 0.000476, 0.000221, 0.0000471, 0.00000309, 0.00000029};
 		  double DYpp_cross_mass_err[]={8.8,3.2,1.5,0.81,0.39,0.22,0.14,0.094,0.068,0.056,0.049,0.049,0.055,0.075,0.20,1.4,1.6,0.17,0.053,0.029,0.019,0.014,0.0100,0.0075,0.0056,0.0043,0.0033,0.0025,0.0019,0.0014,0.00098,0.00067,0.00043,0.00025,0.00012,0.000071,0.000038,0.000021,0.0000048,0.00000084,0.00000015};	
+*/
+		  double DYpp_cross_mass_bin[]={15.0,20.0,25.0,30.0,35.0,40.0,45.0,50.0,55.0,60.0,64.0,68.0,72.0,76.0,81.0,86.0,91.0,96.0,101.0,106.0,110.0,115.0,120.0,126.0,133.0,141.0,150.0,160.0,171.0,185.0,200.0,220.0,243.0,273.0,320.0,380.0,440.0,510.0,600.0};
+		  double DYpp_cross_mass_val[]={184.5,75.0,35.9,19.72,11.81,7.32,4.97,3.591,2.750,2.342,2.177,2.243,2.623,3.889,9.31,85.7,103.1,8.71,2.961,1.552,0.983,0.649,0.4453,0.3101,0.2135,0.1501,0.1061,0.0738,0.0536,0.0351,0.02404,0.01532,0.00909,0.00491,0.00221, 0.001034, 0.000476, 0.000221};
+		  double DYpp_cross_mass_err[]={8.8,3.2,1.5,0.81,0.39,0.22,0.14,0.094,0.068,0.056,0.049,0.049,0.055,0.075,0.20,1.4,1.6,0.17,0.053,0.029,0.019,0.014,0.0100,0.0075,0.0056,0.0043,0.0033,0.0025,0.0019,0.0014,0.00098,0.00067,0.00043,0.00025,0.00012,0.000071,0.000038,0.000021};	
 
 		  //yrap, Mass : 60-120 unit : pb-1
 		  double DYpp_cross_rap60120_bin[]={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4};
@@ -295,7 +300,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  //###const int DYComp_cross_rap60120_binnum=21;
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
 		  const int DYComp_cross_phistar_binnum=17;
-		  double DYComp_cross_phistar_bin[DYComp_cross_phistar_binnum+1] = {0,0.008,0.016,0.024,0.034,0.045,0.057,0.072,0.091,0.114,0.145,0.189,0.258,0.391,0.695,1.153,1.947,3.277};
+		  double DYComp_cross_phistar_bin[DYComp_cross_phistar_binnum+1] = {0.000,0.008,0.016,0.024,0.034,0.045,0.057,0.072,0.091,0.114,0.145,0.189,0.258,0.391,0.695,1.153,1.947,3.277};
 
 //##################################################################
 /*		  // HIN-15-002, Z boson analysis in pPb collision(http://hepdata.cedar.ac.uk/view/ins1410832), 5.02 TeV
@@ -349,7 +354,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c11("CompNew_cross_mass_oribin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,800);
+		  MyCanvas c11("CompNew2_cross_mass_oribin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -367,7 +372,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
-		  MyCanvas c12("CompNew_cross_mass_rebin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,1000);
+			std::cout << "############### c11 is done" << std::endl;
+
+		  MyCanvas c12("CompNew2_cross_mass_rebin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,1000);
    	  c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
@@ -419,7 +426,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c21("CompNew_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
+		  MyCanvas c21("CompNew2_cross_rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -435,7 +442,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c21.PrintCanvas();
 
-		  MyCanvas c22("CompNew_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
+		  MyCanvas c22("CompNew2_cross_rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
 	     c22.isLogX=kFALSE;
         c22.isLogY=kTRUE;
 		  c22.isRatioPadAttached=kTRUE;
@@ -493,7 +500,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(1.0);
 
-		  MyCanvas c31("CompNew_cross_pt_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
+		  MyCanvas c31("CompNew2_cross_pt_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -510,7 +517,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c31.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c31.PrintCanvas();
 
-		  MyCanvas c32("CompNew_cross_pt_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
+		  MyCanvas c32("CompNew2_cross_pt_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
 	     c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
@@ -543,33 +550,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  //temph1 = g2hcor(gaeres_phistar, TEff_Acc_Phistar);
 		  temph2 = array2h(sizeof(DYpp_cross_phistar_bin),DYpp_cross_phistar_bin,DYpp_cross_phistar_val,DYpp_cross_phistar_staterr);//pb-1
 
-			std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-		  for (int i=0;i<temph1->GetNbinsX();i++) {
-					 std::cout << i+1 << " - " << temph1->GetBinLowEdge(i+1) << " - " << temph1->GetBinContent(i+1) << " , " << temph1->GetBinError(i+1) << std::endl;
-		  }
-
-		  TH1D* h1DYpPb_cross_phistar_rebin=new TH1D("h1DYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
-		  TH1D* h2DYpPb_cross_phistar_rebin=new TH1D("h2DYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
-
-		  mergehist(DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin,temph2,h2DYpPb_cross_phistar_rebin,208);
-		  mergehist(DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin,temph1,h1DYpPb_cross_phistar_rebin,1.0);
-
-		  std::cout << "####################" << std::endl;
-		  //h1DYpPb_cross_mass_rebin = (TH1D*)temph1->Rebin(DYComp_cross_mass_binnum,"",DYComp_cross_mass_bin);
-		  //h2DYpPb_cross_mass_rebin = (TH1D*)temph2->Rebin(DYComp_cross_mass_binnum,"",DYComp_cross_mass_bin);
-		  for (int i=0;i<DYComp_cross_phistar_binnum;i++) {
-					 std::cout << i+1 << " - " << h1DYpPb_cross_phistar_rebin->GetBinLowEdge(i+1) << " - " << h1DYpPb_cross_phistar_rebin->GetBinContent(i+1) << " , " << h1DYpPb_cross_phistar_rebin->GetBinError(i+1) << std::endl;
-					 std::cout << i+1 << " - " << h1DYpPb_cross_phistar_rebin->GetBinLowEdge(i+1) << " - " << h2DYpPb_cross_phistar_rebin->GetBinContent(i+1) << " , " << h2DYpPb_cross_phistar_rebin->GetBinError(i+1) << std::endl;
-		  }
-
-		  //		  TH1D *hCompDYpPb_cross_pt_rebin=(TH1D*)temph1->Clone();
-		  TH1D *hCompDYpPb_cross_phistar_rebin= new TH1D("hCompDYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
-		  hCompDYpPb_cross_phistar_rebin->Sumw2();
-		  hCompDYpPb_cross_phistar_rebin->Divide(h1DYpPb_cross_phistar_rebin,h2DYpPb_cross_phistar_rebin,1,1,"");
-
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("CompNew_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,800);
+		  MyCanvas c41("CompNew2_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -585,7 +568,33 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c41.PrintCanvas();
 
-		  MyCanvas c42("CompNew_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,1000);
+
+			std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+		  for (int i=0;i<temph1->GetNbinsX();i++) {
+					 std::cout << i+1 << " - " << temph1->GetBinLowEdge(i+1) << " - " << temph1->GetBinContent(i+1) << " , " << temph1->GetBinError(i+1) << std::endl;
+		  }
+
+		  TH1D* h1DYpPb_cross_phistar_rebin=new TH1D("h1DYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
+		  TH1D* h2DYpPb_cross_phistar_rebin=new TH1D("h2DYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
+
+//		  mergehist(DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin,temph2,h2DYpPb_cross_phistar_rebin,208);
+		  mergehist(DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin,temph2,h2DYpPb_cross_phistar_rebin,1.0);
+		  mergehist(DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin,temph1,h1DYpPb_cross_phistar_rebin,1.0);
+
+		  std::cout << "####################" << std::endl;
+		  //h1DYpPb_cross_mass_rebin = (TH1D*)temph1->Rebin(DYComp_cross_mass_binnum,"",DYComp_cross_mass_bin);
+		  //h2DYpPb_cross_mass_rebin = (TH1D*)temph2->Rebin(DYComp_cross_mass_binnum,"",DYComp_cross_mass_bin);
+		  for (int i=0;i<DYComp_cross_phistar_binnum;i++) {
+					 std::cout << i+1 << " - " << h1DYpPb_cross_phistar_rebin->GetBinLowEdge(i+1) << " - " << h1DYpPb_cross_phistar_rebin->GetBinContent(i+1) << " , " << h1DYpPb_cross_phistar_rebin->GetBinError(i+1) << std::endl;
+					 std::cout << i+1 << " - " << h1DYpPb_cross_phistar_rebin->GetBinLowEdge(i+1) << " - " << h2DYpPb_cross_phistar_rebin->GetBinContent(i+1) << " , " << h2DYpPb_cross_phistar_rebin->GetBinError(i+1) << std::endl;
+		  }
+
+		  //		  TH1D *hCompDYpPb_cross_pt_rebin=(TH1D*)temph1->Clone();
+		  TH1D *hCompDYpPb_cross_phistar_rebin= new TH1D("hCompDYpPb_cross_phistar_rebin","",DYComp_cross_phistar_binnum,DYComp_cross_phistar_bin);
+		  hCompDYpPb_cross_phistar_rebin->Sumw2();
+		  hCompDYpPb_cross_phistar_rebin->Divide(h1DYpPb_cross_phistar_rebin,h2DYpPb_cross_phistar_rebin,1,1,"");
+
+		  MyCanvas c42("CompNew2_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,1000);
 	     c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
@@ -726,7 +735,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208*0.001);
 
-		  MyCanvas c51("CompNew_cross_pt2_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
+		  MyCanvas c51("CompNew2_cross_pt2_oribin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -742,7 +751,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c51.PrintCanvas();
 
-		  MyCanvas c52("CompNew_cross_pt2_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
+		  MyCanvas c52("CompNew2_cross_pt2_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
 	     c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
@@ -798,7 +807,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0*0.001);
 
-		  MyCanvas c61("CompNew_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
+		  MyCanvas c61("CompNew2_cross_2rap60120_oribin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
@@ -815,7 +824,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c61.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 	     c61.PrintCanvas();
 
-		  MyCanvas c62("CompNew_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
+		  MyCanvas c62("CompNew2_cross_2rap60120_rebin_detcor_FSRcor","y_{CM}","d#sigma/dy_{CM} (nb)",800,1000);
 	     c62.isLogX=kFALSE;
         c62.isLogY=kTRUE;
 		  c62.isRatioPadAttached=kTRUE;
