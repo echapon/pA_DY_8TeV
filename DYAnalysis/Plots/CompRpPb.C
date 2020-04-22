@@ -359,7 +359,8 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
-		  c11.isLogX=kTRUE;
+		  //c11.isLogX=kTRUE;
+		  //c11.isSetNoExpo_MoreLogLabels_X=kFALSE;
 		  c11.isLogY=kTRUE;
 		  c11.TitleX="M (GeV)";
 		  c11.TitleY="d#sigma/dM (nb/GeV)";
@@ -375,7 +376,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 			std::cout << "############### c11 is done" << std::endl;
 
 		  MyCanvas c12("CompNew2_cross_mass_rebin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,1000);
-   	  c12.isLogX=kTRUE;
+   	  //c12.isLogX=kTRUE;
 		  c12.isLogY=kTRUE;
 	     c12.isRatioPadAttached=kTRUE;
 		  c12.TitleX="M (GeV)";
@@ -505,7 +506,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
 		  vhistnames.push_back("Z in pPb@5.02 TeV, PLB 759 (2016) 36");
-	     c31.isLogX=kTRUE;
+	     //c31.isLogX=kTRUE;
         c31.isLogY=kTRUE;
 		  c31.LowerEdge_Y=0.005;
 		  c31.UpperEdge_Y=90.0;
@@ -518,7 +519,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c31.PrintCanvas();
 
 		  MyCanvas c32("CompNew2_cross_pt_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
-	     c32.isLogX=kTRUE;
+	     //c32.isLogX=kTRUE;
         c32.isLogY=kTRUE;
 		  c32.isRatioPadAttached=kTRUE;
         c32.RatioStandard=3.0;
@@ -557,7 +558,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
 		  vhistnames.push_back("208#timesDY in pp@8 TeV, JHEP 03 (2018) 172");
-	     c41.isLogX=kTRUE;
+	     //c41.isLogX=kTRUE;
         c41.isLogY=kTRUE;
 		  c41.LowerEdge_Y=0.2;
 		  c41.UpperEdge_Y=9000.0;
@@ -595,7 +596,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  hCompDYpPb_cross_phistar_rebin->Divide(h1DYpPb_cross_phistar_rebin,h2DYpPb_cross_phistar_rebin,1,1,"");
 
 		  MyCanvas c42("CompNew2_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,1000);
-	     c42.isLogX=kTRUE;
+	     //c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
 		  c42.TitleX="#phi^{*}";
@@ -740,7 +741,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, PLB 749 (2015) 187");
-	     c51.isLogX=kTRUE;
+	     //c51.isLogX=kTRUE;
         c51.isLogY=kTRUE;
 		  c51.LowerEdge_Y=0.005;
 		  c51.UpperEdge_Y=80.0;
@@ -752,7 +753,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 	     c51.PrintCanvas();
 
 		  MyCanvas c52("CompNew2_cross_pt2_rebin_detcor_FSRcor","p_{T} (GeV)","d#sigma/dp_{T} (nb/GeV)",800,1000);
-	     c52.isLogX=kTRUE;
+	     //c52.isLogX=kTRUE;
         c52.isLogY=kTRUE;
 		  c52.isRatioPadAttached=kTRUE;
         c52.RatioStandard=3.0;
