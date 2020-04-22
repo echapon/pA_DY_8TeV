@@ -49,8 +49,14 @@ public:
 	Double_t Legend_x2;
 	Double_t Legend_y2;
 
+	Double_t LegendTextSize; // added by Hyunchul
+	Font_t LegendFontStyle; // added by Hyunchul
+
+
 	// -- for multiple histograms & graphs -- //
 	vector< Int_t > Colors;
+	vector< Int_t > Markers;
+
 
 	// -- For Ratio plot -- //
 	TH1D *h_ratio;
@@ -87,6 +93,9 @@ public:
 		Legend_y1 = 0.80;//0.85 (Hyunchul)
 		Legend_x2 = 0.95;//0.95 (Hyunchul)
 		Legend_y2 = 0.90;//0.95 (Hyunchul)
+		LegendTextSize = 0.0;// (Hyunchul)
+		LegendFontStyle = 42;// (Hyunchul)
+
 
 		LowerEdge_Ratio = 0.45;
 		UpperEdge_Ratio = 1.55;
@@ -128,6 +137,16 @@ public:
          Colors.push_back( kAzure+icc );
          Colors.push_back( kSpring+icc );
       }
+
+		Markers.push_back(20);
+		Markers.push_back(21);
+		Markers.push_back(22);
+		Markers.push_back(23);
+		Markers.push_back(33);
+		Markers.push_back(34);
+
+
+
 
 		DoTranspose = kFALSE;
 	}
@@ -688,12 +707,20 @@ public:
 			else if (maxval<Histos[i_hist]->GetMaximum()) maxval=Histos[i_hist]->GetMaximum();
 			else if (minval>Histos[i_hist]->GetMaximum()) minval=Histos[i_hist]->GetMinimum();
 		}
-	
+				Int_t realhistid=0;
+
 		for(Int_t i_hist=0; i_hist<nHist; i_hist++)
 		{
 			TH1D *h = Histos[i_hist];
-			Int_t color = Colors[i_hist];
+			TH1D *hpre;
+			if (i_hist!=0) hpre=Histos[i_hist-1]; else hpre=Histos[i_hist];
 
+			if (i_hist==0 || h!=hpre) {
+			Int_t color = Colors[realhistid];
+			Int_t marker = Markers[realhistid];
+
+
+			realhistid++;
 			h->Draw(DrawOp+"SAME");
 
 			// -- Axis Setting: It is enough to do on the first histogram -- //
@@ -723,13 +750,18 @@ public:
 			h->SetLineWidth(1);
 			h->SetMarkerColor(color);
 			h->SetMarkerSize(1);
-			h->SetMarkerStyle(20);
+			h->SetMarkerStyle(marker);//20
 			h->SetFillColorAlpha(kWhite, 0);
-
-			legend->AddEntry( h, Names[i_hist] );
+			}
+		   if (i_hist==0 || h!=hpre) legend->AddEntry( h, Names[i_hist] );
+			else legend->AddEntry( (TObject*)0, Names[i_hist], "");
 
 			//if (i_hist == 0) h->Draw(DrawOp); else h->Draw(DrawOp+"SAME");
 		}
+		if (LegendTextSize>0.0) gStyle->SetLegendTextSize(LegendTextSize);
+		gStyle->SetLegendFont(LegendFontStyle);
+
+
 		legend->Draw();
 
 		CMS_lumi( TopPad, 111, 0 );//addedby Hyunchul
