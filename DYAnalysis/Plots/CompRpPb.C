@@ -355,21 +355,40 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  temph2->Scale(208.0*0.001);
 
 		  MyCanvas c11("CompNew2_cross_mass_oribin_detcor_FSRcor","M (GeV)","d#sigma/dM (nb/GeV)",800,800);
+/*		  vh.push_back(temph1);
+		  vh.push_back(temph2);
+		  vhistnames.push_back("#splitline{DY in pPb@8.16 TeV}{#splitline{-2.87 < |y_{CM}| < 1.93}{p_{T, leading lepton} > 15 GeV, p_{T, trailing lepton} > 10 GeV}}");
+		  vhistnames.push_back("#splitline{208#timesDY in pp@8 TeV, EPJC 75 (2015) 147}{|#eta| < 2.4, p_{T, leading lepton} > 20 GeV, p_{T, trailing lepton} > 10 GeV}");
+*/
+		  vh.push_back(temph1);
+		  vh.push_back(temph1);
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
+		  vh.push_back(temph2);
+		  vh.push_back(temph2);
 		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
+		  vhistnames.push_back("p_{T, leading lepton} > 15 GeV, p_{T, trailing lepton} > 10 GeV");
 		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
+		  vhistnames.push_back("|#eta| < 2.4");
+		  vhistnames.push_back("p_{T, leading lepton} > 20 GeV, p_{T, trailing lepton} > 10 GeV");
+
+
 		  //c11.isLogX=kTRUE;
 		  //c11.isSetNoExpo_MoreLogLabels_X=kFALSE;
 		  c11.isLogY=kTRUE;
 		  c11.TitleX="M (GeV)";
 		  c11.TitleY="d#sigma/dM (nb/GeV)";
 		  c11.LowerEdge_Y=0.00003;
-		  c11.UpperEdge_Y=2000.0;
+		  c11.UpperEdge_Y=5000.0;
 		  c11.Legend_x1=0.30;//0.50
-		  c11.Legend_y1=0.80;
-		  c11.Legend_x2=0.95;
+		  c11.Legend_y1=0.65;//0.80
+		  c11.Legend_x2=0.50;//0.95
 		  c11.Legend_y2=0.90;
+		  c11.LegendTextSize=0.03;
+		  c11.LegendFontStyle=42;
+
+
 		  c11.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
 		  c11.PrintCanvas();
 
