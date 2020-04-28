@@ -377,14 +377,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 //		  vh.push_back(temph2);
 //		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
-		  vhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
+		  vhistnames.push_back("DY in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
+		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 //		  vhistnames.push_back("p_{T, leading lepton} > 15 GeV, p_{T, trailing lepton} > 10 GeV");
 		  vhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
 //		  vhistnames.push_back("|#eta| < 2.4");
 //		  vhistnames.push_back("p_{T, leading lepton} > 20 GeV, p_{T, trailing lepton} > 10 GeV");
-
-
 		  //c11.isLogX=kTRUE;
 		  c11.LowerEdge_X=10.0;
 		  c11.UpperEdge_X=600.0;
@@ -411,10 +409,10 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vrh.push_back(temph1);
 //		  vrh.push_back(temph1);
 		  vrh.push_back(temph2);
-		  vrh.push_back(temph2);
+..		  vrh.push_back(temph2);
 //		  vrh.push_back(temph2);
-		  vrhistnames.push_back("DY in pPb@8.16 TeV");
-		  vrhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
+		  vrhistnames.push_back("DY in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
+		  vrhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 //		  vrhistnames.push_back("p_{T, leading lepton} > 15 GeV, p_{T, trailing lepton} > 10 GeV");
 		  vrhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
 		  vrhistnames.push_back("|#eta| < 2.4");
@@ -441,7 +439,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 
 //		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesDY in pp@8 TeV, EPJC 75 (2015) 147}{|#eta| < 2.4}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  //c12.CanvasWithHistogramsRatioPlotv2(vrh, vrhistnames, vrisFillbool, "PE");
@@ -491,7 +489,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vh.push_back(temph2);
         //vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV");
         vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, EPJC 75 (2015) 147");
 		  //vhistnames.push_back("p_{T}^{leading} > 20 GeV, p_{T}^{trailing} > 10 GeV");
@@ -530,7 +528,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c22.LegendFontStyle=42;
 
 //		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, EPJC 75 (2015) 147}{#splitline{p_{T}^{leading} > 20 GeV, p_{T}^{trailing} > 10 GeV}{|#eta^{#mu}| < 2.1}}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, EPJC 75 (2015) 147}{|#eta^{#mu}| < 2.1, p_{T}^{#mu} > 20 (10) GeV}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c22.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_rap60120_rebin, h2DYpPb_cross_rap60120_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, EPJC 75 (2015) 147}{|#eta^{#mu}| < 2.1, p_{T}^{#mu} > 20 (10) GeV}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  c22.PrintCanvas();
@@ -580,7 +578,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
         //vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
         //vhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
 		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("Z in pPb@5.02 TeV, PLB 759 (2016) 36");
@@ -618,7 +616,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c32.TitleX="p_{T} (GeV)";
 		  c32.TitleY="d#sigma/dp_{T} (nb/GeV)";
 		  //c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{Z in pPb@5.02 TeV, PLB 759 (2016) 36}{p_{T}^{l} > 20 GeV, |#eta_{lab}^{l}| < 2.4}", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "Z in pPb@5.02 TeV, PLB 759 (2016) 36", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c32.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt_rebin, h2DYpPb_cross_pt_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "Z in pPb@5.02 TeV, PLB 759 (2016) 36", "#frac{pPb(DY)}{pPb(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  c32.PrintCanvas();
@@ -645,7 +643,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph1);
 		  vh.push_back(temph2);
 		  vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
         //vhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
         vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, JHEP 03 (2018) 172");
@@ -708,7 +706,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c42.Legend_y2=0.90;
 		  c42.LegendTextSize=0.033;
         c42.LegendFontStyle=42;
-		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, JHEP 03 (2018) 172}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 30 (20) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, JHEP 03 (2018) 172}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 30 (20) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 		  c42.PrintCanvas();
 
 		  temph1->Clear();
@@ -841,7 +839,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vh.push_back(temph2);
 		  //vh.push_back(temph2);
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
 		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, PLB 749 (2015) 187");
         vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV");
@@ -884,7 +882,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c52.LegendFontStyle=42;
 
 //		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{#splitline{p_{T}^{leading} > 25 GeV, |#eta^{leading}| <2.1}{p_{T}^{second} > 10 GeV, |#eta^{second}| <2.4}}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c52.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_pt2_rebin, h2DYpPb_cross_pt2_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  c52.PrintCanvas();
@@ -932,7 +930,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vh.push_back(temph2);
 
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV");
 		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, PLB 749 (2015) 187");
         vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV");
@@ -970,7 +968,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
         c62.LegendFontStyle=42;
 
 //		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{#splitline{p_{T}^{leading} > 25 GeV, |#eta^{leading}| <2.1}{p_{T}^{second} > 10 GeV, |#eta^{second}| <2.4}}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c62.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_2rap60120_rebin, h2DYpPb_cross_2rap60120_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, PLB 749 (2015) 187}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 25 (10) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 	
 		  c62.PrintCanvas();
 		  std::cout << "################# CHECK CLEAR" << std::endl;
@@ -1023,7 +1021,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vh.push_back(temph2);
 		  vh.push_back(temph2);
 
-		  vhistnames.push_back("DY in pPb@8.16 TeV");
+		  vhistnames.push_back("60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
 		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096");
         vhistnames.push_back("|#eta^{#mu}| <2.1, p_{T}^{#mu} > 20 GeV");
@@ -1063,7 +1061,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c72.LegendFontStyle=42;
 
 		  //c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{p_{T}^{#mu} > 20 GeV, |#eta^{#mu}| <2.1}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{DY in pPb@8.16 TeV}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{|#eta^{#mu}| <2.1, p_{T}^{#mu} > 20 GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{|#eta^{#mu}| <2.1, p_{T}^{#mu} > 20 GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  c72.PrintCanvas();
