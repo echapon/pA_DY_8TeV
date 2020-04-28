@@ -260,8 +260,8 @@ public:
 		h1->SetLineColor(color1);
 		h1->SetLineWidth(1);
 		h1->SetMarkerColor(color1);
-		h1->SetMarkerSize(1);
-		h1->SetMarkerStyle(20);
+		h1->SetMarkerSize(1.5);
+		h1->SetMarkerStyle(Markers[0]);//20
 		if( isFill1 == kTRUE ) h1->SetFillColor(color1);
 		else h1->SetFillColorAlpha(kWhite, 0);
 
@@ -269,8 +269,8 @@ public:
 		h2->SetLineColor(color2);
 		h2->SetLineWidth(1);
 		h2->SetMarkerColor(color2);
-		h2->SetMarkerSize(1);
-		h2->SetMarkerStyle(20);
+		h2->SetMarkerSize(1.5);
+		h2->SetMarkerStyle(Markers[1]);//20
 		if( isFill2 == kTRUE ) h2->SetFillColor(color2);
 		else h2->SetFillColorAlpha(kWhite, 0);
 
@@ -281,8 +281,10 @@ public:
 		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) h1->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
-		h1->GetYaxis()->SetTitleSize(0.06);
-		h1->GetYaxis()->SetTitleOffset(1.25);
+		h1->GetYaxis()->SetTitleSize(0.07);
+		h1->GetYaxis()->SetTitleOffset(1.15);
+		h1->GetYaxis()->SetLabelSize(0.05);
+	
 		if (isLogY) h1->GetYaxis()->SetRangeUser( 0.1*TMath::Min(h1->GetMinimum(), h2->GetMinimum()), 3.0*TMath::Max(h1->GetMaximum(), h2->GetMaximum()) );
       else h1->GetYaxis()->SetRangeUser(0, 1.1*TMath::Max(h1->GetMaximum(), h2->GetMaximum())) ;
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h1->GetYaxis()->SetNoExponent(); h1->GetYaxis()->SetMoreLogLabels(); }
@@ -292,6 +294,10 @@ public:
 		legend = new TLegend(Legend_x1, Legend_y1, Legend_x2, Legend_y2);
 		legend->SetFillStyle(0);
 		legend->SetBorderSize(0);
+		if (LegendTextSize>0.0) gStyle->SetLegendTextSize(LegendTextSize);
+		gStyle->SetLegendFont(LegendFontStyle);
+
+
 		legend->AddEntry(h1, Name1);
 		legend->AddEntry(h2, Name2);
 		legend->Draw();
@@ -322,7 +328,7 @@ public:
 		// -- General Setting -- //
 		h_ratio->SetLineColor(kBlack);
 		h_ratio->SetMarkerStyle(20);
-		h_ratio->SetMarkerSize(1);
+		h_ratio->SetMarkerSize(1.5);//1
 		h_ratio->SetMarkerColor(kBlack);
 		h_ratio->SetStats(kFALSE);
 
@@ -338,9 +344,9 @@ public:
 
 		// -- Y-axis Setting -- //
 		h_ratio->GetYaxis()->SetTitle( Name_Ratio );
-		h_ratio->GetYaxis()->SetTitleOffset( 0.6 );//0.4
-		h_ratio->GetYaxis()->SetTitleSize( 0.1);
-		h_ratio->GetYaxis()->SetLabelSize( 0.07 );
+		h_ratio->GetYaxis()->SetTitleOffset( 0.55 );//0.4
+		h_ratio->GetYaxis()->SetTitleSize( 0.12 );
+		h_ratio->GetYaxis()->SetLabelSize( 0.09 );
 		h_ratio->GetYaxis()->SetRangeUser( RatioStandard-1+LowerEdge_Ratio, RatioStandard-1+UpperEdge_Ratio );
 
 		// -- flat line = 1.00 -- //
@@ -749,7 +755,7 @@ public:
 			h->SetLineColor(color);
 			h->SetLineWidth(1);
 			h->SetMarkerColor(color);
-			h->SetMarkerSize(1);
+			h->SetMarkerSize(1.5);//1
 			h->SetMarkerStyle(marker);//20
 			h->SetFillColorAlpha(kWhite, 0);
 			}
