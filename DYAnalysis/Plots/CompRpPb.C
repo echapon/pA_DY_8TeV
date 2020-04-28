@@ -409,7 +409,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vrh.push_back(temph1);
 //		  vrh.push_back(temph1);
 		  vrh.push_back(temph2);
-..		  vrh.push_back(temph2);
+		  vrh.push_back(temph2);
 //		  vrh.push_back(temph2);
 		  vrhistnames.push_back("DY in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
 		  vrhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
