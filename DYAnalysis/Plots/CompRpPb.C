@@ -1031,7 +1031,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
         vhistnames.push_back("-2.87 < |y_{CM}| < 1.93");
 		  vhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 		  vhistnames.push_back("208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096");
-        vhistnames.push_back("|#eta^{#mu}| <2.1, p_{T}^{#mu} > 20 GeV");
+        vhistnames.push_back("|#eta^{#mu}| < 2.1, p_{T}^{#mu} > 20 GeV");
 
 
      //c71.isLogX=kTRUE;
@@ -1068,7 +1068,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c72.LegendFontStyle=42;
 
 		  //c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{p_{T}^{#mu} > 20 GeV, |#eta^{#mu}| <2.1}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
-		  c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV}{#splitline{-2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{|#eta^{#mu}| <2.1, p_{T}^{#mu} > 20 GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c72.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_ptv2_rebin, h2DYpPb_cross_ptv2_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV}{#splitline{-2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}}", "#splitline{208#timesZ in pp@8 TeV, JHEP 1702 (2017) 096}{|#eta^{#mu}| < 2.1, p_{T}^{#mu} > 20 GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
 		  c72.PrintCanvas();
