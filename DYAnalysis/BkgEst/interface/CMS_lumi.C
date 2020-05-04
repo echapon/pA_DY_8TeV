@@ -76,7 +76,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     }
   else if (iPeriod==111) {
       if( outOfFrame ) lumiText += "#scale[0.85]{";
-      lumiText += "pPb (174 nb^{-1}, #sqrt{s_{NN}} = 8.16 TeV)"; 
+      lumiText += "pPb (173 nb^{-1}, #sqrt{s_{NN}} = 8.16 TeV)"; // from 174
       if( outOfFrame) lumiText += "}";
   }
   else if ( iPeriod==0 )
