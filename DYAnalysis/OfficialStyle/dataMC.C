@@ -177,13 +177,15 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetLabelSize(0);
    h_data->GetXaxis()->SetTitleSize(0);
    h_data->GetXaxis()->SetTitleFont(42);
-   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV/c^{2}");
-   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV/c");
-   else h_data->GetYaxis()->SetTitle("Entries / 1");
+   if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
+   else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
+	else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
+   else h_data->GetYaxis()->SetTitle("Entries / unit y");
    h_data->GetYaxis()->SetLabelFont(42);
-   h_data->GetYaxis()->SetLabelSize(0.035);
-   h_data->GetYaxis()->SetTitleSize(0.06);
-   h_data->GetYaxis()->SetTitleOffset(0.9);
+   h_data->GetYaxis()->SetLabelSize(0.030);
+   //h_data->GetYaxis()->SetLabelOffset(1.1);
+   h_data->GetYaxis()->SetTitleSize(0.055);
+   h_data->GetYaxis()->SetTitleOffset(1.15);//0.9
    h_data->GetYaxis()->SetTitleFont(42);
    h_data->GetZaxis()->SetLabelFont(42);
    h_data->GetZaxis()->SetLabelSize(0.035);
@@ -192,19 +194,19 @@ void dataMC(var thevar)
    double yaxismin = 0.001;
    if (thevar == var::pt) {
       yaxismin = 0.1;
-      h_data->SetMaximum(2e4);
+      h_data->SetMaximum(5e4);//2e4
    } else if (thevar == var::pt1560) {
       yaxismin = 0.1;
-      h_data->SetMaximum(1900);
+      h_data->SetMaximum(2900);//1900
    } else if (thevar == var::rap1560) {
       yaxismin = 0;
       h_data->SetMaximum(1550);
    } else if (thevar == var::rap60120) {
       yaxismin = 0;
-      h_data->SetMaximum(8150);
+      h_data->SetMaximum(8250);//8150
    } else if (thevar == var::phistar) {
       yaxismin = 90;
-      h_data->SetMaximum(3e6);
+      h_data->SetMaximum(5e6);//3e6
    } else if (thevar == var::phistar1560) {
       yaxismin = 10;
       h_data->SetMaximum(5e5);
@@ -236,7 +238,7 @@ void dataMC(var thevar)
    leg->SetFillColor(0);
    leg->SetFillStyle(0);
    hdata->SetMarkerSize(1);
-   TLegendEntry *entry=leg->AddEntry(hdata,"data","pl");
+   TLegendEntry *entry=leg->AddEntry(hdata,"Data","pl");
    entry=leg->AddEntry(hDY,"#gamma* /#font[122]{Z} #rightarrow #mu#mu","f");
    entry=leg->AddEntry(hTop,"t#bar{t}","f");
    entry=leg->AddEntry(hEW,"EW","f");
@@ -260,23 +262,23 @@ void dataMC(var thevar)
    TLatex latex;
    latex.SetNDC();
    latex.SetTextSize(0.03);
-   double xlatex=.17, ylatex=0.89;//0.89
+   double xlatex=.17, ylatex=0.87;//0.89
 	double dylatex=0.045;
-   if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.9;
+   if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.87;//0.9
    latex.SetTextAlign(12);  //centered
    if (thevar!=rap1560 && thevar!=rap60120) {
       latex.DrawLatex(xlatex,ylatex,"-2.87 < |y_{CM}| < 1.93");
       ylatex -= dylatex;
    }
    if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV/c^{2}");
+      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
       ylatex -= dylatex;
    }
    if (thevar==pt || thevar==phistar || thevar==rap60120) {
-      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV/c^{2}");
+      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
       ylatex -= dylatex;
    }
-   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV/c");
+   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
    ylatex -= dylatex;
 
 // ------------>Primitives in pad: bottomPad
@@ -372,11 +374,11 @@ void dataMC(var thevar)
    c1->Modified();
    c1->cd();
    c1->SetSelected(c1);
-   c1->SaveAs(Form("OfficialStyle/%s_test.C",thevarname));
-   c1->SaveAs(Form("OfficialStyle/%s_test.pdf",thevarname));
+   c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
+   c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
 
    // save the ratio
-   TFile *fratio = TFile::Open("OfficialStyle/dataMCratios_test.root","UPDATE");
+   TFile *fratio = TFile::Open("OfficialStyle/dataMCratios.root","UPDATE");
    hratio->Write(thevarname);
    fratio->Close();
 }
