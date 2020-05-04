@@ -324,7 +324,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          TLatex latex;
          latex.SetNDC();
          latex.SetTextSize(0.03);
-         double xlatex=.2, ylatex=0.5, dylatex=0.04;
+         double xlatex=.2, ylatex=0.5, dylatex=0.045;//0.04
          if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.85;//0.9 (Hyunchul)
          latex.SetTextAlign(12);  //centered
          if (thevar!=rap1560 && thevar!=rap60120) {
