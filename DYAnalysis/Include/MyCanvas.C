@@ -1087,9 +1087,10 @@ public:
 		}
 
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { h_2D->GetXaxis()->SetNoExponent(); h_2D->GetXaxis()->SetMoreLogLabels(); }
+		else if ( isSetNoExpo_MoreLogLabels_X == kFALSE ) { h_2D->GetXaxis()->SetNoExponent(kFALSE); h_2D->GetXaxis()->SetMoreLogLabels(kFALSE); } 
 		if( LowerEdge_X != 0 || UpperEdge_X != 0 ) h_2D->GetXaxis()->SetRangeUser( LowerEdge_X, UpperEdge_X );
-
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h_2D->GetYaxis()->SetNoExponent(); h_2D->GetYaxis()->SetMoreLogLabels(); }
+		else if ( isSetNoExpo_MoreLogLabels_Y == kFALSE ) { h_2D->GetYaxis()->SetNoExponent(kFALSE); h_2D->GetYaxis()->SetMoreLogLabels(kFALSE); } 
 		if( LowerEdge_Y != 0 || UpperEdge_Y != 0 ) h_2D->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 	}
 

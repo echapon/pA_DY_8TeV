@@ -35,6 +35,14 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
       cout << systfilename << endl;
       TH2D *hm = matrix2hist(readSyst_cor(systfilename.Data()),varname(thevar));
 
+		if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
+			hm->GetXaxis()->SetMoreLogLabels();
+			hm->GetYaxis()->SetMoreLogLabels();
+		}
+
+
+
+
       MyCanvas c("correlation_matrices/"+cormatname+"_"+*it+"_"+varname(thevar),xaxistitle(thevar),xaxistitle(thevar));
       if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
          c.SetLogx();
@@ -42,6 +50,32 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
       }
       c.SetZRange(-1,1);
       TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
+/*
+		if (thevar==var::mass) {
+			c.LowerEdge_X=bins[0];c.UpperEdge_X=bins[binnum];
+			c.LowerEdge_Y=bins[0];c.UpperEdge_Y=bins[binnum];
+		}
+		else if (thevar==var::mass3bins) {
+			c.LowerEdge_X=bins3[0];c.UpperEdge_X=bins3[binnum3];
+			c.LowerEdge_Y=bins3[0];c.UpperEdge_Y=bins3[binnum3];
+		}
+		else if (thevar==var::pt) {
+			c.LowerEdge_X=0.5;c.UpperEdge_X=ptbin_meas[ptbinnum_meas-1];
+			c.LowerEdge_Y=0.5;c.UpperEdge_Y=ptbin_meas[ptbinnum_meas-1];
+		}
+		else if (thevar==var::pt1560) {
+			c.LowerEdge_X=0.5;c.UpperEdge_X=ptbin_meas_1560[ptbinnum_meas_1560-1];
+			c.LowerEdge_Y=0.5;c.UpperEdge_Y=ptbin_meas_1560[ptbinnum_meas_1560-1];
+		}
+		else if (thevar==var::phistar) {
+			c.LowerEdge_X=0.002;c.UpperEdge_X=phistarbin[phistarnum];
+			c.LowerEdge_Y=0.002;c.UpperEdge_Y=phistarbin[phistarnum];
+		}
+*/
+		if (thevar==var::phistar || thevar==var::phistar1560) {
+			c.isSetNoExpo_MoreLogLabels_X = kFALSE;
+			c.isSetNoExpo_MoreLogLabels_Y = kFALSE;
+		}
       c.CanvasWith2DHistogram(hm,"COLZ");
       CMS_lumi(c.c, 111, 0);
       c.PrintCanvas();
@@ -50,6 +84,14 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
    // and finally the total correlation matrix. DO NOT INCLUDE LUMI HERE
    TH2D *hm = matrix2hist(readSyst_all_cor(thevar,"../",noacc,false),varname(thevar));
 
+		if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
+			hm->GetXaxis()->SetMoreLogLabels();
+			hm->GetYaxis()->SetMoreLogLabels();
+		}
+		hm->GetXaxis()->SetNoExponent();
+		hm->GetYaxis()->SetNoExponent();
+
+
    MyCanvas c("correlation_matrices/"+cormatname+"_total_"+TString(varname(thevar)),xaxistitle(thevar),xaxistitle(thevar));
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
       c.SetLogx();
@@ -57,6 +99,12 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
    }
    c.SetZRange(-1,1);
    TColor::CreateGradientColorTable(Number,Length,Red,Green,Blue,nb);
+		if (thevar==var::phistar || thevar==var::phistar1560) {
+			c.isSetNoExpo_MoreLogLabels_X = kFALSE;
+			c.isSetNoExpo_MoreLogLabels_Y = kFALSE;
+		}
+
+	//std::cout << "******* hm.GetEntries() : " << hm->GetEntries() << std::endl;
    c.CanvasWith2DHistogram(hm,"COLZ");
    CMS_lumi(c.c, 111, 0);
    c.PrintCanvas();
