@@ -49,7 +49,8 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
 
    // for theory, need to account for correlations in the nPDF uncertainties, since we know how to do it
    // EPPS16
-   TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+   //###TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+	TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
    vector<TH1D*> hth1560_EPPS16,hth60120_EPPS16;
    int i=0;
    hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
@@ -71,7 +72,9 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    gth60120_EPPS16->SetName("gth60120_EPPS16");
 
    // CT14
-   TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+   //###TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+   TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+
    vector<TH1D*> hth1560_CT14,hth60120_CT14;
    i=0;
    hth1560_CT14.push_back(RFB_1560((TH1D*) fth_CT14->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
@@ -100,18 +103,18 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    TLatex latex;
    latex.SetNDC();
    latex.SetTextSize(0.03);
-   double xlatex=.2, ylatex=0.9, dylatex=0.04;
+   double xlatex=.2, ylatex=0.85, dylatex=0.045;//0.9,0.040
    latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
    c_1560.PrintCanvas();
 
    MyCanvas c_60120("Plots/grfbp_rap60120","|y|","R_{FB}",800,800);
-   c_60120.SetYRange(0.65,1.35);
+   c_60120.SetYRange(0.65,1.45);//1.35
    c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
          kBlue,kRed,kBlack,
          "5","5","EP",true);
    c_60120.TopPad->cd();
-   ylatex=0.9;
+   ylatex=0.85;//0.9
    latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
    c_60120.PrintCanvas();
 }
