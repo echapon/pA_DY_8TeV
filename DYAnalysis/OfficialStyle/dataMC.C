@@ -15,6 +15,8 @@
 #include "../Include/tdrstyle.C"
 #include "../Include/CMS_lumi.C"
 #include "../Include/PlotTools.h"
+#include "../Include/lhapdf_utils.h"
+#include "../SysUncEstimation/syst.C"
 
 using namespace DYana;
 
@@ -158,7 +160,75 @@ void dataMC(var thevar)
    htotal->Add(hTop);
    htotal->Add(hDY);
    htotal->Sumw2();
+
+   // for the ratio, set all uncertainties to 0
+   for (int i=0; i<htotal->GetNbinsX()+2; i++) htotal->SetBinError(i,0);
+
    hratio->Divide(hdata, htotal);
+
+   // now the histogram with the systs
+   TH1D *hsyst = (TH1D*) htotal->Clone("hsyst");
+
+   vector< map<bin2, syst> > systmap_all;
+
+   vector<TString> tags;
+   tags.push_back("rewNtracks");
+   tags.push_back("MomCorr_smooth");
+   tags.push_back("tnp_tot");
+   tags.push_back("effstat_up");
+   tags.push_back("bkg");
+   tags.push_back("Eff_theory");
+   tags.push_back("lumi");
+
+   for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
+      map<bin2,syst> systmap;
+      TString systfilename = "SysUncEstimation/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
+      cout << systfilename << endl;
+      systmap = readSyst_cov(systfilename.Data());
+      systmap_all.push_back(systmap);
+   }
+
+   map<bin2, syst> ans = combineSyst_cov(systmap_all, "Total");
+
+   // one last thing: add theory uncertainties
+   TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+   vector<TH1D*> hth_EPPS16;
+   int i=0;
+   const char* acceffstr = "AccPass";
+
+   TGraphAsymmErrors *gth_EPPS16 = NULL;
+   if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
+      hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+      for (i=285; i<=324; i++) {
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+      }
+      for (i=112; i<=167; i++) {
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+      }
+      gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+   }
+
+   // combine syst with theory uncertainty
+   int isyst=1;
+   for (auto it = ans.begin(); it != ans.end(); it++) {
+      // relative syst value
+      double systval = it->second.value;
+
+      // theory uncertainty
+      double th_up = gth_EPPS16->GetEYhigh()[isyst-1];
+      double th_down = gth_EPPS16->GetEYlow()[isyst-1];
+      double thval = gth_EPPS16->GetY()[isyst-1];
+      double therr = (th_up+th_down)/(2.*thval);
+
+      double totunc = sqrt(pow(systval,2)+pow(therr,2));
+
+      hsyst->SetBinError(isyst, totunc * hsyst->GetBinContent(isyst));
+      isyst++;
+   }
+
+   // now the ratio for syst
+   TH1D *hratio_syst = (TH1D*) htotal->Clone("hratio_syst");
+   hratio_syst->Divide(hsyst,htotal);
 
    Int_t ci;      // for color index setting
    TColor *color; // for color definition with alpha
@@ -222,6 +292,10 @@ void dataMC(var thevar)
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
+   hsyst->SetFillColor(kBlack);
+   hsyst->SetMarkerSize(0);
+   hsyst->SetFillStyle(3002);
+   hsyst->Draw("E2same");
    //
    TLine grid_;
    grid_.SetLineColor(kGray+2);
@@ -364,6 +438,11 @@ void dataMC(var thevar)
    f_line1->GetYaxis()->SetTitleFont(42);
    f_line1->Draw("SAME");
    hratio->Draw("E1PLsame");
+
+   hratio_syst->SetFillColor(kBlack);
+   hratio_syst->SetMarkerSize(0);
+   hratio_syst->SetFillStyle(3002);
+   hratio_syst->Draw("E2same");
 
    // TLine gridRatio;
    // gridRatio.SetLineColor(kGray+2);
