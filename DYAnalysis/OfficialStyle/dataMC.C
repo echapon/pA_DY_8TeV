@@ -169,7 +169,7 @@ void dataMC(var thevar)
    // now the histogram with the systs
    TH1D *hsyst = (TH1D*) htotal->Clone("hsyst");
 
-   vector< map<bin2, syst> > systmap_all;
+   vector< map<bin, syst> > systmap_all;
 
    vector<TString> tags;
    tags.push_back("rewNtracks");
@@ -181,14 +181,14 @@ void dataMC(var thevar)
    tags.push_back("lumi");
 
    for (vector<TString>::const_iterator it=tags.begin(); it!=tags.end(); it++) {
-      map<bin2,syst> systmap;
+      map<bin,syst> systmap;
       TString systfilename = "SysUncEstimation/csv/" + TString(*it) + "_" + TString(varname(thevar)) + ".csv";
       cout << systfilename << endl;
-      systmap = readSyst_cov(systfilename.Data());
+      systmap = readSyst(systfilename.Data());
       systmap_all.push_back(systmap);
    }
 
-   map<bin2, syst> ans = combineSyst_cov(systmap_all, "Total");
+   map<bin, syst> ans = combineSyst(systmap_all, "Total");
 
    // one last thing: add theory uncertainties
    TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
@@ -220,6 +220,7 @@ void dataMC(var thevar)
       double thval = gth_EPPS16->GetY()[isyst-1];
       double therr = (th_up+th_down)/(2.*thval);
 
+      cout << isyst << " " << systval << " " << therr << endl;
       double totunc = sqrt(pow(systval,2)+pow(therr,2));
 
       hsyst->SetBinError(isyst, totunc * hsyst->GetBinContent(isyst));
