@@ -292,15 +292,27 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  //double DYComp_cross_mass_bin[DYComp_cross_mass_binnum+1]={15.0,20.0,30.0,40.0,50.0,60.0,76.0,86.0,96.0,106.0,120.0,150.0,200.0,600.0,2000.0};
 		  const int DYComp_cross_mass_binnum=13;
 		  double DYComp_cross_mass_bin[DYComp_cross_mass_binnum+1]={15.0,20.0,30.0,40.0,50.0,60.0,76.0,86.0,96.0,106.0,120.0,150.0,200.0,600.0};
-		  const int DYComp_cross_pt_binnum=7;
-		  double DYComp_cross_pt_bin[DYComp_cross_pt_binnum+1] = {0.0,10.0,20.0,30.0,40.0,50.0,70.0,150.0};
-		  const int DYComp_cross_2rap60120_binnum=11;
-		  double DYComp_cross_2rap60120_bin[DYComp_cross_2rap60120_binnum+1] = {-2.87,-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
+		  //const int DYComp_cross_pt_binnum=7;
+		  //double DYComp_cross_pt_bin[DYComp_cross_pt_binnum+1] = {0.0,10.0,20.0,30.0,40.0,50.0,70.0,150.0};
+		  const int DYComp_cross_pt_binnum=12;
+		  double DYComp_cross_pt_bin[DYComp_cross_pt_binnum+1] = {0.0,2.5,5.0,7.5,10.0,12.5,15.0,20.0,30.0,40.0,50.0,70.0,150.0};
+
+
+		  //const int DYComp_cross_2rap60120_binnum=11;
+		  //double DYComp_cross_2rap60120_bin[DYComp_cross_2rap60120_binnum+1] = {-2.87,-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
+		  const int DYComp_cross_2rap60120_binnum=9;
+		  double DYComp_cross_2rap60120_bin[DYComp_cross_2rap60120_binnum+1] = {-2.0,-1.6,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6};
+
 
 		  //###const int DYComp_cross_rap60120_binnum=9;
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-1.2,-0.8,-0.4,0.0,0.4,0.8,1.2,1.6,2.0};
-		  const int DYComp_cross_rap60120_binnum=22;
-		  double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.87,-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
+		  //const int DYComp_cross_rap60120_binnum=22;
+		  //double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.87,-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
+		  const int DYComp_cross_rap60120_binnum=20;
+		  double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8};
+
+
+
 		  //###const int DYComp_cross_rap60120_binnum=21;
 		  //###double DYComp_cross_rap60120_bin[DYComp_cross_rap60120_binnum+1] = {-2.4,-2.2,-1.8,-1.6,-1.4,-1.2,-1,-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6,1.8,2.0};
 		  //###const int DYComp_cross_rap60120_binnum=21;
@@ -394,9 +406,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c11.LowerEdge_Y=0.00003;
 		  c11.UpperEdge_Y=500.0;
 		  c11.Legend_x1=0.35;//0.50
-		  c11.Legend_y1=0.73;//0.80
+		  c11.Legend_y1=0.64;//0.80
 		  c11.Legend_x2=0.55;//0.95
-		  c11.Legend_y2=0.90;
+		  c11.Legend_y2=0.81;
 		  c11.LegendTextSize=0.03;
 		  c11.LegendFontStyle=42;
 
@@ -410,13 +422,13 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  vrh.push_back(temph1);
 //		  vrh.push_back(temph1);
 		  vrh.push_back(temph2);
-		  vrh.push_back(temph2);
+//		  vrh.push_back(temph2);
 //		  vrh.push_back(temph2);
 		  vrhistnames.push_back("DY in pPb@8.16 TeV, -2.87 < |y_{CM}| < 1.93");
 		  vrhistnames.push_back("|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
 //		  vrhistnames.push_back("p_{T, leading lepton} > 15 GeV, p_{T, trailing lepton} > 10 GeV");
 		  vrhistnames.push_back("208#timesDY in pp@8 TeV, EPJC 75 (2015) 147");
-		  vrhistnames.push_back("|#eta| < 2.4");
+//		  vrhistnames.push_back("|#eta| < 2.4");
 //		  vrhistnames.push_back("p_{T, leading lepton} > 20 GeV, p_{T, trailing lepton} > 10 GeV");
 			vrisFillbool.push_back(kFALSE);
 			vrisFillbool.push_back(kFALSE);
@@ -432,14 +444,14 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c12.LowerEdge_Y=0.00003;
 		  c12.UpperEdge_Y=500.0;
 		  c12.Legend_x1=0.35;//0.50
-		  c12.Legend_y1=0.66;//0.80
+		  c12.Legend_y1=0.62;//0.80
 		  c12.Legend_x2=0.55;//0.95
-		  c12.Legend_y2=0.85;//0.90
+		  c12.Legend_y2=0.81;//0.90
 		  c12.LegendTextSize=0.033;
 		  c12.LegendFontStyle=42;
 
-
-		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesDY in pp@8 TeV, EPJC 75 (2015) 147}{|#eta| < 2.4}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
+//		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{-2.87 < |y_{CM}| < 1.93}", "#splitline{208#timesDY in pp@8 TeV, EPJC 75 (2015) 147}{|#eta| < 2.4}", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 //		  c12.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_mass_rebin, h2DYpPb_cross_mass_rebin,	"#splitline{DY in pPb@8.16 TeV}{#splitline{-2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}}", "208#timesDY in pp@8 TeV, EPJC 75 (2015) 147", "#frac{pPb(DY)}{208#timespp(DY)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
 
 
@@ -499,12 +511,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 	     c21.isLogX=kFALSE;
         c21.isLogY=kTRUE;
-		  c21.LowerEdge_Y=4.0;
-		  c21.UpperEdge_Y=200.0;
+		  c21.LowerEdge_Y=0.7;//4.0
+		  c21.UpperEdge_Y=800.0;//200.0
 		  c21.Legend_x1=0.35;
-		  c21.Legend_y1=0.73;
+		  c21.Legend_y1=0.64;
 		  c21.Legend_x2=0.55;
-		  c21.Legend_y2=0.90;
+		  c21.Legend_y2=0.81;
         c21.LegendTextSize=0.03;
 		  c21.LegendFontStyle=42;
 	     c21.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
@@ -519,12 +531,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
         c22.RatioStandard=1.0;
 		  c22.LowerEdge_Ratio=0.0;
 		  c22.UpperEdge_Ratio=2.0;
-		  c22.LowerEdge_Y=4.0;
-		  c22.UpperEdge_Y=200.0;
+		  c22.LowerEdge_Y=0.7;//4.0
+		  c22.UpperEdge_Y=800.0;//200.0
 		  c22.Legend_x1=0.35;
-		  c22.Legend_y1=0.66;
+		  c22.Legend_y1=0.62;
 		  c22.Legend_x2=0.55;
-		  c22.Legend_y2=0.85;
+		  c22.Legend_y2=0.81;
 		  c22.LegendTextSize=0.033;
 		  c22.LegendFontStyle=42;
 
@@ -590,9 +602,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c31.LowerEdge_Y=0.005;
 		  c31.UpperEdge_Y=90.0;
 		  c31.Legend_x1=0.35;
-		  c31.Legend_y1=0.73;
+		  c31.Legend_y1=0.64;
 		  c31.Legend_x2=0.55;
-		  c31.Legend_y2=0.90;
+		  c31.Legend_y2=0.81;
         c31.LegendTextSize=0.03;
 		  c31.LegendFontStyle=42;
 
@@ -609,9 +621,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c32.LowerEdge_Y=0.005;
 		  c32.UpperEdge_Y=90.0;
 		  c32.Legend_x1=0.35;
-		  c32.Legend_y1=0.66;
+		  c32.Legend_y1=0.62;
 		  c32.Legend_x2=0.55;
-		  c32.Legend_y2=0.85;
+		  c32.Legend_y2=0.81;
 		  c32.LegendTextSize=0.033;
 		  c32.LegendFontStyle=42;
 
@@ -640,7 +652,7 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 
 		  temph2->Scale(208.0);
 
-		  MyCanvas c41("CompRpPb_cross_phistar_oribin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,800);
+		  MyCanvas c41("CompRpPb_cross_phistar_oribin_detcor_FSRcor","#phi*","d#sigma/d#phi* (nb)",800,800);
 		  vh.push_back(temph1);
 		  vh.push_back(temph1);
 		  //vh.push_back(temph1);
@@ -656,9 +668,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c41.LowerEdge_Y=0.2;
 		  c41.UpperEdge_Y=5000.0;
 		  c41.Legend_x1=0.35;
-		  c41.Legend_y1=0.71;
+		  c41.Legend_y1=0.62;
 		  c41.Legend_x2=0.55;
-		  c41.Legend_y2=0.90;
+		  c41.Legend_y2=0.81;
         c41.LegendTextSize=0.03;
         c41.LegendFontStyle=42;
 	     c41.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
@@ -690,12 +702,12 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  hCompDYpPb_cross_phistar_rebin->Sumw2();
 		  hCompDYpPb_cross_phistar_rebin->Divide(h1DYpPb_cross_phistar_rebin,h2DYpPb_cross_phistar_rebin,1,1,"");
 
-		  MyCanvas c42("CompRpPb_cross_phistar_rebin_detcor_FSRcor","#phi^{*}","d#sigma/d#phi^{*} (nb)",800,1000);
+		  MyCanvas c42("CompRpPb_cross_phistar_rebin_detcor_FSRcor","#phi*","d#sigma/d#phi* (nb)",800,1000);
 	     //c42.isLogX=kTRUE;
         c42.isLogY=kTRUE;
 		  c42.isRatioPadAttached=kTRUE;
-		  c42.TitleX="#phi^{*}";
-		  c42.TitleY="d#sigma/d#phi^{*} (nb)";
+		  c42.TitleX="#phi*";
+		  c42.TitleY="d#sigma/d#phi* (nb)";
         c42.RatioStandard=3.5;
 		  c42.LowerEdge_Ratio=3.0;
 		  c42.UpperEdge_Ratio=0.5;
@@ -704,9 +716,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c42.LowerEdge_Y=0.2;
 		  c42.UpperEdge_Y=5000.0;
 		  c42.Legend_x1=0.35;
-		  c42.Legend_y1=0.61;
+		  c42.Legend_y1=0.57;
 		  c42.Legend_x2=0.55;
-		  c42.Legend_y2=0.85;
+		  c42.Legend_y2=0.81;
 		  c42.LegendTextSize=0.033;
         c42.LegendFontStyle=42;
 		  //c42.CanvasWithHistogramsRatioPlot(h1DYpPb_cross_phistar_rebin, h2DYpPb_cross_phistar_rebin, "#splitline{60 < M < 120 in pPb@8.16 TeV}{#splitline{-2.87 < |y_{CM}| < 1.93}{|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV}}", "#splitline{208#timesZ in pp@8 TeV, JHEP 03 (2018) 172}{|#eta_{lab}^{#mu}| < 2.1 (2.4), p_{T}^{#mu} > 30 (20) GeV}", "#frac{pPb(DY)}{208#timespp(Z)}", kBlack, kRed, kFALSE, kFALSE, "EP", "EPSAME");
@@ -861,9 +873,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c51.LowerEdge_Y=0.0005;
 		  c51.UpperEdge_Y=80.0;
 		  c51.Legend_x1=0.35;
-		  c51.Legend_y1=0.71;
+		  c51.Legend_y1=0.62;
 		  c51.Legend_x2=0.55;
-		  c51.Legend_y2=0.90;
+		  c51.Legend_y2=0.81;
 		  c51.LegendTextSize=0.03;
         c51.LegendFontStyle=42;
 	     c51.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
@@ -883,9 +895,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c52.LowerEdge_Y=0.0005;
 		  c52.UpperEdge_Y=80.0;
 		  c52.Legend_x1=0.35;
-		  c52.Legend_y1=0.61;
+		  c52.Legend_y1=0.57;
 		  c52.Legend_x2=0.55;
-		  c52.Legend_y2=0.85;
+		  c52.Legend_y2=0.81;
         c52.LegendTextSize=0.033;
 		  c52.LegendFontStyle=42;
 
@@ -948,9 +960,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c61.LowerEdge_Y=0.08;
 		  c61.UpperEdge_Y=2000.0;
 		  c61.Legend_x1=0.35;
-		  c61.Legend_y1=0.73;
+		  c61.Legend_y1=0.64;
 		  c61.Legend_x2=0.55;
-		  c61.Legend_y2=0.90;
+		  c61.Legend_y2=0.81;
 		  c61.LegendTextSize=0.03;
         c61.LegendFontStyle=42;
 
@@ -969,9 +981,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c62.LowerEdge_Y=0.08;
 		  c62.UpperEdge_Y=2000.0;
 		  c62.Legend_x1=0.35;
-		  c62.Legend_y1=0.66;
+		  c62.Legend_y1=0.62;
 		  c62.Legend_x2=0.55;
-		  c62.Legend_y2=0.85;
+		  c62.Legend_y2=0.81;
         c62.LegendTextSize=0.033;
         c62.LegendFontStyle=42;
 
@@ -1042,9 +1054,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c71.LowerEdge_Y=0.00005;
 		  c71.UpperEdge_Y=800.0;
 		  c71.Legend_x1=0.35;
-		  c71.Legend_y1=0.71;
+		  c71.Legend_y1=0.62;
 		  c71.Legend_x2=0.55;
-		  c71.Legend_y2=0.90;
+		  c71.Legend_y2=0.81;
 		  c71.LegendTextSize=0.03;
 		  c71.LegendFontStyle=42;
 	     c71.CanvasWithMultipleHistograms(vh, vhistnames, "PE");
@@ -1064,9 +1076,9 @@ void CompRpPb(const char* infile="results/xsec_nom_detcor_FSR.root") {
 		  c72.LowerEdge_Y=0.00005;
 		  c72.UpperEdge_Y=800.0;
 		  c72.Legend_x1=0.35;
-		  c72.Legend_y1=0.61;
+		  c72.Legend_y1=0.57;
 		  c72.Legend_x2=0.55;
-		  c72.Legend_y2=0.85;
+		  c72.Legend_y2=0.81;
 		  c72.LegendTextSize=0.033;
 		  c72.LegendFontStyle=42;
 
