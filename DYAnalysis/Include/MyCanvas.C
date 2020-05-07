@@ -282,7 +282,7 @@ public:
 
 		// -- Y-axis Setting -- //
 		h1->GetYaxis()->SetTitleSize(0.07);
-		h1->GetYaxis()->SetTitleOffset(1.15);
+		h1->GetYaxis()->SetTitleOffset(1.10);
 		h1->GetYaxis()->SetLabelSize(0.05);
 	
 		if (isLogY) h1->GetYaxis()->SetRangeUser( 0.1*TMath::Min(h1->GetMinimum(), h2->GetMinimum()), 3.0*TMath::Max(h1->GetMaximum(), h2->GetMaximum()) );
@@ -744,7 +744,7 @@ public:
 
 				// -- Y-axis Setting -- //
 				h->GetYaxis()->SetTitleSize(0.06);
-				h->GetYaxis()->SetTitleOffset(1.25);
+				h->GetYaxis()->SetTitleOffset(1.20);
 				h->GetYaxis()->SetLabelSize(0.04);
 				if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { h->GetYaxis()->SetNoExponent(); h->GetYaxis()->SetMoreLogLabels(); }
 				if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0) ) h->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
@@ -770,7 +770,7 @@ public:
 
 		legend->Draw();
 
-		CMS_lumi( TopPad, 111, 0 );//addedby Hyunchul
+		CMS_lumi( TopPad, 111, 0 );//added by Hyunchul
 	}
 
 	void CanvasWithMultipleGraphs(vector< TGraphAsymmErrors* > Graphs, vector< TString > Names, TString DrawOp = "EP")
