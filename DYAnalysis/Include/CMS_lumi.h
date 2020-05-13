@@ -18,7 +18,7 @@ bool writeExtraText = false;
 TString extraText   = "Preliminary";
 float extraTextFont = 52;  // default is helvetica-italics
 
-bool writeSuppleText = true;
+bool writeSuppleText = false;
 TString SuppleText   = "Supplementary";
 float SuppleTextFont = 52;  // default is helvetica-italics
 

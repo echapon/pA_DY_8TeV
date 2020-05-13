@@ -103,9 +103,9 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
       latex.SetTextFont(cmsTextFont);
       latex.SetTextAlign(11); 
       latex.SetTextSize(cmsTextSize*t);    
-      //latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText);
+      latex.DrawLatex(l,1-t+lumiTextOffset*t,cmsText);
       //latex.DrawLatex(l+0.03,1-t-0.07,cmsText);
-		latex.DrawLatex(l+0.03,1-t-0.07,cmsText);
+      // latex.DrawLatex(l+0.03,1-t-0.07,cmsText);
     }
   
   pad->cd();
