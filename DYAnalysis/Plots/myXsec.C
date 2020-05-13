@@ -71,6 +71,20 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
    for (int ivar=0; ivar<ALLvar; ivar++) {
    // for (int ivar=0; ivar<pt; ivar++) { // only mass for now
       var thevar = static_cast<var>(ivar);
+
+      // general multiplicator to enlarge or reduce the size of everything
+      const float sizemod = (thevar==var::mass) ? 0.8 : 1.2;
+      float lumiTextSize0 = lumiTextSize;
+      float lumiTextOffset0 = lumiTextSize;
+      float cmsTextSize0 = cmsTextSize;
+      float cmsTextOffset0 = cmsTextSize;
+      lumiTextSize *= sizemod;
+      if (sizemod>1) lumiTextOffset *= 0.5;
+      else lumiTextOffset *= 0.8;
+      cmsTextSize *= sizemod;
+      if (sizemod>1) cmsTextOffset *= 0.5;
+      else cmsTextOffset *= 0.8;
+
       // the systs
       map<bin,syst> thesyst = readSyst_all(thevar,false,"","./",!correctforacc);
 
@@ -271,17 +285,17 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       if (doxsec && !forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
          if (!correctforacc && thevar==var::rap1560) c1.SetYRange(0,10);
-         if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,49);
+         if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,52);
          if (thevar==var::mass && correctforacc) c1.SetYRange(2e-4,90);
          if (thevar==var::mass && !correctforacc) c1.SetYRange(2e-4,20);
          if (thevar==var::pt1560 && correctforacc) c1.SetYRange(5e-4,7e1);
-         if (thevar==var::pt1560 && !correctforacc) c1.SetYRange(2e-4,2);
-         if (thevar==var::phistar1560 && correctforacc) c1.SetYRange(2,2e3);
-         if (thevar==var::phistar1560 && !correctforacc) c1.SetYRange(4e-1,2e2);
-         if (thevar==var::pt && correctforacc) c1.SetYRange(8e-4,2e1);
-         if (thevar==var::pt && !correctforacc) c1.SetYRange(8e-4,9);
-         if (thevar==var::phistar && correctforacc) c1.SetYRange(3e-1,4e3);
-         if (thevar==var::phistar && !correctforacc) c1.SetYRange(2e-1,2e3);
+         if (thevar==var::pt1560 && !correctforacc) c1.SetYRange(2e-4,4);
+         if (thevar==var::phistar1560 && correctforacc) c1.SetYRange(2,3e3);
+         if (thevar==var::phistar1560 && !correctforacc) c1.SetYRange(4e-1,3e2);
+         if (thevar==var::pt && correctforacc) c1.SetYRange(8e-4,4e1);
+         if (thevar==var::pt && !correctforacc) c1.SetYRange(8e-4,30);
+         if (thevar==var::phistar && correctforacc) c1.SetYRange(3e-1,5e3);
+         if (thevar==var::phistar && !correctforacc) c1.SetYRange(2e-1,3e3);
 
          if (thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) {
             if (gth_CT14) fixXaxis(gth_CT14);
@@ -313,6 +327,14 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // replaceCentralValues(gth_CT14,hpreFSR_CT14);
          // replaceCentralValues(gth_EPPS16,hpreFSR_EPPS16);
 
+         // style stuff
+         // legend
+         double xl1 = 0.63, yl1 = 0.80, xl2 = 0.95, yl2 = 0.90;
+         double dxl = sizemod * (xl2-xl1), dyl = sizemod * (yl2-yl1);
+         c1.SetLegendPosition(xl2-dxl, yl2-dyl, xl2, yl2);
+         c1.SizeMod = sizemod;
+
+
          // c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
                "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
@@ -323,9 +345,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          c1.TopPad->cd();
          TLatex latex;
          latex.SetNDC();
-         latex.SetTextSize(0.03);
-         double xlatex=.2, ylatex=0.5, dylatex=0.045;//0.04
-         if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.85;//0.9 (Hyunchul)
+         latex.SetTextSize(0.03*sizemod);
+         double xlatex=.18, ylatex=0.5, dylatex=0.045*sizemod;//0.04
+         if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.87;//0.9 (Hyunchul)
          latex.SetTextAlign(12);  //centered
          if (thevar!=rap1560 && thevar!=rap60120) {
             latex.DrawLatex(xlatex,ylatex,"-2.87 < |y_{CM}| < 1.93");
@@ -505,6 +527,12 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       if (gth_EPPS16) gth_EPPS16->Write();
       hy->Write();
       hy_statonly->Write();
+
+      // restore CMS parameters
+      lumiTextSize = lumiTextSize0;
+      lumiTextOffset = lumiTextSize0;
+      cmsTextSize = cmsTextSize0;
+      cmsTextOffset = cmsTextSize0;
    }
 
    // close file

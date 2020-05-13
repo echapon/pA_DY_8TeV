@@ -52,6 +52,7 @@ public:
 	Double_t LegendTextSize; // added by Hyunchul
 	Font_t LegendFontStyle; // added by Hyunchul
 
+   Double_t SizeMod;
 
 	// -- for multiple histograms & graphs -- //
 	vector< Int_t > Colors;
@@ -95,6 +96,7 @@ public:
 		Legend_y2 = 0.90;//0.95 (Hyunchul)
 		LegendTextSize = 0.0;// (Hyunchul)
 		LegendFontStyle = 42;// (Hyunchul)
+      SizeMod = 0.;
 
 
 		LowerEdge_Ratio = 0.45;
@@ -512,6 +514,8 @@ public:
 											TString DrawOp1 = "5", TString DrawOp2 = "5", TString DrawOp_ref = "EP",
                                  bool refErrorAtOne = false)
 	{
+      double sizemod = 1;
+      if (SizeMod > 0.) sizemod = SizeMod;
 		c->cd();
 		// -- Top Pad -- //
 		TopPad = new TPad("TopPad", "TopPad", 0.01, 0.01, 0.99, 0.99);
@@ -542,7 +546,7 @@ public:
 		g1->SetLineColor(color1);
 		g1->SetLineWidth(1);
 		g1->SetMarkerColor(color1);
-		g1->SetMarkerSize(1);
+		g1->SetMarkerSize(1*sizemod);
 		g1->SetMarkerStyle(20);
 		g1->SetFillColorAlpha(kWhite, 0);
 
@@ -550,7 +554,7 @@ public:
 		g2->SetLineColor(color2);
 		g2->SetLineWidth(1);
 		g2->SetMarkerColor(color2);
-		g2->SetMarkerSize(1);
+		g2->SetMarkerSize(1*sizemod);
 		g2->SetMarkerStyle(20);
 		g2->SetFillColorAlpha(kWhite, 0);
 
@@ -558,7 +562,7 @@ public:
 		g_ref->SetLineColor(color_ref);
 		g_ref->SetLineWidth(1);
 		g_ref->SetMarkerColor(color_ref);
-		g_ref->SetMarkerSize(1);
+		g_ref->SetMarkerSize(1*sizemod);
 		g_ref->SetMarkerStyle(20);
 		g_ref->SetFillColorAlpha(kWhite, 0);
 
@@ -569,8 +573,8 @@ public:
 		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
-		g1->GetYaxis()->SetTitleSize(0.06);
-		g1->GetYaxis()->SetTitleOffset(1.25);
+		g1->GetYaxis()->SetTitleSize(0.06*sizemod);
+		g1->GetYaxis()->SetTitleOffset(1.25/sizemod);
 		if( isSetNoExpo_MoreLogLabels_Y == kTRUE ) { g1->GetYaxis()->SetNoExponent(); g1->GetYaxis()->SetMoreLogLabels(); }
 		if( !(LowerEdge_Y == 0 && UpperEdge_Y == 0)) g1->GetYaxis()->SetRangeUser( LowerEdge_Y, UpperEdge_Y );
 
@@ -593,6 +597,7 @@ public:
 		BottomPad->cd();
 
 		BottomPad->SetBottomMargin(0.4);
+		if (sizemod>1.) BottomPad->SetBottomMargin(0.45);
 		BottomPad->SetRightMargin(0.04);
 		BottomPad->SetLeftMargin(0.15);	
 
@@ -621,32 +626,33 @@ public:
 		// -- General Setting for 1st ratio plot -- //
 		g_ratio1->SetLineColor(color1);
 		g_ratio1->SetMarkerStyle(20);
-		g_ratio1->SetMarkerSize(1);
+		g_ratio1->SetMarkerSize(1*sizemod);
 		g_ratio1->SetMarkerColor(color1);
 
 		// -- General Setting for 2nd ratio plot -- //
 		g_ratio2->SetLineColor(color2);
 		g_ratio2->SetMarkerStyle(20);
-		g_ratio2->SetMarkerSize(1);
+		g_ratio2->SetMarkerSize(1*sizemod);
 		g_ratio2->SetMarkerColor(color2);
 
 		// -- X-axis Setting -- //		
       haxes =g_ratio1->GetHistogram();
 		haxes->GetXaxis()->SetTitle( TitleX );
 		haxes->GetXaxis()->SetTitleOffset( 0.9 );
-		haxes->GetXaxis()->SetTitleSize( 0.2 );
+		haxes->GetXaxis()->SetTitleSize( 0.2);//*sizemod );
 		haxes->GetXaxis()->SetLabelColor(1);
 		haxes->GetXaxis()->SetLabelFont(42);
-		haxes->GetXaxis()->SetLabelOffset(0.007);
-		haxes->GetXaxis()->SetLabelSize(0.15);
+		haxes->GetXaxis()->SetLabelOffset(0.007*sizemod);
+		haxes->GetXaxis()->SetLabelSize(0.15*sizemod);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetMoreLogLabels(); haxes->GetXaxis()->SetNoExponent(); }
 		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
 		// -- Y-axis Setting -- //
 		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
 		g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
-		g_ratio1->GetYaxis()->SetTitleSize( 0.1);
-		g_ratio1->GetYaxis()->SetLabelSize( 0.07 );
+		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.25 );
+		g_ratio1->GetYaxis()->SetTitleSize( 0.1*sizemod);
+		g_ratio1->GetYaxis()->SetLabelSize( 0.07*sizemod );
 		g_ratio1->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
 
 		// -- flat line = 1.00 -- //
@@ -661,7 +667,9 @@ public:
 
       if (refErrorAtOne) {
          // legend
-         TLegend *tleg_ratio = new TLegend(0.2,0.82,0.9,0.92);
+         double xl1=0.23, yl1=0.82, xl2=0.93, yl2=0.92;
+         double dxl = sizemod*(xl2-xl1), dyl = sizemod*(yl2-yl1), dxl0 = xl2-xl1;
+         TLegend *tleg_ratio = new TLegend(xl1-(dxl-dxl0)/2.,yl2-dyl,xl2+(dxl-dxl0)/2.,yl2);
          tleg_ratio->SetFillColor(0);
          tleg_ratio->SetBorderSize(0);
          tleg_ratio->SetNColumns(3);
