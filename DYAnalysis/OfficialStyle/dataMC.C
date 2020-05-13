@@ -29,6 +29,19 @@ void dataMC(var thevar)
    const char* thevarname = varname(thevar);
    TString thexaxistitle = xaxistitle(thevar);
 
+   // general multiplicator to enlarge or reduce the size of everything
+   const float sizemod = (thevar==var::mass) ? 0.8 : 1.2;
+   float lumiTextSize0 = lumiTextSize;
+   float lumiTextOffset0 = lumiTextSize;
+   float cmsTextSize0 = cmsTextSize;
+   float cmsTextOffset0 = cmsTextSize;
+   lumiTextSize *= sizemod;
+   if (sizemod>1) lumiTextOffset *= 0.5;
+   else lumiTextOffset *= 0.8;
+   cmsTextSize *= sizemod;
+   if (sizemod>1) cmsTextOffset *= 0.5;
+   else cmsTextOffset *= 0.8;
+
    TCanvas *c1 = new TCanvas("c1", "",0,0, 800, 800);
    gStyle->SetOptFit(1);
    gStyle->SetOptStat(0);
@@ -41,7 +54,7 @@ void dataMC(var thevar)
    //c1->SetGridy();
    c1->SetTickx(1);
    c1->SetTicky(1);
-   c1->SetLeftMargin(0.16);
+   c1->SetLeftMargin(0.16*sizemod);
    c1->SetRightMargin(0.02);
    c1->SetTopMargin(0.10);//0.08
    c1->SetBottomMargin(0.14);
@@ -67,7 +80,7 @@ void dataMC(var thevar)
    //TopPad->SetGridy();
    TopPad->SetTickx(1);
    TopPad->SetTicky(1);
-   TopPad->SetLeftMargin(0.13);
+   TopPad->SetLeftMargin(0.13*sizemod);
    TopPad->SetRightMargin(0.05);
    TopPad->SetTopMargin(0.08);//0.05
    TopPad->SetBottomMargin(0.32);//0.32
@@ -237,7 +250,7 @@ void dataMC(var thevar)
    color = new TColor(ci, 1, 1, 1, " ", 0);
    h_data->SetFillColor(ci);
    h_data->SetMarkerStyle(20);
-   h_data->SetMarkerSize(1.0);
+   h_data->SetMarkerSize(1.0*sizemod);
    h_data->GetXaxis()->SetTitle(thexaxistitle);
    // h_data->GetXaxis()->SetRange(1,43);
    if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar == var::pt1560 || thevar == var::phistar1560) {
@@ -255,34 +268,39 @@ void dataMC(var thevar)
    else h_data->GetYaxis()->SetTitle("Entries / unit 1");
 
    h_data->GetYaxis()->SetLabelFont(42);
-   h_data->GetYaxis()->SetLabelSize(0.030);
+   h_data->GetYaxis()->SetLabelSize(0.035*sizemod);
    //h_data->GetYaxis()->SetLabelOffset(1.1);
-   h_data->GetYaxis()->SetTitleSize(0.055);
-   h_data->GetYaxis()->SetTitleOffset(1.15);//0.9
+   h_data->GetYaxis()->SetTitleSize(0.055*sizemod);
+   h_data->GetYaxis()->SetTitleOffset(1.15);//*sizemod);//0.9
+   if (thevar==var::rap60120) {
+      h_data->GetYaxis()->SetLabelOffset(0.003);
+      h_data->GetYaxis()->SetLabelSize(0.033*sizemod);
+      h_data->GetYaxis()->SetTitleOffset(1.25);
+   }
    h_data->GetYaxis()->SetTitleFont(42);
    h_data->GetZaxis()->SetLabelFont(42);
-   h_data->GetZaxis()->SetLabelSize(0.035);
-   h_data->GetZaxis()->SetTitleSize(0.035);
+   h_data->GetZaxis()->SetLabelSize(0.035*sizemod);
+   h_data->GetZaxis()->SetTitleSize(0.035*sizemod);
    h_data->GetZaxis()->SetTitleFont(42);
    double yaxismin = 0.001;
    if (thevar == var::pt) {
-      yaxismin = 0.1;
-      h_data->SetMaximum(5e4);//2e4
+      yaxismin = 0.4;
+      h_data->SetMaximum(2e5);//2e4
    } else if (thevar == var::pt1560) {
-      yaxismin = 0.1;
-      h_data->SetMaximum(2900);//1900
+      yaxismin = 0.4;
+      h_data->SetMaximum(20000);//1900
    } else if (thevar == var::rap1560) {
       yaxismin = 0;
-      h_data->SetMaximum(1550);
+      h_data->SetMaximum(1750);
    } else if (thevar == var::rap60120) {
       yaxismin = 0;
-      h_data->SetMaximum(8250);//8150
+      h_data->SetMaximum(12250);//8150
    } else if (thevar == var::phistar) {
-      yaxismin = 90;
-      h_data->SetMaximum(5e6);//3e6
+      yaxismin = 9;
+      h_data->SetMaximum(5e7);//3e6
    } else if (thevar == var::phistar1560) {
-      yaxismin = 10;
-      h_data->SetMaximum(5e5);
+      yaxismin = 40;
+      h_data->SetMaximum(9e5);
    }
    h_data->SetMinimum(yaxismin);
    h_data->Draw("E1P");
@@ -295,7 +313,7 @@ void dataMC(var thevar)
    h_data->Draw("E1Psame");
    hsyst->SetFillColor(kBlack);
    hsyst->SetMarkerSize(0);
-   hsyst->SetFillStyle(3002);
+   hsyst->SetFillStyle(3003);
    hsyst->Draw("E2same");
    //
    TLine grid_;
@@ -306,7 +324,9 @@ void dataMC(var thevar)
      grid_.DrawLine(xAxis[ii],yaxismin,xAxis[ii],htotal->GetBinContent(ii+1));
    }
 
-   TLegend *leg = new TLegend(0.725,0.72,0.92,0.90,NULL,"brNDC");//0.92
+   double dx = (0.92 - 0.70) * sizemod;
+   double dy = (0.90 - 0.70) * sizemod;
+   TLegend *leg = new TLegend(0.92-dx,0.90-dy,0.92,0.90,NULL,"brNDC");//0.92
    leg->SetBorderSize(0);
    leg->SetTextFont(62);
    leg->SetLineColor(1);
@@ -314,7 +334,7 @@ void dataMC(var thevar)
    leg->SetLineWidth(1);
    leg->SetFillColor(0);
    leg->SetFillStyle(0);
-   hdata->SetMarkerSize(1);
+   hdata->SetMarkerSize(1*sizemod);
    TLegendEntry *entry=leg->AddEntry(hdata,"Data","pl");
    entry=leg->AddEntry(hDY,"#gamma* /#font[122]{Z} #rightarrow #mu#mu","f");
    entry=leg->AddEntry(hTop,"t#bar{t}","f");
@@ -338,9 +358,10 @@ void dataMC(var thevar)
    // add label
    TLatex latex;
    latex.SetNDC();
-   latex.SetTextSize(0.03);
-   double xlatex=.17, ylatex=0.87;//0.89
-	double dylatex=0.045;
+   latex.SetTextSize(0.035*sizemod);
+   double xlatex=.17, ylatex=0.855;//0.89
+   if (thevar != var::mass) xlatex += 0.02;
+	double dylatex=0.05*sizemod;
    if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.87;//0.9
    latex.SetTextAlign(12);  //centered
    if (thevar!=rap1560 && thevar!=rap60120) {
@@ -371,10 +392,10 @@ void dataMC(var thevar)
    //bottomPad->SetGridy();
    bottomPad->SetTickx(1);
    bottomPad->SetTicky(1);
-   bottomPad->SetLeftMargin(0.122);
+   bottomPad->SetLeftMargin(0.122*sizemod);
    bottomPad->SetRightMargin(0.04);
    bottomPad->SetTopMargin(0.05);//0.05
-   bottomPad->SetBottomMargin(0.4);
+   bottomPad->SetBottomMargin(0.4*sizemod);
    bottomPad->SetFrameFillStyle(0);
    bottomPad->SetFrameBorderMode(0);
    bottomPad->SetFrameFillStyle(0);
@@ -395,20 +416,20 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetNoExponent();
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
-   hratio->GetXaxis()->SetLabelSize(0.15);
-   hratio->GetXaxis()->SetTitleSize(0.2);
-   hratio->GetXaxis()->SetTitleOffset(0.9);
+   hratio->GetXaxis()->SetLabelSize(0.15*sizemod);
+   hratio->GetXaxis()->SetTitleSize(0.18*sizemod);
+   hratio->GetXaxis()->SetTitleOffset(0.9);//*sizemod);
    hratio->GetXaxis()->SetTitleFont(42);
    hratio->GetYaxis()->SetTitle("Data/(DY+Bkg)");
    hratio->GetYaxis()->SetLabelFont(42);
-   hratio->GetYaxis()->SetLabelSize(0.07);
-   hratio->GetYaxis()->SetTitleSize(0.1);
-   hratio->GetYaxis()->SetTitleOffset(0.4);
+   hratio->GetYaxis()->SetLabelSize(0.08*sizemod);
+   hratio->GetYaxis()->SetTitleSize(0.1*sizemod);
+   hratio->GetYaxis()->SetTitleOffset(0.4);//*sizemod);
    hratio->GetYaxis()->SetTitleFont(42);
    // hratio->GetYaxis()->SetRangeUser(42);
    hratio->GetZaxis()->SetLabelFont(42);
-   hratio->GetZaxis()->SetLabelSize(0.035);
-   hratio->GetZaxis()->SetTitleSize(0.035);
+   hratio->GetZaxis()->SetLabelSize(0.035*sizemod);
+   hratio->GetZaxis()->SetTitleSize(0.035*sizemod);
    hratio->GetZaxis()->SetTitleFont(42);
    hratio->Draw("E1PL");
    if (thevar==var::pt) hratio->GetXaxis()->SetRangeUser(0.5,ptbin_meas[ptbinnum_meas-1]);
@@ -424,25 +445,25 @@ void dataMC(var thevar)
 
    f_line1->SetLineColor(kSpring-1);
    f_line1->SetLineStyle(2);
-   f_line1->SetLineWidth(1);
+   f_line1->SetLineWidth(1*sizemod);
    f_line1->GetXaxis()->SetLabelFont(42);
    f_line1->GetXaxis()->SetLabelOffset(0.007);
-   f_line1->GetXaxis()->SetLabelSize(0.05);
-   f_line1->GetXaxis()->SetTitleSize(0.06);
-   f_line1->GetXaxis()->SetTitleOffset(0.9);
+   f_line1->GetXaxis()->SetLabelSize(0.05*sizemod);
+   f_line1->GetXaxis()->SetTitleSize(0.06*sizemod);
+   f_line1->GetXaxis()->SetTitleOffset(0.9);//*sizemod);
    f_line1->GetXaxis()->SetTitleFont(42);
    f_line1->GetYaxis()->SetLabelFont(42);
-   f_line1->GetYaxis()->SetLabelOffset(0.007);
-   f_line1->GetYaxis()->SetLabelSize(0.05);
-   f_line1->GetYaxis()->SetTitleSize(0.06);
-   f_line1->GetYaxis()->SetTitleOffset(1.25);
+   f_line1->GetYaxis()->SetLabelOffset(0.007*sizemod);
+   f_line1->GetYaxis()->SetLabelSize(0.06*sizemod);
+   f_line1->GetYaxis()->SetTitleSize(0.06*sizemod);
+   f_line1->GetYaxis()->SetTitleOffset(1.25);//*sizemod);
    f_line1->GetYaxis()->SetTitleFont(42);
    f_line1->Draw("SAME");
    hratio->Draw("E1PLsame");
 
    hratio_syst->SetFillColor(kBlack);
    hratio_syst->SetMarkerSize(0);
-   hratio_syst->SetFillStyle(3002);
+   hratio_syst->SetFillStyle(3003);
    hratio_syst->Draw("E2same");
 
    // TLine gridRatio;
@@ -463,6 +484,12 @@ void dataMC(var thevar)
    TFile *fratio = TFile::Open("OfficialStyle/dataMCratios.root","UPDATE");
    hratio->Write(thevarname);
    fratio->Close();
+
+   // restore CMS parameters
+   lumiTextSize = lumiTextSize0;
+   lumiTextOffset = lumiTextSize0;
+   cmsTextSize = cmsTextSize0;
+   cmsTextOffset = cmsTextSize0;
 }
 
 void dataMC() {
