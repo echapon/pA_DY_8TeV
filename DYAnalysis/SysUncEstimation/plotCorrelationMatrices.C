@@ -6,6 +6,19 @@
 using namespace DYana;
 
 void plotCorrelationMatrices(bool noacc, var thevar) {
+   // general multiplicator to enlarge or reduce the size of everything
+   const float sizemod = (thevar==var::mass) ? 0.9 : 1.1;
+   float lumiTextSize0 = lumiTextSize;
+   float lumiTextOffset0 = lumiTextSize;
+   float cmsTextSize0 = cmsTextSize;
+   float cmsTextOffset0 = cmsTextSize;
+   lumiTextSize *= sizemod;
+   if (sizemod>1) lumiTextOffset *= 0.5;
+   else lumiTextOffset *= 0.8;
+   cmsTextSize *= sizemod;
+   if (sizemod>1) cmsTextOffset *= 0.5;
+   else cmsTextOffset *= 0.8;
+
    vector<TString> tags;
    tags.push_back("rewNtracks");
    tags.push_back("MomCorr_smooth");
@@ -108,6 +121,12 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
    c.CanvasWith2DHistogram(hm,"COLZ");
    CMS_lumi(c.c, 111, 0);
    c.PrintCanvas();
+
+   // restore CMS parameters
+   lumiTextSize = lumiTextSize0;
+   lumiTextOffset = lumiTextSize0;
+   cmsTextSize = cmsTextSize0;
+   cmsTextOffset = cmsTextSize0;
 }
 
 void plotCorrelationMatrices(bool noacc) {
