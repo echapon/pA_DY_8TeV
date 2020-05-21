@@ -417,6 +417,7 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
    hratio->GetXaxis()->SetLabelSize(0.15*sizemod);
+   if (thevar==var::phistar || thevar==var::phistar1560) hratio->GetXaxis()->SetLabelSize(0.12*sizemod);
    hratio->GetXaxis()->SetTitleSize(0.18*sizemod);
    hratio->GetXaxis()->SetTitleOffset(0.9);//*sizemod);
    hratio->GetXaxis()->SetTitleFont(42);

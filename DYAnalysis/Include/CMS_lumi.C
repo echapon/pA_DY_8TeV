@@ -20,7 +20,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
   if( iPosX/10==1 ) alignX_=1;
   if( iPosX/10==2 ) alignX_=2;
   if( iPosX/10==3 ) alignX_=3;
-  //if( iPosX == 0  ) relPosX = 0.12;
+  if( iPosX == 0  ) relPosX = 0.16;
   int align_ = 10*alignX_ + alignY_;
 
   float H = pad->GetWh();
@@ -76,7 +76,7 @@ CMS_lumi( TPad* pad, int iPeriod, int iPosX )
     }
   else if (iPeriod==111) {
       if( outOfFrame ) lumiText += "#scale[0.85]{";
-      lumiText += "pPb (173 nb^{-1}, #sqrt{s_{NN}} = 8.16 TeV)";// from 174 
+      lumiText += "pPb (173 nb^{-1}, 8.16 TeV)";// from 174 
       if( outOfFrame) lumiText += "}";
   }
   else if ( iPeriod==0 )
