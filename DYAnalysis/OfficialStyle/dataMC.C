@@ -263,9 +263,9 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetTitleFont(42);
    if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
    else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
-	//else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
-   //else h_data->GetYaxis()->SetTitle("Entries / unit y");
-   else h_data->GetYaxis()->SetTitle("Entries / unit 1");
+   else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
+   else h_data->GetYaxis()->SetTitle("Entries / unit y_{CM}");
+   // else h_data->GetYaxis()->SetTitle("Entries / unit 1");
 
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035*sizemod);
