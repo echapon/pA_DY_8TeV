@@ -264,7 +264,7 @@ void dataMC(var thevar)
    if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
    else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
    else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
-   else h_data->GetYaxis()->SetTitle("Entries / unit y_{CM}");
+   else h_data->GetYaxis()->SetTitle("Entries / unit y");
    // else h_data->GetYaxis()->SetTitle("Entries / unit 1");
 
    h_data->GetYaxis()->SetLabelFont(42);
@@ -275,7 +275,11 @@ void dataMC(var thevar)
    if (thevar==var::rap60120) {
       h_data->GetYaxis()->SetLabelOffset(0.003);
       h_data->GetYaxis()->SetLabelSize(0.033*sizemod);
-      h_data->GetYaxis()->SetTitleOffset(1.25);
+      h_data->GetYaxis()->SetTitleOffset(1.27);
+      h_data->GetYaxis()->SetTitleSize(0.05*sizemod);
+   } else if (thevar==var::phistar || thevar==var::phistar1560) {
+      h_data->GetYaxis()->SetTitleSize(0.05*sizemod);
+      h_data->GetYaxis()->SetTitleOffset(1.10);//*sizemod);//0.9
    }
    h_data->GetYaxis()->SetTitleFont(42);
    h_data->GetZaxis()->SetLabelFont(42);
