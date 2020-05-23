@@ -373,11 +373,11 @@ void dataMC(var thevar)
       ylatex -= dylatex;
    }
    if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
+      latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
       ylatex -= dylatex;
    }
    if (thevar==pt || thevar==phistar || thevar==rap60120) {
-      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
+      latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
       ylatex -= dylatex;
    }
    latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
