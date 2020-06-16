@@ -80,6 +80,32 @@ void Acc_xQ2_genonly(TString Sample)
    TProfile *plog_rap60120_AccTotal = new TProfile("plog_rap60120_AccTotal", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,-10,0,"s");
    TProfile *plog_rap60120_AccPass = new TProfile("plog_rap60120_AccPass", Form(";%s;log_{10}(x_{Pb})",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,-10,0,"s");
 
+   TH2D *hQ_mass_AccTotal = new TH2D("hQ_mass_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass)), binnum, bins,200,0,1000);
+   TH2D *hQ_mass_AccPass = new TH2D("hQ_mass_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass)), binnum, bins,200,0,1000);
+   TH2D *hQ_mass3bins_AccTotal = new TH2D("hQ_mass3bins_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,200,0,1000);
+   TH2D *hQ_mass3bins_AccPass = new TH2D("hQ_mass3bins_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,200,0,1000);
+   TH2D *hQ_pt_AccTotal = new TH2D("hQ_pt_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,200,0,1000);
+   TH2D *hQ_pt_AccPass = new TH2D("hQ_pt_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,200,0,1000);
+   TH2D *hQ_phistar_AccTotal = new TH2D("hQ_phistar_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,200,0,1000);
+   TH2D *hQ_phistar_AccPass = new TH2D("hQ_phistar_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,200,0,1000);
+   TH2D *hQ_rap1560_AccTotal = new TH2D("hQ_rap1560_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap1560)), rapbinnum_1560, rapbin_1560,200,0,1000);
+   TH2D *hQ_rap1560_AccPass = new TH2D("hQ_rap1560_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap1560)), rapbinnum_1560, rapbin_1560,200,0,1000);
+   TH2D *hQ_rap60120_AccTotal = new TH2D("hQ_rap60120_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,200,0,1000);
+   TH2D *hQ_rap60120_AccPass = new TH2D("hQ_rap60120_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,200,0,1000);
+
+   TProfile *pQ_mass_AccTotal = new TProfile("pQ_mass_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass)), binnum, bins,0,8000,"s");
+   TProfile *pQ_mass_AccPass = new TProfile("pQ_mass_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass)), binnum, bins,0,8000,"s");
+   TProfile *pQ_mass3bins_AccTotal = new TProfile("pQ_mass3bins_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,0,8000,"s");
+   TProfile *pQ_mass3bins_AccPass = new TProfile("pQ_mass3bins_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::mass3bins)), binnum3, bins3,0,8000,"s");
+   TProfile *pQ_pt_AccTotal = new TProfile("pQ_pt_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,0,8000,"s");
+   TProfile *pQ_pt_AccPass = new TProfile("pQ_pt_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::pt)), ptbinnum_meas, ptbin_meas,0,8000,"s");
+   TProfile *pQ_phistar_AccTotal = new TProfile("pQ_phistar_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,0,8000,"s");
+   TProfile *pQ_phistar_AccPass = new TProfile("pQ_phistar_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::phistar)), phistarnum, phistarbin,0,8000,"s");
+   TProfile *pQ_rap1560_AccTotal = new TProfile("pQ_rap1560_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap1560)), rapbinnum_1560, rapbin_1560,0,8000,"s");
+   TProfile *pQ_rap1560_AccPass = new TProfile("pQ_rap1560_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap1560)), rapbinnum_1560, rapbin_1560,0,8000,"s");
+   TProfile *pQ_rap60120_AccTotal = new TProfile("pQ_rap60120_AccTotal", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,0,8000,"s");
+   TProfile *pQ_rap60120_AccPass = new TProfile("pQ_rap60120_AccPass", Form(";%s;Q [GeV]",DYana::xaxistitle(DYana::var::rap60120)), rapbinnum_60120, rapbin_60120,0,8000,"s");
+
 	TString BaseLocation = "/eos/cms/store/group/phys_heavyions/dileptons/echapon/pA_8p16TeV/DYtuples/";
 	// -- Each ntuple directory & corresponding Tags -- //
 		// -- GenWeights are already taken into account in nEvents -- //
@@ -117,20 +143,20 @@ void Acc_xQ2_genonly(TString Sample)
       pair<float,float>   *pdfX = 0;
       float pdfX_first;
       float pdfX_second;
-      // Float_t         qScale;
+      Float_t         qScale;
       TBranch        *b_pdfX;   //!
       TBranch        *b_pdfX_first;   //!
       TBranch        *b_pdfX_second;   //!
-      // TBranch        *b_qScale;   //!
+      TBranch        *b_qScale;   //!
       chainGen->SetBranchAddress("pdfX", &pdfX, &b_pdfX);
       chainGen->SetBranchAddress("first", &pdfX_first, &b_pdfX_first);
       chainGen->SetBranchAddress("second", &pdfX_second, &b_pdfX_second);
-      // chainGen->SetBranchAddress("qScale", &qScale, &b_qScale);
+      chainGen->SetBranchAddress("qScale", &qScale, &b_qScale);
       chainGen->SetBranchStatus("*",0);
       chainGen->SetBranchStatus("pdfX",1);
       chainGen->SetBranchStatus("first",1);
       chainGen->SetBranchStatus("second",1);
-      // chainGen->SetBranchStatus("qScale",1);
+      chainGen->SetBranchStatus("qScale",1);
       float xPb,log_xPb;
 
 		Bool_t isNLO = 0;
@@ -221,6 +247,11 @@ void Acc_xQ2_genonly(TString Sample)
             h_mass3bins_AccTotal->Fill( gen_M, log_xPb, TotWeight );
             plog_mass3bins_AccTotal->Fill( gen_M, log_xPb, TotWeight );
             p_mass3bins_AccTotal->Fill( gen_M, xPb, TotWeight );
+
+            hQ_mass_AccTotal->Fill( gen_M, qScale, TotWeight );
+            pQ_mass_AccTotal->Fill( gen_M, qScale, TotWeight );
+            hQ_mass3bins_AccTotal->Fill( gen_M, qScale, TotWeight );
+            pQ_mass3bins_AccTotal->Fill( gen_M, qScale, TotWeight );
             if (gen_M>60 && gen_M<120) {
                h_pt_AccTotal->Fill( gen_Pt, log_xPb, TotWeight );
                h_phistar_AccTotal->Fill( gen_Phistar, log_xPb, TotWeight );
@@ -231,10 +262,20 @@ void Acc_xQ2_genonly(TString Sample)
                p_pt_AccTotal->Fill( gen_Pt, xPb, TotWeight );
                p_phistar_AccTotal->Fill( gen_Phistar, xPb, TotWeight );
                p_rap60120_AccTotal->Fill( gen_Rap, xPb, TotWeight );
+
+               hQ_pt_AccTotal->Fill( gen_Pt, qScale, TotWeight );
+               hQ_phistar_AccTotal->Fill( gen_Phistar, qScale, TotWeight );
+               hQ_rap60120_AccTotal->Fill( gen_Rap, qScale, TotWeight );
+               pQ_pt_AccTotal->Fill( gen_Pt, qScale, TotWeight );
+               pQ_phistar_AccTotal->Fill( gen_Phistar, qScale, TotWeight );
+               pQ_rap60120_AccTotal->Fill( gen_Rap, qScale, TotWeight );
             } else if (gen_M>15 && gen_M<60) {
                h_rap1560_AccTotal->Fill( gen_Rap, log_xPb, TotWeight );
                plog_rap1560_AccTotal->Fill( gen_Rap, log_xPb, TotWeight );
                p_rap1560_AccTotal->Fill( gen_Rap, xPb, TotWeight );
+
+               hQ_rap1560_AccTotal->Fill( gen_Rap, qScale, TotWeight );
+               pQ_rap1560_AccTotal->Fill( gen_Rap, qScale, TotWeight );
             }
             if( Flag_PassAcc == kTRUE ) 
             {
@@ -244,6 +285,11 @@ void Acc_xQ2_genonly(TString Sample)
                h_mass3bins_AccPass->Fill( gen_M, log_xPb, TotWeight );
                plog_mass3bins_AccPass->Fill( gen_M, log_xPb, TotWeight );
                p_mass3bins_AccPass->Fill( gen_M, xPb, TotWeight );
+
+               hQ_mass_AccPass->Fill( gen_M, qScale, TotWeight );
+               pQ_mass_AccPass->Fill( gen_M, qScale, TotWeight );
+               hQ_mass3bins_AccPass->Fill( gen_M, qScale, TotWeight );
+               pQ_mass3bins_AccPass->Fill( gen_M, qScale, TotWeight );
                if (gen_M>60 && gen_M<120) {
                   h_pt_AccPass->Fill( gen_Pt, log_xPb, TotWeight );
                   h_phistar_AccPass->Fill( gen_Phistar, log_xPb, TotWeight );
@@ -254,10 +300,20 @@ void Acc_xQ2_genonly(TString Sample)
                   p_pt_AccPass->Fill( gen_Pt, xPb, TotWeight );
                   p_phistar_AccPass->Fill( gen_Phistar, xPb, TotWeight );
                   p_rap60120_AccPass->Fill( gen_Rap, xPb, TotWeight );
+
+                  hQ_pt_AccPass->Fill( gen_Pt, qScale, TotWeight );
+                  hQ_phistar_AccPass->Fill( gen_Phistar, qScale, TotWeight );
+                  hQ_rap60120_AccPass->Fill( gen_Rap, qScale, TotWeight );
+                  pQ_pt_AccPass->Fill( gen_Pt, qScale, TotWeight );
+                  pQ_phistar_AccPass->Fill( gen_Phistar, qScale, TotWeight );
+                  pQ_rap60120_AccPass->Fill( gen_Rap, qScale, TotWeight );
                } else if (gen_M>15 && gen_M<60) {
                   h_rap1560_AccPass->Fill( gen_Rap, log_xPb, TotWeight );
                   plog_rap1560_AccPass->Fill( gen_Rap, log_xPb, TotWeight );
                   p_rap1560_AccPass->Fill( gen_Rap, xPb, TotWeight );
+
+                  hQ_rap1560_AccPass->Fill( gen_Rap, qScale, TotWeight );
+                  pQ_rap1560_AccPass->Fill( gen_Rap, qScale, TotWeight );
                }
             }
 			} // -- End of if( GenFlag == kTRUE )
@@ -315,6 +371,32 @@ void Acc_xQ2_genonly(TString Sample)
    p_rap1560_AccPass->Write();
    p_rap60120_AccTotal->Write();
    p_rap60120_AccPass->Write();
+
+   hQ_mass_AccTotal->Write();
+   hQ_mass_AccPass->Write();
+   hQ_mass3bins_AccTotal->Write();
+   hQ_mass3bins_AccPass->Write();
+   hQ_pt_AccTotal->Write();
+   hQ_phistar_AccTotal->Write();
+   hQ_pt_AccPass->Write();
+   hQ_phistar_AccPass->Write();
+   hQ_rap1560_AccTotal->Write();
+   hQ_rap1560_AccPass->Write();
+   hQ_rap60120_AccTotal->Write();
+   hQ_rap60120_AccPass->Write();
+
+   pQ_mass_AccTotal->Write();
+   pQ_mass_AccPass->Write();
+   pQ_mass3bins_AccTotal->Write();
+   pQ_mass3bins_AccPass->Write();
+   pQ_pt_AccTotal->Write();
+   pQ_phistar_AccTotal->Write();
+   pQ_pt_AccPass->Write();
+   pQ_phistar_AccPass->Write();
+   pQ_rap1560_AccTotal->Write();
+   pQ_rap1560_AccPass->Write();
+   pQ_rap60120_AccTotal->Write();
+   pQ_rap60120_AccPass->Write();
 
 
 	Double_t TotalRunTime = totaltime.CpuTime();
