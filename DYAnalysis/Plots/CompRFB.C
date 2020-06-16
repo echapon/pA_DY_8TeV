@@ -93,7 +93,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
 
    // do the plotting here
 
-   MyCanvas c_1560("Plots/grfbp_rap1560","|y|","R_{FB}",800,800);
+   MyCanvas c_1560("Plots/grfbp_rap1560","|y_{CM}|","R_{FB}",800,800);
    c_1560.SetYRange(0.45,1.85);
    c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
@@ -104,10 +104,10 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    latex.SetNDC();
    latex.SetTextSize(0.03);
    double xlatex=.2, ylatex=0.85, dylatex=0.045;//0.9,0.040
-   latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
+   latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
    c_1560.PrintCanvas();
 
-   MyCanvas c_60120("Plots/grfbp_rap60120","|y|","R_{FB}",800,800);
+   MyCanvas c_60120("Plots/grfbp_rap60120","|y_{CM}|","R_{FB}",800,800);
    c_60120.SetYRange(0.65,1.45);//1.35
    c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
          "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
@@ -115,7 +115,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
          "5","5","EP",true);
    c_60120.TopPad->cd();
    ylatex=0.85;//0.9
-   latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
+   latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
    c_60120.PrintCanvas();
 }
 

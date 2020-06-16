@@ -263,9 +263,9 @@ void dataMC(var thevar)
    h_data->GetXaxis()->SetTitleFont(42);
    if (thevar==var::mass || thevar==var::mass3bins) h_data->GetYaxis()->SetTitle("Entries / GeV");
    else if (thevar==var::pt || thevar==var::pt1560) h_data->GetYaxis()->SetTitle("Entries / GeV");
-	//else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
-   //else h_data->GetYaxis()->SetTitle("Entries / unit y");
-   else h_data->GetYaxis()->SetTitle("Entries / unit 1");
+   else if (thevar==var::phistar || thevar==var::phistar1560) h_data->GetYaxis()->SetTitle("Entries / unit #phi^{*}");
+   else h_data->GetYaxis()->SetTitle("Entries / unit y");
+   // else h_data->GetYaxis()->SetTitle("Entries / unit 1");
 
    h_data->GetYaxis()->SetLabelFont(42);
    h_data->GetYaxis()->SetLabelSize(0.035*sizemod);
@@ -275,7 +275,11 @@ void dataMC(var thevar)
    if (thevar==var::rap60120) {
       h_data->GetYaxis()->SetLabelOffset(0.003);
       h_data->GetYaxis()->SetLabelSize(0.033*sizemod);
-      h_data->GetYaxis()->SetTitleOffset(1.25);
+      h_data->GetYaxis()->SetTitleOffset(1.27);
+      h_data->GetYaxis()->SetTitleSize(0.05*sizemod);
+   } else if (thevar==var::phistar || thevar==var::phistar1560) {
+      h_data->GetYaxis()->SetTitleSize(0.05*sizemod);
+      h_data->GetYaxis()->SetTitleOffset(1.10);//*sizemod);//0.9
    }
    h_data->GetYaxis()->SetTitleFont(42);
    h_data->GetZaxis()->SetLabelFont(42);
@@ -369,11 +373,11 @@ void dataMC(var thevar)
       ylatex -= dylatex;
    }
    if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-      latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
+      latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
       ylatex -= dylatex;
    }
    if (thevar==pt || thevar==phistar || thevar==rap60120) {
-      latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
+      latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
       ylatex -= dylatex;
    }
    latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
@@ -417,6 +421,7 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
    hratio->GetXaxis()->SetLabelSize(0.15*sizemod);
+   if (thevar==var::phistar || thevar==var::phistar1560) hratio->GetXaxis()->SetLabelSize(0.12*sizemod);
    hratio->GetXaxis()->SetTitleSize(0.18*sizemod);
    hratio->GetXaxis()->SetTitleOffset(0.9);//*sizemod);
    hratio->GetXaxis()->SetTitleFont(42);

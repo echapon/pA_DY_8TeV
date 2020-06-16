@@ -14,7 +14,7 @@
 TString cmsText     = "CMS";
 float cmsTextFont   = 61;  // default is helvetic-bold
 
-bool writeExtraText = false;
+bool writeExtraText = true;
 TString extraText   = "Preliminary";
 float extraTextFont = 52;  // default is helvetica-italics
 
@@ -25,9 +25,9 @@ float SuppleTextFont = 52;  // default is helvetica-italics
 
 // text sizes and text offsets with respect to the top frame
 // in unit of the top margin size
-float lumiTextSize     = 0.6;//0.6
+float lumiTextSize     = 0.6*0.8;//0.6
 float lumiTextOffset   = 0.2;
-float cmsTextSize      = 0.75;
+float cmsTextSize      = 0.75*0.8;
 float cmsTextOffset    = 0.1;  // only used in outOfFrame version
 
 float relPosX    = 0.085;//0.085

@@ -189,7 +189,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       int lx=800, ly=800;
 
       if (thevar==mass) {
-         ytitle = "d#sigma/dM [nb/GeV]";
+         ytitle = "d#sigma/dm_{#mu#mu} [nb/GeV]";
          xtitle_tex = "\\mmumu (\\GeV)";
          ytitle_tex = "$\\dd\\sigma/\\dd\\mmumu$ (nb/\\GeV)";
          logx= true; logy=true;
@@ -354,11 +354,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             ylatex -= dylatex;
          }
          if (thevar==pt1560 || thevar==phistar1560 || thevar==rap1560) {
-            latex.DrawLatex(xlatex,ylatex,"15 < M < 60 GeV");
+            latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
             ylatex -= dylatex;
          }
          if (thevar==pt || thevar==phistar || thevar==rap60120) {
-            latex.DrawLatex(xlatex,ylatex,"60 < M < 120 GeV");
+            latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
             ylatex -= dylatex;
          }
          if (!correctforacc) {
