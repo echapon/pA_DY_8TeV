@@ -17,7 +17,12 @@
 #include <TEfficiency.h>
 #include <TGraphAsymmErrors.h>
 
+#include "LHAPDF/PDFSet.h"
+#include "LHAPDF/PDF.h"
+
 #include <vector>
+#include <utility>
+#include <iostream>
 
 // -- Customized Analyzer for Drel-Yan Analysis -- //
 #include "../Include/DYAnalyzer.h"
@@ -25,12 +30,15 @@
 #include "../BkgEst/interface/defs.h"
 
 using namespace DYana;
+using namespace LHAPDF;
 
-// number of gen weights (CT14: 284, EPPS16: 325
-const int nweights = 284;//325;//284;
+const int nweights = 325;
 
 static inline void loadBar(int x, int n, int r, int w);
-void Acc_weights_genonly(TString Sample) 
+void Acc_weights_genonly(TString Sample, bool doreweight=false, 
+      TString initial_p="CT14nlo", TString initial_Pb="CT14nlo", 
+      TString target_p="CT14nlo", TString target_Pb="CT14nlo",
+      bool storetree=false) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -38,9 +46,58 @@ void Acc_weights_genonly(TString Sample)
 	TStopwatch totaltime;
 	totaltime.Start();
 
+   /////////////////////////////////////
+   // START SETUP OF WEIGHTS AND PDFS //
+   /////////////////////////////////////
+
+   // number of gen weights (CT14: 284, EPPS16: 325
+   int iwtmax = 284;
+   if (Sample.Contains("EPPS16")) iwtmax = 325;
+
+   // setup the PDFs we need
+   PDFSet* pdfset_initial_p = new PDFSet(initial_p.Data());
+   const PDF* pdf_initial_p = pdfset_initial_p->mkPDF(0);
+
+   PDFSet* pdfset_target_p;
+   if (target_p==initial_p) pdfset_target_p = pdfset_initial_p;
+   else pdfset_target_p = new PDFSet(target_p.Data());
+   const vector<PDF*> pdf_target_p = pdfset_target_p->mkPDFs();
+   
+   PDFSet* pdfset_initial_Pb;
+   if (initial_Pb==initial_p) pdfset_initial_Pb = pdfset_initial_p;
+   else if (initial_Pb==target_p) pdfset_initial_Pb = pdfset_target_p;
+   else pdfset_initial_Pb = new PDFSet(initial_Pb.Data());
+   const PDF* pdf_initial_Pb = pdfset_initial_Pb->mkPDF(0);
+   
+   PDFSet* pdfset_target_Pb;
+   if (target_Pb==initial_p) pdfset_target_Pb = pdfset_initial_p;
+   else if (target_Pb==target_p) pdfset_target_Pb = pdfset_target_p;
+   else if (target_Pb==initial_Pb) pdfset_target_Pb = pdfset_initial_Pb;
+   else pdfset_target_Pb = new PDFSet(target_Pb.Data());
+   const vector<PDF*> pdf_target_Pb = pdfset_target_Pb->mkPDFs();
+
+   int target_p_size = pdf_target_p.size();
+   int target_Pb_size = pdf_target_Pb.size();
+
+   if (doreweight) iwtmax = target_p_size + target_Pb_size - 1;
+   if (doreweight && target_Pb.Contains("EPPS")) iwtmax = target_Pb_size;
+   if (doreweight && target_p == target_Pb) iwtmax = target_p_size;
+   if (doreweight && target_p.Contains("TUJU") && target_Pb.Contains("TUJU")) iwtmax = target_Pb_size;
+
+   if (iwtmax > nweights) {
+      cout << "ERROR iwtmax > nweights (" << iwtmax << " > " << nweights << "). Please increase nweights in the code." << endl;
+      return;
+   }
+
+   /////////////////////////////////////
+   //  END SETUP OF WEIGHTS AND PDFS  //
+   /////////////////////////////////////
+
 	DYAnalyzer *analyzer = new DYAnalyzer( "PAL3Mu12" );
 
-	TFile *f = new TFile("ROOTFile_Histogram_Acc_weights_genonly_" + Sample + ".root", "RECREATE");
+   TString reweightlabel = "";
+   if (doreweight) reweightlabel = "_rewt_" + target_p + "_" + target_Pb;
+	TFile *f = new TFile("ROOTFile_Histogram_Acc_weights_genonly_" + Sample + reweightlabel + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
 
@@ -172,10 +229,35 @@ void Acc_weights_genonly(TString Sample)
       ntuple->TurnOnBranches_GenOthers();
 
       vector<float>   *ttbar_w = 0;
+      pair<float,float>   *pdfX = 0;
+      pair<int,int    >   *pdfID = 0;
+      // float pdfX_first;
+      // float pdfX_second;
+      // float pdfID_first;
+      // float pdfID_second;
+      Float_t         qScale;
       TBranch        *b_ttbar_w;   //!
+      TBranch        *b_pdfID;   //!
+      // TBranch        *b_pdfID_first;   //!
+      // TBranch        *b_pdfID_second;   //!
+      TBranch        *b_pdfX;   //!
+      // TBranch        *b_pdfX_first;   //!
+      // TBranch        *b_pdfX_second;   //!
+      TBranch        *b_qScale;   //!
       chainGen->SetBranchAddress("ttbar_w", &ttbar_w, &b_ttbar_w);
+      chainGen->SetBranchAddress("pdfID", &pdfID, &b_pdfID);
+      chainGen->SetBranchAddress("pdfX", &pdfX, &b_pdfX);
+      chainGen->SetBranchAddress("qScale", &qScale, &b_qScale);
       chainGen->SetBranchStatus("*",0);
-      chainGen->SetBranchStatus("ttbar_w",1);
+      if (!doreweight) {
+         chainGen->SetBranchStatus("ttbar_w",1);
+      } else {
+         chainGen->SetBranchStatus("pdfID",1);
+         chainGen->SetBranchStatus("pdfX",1);
+         chainGen->SetBranchStatus("qScale",1);
+      }
+      float xp, xPb;
+      int   IDp, IDPb;
 
 		Bool_t isNLO = 0;
 		if( !Sample.Contains("Pyquen") && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
@@ -303,7 +385,7 @@ void Acc_weights_genonly(TString Sample)
             Bool_t Flag_PassTotal_post = (gen_Rap_post > rapbin_60120[0] && gen_Rap_post<rapbin_60120[rapbinnum_60120] );
 
             // fill tree
-            tr->Fill();
+            if (storetree) tr->Fill();
 
             // the gen_M, etc. quantities are not very meaningful... replace them with post-FSR
             gen_M = gen_M_post;
@@ -315,14 +397,64 @@ void Acc_weights_genonly(TString Sample)
             h_mass->Fill( gen_M, TotWeight );
             h_mass_tot->Fill( gen_M, TotWeight );
 
+            if (doreweight) {
+               xp = (doflip) ? pdfX->second : pdfX->first;
+               xPb = (doflip) ? pdfX->first : pdfX->second;
+               IDp = (doflip) ? pdfID->second : pdfID->first;
+               IDPb = (doflip) ? pdfID->first : pdfID->second;
+            }
+
             // -- Acceptance Calculation -- //
-            if (ttbar_w->size()!=nweights) cout << i << " -> " << ttbar_w->size() << " " << nweights << endl;
-            for (unsigned int iwt=0; iwt<nweights; iwt++) {
+            if (!doreweight && ttbar_w->size()!=iwtmax) cout << i << " -> " << ttbar_w->size() << " " << iwtmax << endl;
+            for (unsigned int iwt=0; iwt<iwtmax; iwt++) {
                // int iwt=0;
                double wt = TotWeight;
-               // sometimes the last weight is missing... protect against this
-               if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
-               else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+
+               //////////////////////////
+               // COMPUTE PDF WEIGHT HERE
+               //////////////////////////
+
+               if (!doreweight) { // no PDF reweighting
+                  // sometimes the last weight is missing... protect against this
+                  if (iwt<ttbar_w->size()) wt = ttbar_w->at(iwt)*TotWeight;
+                  else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
+               } else {
+                  int ip = 0, iPb=0;
+                  if (target_Pb.Contains("EPPS")) { // https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs
+                     if (iwt < 41) {
+                        ip = 0;
+                        iPb = iwt;
+                     } else {
+                        ip = iwt-40;
+                        iPb = iwt;
+                     }
+                  } else if (target_p.Contains("TUJU") && target_Pb.Contains("TUJU")) {
+                     if (iwt < 27) {
+                        ip = iwt;
+                        iPb = 59 - 27 + iwt;
+                     } else {
+                        ip = 0;
+                        iPb = iwt - 27 + 1;
+                     }
+                  } else if (target_p == target_Pb) {
+                     ip = iwt;
+                     iPb = iwt;
+                  } else {
+                     if (iwt < target_p_size) {
+                        ip = iwt;
+                        iPb = 0;
+                     } else {
+                        ip = 0;
+                        iPb = iwt - target_p_size+1;
+                     }
+                  }
+
+                  wt = TotWeight * pdf_target_p[ip]->xfxQ(IDp,xp,qScale) * pdf_target_Pb[iPb]->xfxQ(IDPb,xPb,qScale) / (pdf_initial_p->xfxQ(IDp,xp,qScale) * pdf_initial_Pb->xfxQ(IDPb,xPb,qScale));
+               }
+
+               //////////////////////////
+               // END COMPUTE PDF WEIGHT
+               //////////////////////////
 
                if (Flag_PassTotal_pre) {
                   h_mass_AccTotal[iwt]->Fill( gen_M, wt );
@@ -432,9 +564,13 @@ void Acc_weights_genonly(TString Sample)
       h_phistar1560_AccPass_pre[i]->Write();
    }
 
-   tr->Write();
+   if (storetree) tr->Write();
    f->Close();
 
+   if (pdfset_initial_p) delete pdfset_initial_p;
+   if (pdfset_target_p) delete pdfset_target_p;
+   if (pdfset_initial_Pb) delete pdfset_initial_Pb;
+   if (pdfset_target_Pb) delete pdfset_target_Pb;
 
 	Double_t TotalRunTime = totaltime.CpuTime();
 	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;
