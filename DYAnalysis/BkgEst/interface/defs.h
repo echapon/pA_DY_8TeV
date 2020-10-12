@@ -14,6 +14,7 @@
 #include "samples_v20180814.h"
 #include "samples_v20180814_Pyquen.h"
 #include "samples_v20180814_CT14.h"
+#include "samples_v20200901_MG5.h"
 
 // // UPDATED IN 2017
 // // 1st part, PbP

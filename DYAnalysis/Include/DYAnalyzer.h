@@ -375,6 +375,19 @@ void DYAnalyzer::SetupMCsamples_v20180814( TString Type, vector<TString> *ntuple
          DYana_v20180814::SampleTag tag_Powheg = static_cast<DYana_v20180814::SampleTag>(i);
          STags->push_back(tag_Powheg);
       }
+   } else if (Type=="MG5") { // MG5 (NNPDF31_nnlo_as_0118_mc_hessian_pdfas)
+      using namespace DYana_v20200901_MG5;
+      cout << "Using samples from v20200901_MG5 for Type " << Type.Data() << endl;
+      for (int i=DYMuMu30_PbP; i<=DYMuMu30_PbP; i++) {
+         SampleTag tag = static_cast<SampleTag>(i);
+         // if (!IsDYMuMu(tag)) continue;
+         ntupleDirectory->push_back(NtupleDir(tag));
+         Tag->push_back(Name(tag));
+         xsec->push_back(Xsec(tag));
+         nEvents->push_back(Nevts(tag));
+         DYana_v20180814::SampleTag tag_Powheg = static_cast<DYana_v20180814::SampleTag>(i);
+         STags->push_back(tag_Powheg);
+      }
    } else { 
       using namespace DYana_v20180814;
       cout << "Using samples from v20180814 for Type " << Type.Data() << endl;
