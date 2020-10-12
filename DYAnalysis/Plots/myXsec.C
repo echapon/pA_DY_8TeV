@@ -20,6 +20,8 @@ using namespace std;
 
 void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist);
 
+void getTheory(TString sample, TGraphAsymmErrors tg, vector<TH1D> hists);
+
 void Obtain_dSigma_dX(TH1D *h){
 	Int_t nBins = h->GetNbinsX();
 	for(Int_t i=0; i<nBins; i++)
@@ -216,6 +218,10 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       MyCanvas c1(Form("Plots/results/plots/result%s_%s",correctforacc ? "" : "_noacc",varname(thevar)),xtitle,ytitle,lx,ly);
       if (logx) c1.SetLogx();
       if (logy) c1.SetLogy(false);
+		if (thevar==var::phistar || thevar==var::phistar1560) {
+			c1.isSetNoExpo_MoreLogLabels_X = kFALSE;
+			c1.isSetNoExpo_MoreLogLabels_Y = kFALSE;
+		}
 
       // // temporary dummy theory
       // TFile *fth = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/MCFM/MCFM-8.0/Bin/DYpA8TeV/CT14_eigenvectors/Z_only_nlo_CT14nlo_90___90___DY15600_CT14nlo_CT14nlo_7_7.root");
@@ -337,7 +343,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
          // c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
-               "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+               "CT14","EPPS16","Data","Pred./Data",
                kBlue,kRed,kBlack,
                "5","5","EP",true);
 
@@ -362,7 +368,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
             ylatex -= dylatex;
          }
          if (!correctforacc) {
-            latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
+            latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
             ylatex -= dylatex;
          }
 
@@ -565,4 +571,36 @@ void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist) {
       tg->SetPoint(i,x,y2);
       tg->SetPointError(i,exl,exh,y2*eyl/y,y2*eyh/y);
    }
+}
+
+void getTheory(TString sample, TGraphAsymmErrors tg, vector<TH1D*> hists, bool preFSR, bool correctforacc, var thevar) {
+      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      vector<TH1D*> hth_EPPS16;
+      int i=0;
+      const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
+
+      TGraphAsymmErrors *gth_EPPS16 = NULL;
+      TH2D *hth_EPPS16_cor = NULL;
+      if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
+         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+         hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
+         Obtain_dSigma_dX(hth_EPPS16.back());
+         for (i=285; i<=324; i++) {
+            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+            hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
+            Obtain_dSigma_dX(hth_EPPS16.back());
+         }
+         for (i=112; i<=167; i++) {
+            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+            hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
+            Obtain_dSigma_dX(hth_EPPS16.back());
+         }
+
+
+         gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+         hth_EPPS16_cor = pdfcorr(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
+         gth_EPPS16->SetMarkerSize(0);
+         gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
+         hth_EPPS16_cor->SetName(Form("hth_EPPS16_cor_%s",varname(thevar)));
+      }
 }

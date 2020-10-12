@@ -380,7 +380,7 @@ void dataMC(var thevar)
       latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
       ylatex -= dylatex;
    }
-   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}|<2.4, p_{T}^{#mu} > 15 (10) GeV");
+   latex.DrawLatex(xlatex,ylatex,"|#eta_{lab}^{#mu}| < 2.4, p_{T}^{#mu} > 15 (10) GeV");
    ylatex -= dylatex;
 
 // ------------>Primitives in pad: bottomPad
@@ -417,7 +417,10 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetTitle(thexaxistitle);
    // hratio->GetXaxis()->SetRange(1,43);
    if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) hratio->GetXaxis()->SetMoreLogLabels();
-   hratio->GetXaxis()->SetNoExponent();
+   if (!(thevar==var::phistar || thevar==var::phistar1560)) {
+      hratio->GetXaxis()->SetNoExponent();
+      // hratio->GetXaxis()->SetMoreLogLabels();
+   }
    hratio->GetXaxis()->SetLabelFont(42);
    hratio->GetXaxis()->SetLabelOffset(0.007);
    hratio->GetXaxis()->SetLabelSize(0.15*sizemod);
@@ -425,7 +428,7 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetTitleSize(0.18*sizemod);
    hratio->GetXaxis()->SetTitleOffset(0.9);//*sizemod);
    hratio->GetXaxis()->SetTitleFont(42);
-   hratio->GetYaxis()->SetTitle("Data/(DY+Bkg)");
+   hratio->GetYaxis()->SetTitle("Data/Pred."); // "Data/(DY+Bkg)");
    hratio->GetYaxis()->SetLabelFont(42);
    hratio->GetYaxis()->SetLabelSize(0.08*sizemod);
    hratio->GetYaxis()->SetTitleSize(0.1*sizemod);

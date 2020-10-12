@@ -583,8 +583,8 @@ public:
 		legend->SetFillStyle(0);
 		legend->SetBorderSize(0);
 		legend->AddEntry(g_ref, Name_ref);
-		legend->AddEntry(g1, Name1);
-		legend->AddEntry(g2, Name2);
+		legend->AddEntry(g1, Name1, "F");
+		legend->AddEntry(g2, Name2, "F");
 		legend->Draw();
 
 // update the full thing
@@ -638,12 +638,14 @@ public:
 		// -- X-axis Setting -- //		
       haxes =g_ratio1->GetHistogram();
 		haxes->GetXaxis()->SetTitle( TitleX );
-		haxes->GetXaxis()->SetTitleOffset( 0.9 );
+		haxes->GetXaxis()->SetTitleOffset( 0.88 );
 		haxes->GetXaxis()->SetTitleSize( 0.2);//*sizemod );
 		haxes->GetXaxis()->SetLabelColor(1);
 		haxes->GetXaxis()->SetLabelFont(42);
 		haxes->GetXaxis()->SetLabelOffset(0.007*sizemod);
 		haxes->GetXaxis()->SetLabelSize(0.15*sizemod);
+      // special case for phistar
+      if (TString(g1->GetName()).Contains("phistar") || TString(g2->GetName()).Contains("phistar") || TString(g_ref->GetName()).Contains("phistar")) haxes->GetXaxis()->SetLabelSize(0.12*sizemod);
 		if( isSetNoExpo_MoreLogLabels_X == kTRUE ) { haxes->GetXaxis()->SetMoreLogLabels(); haxes->GetXaxis()->SetNoExponent(); }
 		if( !(LowerEdge_X == 0 && UpperEdge_X == 0) ) haxes->GetXaxis()->SetLimits( LowerEdge_X, UpperEdge_X );
 
@@ -669,14 +671,14 @@ public:
          // legend
          double xl1=0.23, yl1=0.82, xl2=0.93, yl2=0.92;
          double dxl = sizemod*(xl2-xl1), dyl = sizemod*(yl2-yl1), dxl0 = xl2-xl1;
-         TLegend *tleg_ratio = new TLegend(xl1-(dxl-dxl0)/2.,yl2-dyl,xl2+(dxl-dxl0)/2.,yl2);
-         tleg_ratio->SetFillColor(0);
-         tleg_ratio->SetBorderSize(0);
-         tleg_ratio->SetNColumns(3);
-         tleg_ratio->AddEntry(g_ratio_refAtOne,"Data (stat. + syst.)","lp");
-         tleg_ratio->AddEntry(g_ratio1,"CT14","f");
-         tleg_ratio->AddEntry(g_ratio2,"CT14+EPPS16","f");
-         tleg_ratio->Draw();
+         // TLegend *tleg_ratio = new TLegend(xl1-(dxl-dxl0)/2.,yl2-dyl,xl2+(dxl-dxl0)/2.,yl2);
+         // tleg_ratio->SetFillColor(0);
+         // tleg_ratio->SetBorderSize(0);
+         // tleg_ratio->SetNColumns(3);
+         // tleg_ratio->AddEntry(g_ratio_refAtOne,"Data (stat + syst)","lp");
+         // tleg_ratio->AddEntry(g_ratio1,"CT14","f");
+         // tleg_ratio->AddEntry(g_ratio2,"CT14+EPPS16","f");
+         // tleg_ratio->Draw();
       }
 
 // update the full thing
@@ -1054,7 +1056,7 @@ public:
 
 		
 		c->cd();
-		gPad->SetLeftMargin(0.14);
+		gPad->SetLeftMargin(0.15);
 		gPad->SetRightMargin(0.15);//0.12 (Hyunchul)
 		gPad->SetTopMargin(0.08);// 0.03 (Hyunchul)
 		gPad->SetBottomMargin(0.12);// 0.10 (Hyunchul)
@@ -1076,7 +1078,7 @@ public:
 
 		h_2D->GetYaxis()->SetNoExponent();
 		h_2D->GetYaxis()->SetMoreLogLabels();
-		h_2D->GetYaxis()->SetTitleOffset(2);
+		h_2D->GetYaxis()->SetTitleOffset(1.25);
       if (LowerEdge_Z<UpperEdge_Z) h_2D->GetZaxis()->SetRangeUser(LowerEdge_Z, UpperEdge_Z);
 		// h_2D->SetMinimum(LowerEdge_Z);
 		// h_2D->SetMaximum(UpperEdge_Z);
@@ -1136,6 +1138,12 @@ public:
 	{
 		TString CanvasName = c->GetName();
 		c->SaveAs(CanvasName+".pdf");
+	}
+
+	void PrintCanvas_PNG()
+	{
+		TString CanvasName = c->GetName();
+		c->SaveAs(CanvasName+".png");
 	}
 
 	void PrintCanvas_C()
