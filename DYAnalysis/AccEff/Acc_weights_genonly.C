@@ -16,6 +16,7 @@
 #include <TStyle.h>
 #include <TEfficiency.h>
 #include <TGraphAsymmErrors.h>
+#include <TRandom3.h>
 
 #include "LHAPDF/PDFSet.h"
 #include "LHAPDF/PDF.h"
@@ -32,13 +33,14 @@
 using namespace DYana;
 using namespace LHAPDF;
 
-const int nweights = 325;
+const unsigned int nweights = 325;
 
 static inline void loadBar(int x, int n, int r, int w);
 void Acc_weights_genonly(TString Sample, bool doreweight=false, 
       TString initial_p="CT14nlo", TString initial_Pb="CT14nlo", 
       TString target_p="CT14nlo", TString target_Pb="CT14nlo",
-      bool storetree=false) 
+      bool storetree=false,
+      bool doisospin=false) 
 {
 	TTimeStamp ts_start;
 	cout << "[Start Time(local time): " << ts_start.AsString("l") << "]" << endl;
@@ -46,13 +48,16 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
 	TStopwatch totaltime;
 	totaltime.Start();
 
+   gRandom = new TRandom3();
+
    /////////////////////////////////////
    // START SETUP OF WEIGHTS AND PDFS //
    /////////////////////////////////////
 
    // number of gen weights (CT14: 284, EPPS16: 325
-   int iwtmax = 284;
+   unsigned int iwtmax = 284;
    if (Sample.Contains("EPPS16")) iwtmax = 325;
+   if (Sample.Contains("MG5")) iwtmax = 0;
 
    // setup the PDFs we need
    PDFSet* pdfset_initial_p = new PDFSet(initial_p.Data());
@@ -76,8 +81,8 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
    else pdfset_target_Pb = new PDFSet(target_Pb.Data());
    const vector<PDF*> pdf_target_Pb = pdfset_target_Pb->mkPDFs();
 
-   int target_p_size = pdf_target_p.size();
-   int target_Pb_size = pdf_target_Pb.size();
+   unsigned int target_p_size = pdf_target_p.size();
+   unsigned int target_Pb_size = pdf_target_Pb.size();
 
    if (doreweight) iwtmax = target_p_size + target_Pb_size - 1;
    if (doreweight && target_Pb.Contains("EPPS")) iwtmax = target_Pb_size;
@@ -97,9 +102,30 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
 
    TString reweightlabel = "";
    if (doreweight) reweightlabel = "_rewt_" + target_p + "_" + target_Pb;
+   if (doreweight && doisospin) reweightlabel += "_rewisospin";
 	TFile *f = new TFile("ROOTFile_Histogram_Acc_weights_genonly_" + Sample + reweightlabel + ".root", "RECREATE");
 
  	TH1D *h_mass_tot = new TH1D("h_mass_tot", "", 10000, 0, 10000);
+
+   // MCFM histos
+   TDirectory *dMCFM = f->mkdir("MCFM","histos for comparison with MCFM");
+   dMCFM->cd();
+   TH1D *h_m34_1[nweights];
+   TH1D *h_m34_2[nweights];
+   TH1D *h_y34lM[nweights];
+   TH1D *h_pt34lM[nweights];
+   TH1D *h_phist34lM_1[nweights];
+   TH1D *h_phist34lM_2[nweights];
+   TH1D *h_y34hM[nweights];
+   TH1D *h_pt34hM[nweights];
+   TH1D *h_phist34hM_1[nweights];
+   TH1D *h_phist34hM_2[nweights];
+   TH1D *h_m34cut_1[nweights];
+   TH1D *h_m34cut_2[nweights];
+
+   f->cd();
+   TH1D *h_IDp = new TH1D("h_IDp","",35,-10,25);
+   TH1D *h_IDPb = new TH1D("h_IDPb","",35,-10,25);
 
    TH1D* h_mass_AccTotal[nweights];
    TH1D* h_mass3bins_AccTotal[nweights];
@@ -134,7 +160,22 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
    TH1D* h_pt1560_AccPass_pre[nweights];
    TH1D* h_phistar1560_AccPass_pre[nweights];
    
-   for (int i=0; i<nweights; i++) {
+   for (unsigned int i=0; i<nweights; i++) {
+      dMCFM->cd();
+      h_m34_1[i] = new TH1D(Form("h_m34_1_%d",i),"",60,60,120);
+      h_m34_2[i] = new TH1D(Form("h_m34_2_%d",i),"",60,0,300);
+      h_y34lM[i] = new TH1D(Form("h_y34lM_%d",i),"",60,-6,6);
+      h_pt34lM[i] = new TH1D(Form("h_pt34lM_%d",i),"",25,0,50);
+      h_phist34lM_1[i] = new TH1D(Form("h_phist34lM_1_%d",i),"",100,0,1);
+      h_phist34lM_2[i] = new TH1D(Form("h_phist34lM_2_%d",i),"",60,0,3);
+      h_y34hM[i] = new TH1D(Form("h_y34hM_%d",i),"",60,-6,6);
+      h_pt34hM[i] = new TH1D(Form("h_pt34hM_%d",i),"",25,0,50);
+      h_phist34hM_1[i] = new TH1D(Form("h_phist34hM_1_%d",i),"",100,0,1);
+      h_phist34hM_2[i] = new TH1D(Form("h_phist34hM_2_%d",i),"",60,0,3);
+      h_m34cut_1[i] = new TH1D(Form("h_m34cut_1_%d",i),"",60,0,600);
+      h_m34cut_2[i] = new TH1D(Form("h_m34cut_2_%d",i),"",80,70,110);
+
+      f->cd();
       h_mass_AccTotal[i] = new TH1D(Form("h_mass_AccTotal%d",i), "", binnum, bins);
       h_mass_AccTotal_pre[i] = new TH1D(Form("h_mass_AccTotal_pre%d",i), "", binnum, bins);
       h_mass_AccPass[i] = new TH1D(Form("h_mass_AccPass%d",i), "", binnum, bins);
@@ -209,6 +250,8 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
       if (!Tag[i_tup].Contains("DYMuMu")) continue;
 
       Bool_t doflip = (switcheta(STags[i_tup])<0);
+      Int_t  dorapshift = 1; 
+      if (Sample.Contains("MG5")) dorapshift = 0;// NO rap shift for MG5
       Int_t  flipsign = doflip ? -1 : 1;
       analyzer->sign = flipsign;
 
@@ -229,35 +272,43 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
       ntuple->TurnOnBranches_GenOthers();
 
       vector<float>   *ttbar_w = 0;
-      pair<float,float>   *pdfX = 0;
       pair<int,int    >   *pdfID = 0;
-      // float pdfX_first;
-      // float pdfX_second;
-      // float pdfID_first;
-      // float pdfID_second;
+      pair<float,float>   *pdfX = 0;
+      float pdfX_first;
+      float pdfX_second;
+      int pdfID_first;
+      int pdfID_second;
       Float_t         qScale;
       TBranch        *b_ttbar_w;   //!
       TBranch        *b_pdfID;   //!
-      // TBranch        *b_pdfID_first;   //!
-      // TBranch        *b_pdfID_second;   //!
+      TBranch        *b_pdfID_first;   //!
+      TBranch        *b_pdfID_second;   //!
       TBranch        *b_pdfX;   //!
-      // TBranch        *b_pdfX_first;   //!
-      // TBranch        *b_pdfX_second;   //!
+      TBranch        *b_pdfX_first;   //!
+      TBranch        *b_pdfX_second;   //!
       TBranch        *b_qScale;   //!
       chainGen->SetBranchAddress("ttbar_w", &ttbar_w, &b_ttbar_w);
       chainGen->SetBranchAddress("pdfID", &pdfID, &b_pdfID);
+      // chainGen->SetBranchAddress("first", &pdfID_first, &b_pdfID_first);
+      // chainGen->SetBranchAddress("second", &pdfID_second, &b_pdfID_second);
       chainGen->SetBranchAddress("pdfX", &pdfX, &b_pdfX);
+      // chainGen->SetBranchAddress("first", &pdfX_first, &b_pdfX_first);
+      // chainGen->SetBranchAddress("second", &pdfX_second, &b_pdfX_second);
       chainGen->SetBranchAddress("qScale", &qScale, &b_qScale);
       chainGen->SetBranchStatus("*",0);
       if (!doreweight) {
          chainGen->SetBranchStatus("ttbar_w",1);
       } else {
          chainGen->SetBranchStatus("pdfID",1);
+         chainGen->SetBranchStatus("first",1);
+         chainGen->SetBranchStatus("second",1);
          chainGen->SetBranchStatus("pdfX",1);
+         chainGen->SetBranchStatus("first",1);
+         chainGen->SetBranchStatus("second",1);
          chainGen->SetBranchStatus("qScale",1);
       }
-      float xp, xPb;
-      int   IDp, IDPb;
+      float xp=0, xPb=0;
+      int   IDp=0, IDPb=0, IDPb2=0;
 
 		Bool_t isNLO = 0;
 		if( !Sample.Contains("Pyquen") && (Tag[i_tup].Contains("DYMuMu") || Tag[i_tup].Contains("DYTauTau") || Tag[i_tup] == "TT" || Tag[i_tup].Contains("WE") || Tag[i_tup].Contains("WMu")) )
@@ -278,7 +329,7 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
 		Double_t norm = ( Xsec[i_tup] * lumi_part2 ) / (Double_t)nEvents[i_tup];
       if (doflip)
          norm = ( Xsec[i_tup] * lumi_part1 ) / (Double_t)nEvents[i_tup];
-      if (Sample.Contains("CT14")) // we only have 1 beam direction for CT14
+      if (Sample.Contains("CT14") || Sample.Contains("MG5")) // we only have 1 beam direction for CT14 and MG5
             norm = ( Xsec[i_tup] * lumi_all ) / (Double_t)nEvents[i_tup];
 
 		cout << "\t[Normalization factor: " << norm << "]" << endl;
@@ -315,14 +366,16 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
             SumWeights_Separated += GenWeight;
 
             // -- Collect gen-level information -- //
-            vector<GenLepton> GenLeptonCollection;
+            vector<GenLepton> GenLeptonCollection, GenLeptonCollectionBeforeAnyFSR;
             Int_t NGenLeptons = ntuple->gnpair; 
             for(Int_t i_gen=0; i_gen<NGenLeptons; i_gen++)
             {
                GenLepton genlep;
                genlep.FillFromNtuple(ntuple, i_gen);
-               if( genlep.isMuon() && genlep.isHardProcess )
+               if( genlep.isMuon() && genlep.fromHardProcessFinalState )
                   GenLeptonCollection.push_back( genlep );
+               if( genlep.isMuon() && genlep.isHardProcess )
+                  GenLeptonCollectionBeforeAnyFSR.push_back( genlep );
 
                if( GenLeptonCollection.size() ==  2 )
                   break;
@@ -330,7 +383,7 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
             GenLepton genlep1 = GenLeptonCollection[0];
             GenLepton genlep2 = GenLeptonCollection[1];
             gen_M = (genlep1.Momentum + genlep2.Momentum).M();
-            gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-rapshift;
+            gen_Rap = (genlep1.Momentum + genlep2.Momentum).Rapidity()-dorapshift*rapshift;
             gen_Pt = (genlep1.Momentum + genlep2.Momentum).Pt();
             gen_Phistar = Object::phistar(genlep1,genlep2);
 
@@ -353,7 +406,7 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
             GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
             TLorentzVector tlv_postFSR = genlep_postFSR1.Momentum + genlep_postFSR2.Momentum;
             gen_M_post = tlv_postFSR.M();
-            gen_Rap_post = tlv_postFSR.Rapidity()-rapshift;
+            gen_Rap_post = tlv_postFSR.Rapidity()-dorapshift*rapshift;
             gen_Pt_post = tlv_postFSR.Pt();
             gen_Phistar_post = Object::phistar(genlep_postFSR1,genlep_postFSR2);
 
@@ -370,9 +423,18 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
             // -- Mass, Pt, Rapidity Calculation -- //
             TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
             gen_M_pre = tlv_preFSR.M();
-            gen_Rap_pre = tlv_preFSR.Rapidity()-rapshift;
+            gen_Rap_pre = tlv_preFSR.Rapidity()-dorapshift*rapshift;
             gen_Pt_pre = tlv_preFSR.Pt();
             gen_Phistar_pre = Object::phistar(genlep_preFSR1,genlep_preFSR2);
+
+            // quantities before any FSR, just for comparison with MCFM
+            GenLepton genlep_beforeAnyFSR1 = GenLeptonCollectionBeforeAnyFSR[0];
+            GenLepton genlep_beforeAnyFSR2 = GenLeptonCollectionBeforeAnyFSR[1];
+            TLorentzVector genlep_beforeAnyFSR12 = genlep_beforeAnyFSR1.Momentum + genlep_beforeAnyFSR2.Momentum;
+            Double_t gen_M_beforeAnyFSR = genlep_beforeAnyFSR12.M();
+            Double_t gen_Rap_beforeAnyFSR = genlep_beforeAnyFSR12.Rapidity()-dorapshift*rapshift;
+            Double_t gen_Pt_beforeAnyFSR = genlep_beforeAnyFSR12.Pt();
+            Double_t gen_Phistar_beforeAnyFSR = Object::phistar(genlep_beforeAnyFSR1,genlep_beforeAnyFSR2);
 
             // -- Flags -- //
             Flag_PassAcc = kFALSE;
@@ -398,11 +460,37 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
             h_mass_tot->Fill( gen_M, TotWeight );
 
             if (doreweight) {
+               // xp = (doflip) ? pdfX_second : pdfX_first;
+               // xPb = (doflip) ? pdfX_first : pdfX_second;
+               // IDp = (doflip) ? pdfID_second : pdfID_first;
+               // IDPb = (doflip) ? pdfID_first : pdfID_second;
                xp = (doflip) ? pdfX->second : pdfX->first;
                xPb = (doflip) ? pdfX->first : pdfX->second;
                IDp = (doflip) ? pdfID->second : pdfID->first;
                IDPb = (doflip) ? pdfID->first : pdfID->second;
+               // if (doisospin && (abs(IDPb)==1 || abs(IDPb)==2)) { 
+               //    // -- do / undo isospin effect --
+               //    // we give a chance for the probed quark to "change flavour"
+               //    // i.e. for the u in a proton to actually be a u in a neutron (d in a proton) and vice versa
+               //    double xr = gRandom->Uniform(1);
+               //    if (xr > 82./208.) {
+               //       if (IDPb==-2) IDPb2=-1;
+               //       if (IDPb==-1) IDPb2=-2;
+               //       if (IDPb==2) IDPb2=1;
+               //       if (IDPb==1) IDPb2=2;
+               //    }
+               // } else {
+                  IDPb2=IDPb;
+               // }
+
+               h_IDp->Fill(IDp, TotWeight);
+               h_IDPb->Fill(IDPb, TotWeight);
             }
+
+            // I don't like the qScale found in the tree: let's change to our own one
+            // qScale = sqrt(pow(gen_M, 2)+pow(gen_Pt,2));
+            // qScale = sqrt(pow(gen_M, 2)+pow(qScale,2));
+            qScale = gen_M;
 
             // -- Acceptance Calculation -- //
             if (!doreweight && ttbar_w->size()!=iwtmax) cout << i << " -> " << ttbar_w->size() << " " << iwtmax << endl;
@@ -449,12 +537,43 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
                      }
                   }
 
-                  wt = TotWeight * pdf_target_p[ip]->xfxQ(IDp,xp,qScale) * pdf_target_Pb[iPb]->xfxQ(IDPb,xPb,qScale) / (pdf_initial_p->xfxQ(IDp,xp,qScale) * pdf_initial_Pb->xfxQ(IDPb,xPb,qScale));
+                  double wt_num = pdf_target_p[ip]->xfxQ(IDp,xp,qScale);
+                  if (!doisospin) wt_num  *= pdf_target_Pb[iPb]->xfxQ(IDPb2,xPb,qScale);
+                  else {
+                     if (IDPb2==1 || IDPb2==2) wt_num *= ((82./208.) * pdf_target_Pb[iPb]->xfxQ(IDPb2,xPb,qScale) + (126./208.) * pdf_target_Pb[iPb]->xfxQ(3-IDPb2,xPb,qScale));
+                     else if (IDPb2==-1 || IDPb2==-2) wt_num *= ((82./208.) * pdf_target_Pb[iPb]->xfxQ(IDPb2,xPb,qScale) + (126./208.) * pdf_target_Pb[iPb]->xfxQ(-3-IDPb2,xPb,qScale));
+                     else wt_num  *= pdf_target_Pb[iPb]->xfxQ(IDPb2,xPb,qScale);
+                  }
+                  double wt_den = pdf_initial_p->xfxQ(IDp,xp,qScale) * pdf_initial_Pb->xfxQ(IDPb,xPb,qScale);
+                  double wt_pdf = (wt_den != 0) ?  wt_num / wt_den : 0;
+                  if (wt_pdf < 0.03) wt_pdf = 0.03;
+                  if (wt_pdf > 30) wt_pdf = 30;
+                  wt = TotWeight * wt_pdf;
+                  // cout << iwt << ": " << IDp << " " << IDPb << " " << xp << " " << xPb << " " << qScale << " -- " << TotWeight << ", " << pdf_target_p[ip]->xfxQ(IDp,xp,qScale)<< ", " << pdf_target_Pb[iPb]->xfxQ(IDPb,xPb,qScale)<< ", " << pdf_initial_p->xfxQ(IDp,xp,qScale)<< ", " << pdf_initial_Pb->xfxQ(IDPb,xPb,qScale)<< endl;
                }
 
                //////////////////////////
                // END COMPUTE PDF WEIGHT
                //////////////////////////
+
+               // MCFM histos
+               h_m34_1[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+               h_m34_2[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+               if (gen_M_beforeAnyFSR>60 && gen_M_beforeAnyFSR<120) {
+                  h_y34hM[iwt]->Fill(gen_Rap_beforeAnyFSR, wt);
+                  h_pt34hM[iwt]->Fill(gen_Pt_beforeAnyFSR, wt);
+                  h_phist34hM_1[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+                  h_phist34hM_2[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+               } else if (gen_M_beforeAnyFSR>15 && gen_M_beforeAnyFSR<60) {
+                  h_y34lM[iwt]->Fill(gen_Rap_beforeAnyFSR, wt);
+                  h_pt34lM[iwt]->Fill(gen_Pt_beforeAnyFSR, wt);
+                  h_phist34lM_1[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+                  h_phist34lM_2[iwt]->Fill(gen_Phistar_beforeAnyFSR, wt);
+               }
+               if (Flag_PassTotal_pre) {
+                  h_m34cut_1[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+                  h_m34cut_2[iwt]->Fill(gen_M_beforeAnyFSR, wt);
+               }
 
                if (Flag_PassTotal_pre) {
                   h_mass_AccTotal[iwt]->Fill( gen_M, wt );
@@ -528,8 +647,26 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
 
 	f->cd();
 	h_mass_tot->Write();
+	h_IDp->Write();
+	h_IDPb->Write();
 
-   for (int i=0; i<nweights; i++) {
+   for (unsigned int i=0; i<nweights; i++) {
+      // MCFM
+      dMCFM->cd();
+      h_m34_1[i]->Write();
+      h_m34_2[i]->Write();
+      h_y34lM[i]->Write();
+      h_pt34lM[i]->Write();
+      h_phist34lM_1[i]->Write();
+      h_phist34lM_2[i]->Write();
+      h_y34hM[i]->Write();
+      h_pt34hM[i]->Write();
+      h_phist34hM_1[i]->Write();
+      h_phist34hM_2[i]->Write();
+      h_m34cut_1[i]->Write();
+      h_m34cut_2[i]->Write();
+
+      f->cd();
       h_mass_AccTotal[i]->Write();
       h_mass_AccTotal_pre[i]->Write();
       h_mass_AccPass[i]->Write();
@@ -568,9 +705,9 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
    f->Close();
 
    if (pdfset_initial_p) delete pdfset_initial_p;
-   if (pdfset_target_p) delete pdfset_target_p;
-   if (pdfset_initial_Pb) delete pdfset_initial_Pb;
-   if (pdfset_target_Pb) delete pdfset_target_Pb;
+   if (pdfset_target_p && pdfset_target_p != pdfset_initial_p) delete pdfset_target_p;
+   if (pdfset_initial_Pb && pdfset_initial_Pb != pdfset_initial_p && pdfset_initial_Pb != pdfset_target_p) delete pdfset_initial_Pb;
+   if (pdfset_target_Pb && pdfset_target_Pb != pdfset_initial_p && pdfset_target_Pb != pdfset_target_p && pdfset_target_Pb != pdfset_initial_Pb) delete pdfset_target_Pb;
 
 	Double_t TotalRunTime = totaltime.CpuTime();
 	cout << "Total RunTime: " << TotalRunTime << " seconds" << endl;
