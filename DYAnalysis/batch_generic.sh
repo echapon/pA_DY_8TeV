@@ -20,12 +20,18 @@ uname -a
 which root
 
 
-# echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
-# root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
+root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14")'
 
 # echo root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
 # root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16")'
 
-arg='(kTRUE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both,0,0)'
-echo root -l -b -q AccEff/Acc_Eff_weights.C+${arg}
-root -l -b -q AccEff/Acc_Eff_weights.C+${arg}
+# echo root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14",true,"CT14nlo","CT14nlo","CT14nlo","EPPS16nlo_CT14nlo_Pb208")'
+# root -l -b -q AccEff/Acc_weights_genonly.C+'("CT14",true,"CT14nlo","CT14nlo","CT14nlo","EPPS16nlo_CT14nlo_Pb208")'
+
+# echo root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16",true,"CT14nlo","EPPS16nlo_CT14nlo_Pb208","CT14nlo","CT14nlo")'
+# root -l -b -q AccEff/Acc_weights_genonly.C+'("EPPS16",true,"CT14nlo","EPPS16nlo_CT14nlo_Pb208","CT14nlo","CT14nlo")'
+
+# arg='(kTRUE,"Powheg","PAL3Mu12",0,true,HFweight::HFside::both,0,0)'
+# echo root -l -b -q AccEff/Acc_Eff_weights.C+${arg}
+# root -l -b -q AccEff/Acc_Eff_weights.C+${arg}

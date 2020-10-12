@@ -31,11 +31,13 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    vector<TString> graphNames;
 
    int idx[7] = {0, 8, 4, 6, 3, 2, 1}; // muR, muF = (1, 1), (0.5, 0.5), (2, 2), (0.5, 1), (2, 1), (1, 0.5), (1, 2)
+   // int idx[5] = {0, 6, 3, 2, 1}; // muR, muF = (1, 1), (0.5, 1), (2, 1), (1, 0.5), (1, 2)
    const char* gn[7] = {"(1,1)", "(0.5,0.5)", "(2,2)", "(0.5,1)", "(2,1)", "(1,0.5)", "(1,2)"};
+   // const char* gn[5] = {"(1,1)", "(0.5,1)", "(2,1)", "(1,0.5)", "(1,2)"};
    MyCanvas c1(Form("AccEff/AccEff_scales_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
-   for (int i=0; i<7; i++) {
+   for (int i=0; i<5; i++) {
       hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
       hAccPass.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),idx[i])));
       hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
@@ -58,7 +60,7 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    // put a dummy empty matrix at i=0
    mcor.push_back(TMatrixT<double>(nbins,nbins));
 
-   for (int i=1; i<7; i++) {
+   for (int i=1; i<5; i++) {
       checkNumDen(hAccPass[i],hAccTotal[i]);
       TGraphAsymmErrors *gAccTmp = new TGraphAsymmErrors(hAccPass[i],hAccTotal[i]);
       checkNumDen(hEffPass_Corr_tnp[i],hEffTotal[i]);

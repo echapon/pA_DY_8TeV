@@ -129,6 +129,10 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
    TH2D *h_phistar1560_postpreFSR_tot = new TH2D("h_phistar1560_postpreFSR_tot", ";phistar1560(post-FSR);phistar1560(pre-FSR)", phistarnum_1560, phistarbin_1560, phistarnum_1560, phistarbin_1560);
    TH2D *h_phistar1560_postpreFSR_tot_fine = new TH2D("h_phistar1560_postpreFSR_tot_fine", ";phistar1560(post-FSR);phistar1560(pre-FSR)", 500,-3,2,500,-3,2);
 
+   // additional: lepton mass
+   TH1D *h_leptonmass_preFSR = new TH1D("h_leptonmass_preFSR",";lepton mass (pre-FSR) [GeV]",100,0.105,0.155);
+   TH1D *h_leptonmass_postFSR = new TH1D("h_leptonmass_postFSR",";lepton mass (post-FSR) [GeV]",100,0.105,0.155);
+
 	// const Int_t ndRCuts = 10;
 	// Double_t dRCuts[ndRCuts] = {0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5};
 	// TH1D *h_nPhotons[ndRCuts];
@@ -297,12 +301,18 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 				GenLepton genlep_postFSR1 = GenLeptonCollection_FinalState[0];
 				GenLepton genlep_preFSR1 = genlep_postFSR1; // -- Copy the values of member variables -- // 
 				vector< GenOthers > GenPhotonCollection1;
-				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+            analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+            // analyzer->PostToPreFSR_byDressedLepton(ntuple, &genlep_postFSR1, dRCut, &genlep_preFSR1, &GenPhotonCollection1);
+            h_leptonmass_preFSR->Fill(genlep_preFSR1.Momentum.M());
+            h_leptonmass_postFSR->Fill(genlep_postFSR1.Momentum.M());
 
 				GenLepton genlep_postFSR2 = GenLeptonCollection_FinalState[1];
 				GenLepton genlep_preFSR2 = genlep_postFSR2; // -- Copy the values of member variables -- // 
 				vector< GenOthers > GenPhotonCollection2;
-				analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+            analyzer->PostToPreFSR_byDressedLepton_AllPhotons(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+            // analyzer->PostToPreFSR_byDressedLepton(ntuple, &genlep_postFSR2, dRCut, &genlep_preFSR2, &GenPhotonCollection2);
+            h_leptonmass_preFSR->Fill(genlep_preFSR2.Momentum.M());
+            h_leptonmass_postFSR->Fill(genlep_postFSR2.Momentum.M());
 
 				// -- Mass, Pt, Rapidity Calculation -- //
             TLorentzVector tlv_preFSR = genlep_preFSR1.Momentum + genlep_preFSR2.Momentum;
@@ -623,6 +633,8 @@ void FSRCorrections_DressedLepton( TString Sample = "Powheg", TString HLTname = 
 	h_phistar1560_postFSR_tot_fine->Write();
    h_phistar1560_postpreFSR_tot_fine->Write();
 
+   h_leptonmass_preFSR->Write();
+   h_leptonmass_postFSR->Write();
 
    f->Close();
 }

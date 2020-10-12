@@ -577,9 +577,9 @@ protected:
       else if (thevar == DYana::var::rap60120) htag = "diRap2_M60to120";
 
 		TFile *f_MC = TFile::Open(FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr00_rewboth_tnprew_All.root"); f_MC->cd();
-		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_FR");
+		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_MC");
 		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_emu");
-		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_MC");
+		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_FR");
       Hists->h_nEvent = (TH1D*) Hists->h_nEvent->Clone();
 		Hists->h_nEvent = (TH1D*)Hists->h_nEvent->Rebin(nBin, Hists->h_nEvent->GetName(), BinEdges);
 		Hists->h_nEvent->Scale( normFactor );
