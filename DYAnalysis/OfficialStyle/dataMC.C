@@ -481,12 +481,20 @@ void dataMC(var thevar)
    //   gridRatio.DrawLine(xAxis[ii],0.45,xAxis[ii],1.55);
    // }
 
-   c1->cd();
+   TLine gridRatio;
+   gridRatio.SetLineColor(kRed);
+   gridRatio.SetLineStyle(2);
+   if (thevar==var::pt) gridRatio.DrawLine(0.5,1.0,ptbin_meas[ptbinnum_meas-1],1.0);
+   else if (thevar==var::pt1560) gridRatio.DrawLine(0.5,1.0,ptbin_meas_1560[ptbinnum_meas_1560-1],1.0);
+ 	else gridRatio.DrawLine(xAxis[0],1.0,xAxis[hdata->GetNbinsX()],1.0);
+	
+  c1->cd();
    c1->Modified();
    c1->cd();
    c1->SetSelected(c1);
    c1->SaveAs(Form("OfficialStyle/%s.C",thevarname));
    c1->SaveAs(Form("OfficialStyle/%s.pdf",thevarname));
+
 
    // save the ratio
    TFile *fratio = TFile::Open("OfficialStyle/dataMCratios.root","UPDATE");
