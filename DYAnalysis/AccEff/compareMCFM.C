@@ -129,6 +129,8 @@ void compareMCFM_CT14() {
    TFile *fPowheg_nNNPDF1 = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF10_nlo_as_0118_Pb208.root");
    TFile *fPowheg_nNNPDF2 = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF20_nlo_as_0118_Pb208.root");
    TFile *fPowheg_nCTEQ = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15FullNuc_208_82.root");
+   TFile *fPowheg_KSASG20nlo = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_KSASG20-NLO-Pb.root");
+   TFile *fPowheg_KSASG20nnlo = TFile::Open("/afs/cern.ch/user/e/echapon/workspace/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_KSASG20-NNLO-Pb.root");
 
    gSystem->mkdir("./compareMCFM_CT14");
    gSystem->mkdir("./compareMCFM_CT14/MG5");
@@ -140,6 +142,8 @@ void compareMCFM_CT14() {
    gSystem->mkdir("./compareMCFM_CT14/rewnNNPDF1");
    gSystem->mkdir("./compareMCFM_CT14/rewnNNPDF2");
    gSystem->mkdir("./compareMCFM_CT14/rewnCTEQ");
+   gSystem->mkdir("./compareMCFM_CT14/rewKSASG20nlo");
+   gSystem->mkdir("./compareMCFM_CT14/rewKSASG20nnlo");
 
    const int nhists = 12+2;
    const char* histnamesPowheg[nhists] = {
@@ -210,6 +214,8 @@ void compareMCFM_CT14() {
       TH1D *hPowheg_nNNPDF1 = (TH1D*) fPowheg_nNNPDF1->Get(histnamesPowheg[i]);
       TH1D *hPowheg_nNNPDF2 = (TH1D*) fPowheg_nNNPDF2->Get(histnamesPowheg[i]);
       TH1D *hPowheg_nCTEQ = (TH1D*) fPowheg_nCTEQ->Get(histnamesPowheg[i]);
+      TH1D *hPowheg_KSASG20nlo = (TH1D*) fPowheg_KSASG20nlo->Get(histnamesPowheg[i]);
+      TH1D *hPowheg_KSASG20nnlo = (TH1D*) fPowheg_KSASG20nnlo->Get(histnamesPowheg[i]);
 
       // factor 208 in between MCFM and Powheg
       hMCFM0->Scale(hMCFM0->GetBinWidth(1)*208./1000.);
@@ -229,6 +235,8 @@ void compareMCFM_CT14() {
       hPowheg_nNNPDF1->Scale(1./lumi_all);
       hPowheg_nNNPDF2->Scale(1./lumi_all);
       hPowheg_nCTEQ->Scale(1./lumi_all);
+      hPowheg_KSASG20nlo->Scale(1./lumi_all);
+      hPowheg_KSASG20nnlo->Scale(1./lumi_all);
 
       if (TString(histnamesMCFM[i]).Contains("fb")) {
          hPowhegEPPS = compRFB(hPowhegEPPS);
@@ -246,6 +254,8 @@ void compareMCFM_CT14() {
          hPowheg_nNNPDF1 = compRFB(hPowheg_nNNPDF1);
          hPowheg_nNNPDF2 = compRFB(hPowheg_nNNPDF2);
          hPowheg_nCTEQ = compRFB(hPowheg_nCTEQ);
+         hPowheg_KSASG20nlo = compRFB(hPowheg_KSASG20nlo);
+         hPowheg_KSASG20nnlo = compRFB(hPowheg_KSASG20nnlo);
       }
 
       TString yaxistitle = (TString(histnamesMCFM[i]).Contains("fb")) ? "R_{FB}" : "Xsec [pb] / bin";
@@ -309,6 +319,18 @@ void compareMCFM_CT14() {
             "Powheg (CT14)", "Powheg (EPPS)", "Powheg (rew nCTEQ15)", "Powheg/Powheg (rewt)");
       c10.PrintCanvas();
       c10.PrintCanvas_PNG();
+      MyCanvas c11(TString("compareMCFM_CT14/rewKSASG20nlo/")+TString(histnamesMCFM[i])+"_rewKSASG20nlo",xtitles[i],yaxistitle,800,600);
+      c11.SetRatioRange(0.79,1.21);
+      c11.CanvasWithThreeHistogramsRatioPlot(hPowheg,hPowhegEPPS,hPowheg_KSASG20nlo,
+            "Powheg (CT14)", "Powheg (EPPS)", "Powheg (rew KSASG20nlo)", "Powheg/Powheg (rewt)");
+      c11.PrintCanvas();
+      c11.PrintCanvas_PNG();
+      MyCanvas c12(TString("compareMCFM_CT14/rewKSASG20nnlo/")+TString(histnamesMCFM[i])+"_rewKSASG20nnlo",xtitles[i],yaxistitle,800,600);
+      c12.SetRatioRange(0.79,1.21);
+      c12.CanvasWithThreeHistogramsRatioPlot(hPowheg,hPowhegEPPS,hPowheg_KSASG20nnlo,
+            "Powheg (CT14)", "Powheg (EPPS)", "Powheg (rew KSASG20nnlo)", "Powheg/Powheg (rewt)");
+      c12.PrintCanvas();
+      c12.PrintCanvas_PNG();
 
 
       // OLD STUFF
