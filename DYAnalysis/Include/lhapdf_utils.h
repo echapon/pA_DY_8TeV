@@ -22,7 +22,7 @@ TGraphAsymmErrors* pdfuncert(vector<TH1D*> h, const char* pdfname, bool errnom=f
    PDFSet pdfset(pdfname);
    size_t nm = pdfset.size();
    if (h.size() != nm) {
-      cout << "Error, expected " << nm << " histos for " << pdfname << ", but I got << " << h.size() << endl;
+      cout << "Error, expected " << nm << " histos for " << pdfname << ", but I got " << h.size() << endl;
       return NULL;
    }
 

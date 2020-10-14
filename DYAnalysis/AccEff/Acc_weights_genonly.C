@@ -508,7 +508,7 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
                   else wt = (1./ttbar_w->at(iwt-1))*TotWeight;
                } else {
                   int ip = 0, iPb=0;
-                  if (target_Pb.Contains("EPPS")) { // https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs
+                  if (target_Pb.Contains("EPPS") && target_p.Contains("CT14")) { // https://www.jyu.fi/science/en/physics/research/highenergy/urhic/npdfs/epps16-nuclear-pdfs
                      if (iwt < 41) {
                         ip = 0;
                         iPb = iwt;
@@ -517,12 +517,12 @@ void Acc_weights_genonly(TString Sample, bool doreweight=false,
                         iPb = iwt;
                      }
                   } else if (target_p.Contains("TUJU") && target_Pb.Contains("TUJU")) {
-                     if (iwt < 27) {
-                        ip = iwt;
-                        iPb = 59 - 27 + iwt;
-                     } else {
+                     if (iwt < 33) {
                         ip = 0;
-                        iPb = iwt - 27 + 1;
+                        iPb = iwt;
+                     } else {
+                        ip = iwt-32;
+                        iPb = iwt;
                      }
                   } else if (target_p == target_Pb) {
                      ip = iwt;

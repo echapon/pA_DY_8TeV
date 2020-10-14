@@ -20,7 +20,7 @@ using namespace std;
 
 void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist);
 
-void getTheory(TString sample, TGraphAsymmErrors tg, vector<TH1D> hists);
+void getTheory(TString sample, TGraphAsymmErrors* &gth, vector<TH1D*> &hth, TH2D* &hcor, bool preFSR, bool correctforacc, var thevar);
 
 void Obtain_dSigma_dX(TH1D *h){
 	Int_t nBins = h->GetNbinsX();
@@ -52,7 +52,9 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       bool forsyst=false,                                        // if true, don't print canvases and tables
       bool doxsec=true,                                          // if false, don't do dxsec/dxxx, just correct for acc eff
       bool correctforacc=true,                                   // if false, do not correct for acceptance, only efficiency
-      bool preFSR=true) {                                        // true for preFSR, false for postFSR (ie before FSR unfolding)
+      bool preFSR=true,                                          // true for preFSR, false for postFSR (ie before FSR unfolding)
+      TString sample1="CT14",
+      TString sample2="EPPS16") {
    TFile *fy = TFile::Open(datafile);
    TFile *fae = TFile::Open(accefffile);
 
@@ -61,11 +63,11 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
    ofstream chi2file(Form("Plots/results/tex/chi2%s.tex",correctforacc ? "" : "_noacc"));
    ofstream chi2file_nocor(Form("Plots/results/tex/chi2_nocor%s.tex",correctforacc ? "" : "_noacc"));
    chi2file << "\\begin{tabular}{lcccccc}" << endl;
-   chi2file << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{CT14} & \\multicolumn{3}{c}{CT14+EPPS16} \\\\" << endl;
+   chi2file << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1<<"} & \\multicolumn{3}{c}{"<<sample2<<"} \\\\" << endl;
    chi2file << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
    chi2file << "\\hline" << endl;
    chi2file_nocor << "\\begin{tabular}{lcccccc}" << endl;
-   chi2file_nocor << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{CT14} & \\multicolumn{3}{c}{CT14+EPPS16} \\\\" << endl;
+   chi2file_nocor << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1<<"} & \\multicolumn{3}{c}{"<<sample2<<"} \\\\" << endl;
    chi2file_nocor << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
    chi2file_nocor << "\\hline" << endl;
 
@@ -234,59 +236,17 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       // EPPS16
       // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_Eff_weights_MomUnCorr_Powheg_PAL3Mu12_0_rewboth_EPPS16.root");
       // TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
-      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
-      vector<TH1D*> hth_EPPS16;
-      int i=0;
-      const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
 
+      vector<TH1D*> hth_EPPS16;
       TGraphAsymmErrors *gth_EPPS16 = NULL;
       TH2D *hth_EPPS16_cor = NULL;
-      if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
-         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-         hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hth_EPPS16.back());
-         for (i=285; i<=324; i++) {
-            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-            hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
-            Obtain_dSigma_dX(hth_EPPS16.back());
-         }
-         for (i=112; i<=167; i++) {
-            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-            hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
-            Obtain_dSigma_dX(hth_EPPS16.back());
-         }
-
-
-         gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-         hth_EPPS16_cor = pdfcorr(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-         gth_EPPS16->SetMarkerSize(0);
-         gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
-         hth_EPPS16_cor->SetName(Form("hth_EPPS16_cor_%s",varname(thevar)));
-      }
+      getTheory(sample2, gth_EPPS16, hth_EPPS16, hth_EPPS16_cor, preFSR, correctforacc, thevar);
 
       // CT14
-      TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
       vector<TH1D*> hth_CT14;
-      i=0;
       TGraphAsymmErrors *gth_CT14 = NULL;
       TH2D *hth_CT14_cor = NULL;
-      if (fth_CT14->IsOpen()) { // skip the theory part if we don't want dsigma/dX
-         hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-         hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hth_CT14.back());
-         for (i=112; i<=167; i++) {
-            hth_CT14.push_back((TH1D*) fth_CT14->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-            hth_CT14.back()->Scale(1.e-3/lumi_all); // pb -> nb
-            Obtain_dSigma_dX(hth_CT14.back());
-         }
-
-         gth_CT14 = pdfuncert(hth_CT14, "CT14nlo");
-         hth_CT14_cor = pdfcorr(hth_CT14, "CT14nlo");
-         gth_CT14->SetMarkerSize(0);
-         gth_CT14->SetName(Form("gth_CT14_%s",varname(thevar)));
-         hth_CT14_cor->SetName(Form("hth_CT14_cor_%s",varname(thevar)));
-      }
-
+      getTheory(sample1, gth_CT14, hth_CT14, hth_CT14_cor, preFSR, correctforacc, thevar);
 
       if (doxsec && !forsyst) {
          if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
@@ -343,7 +303,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
          // c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
-               "CT14","EPPS16","Data","Pred./Data",
+               sample1,sample2,"Data","Pred./Data",
                kBlue,kRed,kBlack,
                "5","5","EP",true);
 
@@ -377,8 +337,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
          // write the ratio to file
          TFile *fratio = TFile::Open("Plots/results/expthratios.root","UPDATE");
-         c1.g_ratio1->Write(Form("%s_CT14",varname(thevar)));
-         c1.g_ratio2->Write(Form("%s_EPPS16",varname(thevar)));
+         c1.g_ratio1->Write(Form("%s_%s",varname(thevar),sample1.Data()));
+         c1.g_ratio2->Write(Form("%s_%s",varname(thevar),sample2.Data()));
          fratio->Close();
 
          // print graph
@@ -394,8 +354,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          int nbins = nbinsvar(thevar);
          double chi2_CT14_nocor = chi2(gres,gth_CT14);
          double chi2_EPPS16_nocor = chi2(gres,gth_EPPS16);
-         cout << varname(thevar) << ", CT14, w/o cor: chi2/ndf = " << chi2_CT14_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_nocor,nbins) << ")" << endl;
-         cout << varname(thevar) << ", EPPS16, w/o cor: chi2/ndf = " << chi2_EPPS16_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_nocor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", " << sample1 << ", w/o cor: chi2/ndf = " << chi2_CT14_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_nocor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", " << sample2 << ", w/o cor: chi2/ndf = " << chi2_EPPS16_nocor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_nocor,nbins) << ")" << endl;
 
          // chi2, with correlations
          // data stat
@@ -465,8 +425,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // compute chi2
          double chi2_CT14_withcor = chi2(gres,gth_CT14,cov_statsyst,cov_CT14);
          double chi2_EPPS16_withcor = chi2(gres,gth_EPPS16,cov_statsyst,cov_EPPS16);
-         cout << varname(thevar) << ", CT14, w/ cor: chi2/ndf = " << chi2_CT14_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_withcor,nbins) << ")" << endl;
-         cout << varname(thevar) << ", EPPS16, w/ cor: chi2/ndf = " << chi2_EPPS16_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_withcor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", " << sample1 << ", w/ cor: chi2/ndf = " << chi2_CT14_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_CT14_withcor,nbins) << ")" << endl;
+         cout << varname(thevar) << ", " << sample2 << ", w/ cor: chi2/ndf = " << chi2_EPPS16_withcor << "/" << nbins << " (p = " << TMath::Prob(chi2_EPPS16_withcor,nbins) << ")" << endl;
 
          // // let's debug the details
          // ofstream tmpfile(Form("debug_cov_%s.txt",varname(thevar)));
@@ -573,34 +533,185 @@ void replaceCentralValues(TGraphAsymmErrors *tg, TH1D *hist) {
    }
 }
 
-void getTheory(TString sample, TGraphAsymmErrors tg, vector<TH1D*> hists, bool preFSR, bool correctforacc, var thevar) {
-      TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
-      vector<TH1D*> hth_EPPS16;
-      int i=0;
-      const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
+void getTheory(TString sample, TGraphAsymmErrors* &gth, vector<TH1D*> &hth, TH2D* &hth_cor, bool preFSR, bool correctforacc, var thevar) {
+   TFile *fth = NULL;
+   TString pdfname;
+   int imin1, imax1; // for PDF error sets
+   int imin2=-1, imax2=-1; // case when we need 2 ranges (eg for p + Pb variations)
+   bool refCT14 = false;
 
-      TGraphAsymmErrors *gth_EPPS16 = NULL;
-      TH2D *hth_EPPS16_cor = NULL;
-      if (fth_EPPS16->IsOpen()) { // skip the theory part if we don't want dsigma/dX
-         hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-         hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
-         Obtain_dSigma_dX(hth_EPPS16.back());
-         for (i=285; i<=324; i++) {
-            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-            hth_EPPS16.back()->Scale(1.e-3/lumi_all); // pb -> nb
-            Obtain_dSigma_dX(hth_EPPS16.back());
-         }
-         for (i=112; i<=167; i++) {
-            hth_EPPS16.push_back((TH1D*) fth_EPPS16->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
-            hth_EPPS16.back()->Scale(1e-3/lumi_all); // pb -> nb
-            Obtain_dSigma_dX(hth_EPPS16.back());
-         }
+   if (sample=="EPPS16") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      pdfname = "EPPS16nlo_CT14nlo_Pb208";
+      imin1 = 285;
+      imax1 = 324;
+      imin2 = 112;
+      imax2 = 167;
+   } else if (sample=="CT14") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+      pdfname = "CT14nlo";
+      imin1 = 112;
+      imax1 = 167;
+   } else if (sample=="MG5 (CT14)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_MG5_rewt_CT14nlo_CT14nlo_rewisospin.root");
+      pdfname = "CT14nlo";
+      imin1 = 1;
+      imax1 = 56;
+   } else if (sample=="MG5 (EPPS16)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_MG5_rewt_CT14nlo_EPPS16nlo_CT14nlo_Pb208.root");
+      pdfname = "EPPS16nlo_CT14nlo_Pb208";
+      imin1 = 1;
+      imax1 = 96;
+   } else if (sample=="NNPDF3.0") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_rewisospin.root");
+      pdfname = "NNPDF31_nnlo_as_0118_mc_hessian_pdfas";
+      imin1 = 1;
+      imax1 = 100;
+   } else if (sample=="nCTEQ15") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15FullNuc_208_82.root");
+      pdfname = "nCTEQ15FullNuc_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 90;
+      refCT14 = true;
+   } else if (sample=="TUJU19nlopp") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_1_1_rewisospin.root");
+      pdfname = "TUJU19_nlo_1_1";
+      imin1 = 1;
+      imax1 = 26;
+   } else if (sample=="TUJU19nlo") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_208_82.root");
+      pdfname = "TUJU19_nlo_208_82";
+      imin1 = 1;
+      imax1 = 58;
+   } else if (sample=="TUJU19nnlopp") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nnlo_1_1_TUJU19_nnlo_1_1_rewisospin.root");
+      pdfname = "TUJU19_nnlo_1_1";
+      imin1 = 1;
+      imax1 = 26;
+   } else if (sample=="TUJU19nnlo") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nnlo_1_1_TUJU19_nnlo_208_82.root");
+      pdfname = "TUJU19_nnlo_208_82";
+      imin1 = 1;
+      imax1 = 58;
+   } else if (sample=="nNNPDF1.0") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF10_nlo_as_0118_Pb208.root");
+      pdfname = "nNNPDF10_nlo_as_0118_Pb208";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 307;
+      refCT14 = true;
+   } else if (sample=="nNNPDF2.0") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF20_nlo_as_0118_Pb208.root");
+      pdfname = "nNNPDF20_nlo_as_0118_Pb208";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 307;
+      refCT14 = true;
+   } else {
+      cout << "ERROR: unknown sample " << sample << endl;
+      return;
+   }
+   if (!fth->IsOpen()) return;
+
+   int i=0;
+   const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
 
 
-         gth_EPPS16 = pdfuncert(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-         hth_EPPS16_cor = pdfcorr(hth_EPPS16, "EPPS16nlo_CT14nlo_Pb208");
-         gth_EPPS16->SetMarkerSize(0);
-         gth_EPPS16->SetName(Form("gth_EPPS16_%s",varname(thevar)));
-         hth_EPPS16_cor->SetName(Form("hth_EPPS16_cor_%s",varname(thevar)));
+   hth.push_back((TH1D*) fth->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+   hth.back()->Scale(1.e-3/lumi_all); // pb -> nb
+   Obtain_dSigma_dX(hth.back());
+   for (i=imin1; i<=imax1; i++) {
+      hth.push_back((TH1D*) fth->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+      hth.back()->Scale(1.e-3/lumi_all); // pb -> nb
+      Obtain_dSigma_dX(hth.back());
+   }
+   if (imin2>0 && imax2>0) {
+      for (i=imin2; i<=imax2; i++) {
+         hth.push_back((TH1D*) fth->Get(Form("h_%s_%s%d",varname(thevar),acceffstr,i)));
+         hth.back()->Scale(1e-3/lumi_all); // pb -> nb
+         Obtain_dSigma_dX(hth.back());
       }
+   }
+
+   if (!refCT14) { // normal case: p and Pb PDFs are "consistent" (p error sets are included inside the Pb error sets, eg EPPS or TUJU or proton PDFs)
+      gth = pdfuncert(hth, pdfname);
+      hth_cor = pdfcorr(hth, pdfname);
+   } else { // special case of nCTEQ, nNNPDF
+      vector<TH1D*> vCT14, vnPDF;
+      TGraphAsymmErrors *gCT14, *gnPDF;
+      TH2D *hcorCT14, *hcornPDF;
+
+      vCT14.push_back(hth[0]);
+      vnPDF.push_back(hth[0]);
+      for (int i=1; i<(imax1-imin1)+1; i++) vCT14.push_back(hth[i]);
+      for (int i=(imax1-imin1)+1;i<(imax1+imax2-imin1-imin2); i++) vnPDF.push_back(hth[i]);
+
+      gCT14 = pdfuncert(vCT14, "CT14nlo");
+      hcorCT14 = pdfcorr(vCT14, "CT14nlo");
+      hcorCT14->SetName("cortmp1");
+      gnPDF = pdfuncert(vnPDF, pdfname);
+      hcornPDF = pdfcorr(vnPDF, pdfname);
+      hcornPDF->SetName("cortmp2");
+
+      // now let's combine what we have for CT14 and for the nPDF
+      int nbins = gCT14->GetN();
+      gth = new TGraphAsymmErrors(nbins);
+      for (int i=0; i<nbins; i++) {
+         double x = gCT14->GetX()[i];
+         double exl = gCT14->GetEXlow()[i];
+         double exh = gCT14->GetEXhigh()[i];
+         double y1 = gCT14->GetY()[i];
+         double eyl1 = gCT14->GetEYlow()[i];
+         double eyh1 = gCT14->GetEYhigh()[i];
+         double y2 = gnPDF->GetY()[i];
+         double eyl2 = gnPDF->GetEYlow()[i];
+         double eyh2 = gnPDF->GetEYhigh()[i];
+
+         if (y1 != y2) cout << "ERROR: for " << i << " (" << x << ") we have y1 = " << y1 << " != y2 = " << y2 << endl;
+         gth->SetPoint(i,x,y1);
+         gth->SetPointError(i, exl, exh, sqrt(pow(eyl1,2)+pow(eyl2,2)), sqrt(pow(eyh1,2)+pow(eyh2,2)));
+
+      }
+
+      hth_cor = (TH2D*) hcorCT14->Clone("htmp");
+      for (int i=0; i<nbins; i++) {
+         double eyl1i = gCT14->GetEYlow()[i];
+         double eyh1i = gCT14->GetEYhigh()[i];
+         double eyl2i = gnPDF->GetEYlow()[i];
+         double eyh2i = gnPDF->GetEYhigh()[i];
+         double ey1i = (eyl1i + eyh1i) / 2.;
+         double ey2i = (eyl2i + eyh2i) / 2.;
+         double eyi = sqrt(pow(ey1i,2)+pow(ey2i,2));
+
+         for (int j=0; j<nbins; j++) {
+            double eyl1j = gCT14->GetEYlow()[j];
+            double eyh1j = gCT14->GetEYhigh()[j];
+            double eyl2j = gnPDF->GetEYlow()[j];
+            double eyh2j = gnPDF->GetEYhigh()[j];
+            double ey1j = (eyl1j + eyh1j) / 2.;
+            double ey2j = (eyl2j + eyh2j) / 2.;
+            double eyj = sqrt(pow(ey1j,2)+pow(ey2j,2));
+
+            double cor1 = hcorCT14->GetBinContent(i+1,j+1);
+            double cor2 = hcorCT14->GetBinContent(i+1,j+1);
+            double var1 = cor1*ey1i*ey1j;
+            double var2 = cor2*ey2i*ey2j;
+            double var = var1 + var2;
+            double cor = var / (eyi*eyj);
+            hth_cor->SetBinContent(i+1,j+1,cor);
+            hth_cor->SetBinError(i+1,j+1,0);
+         }
+      }
+   }
+
+   gth->SetMarkerSize(0);
+   gth->SetName(Form("gth_%s_%s",sample.Data(),varname(thevar)));
+   // clone hth_cor, otherwise it disappears
+   hth_cor = (TH2D*) hth_cor->Clone(Form("hth_cor_%s_%s",sample.Data(),varname(thevar)));
+
+   // fth->Close();
 }
