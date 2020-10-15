@@ -217,7 +217,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          ytitle_tex = "$\\dd\\sigma/\\dd\\yCM$ (nb)";
       }
 
-      MyCanvas c1(Form("Plots/results/plots/result%s_%s",correctforacc ? "" : "_noacc",varname(thevar)),xtitle,ytitle,lx,ly);
+      MyCanvas c1(Form("Plots/results/plots/result%s_%s_%s_%s",correctforacc ? "" : "_noacc",varname(thevar),sample1.Data(),sample2.Data()),xtitle,ytitle,lx,ly);
       if (logx) c1.SetLogx();
       if (logy) c1.SetLogy(false);
 		if (thevar==var::phistar || thevar==var::phistar1560) {
@@ -562,11 +562,11 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, vector<TH1D*> &hth, TH2D
       pdfname = "EPPS16nlo_CT14nlo_Pb208";
       imin1 = 1;
       imax1 = 96;
-   } else if (sample=="NNPDF3.0") {
+   } else if (sample=="NNPDF3.1") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_rewisospin.root");
       pdfname = "NNPDF31_nnlo_as_0118_mc_hessian_pdfas";
       imin1 = 1;
-      imax1 = 100;
+      imax1 = 102;
    } else if (sample=="nCTEQ15") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15FullNuc_208_82.root");
       pdfname = "nCTEQ15FullNuc_208_82";

@@ -23,11 +23,11 @@ TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<doub
 TGraphAsymmErrors *RFB_60120(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<double> mcov);
 TH1D *RFB_1560(TH1D *h, TH1D* hstatonly, TMatrixT<double> mcov);
 TH1D *RFB_60120(TH1D *h, TH1D* hstatonly, TMatrixT<double> mcov);
-void Obtain_dSigma_dX(TH1D *h);
+void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar);
 
 using namespace std;
 
-void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
+void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16") {
    TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");
@@ -50,53 +50,24 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    // for theory, need to account for correlations in the nPDF uncertainties, since we know how to do it
    // EPPS16
    //###TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
-	TFile *fth_EPPS16 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
-   vector<TH1D*> hth1560_EPPS16,hth60120_EPPS16;
-   int i=0;
-   hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
-   hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0_rap60120));
-   for (i=285; i<=324; i++) {
-      hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
-      hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0_rap60120));
-   }
-   for (i=112; i<=167; i++) {
-      hth1560_EPPS16.push_back(RFB_1560((TH1D*) fth_EPPS16->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
-      hth60120_EPPS16.push_back(RFB_60120((TH1D*) fth_EPPS16->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0_rap60120));
-   }
 
-   TGraphAsymmErrors *gth1560_EPPS16 = pdfuncert(hth1560_EPPS16, "EPPS16nlo_CT14nlo_Pb208",true);
-   TGraphAsymmErrors *gth60120_EPPS16 = pdfuncert(hth60120_EPPS16, "EPPS16nlo_CT14nlo_Pb208",true);
-   gth1560_EPPS16->SetMarkerSize(0);
-   gth60120_EPPS16->SetMarkerSize(0);
-   gth1560_EPPS16->SetName("gth1560_EPPS16");
-   gth60120_EPPS16->SetName("gth60120_EPPS16");
+   TGraphAsymmErrors *gth1560_EPPS16 = NULL, *gth60120_EPPS16 = NULL;
+   getTheory(sample2, gth1560_EPPS16, DYana::var::rap1560);
+   getTheory(sample2, gth60120_EPPS16, DYana::var::rap60120);
 
    // CT14
    //###TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/private/2016_pPb/DY/tree_ana/PADrellYan8TeV/DYAnalysis/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
-   TFile *fth_CT14 = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
-
-   vector<TH1D*> hth1560_CT14,hth60120_CT14;
-   i=0;
-   hth1560_CT14.push_back(RFB_1560((TH1D*) fth_CT14->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
-   hth60120_CT14.push_back(RFB_60120((TH1D*) fth_CT14->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0_rap60120));
-   for (i=112; i<=167; i++) {
-      hth1560_CT14.push_back(RFB_1560((TH1D*) fth_CT14->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0_rap1560));
-      hth60120_CT14.push_back(RFB_60120((TH1D*) fth_CT14->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0_rap60120));
-   }
-
-   TGraphAsymmErrors *gth1560_CT14 = pdfuncert(hth1560_CT14, "CT14nlo",true);
-   TGraphAsymmErrors *gth60120_CT14 = pdfuncert(hth60120_CT14, "CT14nlo",true);
-   gth1560_CT14->SetMarkerSize(0);
-   gth60120_CT14->SetMarkerSize(0);
-   gth1560_CT14->SetName("gth1560_CT14");
-   gth60120_CT14->SetName("gth60120_CT14");
+   TGraphAsymmErrors *gth1560_CT14 = NULL, *gth60120_CT14 = NULL;
+   getTheory(sample1, gth1560_CT14, DYana::var::rap1560);
+   getTheory(sample1, gth60120_CT14, DYana::var::rap60120);
 
    // do the plotting here
 
-   MyCanvas c_1560("Plots/grfbp_rap1560","|y_{CM}|","R_{FB}",800,800);
+   MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
    c_1560.SetYRange(0.45,1.85);
+   cout << gth1560_CT14 << " " << gth1560_EPPS16 << " " << grfbp_rap1560 << endl;
    c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
-         "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+         sample1,sample2,"Data","Pred./Data",
          kBlue,kRed,kBlack,
          "5","5","EP",true);
    c_1560.TopPad->cd();
@@ -107,10 +78,10 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root") {
    latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
    c_1560.PrintCanvas();
 
-   MyCanvas c_60120("Plots/grfbp_rap60120","|y_{CM}|","R_{FB}",800,800);
+   MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
    c_60120.SetYRange(0.65,1.45);//1.35
    c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
-         "Powheg (CT14)","Powheg (EPPS16)","Data","Powheg/Data",
+         sample1,sample2,"Data","Pred./Data",
          kBlue,kRed,kBlack,
          "5","5","EP",true);
    c_60120.TopPad->cd();
@@ -247,27 +218,157 @@ TH1D *RFB_60120(TH1D *h, TH1D* hstatonly, TMatrixT<double> mcov) {
    return Convert_GraphToHist(RFB_60120(g, hstatonly, mcov));
 }
 
-void Obtain_dSigma_dX(TH1D *h){
-	Int_t nBins = h->GetNbinsX();
-	for(Int_t i=0; i<nBins; i++)
-	{
-		Int_t i_bin = i+1;
-		Double_t BinWidth = h->GetBinWidth(i_bin);
+void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
+   TFile *fth = NULL;
+   vector<TH1D*> hth;
+   bool preFSR = true;
+   bool correctforacc = true;
+   TString pdfname;
+   int imin1, imax1; // for PDF error sets
+   int imin2=-1, imax2=-1; // case when we need 2 ranges (eg for p + Pb variations)
+   bool refCT14 = false;
+   TMatrixT<double> m0(DYana::nbinsvar(thevar),DYana::nbinsvar(thevar));
 
-		Double_t low = h->GetBinLowEdge(i_bin);
-		Double_t high = h->GetBinLowEdge(i_bin + 1);
+   if (sample=="EPPS16") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16.root");
+      pdfname = "EPPS16nlo_CT14nlo_Pb208";
+      imin1 = 285;
+      imax1 = 324;
+      imin2 = 112;
+      imax2 = 167;
+   } else if (sample=="CT14") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14.root");
+      pdfname = "CT14nlo";
+      imin1 = 112;
+      imax1 = 167;
+   } else if (sample=="MG5 (CT14)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_MG5_rewt_CT14nlo_CT14nlo_rewisospin.root");
+      pdfname = "CT14nlo";
+      imin1 = 1;
+      imax1 = 56;
+   } else if (sample=="MG5 (EPPS16)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_MG5_rewt_CT14nlo_EPPS16nlo_CT14nlo_Pb208.root");
+      pdfname = "EPPS16nlo_CT14nlo_Pb208";
+      imin1 = 1;
+      imax1 = 96;
+   } else if (sample=="NNPDF3.1") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_NNPDF31_nnlo_as_0118_mc_hessian_pdfas_rewisospin.root");
+      pdfname = "NNPDF31_nnlo_as_0118_mc_hessian_pdfas";
+      imin1 = 1;
+      imax1 = 102;
+   } else if (sample=="nCTEQ15") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15FullNuc_208_82.root");
+      pdfname = "nCTEQ15FullNuc_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 90;
+      refCT14 = true;
+   } else if (sample=="TUJU19nlopp") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_1_1_rewisospin.root");
+      pdfname = "TUJU19_nlo_1_1";
+      imin1 = 1;
+      imax1 = 26;
+   } else if (sample=="TUJU19nlo") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_208_82.root");
+      pdfname = "TUJU19_nlo_208_82";
+      imin1 = 1;
+      imax1 = 58;
+   } else if (sample=="TUJU19nnlopp") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nnlo_1_1_TUJU19_nnlo_1_1_rewisospin.root");
+      pdfname = "TUJU19_nnlo_1_1";
+      imin1 = 1;
+      imax1 = 26;
+   } else if (sample=="TUJU19nnlo") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nnlo_1_1_TUJU19_nnlo_208_82.root");
+      pdfname = "TUJU19_nnlo_208_82";
+      imin1 = 1;
+      imax1 = 58;
+   } else if (sample=="nNNPDF1.0") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF10_nlo_as_0118_Pb208.root");
+      pdfname = "nNNPDF10_nlo_as_0118_Pb208";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 307;
+      refCT14 = true;
+   } else if (sample=="nNNPDF2.0") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF20_nlo_as_0118_Pb208.root");
+      pdfname = "nNNPDF20_nlo_as_0118_Pb208";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 307;
+      refCT14 = true;
+   } else {
+      cout << "ERROR: unknown sample " << sample << endl;
+      return;
+   }
+   if (!fth->IsOpen()) return;
 
-		Double_t xSec = h->GetBinContent(i_bin);
-		Double_t xSec_dX = xSec / BinWidth;
+   int i=0;
+   const char* acceffstr = (correctforacc) ? (!preFSR ? "AccTotal" : "AccTotal_pre") : (!preFSR ? "AccPass" : "AccPass_pre");
 
-		Double_t error_before = h->GetBinError(i_bin);
-		Double_t error_after = error_before / BinWidth;
 
-		h->SetBinContent(i_bin, xSec_dX);
-		h->SetBinError(i_bin, error_after);
+   if (thevar==DYana::var::rap1560) {
+      hth.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0));
+      for (i=imin1; i<=imax1; i++) {
+         hth.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0));
+      }
+      if (imin2>0 && imax2>0) {
+         for (i=imin2; i<=imax2; i++) {
+            hth.push_back(RFB_1560((TH1D*) fth->Get(Form("h_rap1560_AccTotal_pre%d",i)),NULL,m0));
+         }
+      }
+   } else {
+      hth.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0));
+      for (i=imin1; i<=imax1; i++) {
+         hth.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0));
+      }
+      if (imin2>0 && imax2>0) {
+         for (i=imin2; i<=imax2; i++) {
+            hth.push_back(RFB_60120((TH1D*) fth->Get(Form("h_rap60120_AccTotal_pre%d",i)),NULL,m0));
+         }
+      }
+   }
 
-		// printf("%2dth bin [%5.lf, %5.lf] (xSec, BinWidth, dSigma/dM) = (%15.9lf, %6.1lf, %15.9lf), (error_before, error_after) = (%8.5lf, %8.5lf)\n", 
-			// i_bin, low, high, xSec, BinWidth, xSec_dM, error_before, error_after );
-	}
+   if (!refCT14) { // normal case: p and Pb PDFs are "consistent" (p error sets are included inside the Pb error sets, eg EPPS or TUJU or proton PDFs)
+      gth = pdfuncert(hth, pdfname,true);
+   } else { // special case of nCTEQ, nNNPDF
+      vector<TH1D*> vCT14, vnPDF;
+      TGraphAsymmErrors *gCT14, *gnPDF;
+
+      vCT14.push_back(hth[0]);
+      vnPDF.push_back(hth[0]);
+      for (int i=1; i<(imax1-imin1)+1; i++) vCT14.push_back(hth[i]);
+      for (int i=(imax1-imin1)+1;i<(imax1+imax2-imin1-imin2); i++) vnPDF.push_back(hth[i]);
+
+      gCT14 = pdfuncert(vCT14, "CT14nlo", true);
+      gnPDF = pdfuncert(vnPDF, pdfname, true);
+
+      // now let's combine what we have for CT14 and for the nPDF
+      int nbins = gCT14->GetN();
+      gth = new TGraphAsymmErrors(nbins);
+      for (int i=0; i<nbins; i++) {
+         double x = gCT14->GetX()[i];
+         double exl = gCT14->GetEXlow()[i];
+         double exh = gCT14->GetEXhigh()[i];
+         double y1 = gCT14->GetY()[i];
+         double eyl1 = gCT14->GetEYlow()[i];
+         double eyh1 = gCT14->GetEYhigh()[i];
+         double y2 = gnPDF->GetY()[i];
+         double eyl2 = gnPDF->GetEYlow()[i];
+         double eyh2 = gnPDF->GetEYhigh()[i];
+
+         if (y1 != y2) cout << "ERROR: for " << i << " (" << x << ") we have y1 = " << y1 << " != y2 = " << y2 << endl;
+         gth->SetPoint(i,x,y1);
+         gth->SetPointError(i, exl, exh, sqrt(pow(eyl1,2)+pow(eyl2,2)), sqrt(pow(eyh1,2)+pow(eyh2,2)));
+
+      }
+   }
+
+   gth->SetMarkerSize(0);
+   gth->SetName(Form("gth_%s_%s",sample.Data(),varname(thevar)));
+
+   // fth->Close();
 }
-
