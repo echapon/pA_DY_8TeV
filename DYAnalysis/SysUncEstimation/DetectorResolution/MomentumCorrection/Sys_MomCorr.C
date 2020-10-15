@@ -1,6 +1,7 @@
 #include "../../../BkgEst/interface/defs.h"
 #include "../../../Include/MyCanvas.C"
 #include "../../../Include/texUtils.h"
+#include "../../../Include/PlotTools.h"
 #include "../../syst.C"
 
 #include "TFile.h"
@@ -27,15 +28,7 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
    //         5 -> FitDm
    //         7 -> Run
 
-   TString hname;
-   if (thevar==var::mass) hname = "h_mass2";
-   else if (thevar==var::mass3bins) hname = "h_mass3bins";
-   else if (thevar==var::pt) hname = "h_diPt2_M60to120";
-   else if (thevar==var::pt1560) hname = "h_diPt2_M15to60";
-   else if (thevar==var::rap1560) hname = "h_diRap2_M15to60";
-   else if (thevar==var::rap60120) hname = "h_diRap2_M60to120";
-   else if (thevar==var::phistar) hname = "h_Phistar2_M60to120";
-   else if (thevar==var::phistar1560) hname = "h_Phistar2_M15to60";
+   TString hname = histname(thevar);
 
    vector<TGraphAsymmErrors*> graphs;
    vector<TMatrixT<double> > mcor;
@@ -46,8 +39,8 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    TFile *f = TFile::Open(file);
-   TH1D *hnom = (TH1D*) f->Get(hname + "_Data1");
-   hnom->Add((TH1D*) f->Get(hname + "_Data2"));
+   TH1D *hnom = getHist(f, hname + "_Data1");
+   hnom->Add(getHist(f,hname + "_Data2"));
 
    gErr = new TGraphAsymmErrors(hnom,hnom,"pois n"); // fill gErr with 1's
    for (int j=0; j<gErr->GetN(); j++) {
@@ -63,8 +56,8 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
       if (itype==7 && i!=6) continue; // only do run H for run variations
       TString s = file;
       TFile *fi = TFile::Open(s.ReplaceAll("00",Form("%d%d",itype,i)));
-      TH1D* htmp = (TH1D*) fi->Get(hname + "_Data1");
-      htmp->Add((TH1D*) fi->Get(hname + "_Data2"));
+      TH1D* htmp = getHist(fi,hname + "_Data1");
+      htmp->Add(getHist(fi,hname + "_Data2"));
 
       // ratio to nominal
       TGraphAsymmErrors *gtmp = new TGraphAsymmErrors(htmp,hnom,"pois n");
@@ -279,7 +272,8 @@ void Sys_MomCorr(const char* file, var thevar) {
 }
 
 void Sys_MomCorr(const char* file) {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==var::ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       Sys_MomCorr(file,thevar_i);
    }

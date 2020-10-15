@@ -20,7 +20,6 @@ using DYana::var;
 // .L Eff/Sys_Eff.C+
 
 void checkNumDen(TH1 *hnum, TH1 *hden);
-TH1D* getHist(TFile *f, TString histname);
 
 TH2D* Sys_Eff_scales(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    TFile *fin = TFile::Open(file);
@@ -555,6 +554,9 @@ void Sys_Eff(const char* file) {
       var thevar_i = static_cast<var>(i);
       Sys_Eff(file,thevar_i);
    }
+   Sys_Eff(file,var::rapall);
+   Sys_Eff(file,var::ptall);
+   Sys_Eff(file,var::phistarall);
 }
 
 void Sys_Eff_MCstat(const char* file, var thevar) {
@@ -593,6 +595,9 @@ void Sys_Eff_MCstat(const char* file) {
       var thevar_i = static_cast<var>(i);
       Sys_Eff_MCstat(file,thevar_i);
    }
+   Sys_Eff_MCstat(file,var::rapall);
+   Sys_Eff_MCstat(file,var::ptall);
+   Sys_Eff_MCstat(file,var::phistarall);
 }
 
 void checkNumDen(TH1 *hnum, TH1 *hden) {
@@ -608,53 +613,5 @@ void checkNumDen(TH1 *hnum, TH1 *hden) {
          hnum->SetBinContent(i,hden->GetBinContent(i));
          hnum->SetBinError(i,hden->GetBinError(i));
       }
-   }
-}
-
-TH1D* getHist(TFile *f, TString histname) {
-   if (histname.Contains("rapall") || histname.Contains("ptall") || histname.Contains("phistarall")) {
-      var thevar;
-      int offset;
-      if (histname.Contains("rapall")) {
-         thevar = var::rapall;
-         offset = nbinsvar(var::rap1560);
-      } else if (histname.Contains("ptall")) {
-         thevar = var::ptall;
-         offset = nbinsvar(var::pt1560);
-      } else {
-         thevar = var::phistarall;
-         offset = nbinsvar(var::phistar1560);
-      }
-
-      TString histname1=histname, histname2=histname;
-      histname1.ReplaceAll("rapall","rap1560");
-      histname2.ReplaceAll("rapall","rap60120");
-      histname1.ReplaceAll("ptall","pt1560");
-      histname2.ReplaceAll("ptall","pt");
-      histname1.ReplaceAll("phistarall","phistar1560");
-      histname2.ReplaceAll("phistarall","phistar");
-
-      int nbins = nbinsvar(thevar);
-      TH1D *hist1 = (TH1D*) f->Get(histname1);
-      TH1D *hist2 = (TH1D*) f->Get(histname2);
-      TH1D *ans = new TH1D(histname,histname,nbins,0,nbins);
-      int nbins1 = hist1->GetNbinsX();
-      int nbins2 = hist2->GetNbinsX();
-
-      for (int i=1; i<=nbins1; i++) {
-         ans->SetBinContent(i,hist1->GetBinContent(i));
-         ans->SetBinError(i,hist1->GetBinError(i));
-      }
-      for (int i=1; i<=nbins2; i++) {
-         ans->SetBinContent(i+offset,hist2->GetBinContent(i));
-         ans->SetBinError(i+offset,hist2->GetBinError(i));
-      }
-      // let's deal with under/overflow
-      ans->SetBinContent(0,hist1->GetBinContent(0)+hist2->GetBinContent(0));
-      ans->SetBinError(0,sqrt(pow(hist1->GetBinError(0),2)+pow(hist2->GetBinError(0),2)));
-      ans->SetBinContent(nbins+1,hist1->GetBinContent(nbins1+1)+hist2->GetBinContent(nbins2+1));
-      ans->SetBinError(nbins+1,sqrt(pow(hist1->GetBinError(nbins1+1),2)+pow(hist2->GetBinError(nbins2+1),2)));
-   } else {
-      return (TH1D*) f->Get(histname);
    }
 }

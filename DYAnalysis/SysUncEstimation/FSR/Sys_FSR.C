@@ -19,8 +19,8 @@ void Sys_FSR(var thevar) {
    // Powheg vs Pyquen
    TFile *fnom = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.root");
    TFile *fpyq = TFile::Open("../FSRCorrection/xsec_FSRcor_Pyquen_MomCorr00_0.root");
-   TH1D *hnom = (TH1D*) fnom->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
-   TH1D *hpyq = (TH1D*) fpyq->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
+   TH1D *hnom = getHist(fnom,Form("h_Measured_unfoldedMLE_%s",thevarname));
+   TH1D *hpyq = getHist(fpyq,Form("h_Measured_unfoldedMLE_%s",thevarname));
    
    TH1D *hmod = (TH1D*) hnom->Clone("hmod");
    hmod->Add(hpyq,-1); // take the difference
@@ -43,8 +43,8 @@ void Sys_FSR(var thevar) {
    // pPb vs PbP
    TFile *fPbP = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_1.root");
    TFile *fpPb = TFile::Open("../FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_2.root");
-   TH1D *hPbP = (TH1D*) fPbP->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
-   TH1D *hpPb = (TH1D*) fpPb->Get(Form("h_Measured_unfoldedMLE_%s",thevarname));
+   TH1D *hPbP = getHist(fPbP,Form("h_Measured_unfoldedMLE_%s",thevarname));
+   TH1D *hpPb = getHist(fpPb,Form("h_Measured_unfoldedMLE_%s",thevarname));
    
    TH1D *hrun = (TH1D*) hpPb->Clone("hrun");
    hrun->Add(hPbP,-1); // take the difference
@@ -113,7 +113,8 @@ void Sys_FSR(var thevar) {
 }
 
 void Sys_FSR() {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==var::ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       Sys_FSR(thevar_i);
    }

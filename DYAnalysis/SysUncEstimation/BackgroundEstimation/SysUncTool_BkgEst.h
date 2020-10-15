@@ -1,6 +1,7 @@
 #include "../../Include/DYAnalyzer.h"
 #include "../../Include/tdrstyle.C"
 #include "../../Include/CMS_lumi.C"
+#include "../../Include/PlotTools.h"
 
 #include <fstream>
 
@@ -461,7 +462,7 @@ protected:
 	void SetupHistogram_Unfolded()
 	{
       TFile *f_result = TFile::Open(FileLocation + "/ResponseMatrix/yields_detcor_Powheg_MomCorr00_0.root");
-      h_unfolded = (TH1D*)f_result->Get(Form("h_Measured_unfoldedMLE_%s",DYana::varname(thevar)))->Clone();
+      h_unfolded = (TH1D*) getHist(f_result, Form("h_Measured_unfoldedMLE_%s",DYana::varname(thevar)))->Clone();
 	}
 
 	void SetupHistogram_DataDrivenBkg_All()
@@ -477,27 +478,27 @@ protected:
 
 	void SetupHistogram_DataDrivenBkg( TString Type, HistogramContainer* Hists )
 	{
-      TFile *f_input, *f_input_up, *f_input_down;
+      TString f_input, f_input_up, f_input_down;
       if (Type == "wjets") {
-         f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",DYana::varname(thevar)));
+         f_input = FileLocation + Form("/BkgEst/fakerate/applyFR/result/wjets_%s.root",DYana::varname(thevar));
       } else if (Type == "dijet") {
-         f_input = TFile::Open(FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",DYana::varname(thevar)));
+         f_input = FileLocation + Form("/BkgEst/fakerate/applyFR/result/dijet_%s.root",DYana::varname(thevar));
       } else if (Type == "FRnonclosure") {
-         f_input = TFile::Open(Form("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/SSnonclosure/syst_%s.root",DYana::varname(thevar)));
+         f_input = Form("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/SSnonclosure/syst_%s.root",DYana::varname(thevar));
       } else {
-         f_input = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s.root",DYana::varname(thevar)));
+         f_input = FileLocation + Form("/BkgEst/emu/result/emu_%s.root",DYana::varname(thevar));
       }
-		Hists->h_nEvent = (TH1D*)f_input->Get(Type)->Clone();
-		Hists->h_AbsUnc_Stat = (TH1D*)f_input->Get(Type+"_stat")->Clone();
-		Hists->h_AbsUnc_Syst = (TH1D*)f_input->Get(Type+"_systematic")->Clone();
+		Hists->h_nEvent = (TH1D*)getHist(f_input,Type)->Clone();
+		Hists->h_AbsUnc_Stat = (TH1D*)getHist(f_input,Type+"_stat")->Clone();
+		Hists->h_AbsUnc_Syst = (TH1D*)getHist(f_input,Type+"_systematic")->Clone();
 
       // for emu, add the ttbar xsec uncertainty
       TH1D *hup=NULL, *hdown=NULL;
       if (Type == "ttbar" || Type == "DYtautau" || Type == "WW") {
-         f_input_up = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s_ttup.root",DYana::varname(thevar)));
-         hup = (TH1D*)f_input_up->Get(Type)->Clone();
-         f_input_down = TFile::Open(FileLocation + Form("/BkgEst/emu/result/emu_%s_ttdown.root",DYana::varname(thevar)));
-         hdown = (TH1D*)f_input_down->Get(Type)->Clone();
+         f_input_up = FileLocation + Form("/BkgEst/emu/result/emu_%s_ttup.root",DYana::varname(thevar));
+         hup = (TH1D*)getHist(f_input_up,Type)->Clone();
+         f_input_down = FileLocation + Form("/BkgEst/emu/result/emu_%s_ttdown.root",DYana::varname(thevar));
+         hdown = (TH1D*)getHist(f_input_down,Type)->Clone();
       }
 
       // cout << DYana::varname(thevar) << endl;
@@ -576,10 +577,10 @@ protected:
       else if (thevar == DYana::var::rap1560) htag = "diRap2_M15to60";
       else if (thevar == DYana::var::rap60120) htag = "diRap2_M60to120";
 
-		TFile *f_MC = TFile::Open(FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr00_rewboth_tnprew_All.root"); f_MC->cd();
-		Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_MC");
-		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_emu");
-		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)f_MC->Get("h_" + Type + "_FR");
+		TString f_MC = FileLocation + "/ControlPlots/root/ROOTFile_Histograms_" + TString(DYana::varname(thevar)) + "_MomCorr00_rewboth_tnprew_All.root"; //f_MC->cd();
+		Hists->h_nEvent = (TH1D*)getHist(f_MC,"h_" + Type + "_MC");
+		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)getHist(f_MC,"h_" + Type + "_emu");
+		if (!Hists->h_nEvent) Hists->h_nEvent = (TH1D*)getHist(f_MC,"h_" + Type + "_FR");
       Hists->h_nEvent = (TH1D*) Hists->h_nEvent->Clone();
 		Hists->h_nEvent = (TH1D*)Hists->h_nEvent->Rebin(nBin, Hists->h_nEvent->GetName(), BinEdges);
 		Hists->h_nEvent->Scale( normFactor );

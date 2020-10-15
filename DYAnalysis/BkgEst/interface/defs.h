@@ -136,7 +136,8 @@ namespace DYana {
       ALLvar,
       ptall,
       phistarall,
-      rapall
+      rapall,
+      ALLvar2
    };
 
    var str2var(TString variable) {
@@ -194,6 +195,23 @@ namespace DYana {
       else if (thevar==var::phistarall) return "PhistarAll";
       else return "unknown";
    };
+
+  const char* histname(var thevar) {
+     const char* hname;
+     if (thevar==var::mass) hname = "h_mass2";
+     else if (thevar==var::mass3bins) hname = "h_mass3bins";
+     else if (thevar==var::pt) hname = "h_diPt2_M60to120";
+     else if (thevar==var::pt1560) hname = "h_diPt2_M15to60";
+     else if (thevar==var::rap1560) hname = "h_diRap2_M15to60";
+     else if (thevar==var::rap60120) hname = "h_diRap2_M60to120";
+     else if (thevar==var::phistar) hname = "h_Phistar2_M60to120";
+     else if (thevar==var::phistar1560) hname = "h_Phistar2_M15to60";
+     else if (thevar==var::rapall) return "h_RapAll2";
+     else if (thevar==var::ptall) return "h_PtAll2";
+     else if (thevar==var::phistarall) return "h_PhistarAll2";
+     else hname = "unknown";
+     return hname;
+  }
 
    const char* xaxistitle(var thevar) {
       if (thevar==var::mass || thevar==var::mass3bins) return "m_{#mu#mu} [GeV]";
