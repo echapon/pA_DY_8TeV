@@ -94,6 +94,14 @@ namespace DYana {
    const int phistarnum_1560 = 9;
    double phistarbin_1560[phistarnum_1560+1] = {0, 0.008, 0.024, 0.045, 0.072, 0.114, 0.189, 0.391, 1.153, 3.277};
 
+   // "fake" binnings combining low and high masses
+   const int ptall_binnum = ptbinnum_meas + ptbinnum_meas_1560;
+   double ptall_bin[ptall_binnum+1] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25};
+   const int phistarall_binnum = phistarnum + phistarnum_1560;
+   double phistarall_bin[phistarall_binnum+1] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26};
+   const int rapall_binnum = rapbinnum_1560 + rapbinnum_60120;
+   double rapall_bin[rapall_binnum+1] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36};
+
    // object selection
    bool MuSel(PhysicsMuon *mu) {
       // cout << mu->pt << " " << mu->eta << " " << mu->acceptance(cuts::ptmin2,cuts::etamax) << " " << mu->tightMuonID() << " " << mu->trkisolation(cuts::isomax) << endl;
@@ -125,23 +133,32 @@ namespace DYana {
       rap1560,
       pt1560,
       phistar1560,
-      ALLvar
+      ALLvar,
+      ptall,
+      phistarall,
+      rapall
    };
 
    var str2var(TString variable) {
       if (variable.Contains("mass3bins")) return mass3bins;
       else if (variable.Contains("mass")) return mass;
       else if (variable.Contains("pt1560")) return pt1560;
+      else if (variable.Contains("ptall")) return ptall;
       else if (variable.Contains("phistar1560")) return phistar1560;
+      else if (variable.Contains("phistarall")) return phistarall;
       else if (variable.Contains("pt")) return pt;
       else if (variable.Contains("phistar")) return phistar;
       else if (variable.Contains("rap60120")) return rap60120;
       else if (variable.Contains("rap1560")) return rap1560;
+      else if (variable.Contains("rapall")) return rapall;
       else if (variable.Contains("Mass3bins")) return mass3bins;
       else if (variable.Contains("Mass")) return mass;
       else if (variable.Contains("Rap1560")) return rap1560;
+      else if (variable.Contains("RapAll")) return rapall;
       else if (variable.Contains("Phistar1560")) return phistar1560;
+      else if (variable.Contains("PhistarAll")) return phistarall;
       else if (variable.Contains("Pt1560")) return pt1560;
+      else if (variable.Contains("PtAll")) return ptall;
       else if (variable.Contains("Pt")) return pt;
       else if (variable.Contains("Phistar")) return phistar;
       else if (variable.Contains("Rap60120")) return rap60120;
@@ -157,6 +174,9 @@ namespace DYana {
       else if (thevar==var::rap1560) return "rap1560";
       else if (thevar==var::pt1560) return "pt1560";
       else if (thevar==var::phistar1560) return "phistar1560";
+      else if (thevar==var::rapall) return "rapall";
+      else if (thevar==var::ptall) return "ptall";
+      else if (thevar==var::phistarall) return "phistarall";
       else return "unknown";
    };
 
@@ -169,21 +189,24 @@ namespace DYana {
       else if (thevar==var::rap1560) return "Rap1560";
       else if (thevar==var::pt1560) return "Pt1560";
       else if (thevar==var::phistar1560) return "Phistar1560";
+      else if (thevar==var::rapall) return "RapAll";
+      else if (thevar==var::ptall) return "PtAll";
+      else if (thevar==var::phistarall) return "PhistarAll";
       else return "unknown";
    };
 
    const char* xaxistitle(var thevar) {
       if (thevar==var::mass || thevar==var::mass3bins) return "m_{#mu#mu} [GeV]";
-      else if (thevar==var::pt || thevar==var::pt1560) return "p_{T} [GeV]";
-      else if (thevar==var::phistar || thevar==var::phistar1560) return "#lower[0.1]{#phi}#lower[-0.1]{#scale[0.8]{*}}";
+      else if (thevar==var::pt || thevar==var::pt1560 || thevar==var::ptall) return "p_{T} [GeV]";
+      else if (thevar==var::phistar || thevar==var::phistar1560 || thevar==var::phistarall) return "#lower[0.1]{#phi}#lower[-0.1]{#scale[0.8]{*}}";
       // else if (thevar==var::phistar || thevar==var::phistar1560) return "#phi^{*}";
       else return "y_{CM}";
    };
 
    const char* xaxistitletex(var thevar) {
       if (thevar==var::mass || thevar==var::mass3bins) return "\\mmumu [\\GeV]";
-      else if (thevar==var::pt || thevar==var::pt1560) return "\\pt [\\GeV]";
-      else if (thevar==var::phistar || thevar==var::phistar1560) return "\\phistar";
+      else if (thevar==var::pt || thevar==var::pt1560 || thevar==var::ptall) return "\\pt [\\GeV]";
+      else if (thevar==var::phistar || thevar==var::phistar1560 || thevar==var::phistarall) return "\\phistar";
       else return "$y_\\text{CM}$";
    };
 
@@ -197,6 +220,9 @@ namespace DYana {
       else if (thevar==var::rap1560) return rapbinnum_1560;
       else if (thevar==var::pt1560) return ptbinnum_meas_1560;
       else if (thevar==var::phistar1560) return phistarnum_1560;
+      else if (thevar==var::rapall) return rapall_binnum;
+      else if (thevar==var::ptall) return ptall_binnum;
+      else if (thevar==var::phistarall) return phistarall_binnum;
       else return rapbinnum_60120;
    };
 
@@ -208,11 +234,56 @@ namespace DYana {
       else if (thevar==var::rap1560) return rapbin_1560;
       else if (thevar==var::pt1560) return ptbin_meas_1560;
       else if (thevar==var::phistar1560) return phistarbin_1560;
+      else if (thevar==var::rapall) return rapall_bin;
+      else if (thevar==var::ptall) return ptall_bin;
+      else if (thevar==var::phistarall) return phistarall_bin;
       else return rapbin_60120;
    };
 
    int nbinsvar(TString variable) {return nbinsvar(str2var(variable));}
    double* binsvar(TString variable) {return binsvar(str2var(variable));}
+
+   // special functions for variables combining low and high masses
+   bool isAllMassVar(var thevar) {
+      return (thevar==var::rapall || thevar==var::ptall || thevar==phistarall);
+   };
+   int idx1560(var thevar, int i) {
+      if (thevar==var::rapall && i<rapbinnum_1560) return i; 
+      if (thevar==var::ptall && i<ptbinnum_meas_1560) return i; 
+      if (thevar==var::phistarall && i<phistarnum_1560) return i; 
+      return -1;
+   };
+   int idx60120(var thevar, int i) {
+      if (thevar==var::rapall && i>=rapbinnum_1560) return i-rapbinnum_1560; 
+      if (thevar==var::ptall && i>=ptbinnum_meas_1560) return i-ptbinnum_meas_1560; 
+      if (thevar==var::phistarall && i>=phistarnum_1560) return i-phistarnum_1560; 
+      return -1;
+   };
+   const char* varname1560(var thevar) {
+      if (thevar==var::rapall) return varname(var::rap1560);
+      if (thevar==var::ptall) return varname(var::pt1560);
+      if (thevar==var::phistarall) return varname(var::phistar1560);
+      return "unknown";
+   };
+   const char* varname60120(var thevar) {
+      if (thevar==var::rapall) return varname(var::rap60120);
+      if (thevar==var::ptall) return varname(var::pt);
+      if (thevar==var::phistarall) return varname(var::phistar);
+      return "unknown";
+   };
+   const char* Varname1560(var thevar) {
+      if (thevar==var::rapall) return Varname(var::rap1560);
+      if (thevar==var::ptall) return Varname(var::pt1560);
+      if (thevar==var::phistarall) return Varname(var::phistar1560);
+      return "unknown";
+   };
+   const char* Varname60120(var thevar) {
+      if (thevar==var::rapall) return Varname(var::rap60120);
+      if (thevar==var::ptall) return Varname(var::pt);
+      if (thevar==var::phistarall) return Varname(var::phistar);
+      return "unknown";
+   };
+
 
    // Z pt rweighting
    double zptWeight(double pt, double mass=90) {

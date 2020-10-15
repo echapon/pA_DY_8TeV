@@ -53,9 +53,9 @@ TMatrixT<double> readSyst_cor(const char* systfile) {
    int nbins=0;
    if (tsystfile.Contains("mass3bins")) nbins = DYana::nbinsvar("mass3bins");
    else if (tsystfile.Contains("mass")) nbins = DYana::nbinsvar("mass");
+   else if (tsystfile.Contains("pt1560")) nbins = DYana::nbinsvar("pt1560");
    else if (tsystfile.Contains("pt")) nbins = DYana::nbinsvar("pt");
    else if (tsystfile.Contains("phistar1560")) nbins = DYana::nbinsvar("phistar1560");
-   else if (tsystfile.Contains("pt1560")) nbins = DYana::nbinsvar("pt1560");
    else if (tsystfile.Contains("phistar")) nbins = DYana::nbinsvar("phistar");
    else if (tsystfile.Contains("rap1560")) nbins = DYana::nbinsvar("rap1560");
    else if (tsystfile.Contains("rap60120")) nbins = DYana::nbinsvar("rap60120");
@@ -110,6 +110,7 @@ map<bin2, syst> readSyst_cov(const char* systfile) {
    TMatrixT<double> thesyst_cor = readSyst_cor(systfile);
    map<bin2, syst> ans;
 
+   cout << systfile << ": ";
    map<bin, syst>::const_iterator it1,it2;
    int i1=0;
    for (it1=thesyst_val.begin(); it1!=thesyst_val.end(); it1++) {
@@ -117,11 +118,13 @@ map<bin2, syst> readSyst_cov(const char* systfile) {
       for (it2=thesyst_val.begin(); it2!=thesyst_val.end(); it2++) {
          syst tmpsyst; tmpsyst.name = it1->second.name;
          tmpsyst.value = it1->second.value * it2->second.value * thesyst_cor[i1][i2];
+         if (i1==4) cout << tmpsyst.value << ", ";
          ans[bin2(it1->first,it2->first)] = tmpsyst;
          i2++;
       }
       i1++;
    }
+   cout << endl;
 
    return ans;
 }
@@ -180,20 +183,24 @@ TMatrixT<double> combineSyst_cor(vector< map<bin2, syst> > theSysts) {
    int i=0, j=0;
    for (it=cov_tot.begin(); it!=cov_tot.end(); it++) {
       ans[i][j] = it->second.value;
+      if (i==4) cout << it->second.value << " ";
       j++;
       if (j==nbins) {
          j=0;
          i++;
       }
    }
+   cout << endl;
 
    // convert this covariance matrix into a correlation matrix
    for (i=0; i<nbins; i++) {
       for (j=0; j<nbins; j++) {
          if (i==j) continue;
          ans[i][j] *= 1./sqrt(fabs(ans[i][i]*ans[j][j]));
+         if (i==4) cout << ans[i][j] << " ";
       }
    }
+   cout << endl;
    for (i=0; i<nbins; i++) ans[i][i] = 1;
 
    return ans;

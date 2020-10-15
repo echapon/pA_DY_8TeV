@@ -23,24 +23,48 @@ void Sys_TnP(const char* file, var thevar, bool absxsec=true) {// if absxsec=fal
    TFile *f = TFile::Open(file);
    if (!f || !f->IsOpen()) return;
 
+   bool isAllMass = isAllMassVar(thevar);
+
    TEfficiency **ee = new TEfficiency*[645];
-   if (absxsec) {
-      for (int i=0; i<645; i++) ee[i] = (TEfficiency*) f->Get(Form("TEff_Eff_%s_Corr_tnp%d",Varname(thevar),i)); 
+   TEfficiency **ee2 = new TEfficiency*[645];
+
+   TString thevarname, theVarname, thevarname2, theVarname2;
+   if (!isAllMass) {
+      thevarname = varname(thevar);
+      theVarname = Varname(thevar);
    } else {
-      TH1D* hpass;
-      TH1D* htot = (TH1D*) f->Get(Form("h_%s_EffTotal",varname(thevar)));
+      thevarname = varname1560(thevar);
+      theVarname = Varname1560(thevar);
+      thevarname2 = varname60120(thevar);
+      theVarname2 = Varname60120(thevar);
+   }
+
+   if (absxsec) {
+      for (int i=0; i<645; i++) {
+         ee[i] = (TEfficiency*) f->Get(Form("TEff_Eff_%s_Corr_tnp%d",theVarname.Data(),i)); 
+         if (isAllMass) ee2[i] = (TEfficiency*) f->Get(Form("TEff_Eff_%s_Corr_tnp%d",theVarname2.Data(),i)); 
+      }
+   } else {
+      TH1D *hpass, *hpass2, *htot, *htot2;
+      htot = (TH1D*) f->Get(Form("h_%s_EffTotal",thevarname.Data()));
+      if (isAllMass) htot2 = (TH1D*) f->Get(Form("h_%s_EffTotal",thevarname2.Data()));
       // htot->Scale(1./htot->Integral());
 
       for (int i=0; i<645; i++) {
          // cout << i << endl;
-         hpass = (TH1D*) f->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i));
+         hpass = (TH1D*) f->Get(Form("h_%s_EffPass_Corr_tnp%d",thevarname.Data(),i));
          hpass->Scale(1./hpass->Integral());
          ee[i] = new TEfficiency(*hpass,*htot);
+         if (isAllMass) {
+            hpass2 = (TH1D*) f->Get(Form("h_%s_EffPass_Corr_tnp%d",thevarname2.Data(),i));
+            hpass2->Scale(1./hpass2->Integral());
+            ee2[i] = new TEfficiency(*hpass2,*htot2);
+         }
       }
    }
 
 
-   int nbins = ee[0]->GetTotalHistogram()->GetNbinsX();
+   int nbins = nbinsvar(thevar);
 
    vector<TMatrixT<double> > mcov_trg, mcov_muid, mcov_iso, mcov_syst;
 
@@ -52,60 +76,78 @@ void Sys_TnP(const char* file, var thevar, bool absxsec=true) {// if absxsec=fal
 
    for (int ibin=0; ibin<nbins; ibin++) {
       // compute the tnp syst uncertainty
-      double e0i = ee[0]->GetEfficiency(ibin+1);
+      double ei[645];
+      for (int isyst=0; isyst<645; isyst++) {
+         if (!isAllMass) ei[isyst] = ee[isyst]->GetEfficiency(ibin+1);
+         else {
+            int ibin1 = DYana::idx1560(thevar,ibin);
+            int ibin2 = DYana::idx60120(thevar,ibin);
+            if (ibin1>=0) ei[isyst] = ee[isyst]->GetEfficiency(ibin1+1);
+            else ei[isyst] = ee2[isyst]->GetEfficiency(ibin2+1);
+         }
+      }
 
       for (int jbin=0; jbin<nbins; jbin++) {
-         double e0j = ee[0]->GetEfficiency(jbin+1);
+         double ej[645];
+         for (int isyst=0; isyst<645; isyst++) {
+            if (!isAllMass) ej[isyst] = ee[isyst]->GetEfficiency(jbin+1);
+            else {
+               int jbin1 = DYana::idx1560(thevar,jbin);
+               int jbin2 = DYana::idx60120(thevar,jbin);
+               if (jbin1>=0) ej[isyst] = ee[isyst]->GetEfficiency(jbin1+1);
+               else ej[isyst] = ee2[isyst]->GetEfficiency(jbin2+1);
+            }
+         }
 
          // stat uncertainties
          // trigger
          for (int i=1; i<=14; i++) {
-            mcov_trg[i-1][ibin][jbin] = max(fabs(ee[600+i]->GetEfficiency(ibin+1)-e0i),fabs(ee[614+i]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[600+i]->GetEfficiency(jbin+1)-e0j),fabs(ee[614+i]->GetEfficiency(jbin+1)-e0j));
+            mcov_trg[i-1][ibin][jbin] = max(fabs(ei[600+i]-ei[0]),fabs(ei[614+i]-ei[0]))
+               * max(fabs(ej[600+i]-ej[0]),fabs(ej[614+i]-ej[0]));
          }
 
          // muID
          // there is a super weird bug... dirty-fix it
          for (int ix=1; ix<=300; ix++) {
-            double eixi = ee[ix]->GetEfficiency(ibin+1);
-            if (eixi<1e-9) eixi = ee[ix-1]->GetEfficiency(ibin+1);
-            double eixj = ee[ix]->GetEfficiency(jbin+1);
-            if (eixj<1e-9) eixj = ee[ix-1]->GetEfficiency(jbin+1);
-            mcov_muid[(ix-1)/100][ibin][jbin] += (eixi-e0i) * (eixj-e0j) / 99.;
+            double eixi = ei[ix];
+            if (eixi<1e-9) eixi = ei[ix-1];
+            double eixj = ej[ix];
+            if (eixj<1e-9) eixj = ej[ix-1];
+            mcov_muid[(ix-1)/100][ibin][jbin] += (eixi-ei[0]) * (eixj-ej[0]) / 99.;
          }
          
          // iso
-         for (int ix=301; ix<=600; ix++) mcov_iso[(ix-301)/100][ibin][jbin] += (ee[ix]->GetEfficiency(ibin+1)-e0i)
-            * (ee[ix]->GetEfficiency(jbin+1)-e0j) / 99.;
+         for (int ix=301; ix<=600; ix++) mcov_iso[(ix-301)/100][ibin][jbin] += (ei[ix]-ei[0])
+            * (ej[ix]-ej[0]) / 99.;
 
 
          // syst uncertainties: no bin-to-bin correlations
          if (ibin==jbin) {
             // trigger
-            mcov_syst[0][ibin][jbin] = max(fabs(ee[629]->GetEfficiency(ibin+1)-e0i),fabs(ee[630]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[629]->GetEfficiency(jbin+1)-e0j),fabs(ee[630]->GetEfficiency(jbin+1)-e0j));
-            mcov_syst[1][ibin][jbin] = max(fabs(ee[631]->GetEfficiency(ibin+1)-e0i),fabs(ee[632]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[631]->GetEfficiency(jbin+1)-e0j),fabs(ee[632]->GetEfficiency(jbin+1)-e0j));
+            mcov_syst[0][ibin][jbin] = max(fabs(ei[629]-ei[0]),fabs(ei[630]-ei[0]))
+               * max(fabs(ej[629]-ej[0]),fabs(ej[630]-ej[0]));
+            mcov_syst[1][ibin][jbin] = max(fabs(ei[631]-ei[0]),fabs(ei[632]-ei[0]))
+               * max(fabs(ej[631]-ej[0]),fabs(ej[632]-ej[0]));
 
             // muID
-            mcov_syst[2][ibin][jbin] = max(fabs(ee[633]->GetEfficiency(ibin+1)-e0i),fabs(ee[634]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[633]->GetEfficiency(jbin+1)-e0j),fabs(ee[634]->GetEfficiency(jbin+1)-e0j));
-            mcov_syst[3][ibin][jbin] = max(fabs(ee[635]->GetEfficiency(ibin+1)-e0i),fabs(ee[636]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[635]->GetEfficiency(jbin+1)-e0j),fabs(ee[636]->GetEfficiency(jbin+1)-e0j));
+            mcov_syst[2][ibin][jbin] = max(fabs(ei[633]-ei[0]),fabs(ei[634]-ei[0]))
+               * max(fabs(ej[633]-ej[0]),fabs(ej[634]-ej[0]));
+            mcov_syst[3][ibin][jbin] = max(fabs(ei[635]-ei[0]),fabs(ei[636]-ei[0]))
+               * max(fabs(ej[635]-ej[0]),fabs(ej[636]-ej[0]));
 
             // iso
-            mcov_syst[4][ibin][jbin] = max(fabs(ee[637]->GetEfficiency(ibin+1)-e0i),fabs(ee[638]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[637]->GetEfficiency(jbin+1)-e0j),fabs(ee[638]->GetEfficiency(jbin+1)-e0j));
-            mcov_syst[5][ibin][jbin] = max(fabs(ee[639]->GetEfficiency(ibin+1)-e0i),fabs(ee[640]->GetEfficiency(ibin+1)-e0i))
-               * max(fabs(ee[639]->GetEfficiency(jbin+1)-e0j),fabs(ee[640]->GetEfficiency(jbin+1)-e0j));
+            mcov_syst[4][ibin][jbin] = max(fabs(ei[637]-ei[0]),fabs(ei[638]-ei[0]))
+               * max(fabs(ej[637]-ej[0]),fabs(ej[638]-ej[0]));
+            mcov_syst[5][ibin][jbin] = max(fabs(ei[639]-ei[0]),fabs(ei[640]-ei[0]))
+               * max(fabs(ej[639]-ej[0]),fabs(ej[640]-ej[0]));
 
             // muID binned
-            mcov_syst[6][ibin][jbin] = fabs(ee[641]->GetEfficiency(ibin+1)-e0i) * fabs(ee[641]->GetEfficiency(jbin+1)-e0j);
-            mcov_syst[7][ibin][jbin] = fabs(ee[642]->GetEfficiency(ibin+1)-e0i) * fabs(ee[642]->GetEfficiency(jbin+1)-e0j);
+            mcov_syst[6][ibin][jbin] = fabs(ei[641]-ei[0]) * fabs(ej[641]-ej[0]);
+            mcov_syst[7][ibin][jbin] = fabs(ei[642]-ei[0]) * fabs(ej[642]-ej[0]);
 
             // iso binned
-            mcov_syst[8][ibin][jbin] = fabs(ee[643]->GetEfficiency(ibin+1)-e0i) * fabs(ee[643]->GetEfficiency(jbin+1)-e0j);
-            mcov_syst[9][ibin][jbin] = fabs(ee[644]->GetEfficiency(ibin+1)-e0i) * fabs(ee[644]->GetEfficiency(jbin+1)-e0j);
+            mcov_syst[8][ibin][jbin] = fabs(ei[643]-ei[0]) * fabs(ej[643]-ej[0]);
+            mcov_syst[9][ibin][jbin] = fabs(ei[644]-ei[0]) * fabs(ej[644]-ej[0]);
 
             // HF+PU
             mcov_syst[10][ibin][jbin] = absxsec ? pow(0.34e-2,2) : 0;
@@ -216,4 +258,7 @@ void Sys_TnP(const char* file, bool absxsec=true) {
       var thevar_i = static_cast<var>(i);
       Sys_TnP(file,thevar_i,absxsec);
    }
+   Sys_TnP(file,var::ptall,absxsec);
+   Sys_TnP(file,var::rapall,absxsec);
+   Sys_TnP(file,var::phistarall,absxsec);
 }
