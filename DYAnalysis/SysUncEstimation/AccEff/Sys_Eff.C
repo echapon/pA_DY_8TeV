@@ -20,6 +20,7 @@ using DYana::var;
 // .L Eff/Sys_Eff.C+
 
 void checkNumDen(TH1 *hnum, TH1 *hden);
+TH1D* getHist(TFile *f, TString histname);
 
 TH2D* Sys_Eff_scales(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    TFile *fin = TFile::Open(file);
@@ -35,8 +36,8 @@ TH2D* Sys_Eff_scales(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<7; i++) {
-      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
-      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+      hEffTotal.push_back(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
    checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
@@ -130,8 +131,8 @@ TH2D* Sys_Eff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<3; i++) {
-      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
-      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+      hEffTotal.push_back(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
    checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
@@ -226,19 +227,19 @@ TH2D* Sys_Eff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    int i=0;
-   hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-   hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+   hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+   hEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
    histNames.push_back(Form("%d",i));
 
    for (i=285; i<=324; i++) {
-      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-284));
    }
 
    for (i=112; i<=167; i++) {
-      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-111+40));
    }
 
@@ -270,10 +271,10 @@ TH2D* Sys_Eff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gEff) {
    MyCanvas c1(Form("AccEff/Eff_Zpt_%s",varname(thevar)),xaxistitle(thevar),"Eff",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
-   hEffTotal.push_back((TH1D*) fin[0]->Get(Form("h_%s_EffTotal0",varname(thevar))));
-   hEffPass_Corr_tnp.push_back((TH1D*) fin[0]->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
-   hEffTotal.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffTotal",varname(thevar))));
-   hEffPass_Corr_tnp.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
+   hEffTotal.push_back(getHist(fin[0], Form("h_%s_EffTotal0",varname(thevar))));
+   hEffPass_Corr_tnp.push_back(getHist(fin[0], Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
+   hEffTotal.push_back(getHist(fin[1], Form("h_%s_EffTotal",varname(thevar))));
+   hEffPass_Corr_tnp.push_back(getHist(fin[1], Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
 
    checkNumDen(hEffPass_Corr_tnp[0],hEffTotal[0]);
    gEff = new TGraphAsymmErrors(hEffPass_Corr_tnp[0],hEffTotal[0]);
@@ -558,8 +559,8 @@ void Sys_Eff(const char* file) {
 
 void Sys_Eff_MCstat(const char* file, var thevar) {
    TFile *fin = TFile::Open(file);
-   TH1D *hAccTotal = (TH1D*) fin->Get(Form("h_%s_EffTotal",varname(thevar)));
-   TH1D *hEffPass_Corr_tnp = (TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
+   TH1D *hAccTotal = getHist(fin, Form("h_%s_EffTotal",varname(thevar)));
+   TH1D *hEffPass_Corr_tnp = getHist(fin, Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
    cout << hEffPass_Corr_tnp << " " << hAccTotal << endl;
    checkNumDen(hEffPass_Corr_tnp,hAccTotal);
    TGraphAsymmErrors *gae = new TGraphAsymmErrors(hEffPass_Corr_tnp,hAccTotal);
@@ -607,5 +608,53 @@ void checkNumDen(TH1 *hnum, TH1 *hden) {
          hnum->SetBinContent(i,hden->GetBinContent(i));
          hnum->SetBinError(i,hden->GetBinError(i));
       }
+   }
+}
+
+TH1D* getHist(TFile *f, TString histname) {
+   if (histname.Contains("rapall") || histname.Contains("ptall") || histname.Contains("phistarall")) {
+      var thevar;
+      int offset;
+      if (histname.Contains("rapall")) {
+         thevar = var::rapall;
+         offset = nbinsvar(var::rap1560);
+      } else if (histname.Contains("ptall")) {
+         thevar = var::ptall;
+         offset = nbinsvar(var::pt1560);
+      } else {
+         thevar = var::phistarall;
+         offset = nbinsvar(var::phistar1560);
+      }
+
+      TString histname1=histname, histname2=histname;
+      histname1.ReplaceAll("rapall","rap1560");
+      histname2.ReplaceAll("rapall","rap60120");
+      histname1.ReplaceAll("ptall","pt1560");
+      histname2.ReplaceAll("ptall","pt");
+      histname1.ReplaceAll("phistarall","phistar1560");
+      histname2.ReplaceAll("phistarall","phistar");
+
+      int nbins = nbinsvar(thevar);
+      TH1D *hist1 = (TH1D*) f->Get(histname1);
+      TH1D *hist2 = (TH1D*) f->Get(histname2);
+      TH1D *ans = new TH1D(histname,histname,nbins,0,nbins);
+      int nbins1 = hist1->GetNbinsX();
+      int nbins2 = hist2->GetNbinsX();
+
+      for (int i=1; i<=nbins1; i++) {
+         ans->SetBinContent(i,hist1->GetBinContent(i));
+         ans->SetBinError(i,hist1->GetBinError(i));
+      }
+      for (int i=1; i<=nbins2; i++) {
+         ans->SetBinContent(i+offset,hist2->GetBinContent(i));
+         ans->SetBinError(i+offset,hist2->GetBinError(i));
+      }
+      // let's deal with under/overflow
+      ans->SetBinContent(0,hist1->GetBinContent(0)+hist2->GetBinContent(0));
+      ans->SetBinError(0,sqrt(pow(hist1->GetBinError(0),2)+pow(hist2->GetBinError(0),2)));
+      ans->SetBinContent(nbins+1,hist1->GetBinContent(nbins1+1)+hist2->GetBinContent(nbins2+1));
+      ans->SetBinError(nbins+1,sqrt(pow(hist1->GetBinError(nbins1+1),2)+pow(hist2->GetBinError(nbins2+1),2)));
+   } else {
+      return (TH1D*) f->Get(histname);
    }
 }
