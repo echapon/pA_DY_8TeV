@@ -21,6 +21,7 @@ using DYana::var;
 // .L AccEff/Sys_AccEff.C+
 
 void checkNumDen(TH1 *hnum, TH1 *hden);
+TH1D* getHist(TFile *f, TString histname);
 
 TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGraphAsymmErrors *&gEff, TGraphAsymmErrors *&gAccEff) {
    TFile *fin = TFile::Open(file);
@@ -38,10 +39,10 @@ TH2D* Sys_AccEff_scales(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<5; i++) {
-      hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
-      hAccPass.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),idx[i])));
-      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
-      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+      hAccTotal.push_back(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
+      hAccPass.push_back(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),idx[i])));
+      hEffTotal.push_back(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
    checkNumDen(hAccPass[0],hAccTotal[0]);
@@ -158,10 +159,10 @@ TH2D* Sys_AccEff_alphas(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    for (int i=0; i<3; i++) {
-      hAccTotal.push_back((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
-      hAccPass.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),idx[i])));
-      hEffTotal.push_back((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
-      hEffPass_Corr_tnp.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
+      hAccTotal.push_back(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),idx[i])));
+      hAccPass.push_back(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),idx[i])));
+      hEffTotal.push_back(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),idx[i])));
+      hEffPass_Corr_tnp.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),idx[i])));
    }
 
    checkNumDen(hAccPass[0],hAccTotal[0]);
@@ -284,40 +285,40 @@ TH2D* Sys_AccEff_EPPS16(const char* file, var thevar, TGraphAsymmErrors *&gAcc, 
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
    int i=0;
-   hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-   // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-   hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-   // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-   // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-   hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-   hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-   hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
-   hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+   hAcc.push_back(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+   // hAcc.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
+   hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+   // hEff.push_back(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+   // hEff.back()->Divide(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+   hAccEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+   hAccEff.back()->Multiply(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+   hAccEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
+   hAccEff.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
    histNames.push_back(Form("%d",i));
 
    for (i=285; i<=324; i++) {
-      hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-      // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-      hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
-      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hAcc.push_back(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+      // hAcc.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      // hEff.push_back(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+      // hEff.back()->Divide(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+      hAccEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hAccEff.back()->Multiply(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAccEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-284));
    }
 
    for (i=112; i<=167; i++) {
-      hAcc.push_back((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      // hAcc.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
-      hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      // hEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-      // hEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffPass%d",varname(thevar),i)));
-      hAccEff.push_back((TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
-      hAccEff.back()->Multiply((TH1D*) fin->Get(Form("h_%s_AccPass%d",varname(thevar),i)));
-      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_EffTotal%d",varname(thevar),i)));
-      hAccEff.back()->Divide((TH1D*) fin->Get(Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hAcc.push_back(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+      // hAcc.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
+      hEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      // hEff.push_back(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+      // hEff.back()->Divide(getHist(fin, Form("h_%s_EffPass%d",varname(thevar),i)));
+      hAccEff.push_back(getHist(fin, Form("h_%s_EffPass_Corr_tnp%d",varname(thevar),i)));
+      hAccEff.back()->Multiply(getHist(fin, Form("h_%s_AccPass%d",varname(thevar),i)));
+      hAccEff.back()->Divide(getHist(fin, Form("h_%s_EffTotal%d",varname(thevar),i)));
+      hAccEff.back()->Divide(getHist(fin, Form("h_%s_AccTotal%d",varname(thevar),i)));
       histNames.push_back(Form("%d",i-111+40));
    }
 
@@ -358,14 +359,14 @@ TH2D* Sys_AccEff_Zpt(const char* file, var thevar, TGraphAsymmErrors *&gAcc, TGr
    MyCanvas c1(Form("AccEff/AccEff_Zpt_%s",varname(thevar)),xaxistitle(thevar),"Acc #times Eff",800,800);
    if (thevar==var::mass || thevar==var::pt || thevar==var::phistar || thevar==var::pt1560 || thevar==var::phistar1560) c1.SetLogx();
 
-   hAccTotal.push_back((TH1D*) fin[0]->Get(Form("h_%s_AccTotal0",varname(thevar))));
-   hAccPass.push_back((TH1D*) fin[0]->Get(Form("h_%s_AccPass0",varname(thevar))));
-   hEffTotal.push_back((TH1D*) fin[0]->Get(Form("h_%s_EffTotal0",varname(thevar))));
-   hEffPass_Corr_tnp.push_back((TH1D*) fin[0]->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
-   hAccTotal.push_back((TH1D*) fin[1]->Get(Form("h_%s_AccTotal",varname(thevar))));
-   hAccPass.push_back((TH1D*) fin[1]->Get(Form("h_%s_AccPass",varname(thevar))));
-   hEffTotal.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffTotal",varname(thevar))));
-   hEffPass_Corr_tnp.push_back((TH1D*) fin[1]->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
+   hAccTotal.push_back(getHist(fin[0], Form("h_%s_AccTotal0",varname(thevar))));
+   hAccPass.push_back(getHist(fin[0], Form("h_%s_AccPass0",varname(thevar))));
+   hEffTotal.push_back(getHist(fin[0], Form("h_%s_EffTotal0",varname(thevar))));
+   hEffPass_Corr_tnp.push_back(getHist(fin[0], Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
+   hAccTotal.push_back(getHist(fin[1], Form("h_%s_AccTotal",varname(thevar))));
+   hAccPass.push_back(getHist(fin[1], Form("h_%s_AccPass",varname(thevar))));
+   hEffTotal.push_back(getHist(fin[1], Form("h_%s_EffTotal",varname(thevar))));
+   hEffPass_Corr_tnp.push_back(getHist(fin[1], Form("h_%s_EffPass_Corr_tnp0",varname(thevar))));
 
    checkNumDen(hAccPass[0],hAccTotal[0]);
    gAcc = new TGraphAsymmErrors(hAccPass[0],hAccTotal[0]);
@@ -690,8 +691,8 @@ void checkNumDen(TH1 *hnum, TH1 *hden) {
 
 void Sys_AccEff_MCstat(const char* file, var thevar) {
    TFile *fin = TFile::Open(file);
-   TH1D *hAccTotal = (TH1D*) fin->Get(Form("h_%s_AccTotal",varname(thevar)));
-   TH1D *hEffPass_Corr_tnp = (TH1D*) fin->Get(Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
+   TH1D *hAccTotal = getHist(fin, Form("h_%s_AccTotal",varname(thevar)));
+   TH1D *hEffPass_Corr_tnp = getHist(fin, Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
    cout << hEffPass_Corr_tnp << " " << hAccTotal << endl;
    checkNumDen(hEffPass_Corr_tnp,hAccTotal);
    TGraphAsymmErrors *gae = new TGraphAsymmErrors(hEffPass_Corr_tnp,hAccTotal);
@@ -723,5 +724,53 @@ void Sys_AccEff_MCstat(const char* file) {
    for (int i=0; i<var::ALLvar; i++) {
       var thevar_i = static_cast<var>(i);
       Sys_AccEff_MCstat(file,thevar_i);
+   }
+}
+
+TH1D* getHist(TFile *f, TString histname) {
+   if (histname.Contains("rapall") || histname.Contains("ptall") || histname.Contains("phistarall")) {
+      var thevar;
+      int offset;
+      if (histname.Contains("rapall")) {
+         thevar = var::rapall;
+         offset = nbinsvar(var::rap1560);
+      } else if (histname.Contains("ptall")) {
+         thevar = var::ptall;
+         offset = nbinsvar(var::pt1560);
+      } else {
+         thevar = var::phistarall;
+         offset = nbinsvar(var::phistar1560);
+      }
+
+      TString histname1=histname, histname2=histname;
+      histname1.ReplaceAll("rapall","rap1560");
+      histname2.ReplaceAll("rapall","rap60120");
+      histname1.ReplaceAll("ptall","pt1560");
+      histname2.ReplaceAll("ptall","pt");
+      histname1.ReplaceAll("phistarall","phistar1560");
+      histname2.ReplaceAll("phistarall","phistar");
+
+      int nbins = nbinsvar(thevar);
+      TH1D *hist1 = (TH1D*) f->Get(histname1);
+      TH1D *hist2 = (TH1D*) f->Get(histname2);
+      TH1D *ans = new TH1D(histname,histname,nbins,0,nbins);
+      int nbins1 = hist1->GetNbinsX();
+      int nbins2 = hist2->GetNbinsX();
+
+      for (int i=1; i<=nbins1; i++) {
+         ans->SetBinContent(i,hist1->GetBinContent(i));
+         ans->SetBinError(i,hist1->GetBinError(i));
+      }
+      for (int i=1; i<=nbins2; i++) {
+         ans->SetBinContent(i+offset,hist2->GetBinContent(i));
+         ans->SetBinError(i+offset,hist2->GetBinError(i));
+      }
+      // let's deal with under/overflow
+      ans->SetBinContent(0,hist1->GetBinContent(0)+hist2->GetBinContent(0));
+      ans->SetBinError(0,sqrt(pow(hist1->GetBinError(0),2)+pow(hist2->GetBinError(0),2)));
+      ans->SetBinContent(nbins+1,hist1->GetBinContent(nbins1+1)+hist2->GetBinContent(nbins2+1));
+      ans->SetBinError(nbins+1,sqrt(pow(hist1->GetBinError(nbins1+1),2)+pow(hist2->GetBinError(nbins2+1),2)));
+   } else {
+      return (TH1D*) f->Get(histname);
    }
 }
