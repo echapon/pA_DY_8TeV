@@ -539,7 +539,7 @@ protected:
 
       Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
 
-		delete f_input;
+      // delete f_input;
 	}
 
 	void SetupHistgram_MCBkg_All()
@@ -611,7 +611,7 @@ protected:
 
       Hists->Fill_RelUncHist_wrt_nUnfolded( this->h_unfolded );
 
-		delete f_MC;
+      // delete f_MC;
 	}
 
 };

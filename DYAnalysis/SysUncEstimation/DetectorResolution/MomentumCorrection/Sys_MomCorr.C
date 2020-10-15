@@ -40,7 +40,8 @@ TH2D* Sys_MomCorr_compute(TString file, var thevar, TGraphAsymmErrors *&gErr, in
 
    TFile *f = TFile::Open(file);
    TH1D *hnom = getHist(f, hname + "_Data1");
-   hnom->Add(getHist(f,hname + "_Data2"));
+   TH1D *htoadd = getHist(f,hname + "_Data2");
+   hnom->Add(htoadd);
 
    gErr = new TGraphAsymmErrors(hnom,hnom,"pois n"); // fill gErr with 1's
    for (int j=0; j<gErr->GetN(); j++) {

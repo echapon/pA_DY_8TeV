@@ -1236,13 +1236,14 @@ double chi2(TGraphAsymmErrors *g1, TGraphAsymmErrors *g2, TMatrixT<double> cov1,
 TH1D* getHist(TFile *f, TString histname) {
    TH1D *ans = NULL;
 
-   if (histname.Contains("rapall") || histname.Contains("ptall") || histname.Contains("phistarall")) {
+   if (histname.Contains("rapall") || histname.Contains("ptall") || histname.Contains("phistarall") ||
+         histname.Contains("RapAll") || histname.Contains("PtAll") || histname.Contains("PhistarAll") ) {
       DYana::var thevar;
       int offset;
-      if (histname.Contains("rapall")) {
+      if (histname.Contains("rapall") || histname.Contains("RapAll")) {
          thevar = DYana::var::rapall;
          offset = nbinsvar(DYana::var::rap1560);
-      } else if (histname.Contains("ptall")) {
+      } else if (histname.Contains("ptall") || histname.Contains("PtAll")) {
          thevar = DYana::var::ptall;
          offset = nbinsvar(DYana::var::pt1560);
       } else {
@@ -1258,15 +1259,15 @@ TH1D* getHist(TFile *f, TString histname) {
       histname1.ReplaceAll("phistarall","phistar1560");
       histname2.ReplaceAll("phistarall","phistar");
       // special case of histos for unfolding
-      if (histname==histname(DYana::var::rapall)) {
-         histname1 = histname(DYana::var::rap1560);
-         histname2 = histname(DYana::var::rap60120);
-      }  else if (histname==histname(DYana::var::ptall)) {
-         histname1 = histname(DYana::var::pt1560);
-         histname2 = histname(DYana::var::pt);
-      }  else if (histname==histname(DYana::var::phistarall)) {
-         histname1 = histname(DYana::var::phistar1560);
-         histname2 = histname(DYana::var::phistar);
+      if (histname.Contains(DYana::histname(DYana::var::rapall))) {
+         histname1.ReplaceAll(DYana::histname(DYana::var::rapall), DYana::histname(DYana::var::rap1560));
+         histname2.ReplaceAll(DYana::histname(DYana::var::rapall), DYana::histname(DYana::var::rap60120));
+      }  else if (histname.Contains(DYana::histname(DYana::var::ptall))) {
+         histname1.ReplaceAll(DYana::histname(DYana::var::ptall), DYana::histname(DYana::var::pt1560));
+         histname2.ReplaceAll(DYana::histname(DYana::var::ptall), DYana::histname(DYana::var::pt));
+      }  else if (histname.Contains(DYana::histname(DYana::var::phistarall))) {
+         histname1.ReplaceAll(DYana::histname(DYana::var::phistarall), DYana::histname(DYana::var::phistar1560));
+         histname2.ReplaceAll(DYana::histname(DYana::var::phistarall), DYana::histname(DYana::var::phistar));
       }
 
       int nbins = nbinsvar(thevar);

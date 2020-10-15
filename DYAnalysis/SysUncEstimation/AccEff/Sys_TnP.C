@@ -212,11 +212,18 @@ void Sys_TnP(const char* file, var thevar, bool absxsec=true) {// if absxsec=fal
    of_cor << "TnP (total)" << endl;
 
    const TH1 *htot = ee[0]->GetTotalHistogram();
+   const TH1 *htot2 = (isAllMass) ? ee2[0]->GetTotalHistogram() : NULL;
+   double* binedges = binsvar(thevar);
    for (int i=0; i<nbins; i++) {
-      double x = htot->GetBinCenter(i+1);
-      double dx = htot->GetBinWidth(i+1)/2.;
-      double ei = ee[0]->GetEfficiency(i+1);
-      of_syst << x-dx << ", " << x+dx << ", " << sqrt(mcov_tot[i][i])/ei << endl;
+      int ibin1=i, ibin2=-1;
+      if (isAllMass) {
+         ibin1 = DYana::idx1560(thevar,i);
+         ibin2 = DYana::idx60120(thevar,i);
+      }
+      double x1 = binedges[i];
+      double x2 = binedges[i+1];
+      double ei = ibin1>=0 ? ee[0]->GetEfficiency(ibin1+1) : ee2[0]->GetEfficiency(ibin2+1);
+      of_syst << x1 << ", " << x2 << ", " << sqrt(mcov_tot[i][i])/ei << endl;
 
       for (int j=0; j<nbins; j++) {
          if (j>0) of_cor << ", ";
@@ -225,17 +232,17 @@ void Sys_TnP(const char* file, var thevar, bool absxsec=true) {// if absxsec=fal
       of_cor << endl;
    
       // now print the individual components...
-      of_isobinned << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[8][i][i]+mcov_syst[9][i][i])/ei << endl;
-      of_isostat << x-dx << ", " << x+dx << ", " << sqrt(mcov_iso[0][i][i]+mcov_iso[1][i][i]+mcov_iso[2][i][i])/ei << endl;
-      of_isosyst << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[4][i][i]+mcov_syst[5][i][i])/ei << endl;
-      of_muidbinned << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[6][i][i]+mcov_syst[7][i][i])/ei << endl;
-      of_muidstat << x-dx << ", " << x+dx << ", " << sqrt(mcov_muid[0][i][i]+mcov_muid[1][i][i]+mcov_muid[2][i][i])/ei << endl;
-      of_muidsyst << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[2][i][i]+mcov_syst[3][i][i])/ei << endl;
+      of_isobinned << x1 << ", " << x2 << ", " << sqrt(mcov_syst[8][i][i]+mcov_syst[9][i][i])/ei << endl;
+      of_isostat << x1 << ", " << x2 << ", " << sqrt(mcov_iso[0][i][i]+mcov_iso[1][i][i]+mcov_iso[2][i][i])/ei << endl;
+      of_isosyst << x1 << ", " << x2 << ", " << sqrt(mcov_syst[4][i][i]+mcov_syst[5][i][i])/ei << endl;
+      of_muidbinned << x1 << ", " << x2 << ", " << sqrt(mcov_syst[6][i][i]+mcov_syst[7][i][i])/ei << endl;
+      of_muidstat << x1 << ", " << x2 << ", " << sqrt(mcov_muid[0][i][i]+mcov_muid[1][i][i]+mcov_muid[2][i][i])/ei << endl;
+      of_muidsyst << x1 << ", " << x2 << ", " << sqrt(mcov_syst[2][i][i]+mcov_syst[3][i][i])/ei << endl;
       double t=0; for (int k=0; k<14; k++) t+=mcov_trg[k][i][i];
-      of_trigstat << x-dx << ", " << x+dx << ", " << sqrt(t)/ei << endl;
-      of_trigsyst << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[0][i][i]+mcov_syst[1][i][i])/ei << endl;
-      of_STA << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[12][i][i]+mcov_syst[13][i][i]+mcov_muid[2][i][i])/ei << endl;
-      of_PU << x-dx << ", " << x+dx << ", " << sqrt(mcov_syst[10][i][i]+mcov_syst[11][i][i]+mcov_muid[2][i][i])/ei << endl;
+      of_trigstat << x1 << ", " << x2 << ", " << sqrt(t)/ei << endl;
+      of_trigsyst << x1 << ", " << x2 << ", " << sqrt(mcov_syst[0][i][i]+mcov_syst[1][i][i])/ei << endl;
+      of_STA << x1 << ", " << x2 << ", " << sqrt(mcov_syst[12][i][i]+mcov_syst[13][i][i]+mcov_muid[2][i][i])/ei << endl;
+      of_PU << x1 << ", " << x2 << ", " << sqrt(mcov_syst[10][i][i]+mcov_syst[11][i][i]+mcov_muid[2][i][i])/ei << endl;
    }
    of_syst.close();
    of_isobinned.close();

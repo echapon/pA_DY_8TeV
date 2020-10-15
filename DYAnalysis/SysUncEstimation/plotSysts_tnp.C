@@ -91,7 +91,8 @@ void plotSysts_tnp(var thevar, bool plotabs=false) {
 }
 
 void plotSysts_tnp(bool plotabs=false) {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==var::ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       plotSysts_tnp(thevar_i, plotabs);
    }
