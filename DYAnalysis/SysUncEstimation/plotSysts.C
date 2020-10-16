@@ -108,7 +108,8 @@ void plotSysts(bool noacc, var thevar) {
 }
 
 void plotSysts(bool noacc=false) {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==var::ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       plotSysts(noacc, thevar_i);
    }

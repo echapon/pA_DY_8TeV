@@ -130,7 +130,8 @@ void plotCorrelationMatrices(bool noacc, var thevar) {
 }
 
 void plotCorrelationMatrices(bool noacc) {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       plotCorrelationMatrices(noacc, thevar_i);
    }

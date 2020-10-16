@@ -561,7 +561,7 @@ void Sys_Eff(const char* file) {
 
 void Sys_Eff_MCstat(const char* file, var thevar) {
    TFile *fin = TFile::Open(file);
-   TH1D *hAccTotal = getHist(fin, Form("h_%s_EffTotal",varname(thevar)));
+   TH1D *hAccTotal = getHist(fin, Form("h_%s_EffTotal0",varname(thevar)));
    TH1D *hEffPass_Corr_tnp = getHist(fin, Form("h_%s_EffPass_Corr_tnp0",varname(thevar)));
    cout << hEffPass_Corr_tnp << " " << hAccTotal << endl;
    checkNumDen(hEffPass_Corr_tnp,hAccTotal);
@@ -591,13 +591,11 @@ void Sys_Eff_MCstat(const char* file, var thevar) {
 }
 
 void Sys_Eff_MCstat(const char* file) {
-   for (int i=0; i<var::ALLvar; i++) {
+   for (int i=0; i<var::ALLvar2; i++) {
+      if (i==var::ALLvar) continue;
       var thevar_i = static_cast<var>(i);
       Sys_Eff_MCstat(file,thevar_i);
    }
-   Sys_Eff_MCstat(file,var::rapall);
-   Sys_Eff_MCstat(file,var::ptall);
-   Sys_Eff_MCstat(file,var::phistarall);
 }
 
 void checkNumDen(TH1 *hnum, TH1 *hden) {

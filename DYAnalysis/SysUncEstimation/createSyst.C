@@ -1,5 +1,6 @@
 #include "../Include/bin.h"
 #include "../BkgEst/interface/defs.h"
+#include "../Include/PlotTools.h"
 
 #include <map>
 #include <fstream>
@@ -15,8 +16,8 @@ void createSyst(const char* fnom="nominal.root", const char* fsyst="syst.root", 
    if (!tfnom || !tfsyst || !tfnom->IsOpen() || !tfsyst->IsOpen()) return;
 
    // get the histos
-   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_%s",varname(thevar)));
-   TH1D* hsyst = (TH1D*) tfsyst->Get(Form("hy_%s",varname(thevar)));
+   TH1D* hnom = getHist(tfnom,Form("hy_%s",varname(thevar)));
+   TH1D* hsyst = getHist(tfsyst,Form("hy_%s",varname(thevar)));
    if (!hnom || !hsyst) return;
 
    // get the relative difference
@@ -49,7 +50,7 @@ void createStat(const char* fnom, var thevar=mass) {
    if (!tfnom) return;
 
    // get the histos
-   TH1D* hnom = (TH1D*) tfnom->Get(Form("hy_statonly_%s",varname(thevar)));
+   TH1D* hnom = getHist(tfnom,Form("hy_statonly_%s",varname(thevar)));
    if (!hnom) return;
 
    // get the uncert
@@ -78,7 +79,7 @@ void createStat(const char* fnom, var thevar=mass) {
 // create all systs
 void createSystAll(var thevar=mass) {
    createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_rewNtracks.root","rewNtracks",thevar);
-   createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_MomCorr.root","MomCorr",thevar);
+   createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_MomUnCorr.root","MomCorr",thevar);
    createSyst("../Plots/results/xsec_nom.root","../Plots/results/xsec_notnprew.root","TnpRew",thevar);
 
    createStat("../Plots/results/xsec_nom.root",thevar);

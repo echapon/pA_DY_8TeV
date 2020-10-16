@@ -173,7 +173,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          // cout << hy->GetBinContent(1) << endl;
 
          if (!hy) {
-            cout << "Error, can't find yield histo in input file." << endl;
+            cout << "Error, can't find yield histo " << Form("h_Measured_unfoldedMLE_%s",varname(thevar)) << " in input file " << fy->GetName() << "." << endl;
             return;
          }
 
