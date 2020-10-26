@@ -971,9 +971,9 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
    h_DYTauTau_emu->Multiply(h_emu_ratio);
    h_ttbar_emu->Multiply(h_emu_ratio);
    h_WW_emu->Multiply(h_emu_ratio);
-   // NB: originally the WZ and ZZ were not emu-corrected
-   // h_WZ_emu->Multiply(h_emu_ratio);
-   // h_ZZ_emu->Multiply(h_emu_ratio);
+   // NB: originally the WZ and ZZ were not emu-corrected, but now they are https://indico.cern.ch/event/967578/note/
+   h_WZ_emu->Multiply(h_emu_ratio);
+   h_ZZ_emu->Multiply(h_emu_ratio);
 
 	f_input_bkg_dijet->cd();
 	TH1D *h_StatUnc_diJet_FR = (TH1D*)f_input_bkg_dijet->Get("dijet_stat")->Clone();
@@ -984,8 +984,9 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	ChangeHistError_StatOnlyError(h_WJets_FR, h_StatUnc_WJets_FR);
 
    // and account for nonclosure
-   myMultiply(h_diJet_FR,h_nonclosure);
-   myMultiply(h_WJets_FR,h_nonclosure);
+   // EDIT Oct 26, 2020: We do not do this anymore https://indico.cern.ch/event/967578/note/
+   // myMultiply(h_diJet_FR,h_nonclosure);
+   // myMultiply(h_WJets_FR,h_nonclosure);
 
 	if( Type == "part1" || Type == "part2" )
 	{
@@ -1101,10 +1102,10 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 	h_WJets_FR->SetName("h_WJets_FR");
 	h_WJets_FR->Write();
 
-	h_WZ_emu->SetName("h_WZ_MC");
+	h_WZ_emu->SetName("h_WZ_emu");
 	h_WZ_emu->Write();
 
-	h_ZZ_emu->SetName("h_ZZ_MC");
+	h_ZZ_emu->SetName("h_ZZ_emu");
 	h_ZZ_emu->Write();
 
 	h_WW_emu->SetName("h_WW_emu");
