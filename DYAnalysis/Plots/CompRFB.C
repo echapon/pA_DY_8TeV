@@ -262,7 +262,7 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
       imin1 = 1;
       imax1 = 56;
       imin2 = 57;
-      imax2 = 90;
+      imax2 = 88;//90;
       refCT14 = true;
    } else if (sample=="TUJU19nlopp") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_1_1_rewisospin.root");
@@ -290,7 +290,7 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
       imin1 = 1;
       imax1 = 56;
       imin2 = 57;
-      imax2 = 307;
+      imax2 = 306;
       refCT14 = true;
    } else if (sample=="nNNPDF2.0") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nNNPDF20_nlo_as_0118_Pb208.root");
@@ -298,7 +298,7 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
       imin1 = 1;
       imax1 = 56;
       imin2 = 57;
-      imax2 = 307;
+      imax2 = 305;
       refCT14 = true;
    } else {
       cout << "ERROR: unknown sample " << sample << endl;
@@ -340,8 +340,8 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
 
       vCT14.push_back(hth[0]);
       vnPDF.push_back(hth[0]);
-      for (int i=1; i<(imax1-imin1)+1; i++) vCT14.push_back(hth[i]);
-      for (int i=(imax1-imin1)+1;i<(imax1+imax2-imin1-imin2); i++) vnPDF.push_back(hth[i]);
+      for (int i=1; i<=(imax1-imin1)+1; i++) vCT14.push_back(hth[i]);
+      for (int i=(imax1-imin1)+1;i<=(imax1+imax2-imin1-imin2)+1; i++) vnPDF.push_back(hth[i]);
 
       gCT14 = pdfuncert(vCT14, "CT14nlo", true);
       gnPDF = pdfuncert(vnPDF, pdfname, true);
