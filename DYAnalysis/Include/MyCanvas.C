@@ -709,9 +709,9 @@ public:
 		gPad->SetGridy(0);
 
 		// -- ensure additional space at the bottom side for ratio plot -- //
-		TopPad->SetBottomMargin(0.32);
+		TopPad->SetBottomMargin(0.31);
 		TopPad->SetRightMargin(0.05);
-		TopPad->SetTopMargin(0.08); // added by Hyunchul
+		TopPad->SetTopMargin(0.06); // added by Hyunchul
 
 		g1->Draw("A" + DrawOp1);
 		g2->Draw(DrawOp2);
@@ -782,12 +782,12 @@ public:
        TopPad->Update();
 
 		// -- Bottom Pad -- //
-		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.3);
+		BottomPad = new TPad("BottomPad","BottomPad",0.01,0.01,0.99,0.31);
 		BottomPad->Draw();
 		BottomPad->cd();
 
 		BottomPad->SetBottomMargin(0.4);
-		if (sizemod>1.) BottomPad->SetBottomMargin(0.45);
+		if (sizemod>1.) BottomPad->SetBottomMargin(0.38);
 		BottomPad->SetRightMargin(0.04);
 		BottomPad->SetLeftMargin(0.15);	
 
@@ -853,10 +853,11 @@ public:
 		// -- Y-axis Setting -- //
 		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
 		g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
-		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.25 );
-		g_ratio1->GetYaxis()->SetTitleSize( 0.1*sizemod);
-		g_ratio1->GetYaxis()->SetLabelSize( 0.07*sizemod );
+		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.5 );
+		g_ratio1->GetYaxis()->SetTitleSize( 0.2); //0.1*sizemod);
+		g_ratio1->GetYaxis()->SetLabelSize( 0.15*sizemod );
 		g_ratio1->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
+      g_ratio1->GetYaxis()->SetNdivisions(305);
 
 		// -- flat line = 1.00 -- //
 		TF1 *f_line = new TF1("f_line", "1", -10000, 10000);

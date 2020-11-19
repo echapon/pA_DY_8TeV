@@ -28,6 +28,11 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar);
 using namespace std;
 
 void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16", TString sample3="nCTEQ15") {
+
+   // style
+   cmsTextSize *= 1.2;
+   lumiTextSize *= 1.2;
+
    TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");
@@ -72,7 +77,9 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    // do the plotting here
 
    MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
-   c_1560.SetYRange(0.45,1.85);
+   c_1560.SetYRange(0.65,1.45);
+   c_1560.SetRatioRange(0.55,1.45);
+   c_1560.SetLegendPosition(0.63,0.76,0.95,0.92);
    cout << gth1560_CT14 << " " << gth1560_EPPS16 << " " << grfbp_rap1560 << endl;
    if (gth1560_3rd && gth60120_3rd) {
       c_1560.CanvasWithFourGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,gth1560_3rd,grfbp_rap1560,
@@ -88,13 +95,15 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    c_1560.TopPad->cd();
    TLatex latex;
    latex.SetNDC();
-   latex.SetTextSize(0.03);
+   latex.SetTextSize(0.04);
    double xlatex=.2, ylatex=0.85, dylatex=0.045;//0.9,0.040
    latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
    c_1560.PrintCanvas();
 
    MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
    c_60120.SetYRange(0.65,1.45);//1.35
+   c_60120.SetRatioRange(0.55,1.45);
+   c_60120.SetLegendPosition(0.63,0.76,0.95,0.92);
    if (gth60120_3rd && gth60120_3rd) {
       c_60120.CanvasWithFourGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,gth60120_3rd,grfbp_rap60120,
             sample1,sample2,sample3,"Data","Pred./Data",
@@ -110,6 +119,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    ylatex=0.85;//0.9
    latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
    c_60120.PrintCanvas();
+   // c_60120.PrintCanvas_C();
 }
 
 TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<double> mcov) {
