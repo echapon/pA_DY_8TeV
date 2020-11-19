@@ -1007,8 +1007,8 @@ void DrawControlPlotTool::DrawMassHistogram_DataDrivenBkg(TString Type, TH1D *h_
 
 	vector< TH1D* > StackHistos; vector< TString > LegendNames; vector< Int_t > colors;
 	StackHistos.push_back( h_WW_emu ); LegendNames.push_back( "WW (e#mu)" ); colors.push_back(kGreen);
-	StackHistos.push_back( h_WZ_emu ); LegendNames.push_back( "WZ" ); colors.push_back(kGreen+2);
-	StackHistos.push_back( h_ZZ_emu ); LegendNames.push_back( "ZZ" ); colors.push_back(kGreen+4);
+	StackHistos.push_back( h_WZ_emu ); LegendNames.push_back( "WZ (e#mu)" ); colors.push_back(kGreen+2);
+	StackHistos.push_back( h_ZZ_emu ); LegendNames.push_back( "ZZ (e#mu)" ); colors.push_back(kGreen+4);
 	StackHistos.push_back( h_DYTauTau_emu ); LegendNames.push_back( "DYTauTau (e#mu)" ); colors.push_back(kBlue-9);
 	StackHistos.push_back( h_ttbar_emu ); LegendNames.push_back( "ttbar (e#mu)" ); colors.push_back(kRed);
    if (DrawDataDriven==1) {StackHistos.push_back( h_diJet_FR ); LegendNames.push_back( "QCD (FR)" ); colors.push_back(kMagenta+2);}

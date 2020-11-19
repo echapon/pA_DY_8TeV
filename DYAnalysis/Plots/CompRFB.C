@@ -27,7 +27,7 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar);
 
 using namespace std;
 
-void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16") {
+void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16", TString sample3="nCTEQ15") {
    TFile* fin = TFile::Open(infile);
 
    TGraphAsymmErrors* gaeres_rap1560 = (TGraphAsymmErrors*)fin->Get("gres_rap1560");
@@ -61,15 +61,30 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    getTheory(sample1, gth1560_CT14, DYana::var::rap1560);
    getTheory(sample1, gth60120_CT14, DYana::var::rap60120);
 
+   // 3rd sample
+   TGraphAsymmErrors *gth1560_3rd = NULL, *gth60120_3rd = NULL;
+   if (sample3 != "") {
+      getTheory(sample3, gth1560_3rd, DYana::var::rap1560);
+      getTheory(sample3, gth60120_3rd, DYana::var::rap60120);
+   }
+
+
    // do the plotting here
 
    MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
    c_1560.SetYRange(0.45,1.85);
    cout << gth1560_CT14 << " " << gth1560_EPPS16 << " " << grfbp_rap1560 << endl;
-   c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
-         sample1,sample2,"Data","Pred./Data",
-         kBlue,kRed,kBlack,
-         "5","5","EP",true);
+   if (gth1560_3rd && gth60120_3rd) {
+      c_1560.CanvasWithFourGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,gth1560_3rd,grfbp_rap1560,
+            sample1,sample2,sample3,"Data","Pred./Data",
+            kBlue,kRed,kGreen+1,kBlack,
+            "5","5","5","EP",true);
+   } else {
+      c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
+            sample1,sample2,"Data","Pred./Data",
+            kBlue,kRed,kBlack,
+            "5","5","EP",true);
+   }
    c_1560.TopPad->cd();
    TLatex latex;
    latex.SetNDC();
@@ -80,10 +95,17 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
 
    MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
    c_60120.SetYRange(0.65,1.45);//1.35
-   c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
-         sample1,sample2,"Data","Pred./Data",
-         kBlue,kRed,kBlack,
-         "5","5","EP",true);
+   if (gth60120_3rd && gth60120_3rd) {
+      c_60120.CanvasWithFourGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,gth60120_3rd,grfbp_rap60120,
+            sample1,sample2,sample3,"Data","Pred./Data",
+            kBlue,kRed,kGreen+1,kBlack,
+            "5","5","5","EP",true);
+   } else {
+      c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
+            sample1,sample2,"Data","Pred./Data",
+            kBlue,kRed,kBlack,
+            "5","5","EP",true);
+   }
    c_60120.TopPad->cd();
    ylatex=0.85;//0.9
    latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
