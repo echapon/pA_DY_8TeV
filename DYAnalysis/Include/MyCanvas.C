@@ -651,9 +651,9 @@ public:
 
 		// -- Y-axis Setting -- //
 		g_ratio1->GetYaxis()->SetTitle( Name_Ratio );
-		g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
-		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.25 );
-		g_ratio1->GetYaxis()->SetTitleSize( 0.1*sizemod);
+		g_ratio1->GetYaxis()->SetTitleOffset( 0.35 );
+		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
+		g_ratio1->GetYaxis()->SetTitleSize( 0.15);//*sizemod);
 		g_ratio1->GetYaxis()->SetLabelSize( 0.07*sizemod );
 		g_ratio1->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
 

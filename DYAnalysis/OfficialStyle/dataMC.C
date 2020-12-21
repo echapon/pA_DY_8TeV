@@ -102,8 +102,8 @@ void dataMC(var thevar)
    TH1D* h_ttbar_emu = (TH1D*) f1->Get("h_ttbar_emu");
    TH1D* h_DYTauTau_emu = (TH1D*) f1->Get("h_DYTauTau_emu");
    TH1D* h_WW_emu = (TH1D*) f1->Get("h_WW_emu");
-   TH1D* h_WZ = (TH1D*) f1->Get("h_WZ_MC");
-   TH1D* h_ZZ = (TH1D*) f1->Get("h_ZZ_MC");
+   TH1D* h_WZ_emu = (TH1D*) f1->Get("h_WZ_emu");
+   TH1D* h_ZZ_emu = (TH1D*) f1->Get("h_ZZ_emu");
    TH1D* h_WJets_FR = (TH1D*) f1->Get("h_WJets_FR");
    TH1D* h_diJet_FR = (TH1D*) f1->Get("h_diJet_FR");
    TH1D* htotal = (TH1D*) h_SignalMC->Clone("htotal");
@@ -116,8 +116,8 @@ void dataMC(var thevar)
    normBinWidth(h_ttbar_emu);
    normBinWidth(h_DYTauTau_emu);
    normBinWidth(h_WW_emu);
-   normBinWidth(h_WZ);
-   normBinWidth(h_ZZ);
+   normBinWidth(h_WZ_emu);
+   normBinWidth(h_ZZ_emu);
    normBinWidth(h_WJets_FR);
    normBinWidth(h_diJet_FR);
 
@@ -129,8 +129,8 @@ void dataMC(var thevar)
       fixXaxis(h_ttbar_emu);
       fixXaxis(h_DYTauTau_emu);
       fixXaxis(h_WW_emu);
-      fixXaxis(h_WZ);
-      fixXaxis(h_ZZ);
+      fixXaxis(h_WZ_emu);
+      fixXaxis(h_ZZ_emu);
       fixXaxis(h_WJets_FR);
       fixXaxis(h_diJet_FR);
       fixXaxis(htotal);
@@ -142,8 +142,8 @@ void dataMC(var thevar)
    TH1D *httbar = (TH1D*) h_ttbar_emu->Clone();
    TH1D *hDYtautau = (TH1D*) h_DYTauTau_emu->Clone();
    TH1D *hWW = (TH1D*) h_WW_emu->Clone(); hWW->Sumw2();
-   TH1D *hWZ = (TH1D*) h_WZ->Clone(); hWZ->Sumw2();
-   TH1D *hZZ = (TH1D*) h_ZZ->Clone(); hZZ->Sumw2();
+   TH1D *hWZ = (TH1D*) h_WZ_emu->Clone(); hWZ->Sumw2();
+   TH1D *hZZ = (TH1D*) h_ZZ_emu->Clone(); hZZ->Sumw2();
    TH1D *hWJets = (TH1D*) h_WJets_FR->Clone();
    TH1D *hdijet = (TH1D*) h_diJet_FR->Clone();
    TH1D *hdiboson = (TH1D*) hWW->Clone();
@@ -259,6 +259,10 @@ void dataMC(var thevar)
    // if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar == var::pt1560) {
       // h_data->GetXaxis()->SetMoreLogLabels();
    // }
+   if (thevar==var::mass) {
+      h_data->GetXaxis()->SetMoreLogLabels(); 
+      h_data->GetXaxis()->SetNoExponent();
+   }
    if (thevar==var::phistar || thevar == var::phistar1560) {
       // h_data->GetXaxis()->SetMoreLogLabels();
       // h_data->GetXaxis()->SetNdivisions(0,4,3,kTRUE);
@@ -425,6 +429,10 @@ void dataMC(var thevar)
    hratio->GetXaxis()->SetTitle(thexaxistitle);
    // hratio->GetXaxis()->SetRange(1,43);
    // if (thevar==var::mass || thevar==var::mass3bins || thevar==var::pt || thevar==var::pt1560) hratio->GetXaxis()->SetMoreLogLabels();
+   if (thevar==var::mass) {
+      hratio->GetXaxis()->SetMoreLogLabels(); 
+      hratio->GetXaxis()->SetNoExponent();
+   }
    if (!(thevar==var::phistar || thevar==var::phistar1560)) {
       hratio->GetXaxis()->SetNoExponent();
       // hratio->GetXaxis()->SetMoreLogLabels();
