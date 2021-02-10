@@ -76,10 +76,10 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
 
    // do the plotting here
 
-   MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
+   MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1.ReplaceAll("/","_").ReplaceAll(" ","_") + "_" + sample2.ReplaceAll("/","_").ReplaceAll(" ","_"), "|y_{CM}|", "R_{FB}", 800, 800);
    c_1560.SetYRange(0.65,1.45);
    c_1560.SetRatioRange(0.55,1.45);
-   c_1560.SetLegendPosition(0.63,0.76,0.95,0.92);
+   c_1560.SetLegendPosition(0.58,0.76,0.90,0.92);
    cout << gth1560_CT14 << " " << gth1560_EPPS16 << " " << grfbp_rap1560 << endl;
    if (gth1560_3rd && gth60120_3rd) {
       c_1560.CanvasWithFourGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,gth1560_3rd,grfbp_rap1560,
@@ -100,7 +100,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
    c_1560.PrintCanvas();
 
-   MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1 + "_" + sample2, "|y_{CM}|", "R_{FB}", 800, 800);
+   MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1.ReplaceAll("/","_").ReplaceAll(" ","_") + "_" + sample2.ReplaceAll("/","_").ReplaceAll(" ","_"), "|y_{CM}|", "R_{FB}", 800, 800);
    c_60120.SetYRange(0.65,1.45);//1.35
    c_60120.SetRatioRange(0.55,1.45);
    c_60120.SetLegendPosition(0.63,0.76,0.95,0.92);
@@ -296,6 +296,22 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
       imin2 = 57;
       imax2 = 88;//90;
       refCT14 = true;
+   } else if (sample=="nCTEQ W/Z") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15WZ_208_82.root");
+      pdfname = "nCTEQ15WZ_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 94;
+      refCT14 = true;
+   } else if (sample=="nCTEQ W/Z (from CT14)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14_rewt_CT14nlo_nCTEQ15WZ_208_82.root");
+      pdfname = "nCTEQ15WZ_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 94;
+      refCT14 = true;
    } else if (sample=="TUJU19nlopp") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_1_1_rewisospin.root");
       pdfname = "TUJU19_nlo_1_1";
@@ -400,7 +416,7 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar) {
    }
 
    gth->SetMarkerSize(0);
-   gth->SetName(Form("gth_%s_%s",sample.Data(),varname(thevar)));
+   gth->SetName(Form("gth_%s_%s",sample.ReplaceAll("/","_").ReplaceAll(" ","_").Data(),varname(thevar)));
 
    // fth->Close();
 }
