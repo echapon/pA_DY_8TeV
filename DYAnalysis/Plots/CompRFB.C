@@ -27,11 +27,18 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, var thevar);
 
 using namespace std;
 
-void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16", TString sample3="nCTEQ15") {
+void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TString sample1="CT14", TString sample2="EPPS16", TString sample3="nCTEQ W/Z") {
 
    // style
    cmsTextSize *= 1.2;
    lumiTextSize *= 1.2;
+
+   // legend
+   TString sample1_leg = sample1;
+   TString sample2_leg = sample2;
+   TString sample3_leg = sample3;
+   if (sample2_leg=="EPPS16") sample2_leg = "CT14+EPPS16";
+   if (sample3_leg=="nCTEQ W/Z") sample3_leg = "CT14+nCTEQ W/Z";
 
    TFile* fin = TFile::Open(infile);
 
@@ -77,18 +84,19 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    // do the plotting here
 
    MyCanvas c_1560("Plots/grfbp_rap1560_" + sample1.ReplaceAll("/","_").ReplaceAll(" ","_") + "_" + sample2.ReplaceAll("/","_").ReplaceAll(" ","_"), "|y_{CM}|", "R_{FB}", 800, 800);
+   c_1560.SetXRange(0,2);
    c_1560.SetYRange(0.65,1.45);
    c_1560.SetRatioRange(0.55,1.45);
-   c_1560.SetLegendPosition(0.58,0.76,0.90,0.92);
+   c_1560.SetLegendPosition(0.51,0.72,0.89,0.92);
    cout << gth1560_CT14 << " " << gth1560_EPPS16 << " " << grfbp_rap1560 << endl;
    if (gth1560_3rd && gth60120_3rd) {
       c_1560.CanvasWithFourGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,gth1560_3rd,grfbp_rap1560,
-            sample1,sample2,sample3,"Data","Pred./Data",
+            sample1_leg,sample2_leg,sample3_leg,"Data","Pred./Data",
             kBlue,kRed,kGreen+1,kBlack,
             "5","5","5","EP",true);
    } else {
       c_1560.CanvasWithThreeGraphsRatioPlot(gth1560_CT14,gth1560_EPPS16,grfbp_rap1560,
-            sample1,sample2,"Data","Pred./Data",
+            sample1_leg,sample2_leg,"Data","Pred./Data",
             kBlue,kRed,kBlack,
             "5","5","EP",true);
    }
@@ -99,19 +107,21 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    double xlatex=.2, ylatex=0.85, dylatex=0.045;//0.9,0.040
    latex.DrawLatex(xlatex,ylatex,"15 < m_{#mu#mu} < 60 GeV");
    c_1560.PrintCanvas();
+   c_1560.PrintCanvas_C();
 
    MyCanvas c_60120("Plots/grfbp_rap60120_" + sample1.ReplaceAll("/","_").ReplaceAll(" ","_") + "_" + sample2.ReplaceAll("/","_").ReplaceAll(" ","_"), "|y_{CM}|", "R_{FB}", 800, 800);
+   c_60120.SetXRange(0,2);
    c_60120.SetYRange(0.65,1.45);//1.35
    c_60120.SetRatioRange(0.55,1.45);
-   c_60120.SetLegendPosition(0.63,0.76,0.95,0.92);
+   c_60120.SetLegendPosition(0.56,0.72,0.94,0.92);
    if (gth60120_3rd && gth60120_3rd) {
       c_60120.CanvasWithFourGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,gth60120_3rd,grfbp_rap60120,
-            sample1,sample2,sample3,"Data","Pred./Data",
+            sample1_leg,sample2_leg,sample3_leg,"Data","Pred./Data",
             kBlue,kRed,kGreen+1,kBlack,
             "5","5","5","EP",true);
    } else {
       c_60120.CanvasWithThreeGraphsRatioPlot(gth60120_CT14,gth60120_EPPS16,grfbp_rap60120,
-            sample1,sample2,"Data","Pred./Data",
+            sample1_leg,sample2_leg,"Data","Pred./Data",
             kBlue,kRed,kBlack,
             "5","5","EP",true);
    }
@@ -119,7 +129,7 @@ void CompRFB (const char* infile="Plots/results/xsec_nom_detcor_FSR.root", TStri
    ylatex=0.85;//0.9
    latex.DrawLatex(xlatex,ylatex,"60 < m_{#mu#mu} < 120 GeV");
    c_60120.PrintCanvas();
-   // c_60120.PrintCanvas_C();
+   c_60120.PrintCanvas_C();
 }
 
 TGraphAsymmErrors *RFB_1560(TGraphAsymmErrors *g, TH1D* hstatonly, TMatrixT<double> mcov) {

@@ -325,9 +325,9 @@ void dataMC(var thevar)
    h_data->Draw("E1P");
    hstack->Draw("histsame");
    h_data->Draw("E1Psame");
-   hsyst->SetFillColor(kBlack);
+   hsyst->SetFillColorAlpha(kBlack, 0.5);
    hsyst->SetMarkerSize(0);
-   hsyst->SetFillStyle(3003);
+   // hsyst->SetFillStyle(3003);
    hsyst->Draw("E2same");
    //
    TLine grid_;
@@ -509,9 +509,9 @@ void dataMC(var thevar)
    }
    hratio->Draw("E1PL");
 
-   hratio_syst->SetFillColor(kBlack);
+   hratio_syst->SetFillColorAlpha(kBlack, 0.5);
    hratio_syst->SetMarkerSize(0);
-   hratio_syst->SetFillStyle(3003);
+   // hratio_syst->SetFillStyle(3003);
    hratio_syst->Draw("E2same");
 
    // TLine gridRatio;

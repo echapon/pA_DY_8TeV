@@ -60,14 +60,20 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
    TFile *fout = TFile::Open(outputfile,"RECREATE");
 
+   // for legend
+   TString sample1_leg = sample1;
+   TString sample2_leg = sample2;
+   if (sample1_leg == "EPPS16") sample1_leg = "CT14+EPPS16";
+   if (sample2_leg == "EPPS16") sample2_leg = "CT14+EPPS16";
+
    ofstream chi2file(Form("Plots/results/tex/chi2%s.tex",correctforacc ? "" : "_noacc"));
    ofstream chi2file_nocor(Form("Plots/results/tex/chi2_nocor%s.tex",correctforacc ? "" : "_noacc"));
    chi2file << "\\begin{tabular}{lcccccc}" << endl;
-   chi2file << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1<<"} & \\multicolumn{3}{c}{"<<sample2<<"} \\\\" << endl;
+   chi2file << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1_leg<<"} & \\multicolumn{3}{c}{"<<sample2_leg<<"} \\\\" << endl;
    chi2file << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
    chi2file << "\\hline" << endl;
    chi2file_nocor << "\\begin{tabular}{lcccccc}" << endl;
-   chi2file_nocor << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1<<"} & \\multicolumn{3}{c}{"<<sample2<<"} \\\\" << endl;
+   chi2file_nocor << "\\multirow{2}{4em}{Observable} & \\multicolumn{3}{c}{"<<sample1_leg<<"} & \\multicolumn{3}{c}{"<<sample2_leg<<"} \\\\" << endl;
    chi2file_nocor << "& $\\chi^{2}$ & dof & Prob. [\\%] & $\\chi^{2}$ & dof & Prob. [\\%] \\\\" << endl;
    chi2file_nocor << "\\hline" << endl;
 
@@ -82,7 +88,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       float lumiTextOffset0 = lumiTextSize;
       float cmsTextSize0 = cmsTextSize;
       float cmsTextOffset0 = cmsTextSize;
-      lumiTextSize *= sizemod;
+      lumiTextSize *= 1.1*sizemod;
       if (sizemod>1) lumiTextOffset *= 0.5;
       else lumiTextOffset *= 0.8;
       cmsTextSize *= sizemod;
@@ -249,7 +255,7 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
       getTheory(sample1, gth_CT14, hth_CT14, hth_CT14_cor, preFSR, correctforacc, thevar);
 
       if (doxsec && !forsyst) {
-         if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(14,69);
+         if (thevar==var::rap60120 || thevar==var::rap1560) c1.SetYRange(19,72);
          if (!correctforacc && thevar==var::rap1560) c1.SetYRange(0,10);
          if (!correctforacc && thevar==var::rap60120) c1.SetYRange(0,52);
          if (thevar==var::mass && correctforacc) c1.SetYRange(2e-4,90);
@@ -295,15 +301,27 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
 
          // style stuff
          // legend
-         double xl1 = 0.63, yl1 = 0.80, xl2 = 0.95, yl2 = 0.90;
+         double xl1 = 0.55, yl1 = 0.70, xl2 = 0.98, yl2 = 0.90;
          double dxl = sizemod * (xl2-xl1), dyl = sizemod * (yl2-yl1);
+         if (thevar==var::pt || thevar==var::pt1560 || thevar==var::phistar || thevar==var::phistar1560) {
+            xl2 = 0.68;
+            yl2 = 0.78;
+         }
+         if (thevar==var::rap60120 || thevar==var::rap1560) {
+            xl2 = 1.03;
+            yl2 = 0.92;
+         }
+         if (!correctforacc && (thevar==var::rap60120 || thevar==var::rap1560)) {
+            xl2 = 0.88;
+            yl2 = 0.58;
+         }
          c1.SetLegendPosition(xl2-dxl, yl2-dyl, xl2, yl2);
          c1.SizeMod = sizemod;
 
 
          // c1.PrintVariables();
          c1.CanvasWithThreeGraphsRatioPlot(gth_CT14,gth_EPPS16,gres,
-               sample1,sample2,"Data","Pred./Data",
+               sample1_leg,sample2_leg,"Data","Pred./Data",
                kBlue,kRed,kBlack,
                "5","5","EP",true);
 
@@ -311,8 +329,8 @@ void myXsec(const char* datafile="FSRCorrection/xsec_FSRcor_Powheg_MomCorr00_0.r
          c1.TopPad->cd();
          TLatex latex;
          latex.SetNDC();
-         latex.SetTextSize(0.03*sizemod);
-         double xlatex=.18, ylatex=0.5, dylatex=0.045*sizemod;//0.04
+         latex.SetTextSize(0.035*sizemod);
+         double xlatex=.18, ylatex=0.5, dylatex=0.05*sizemod;//0.04
          if (thevar==var::rap1560 || thevar==rap60120) ylatex=0.87;//0.9 (Hyunchul)
          latex.SetTextAlign(12);  //centered
          if (thevar!=rap1560 && thevar!=rap60120) {
@@ -574,6 +592,22 @@ void getTheory(TString sample, TGraphAsymmErrors* &gth, vector<TH1D*> &hth, TH2D
       imax1 = 56;
       imin2 = 57;
       imax2 = 88;
+      refCT14 = true;
+   } else if (sample=="nCTEQ W/Z") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_CT14nlo_nCTEQ15WZ_208_82.root");
+      pdfname = "nCTEQ15WZ_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 94;
+      refCT14 = true;
+   } else if (sample=="nCTEQ W/Z (from CT14)") {
+      fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_CT14_rewt_CT14nlo_nCTEQ15WZ_208_82.root");
+      pdfname = "nCTEQ15WZ_208_82";
+      imin1 = 1;
+      imax1 = 56;
+      imin2 = 57;
+      imax2 = 94;
       refCT14 = true;
    } else if (sample=="TUJU19nlopp") {
       fth = TFile::Open("/afs/cern.ch/work/e/echapon/public/DY_pA_2016/ROOTFile_Histogram_Acc_weights_genonly_EPPS16_rewt_TUJU19_nlo_1_1_TUJU19_nlo_1_1_rewisospin.root");

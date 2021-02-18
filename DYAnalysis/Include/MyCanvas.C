@@ -546,7 +546,7 @@ public:
 		g1->SetLineColor(color1);
 		g1->SetLineWidth(1);
 		g1->SetMarkerColor(color1);
-		g1->SetMarkerSize(1*sizemod);
+		g1->SetMarkerSize(1.5*sizemod);
 		g1->SetMarkerStyle(20);
 		g1->SetFillColorAlpha(kWhite, 0);
 
@@ -554,7 +554,7 @@ public:
 		g2->SetLineColor(color2);
 		g2->SetLineWidth(1);
 		g2->SetMarkerColor(color2);
-		g2->SetMarkerSize(1*sizemod);
+		g2->SetMarkerSize(1.5*sizemod);
 		g2->SetMarkerStyle(20);
 		g2->SetFillColorAlpha(kWhite, 0);
 
@@ -562,7 +562,7 @@ public:
 		g_ref->SetLineColor(color_ref);
 		g_ref->SetLineWidth(1);
 		g_ref->SetMarkerColor(color_ref);
-		g_ref->SetMarkerSize(1*sizemod);
+		g_ref->SetMarkerSize(1.5*sizemod);
 		g_ref->SetMarkerStyle(20);
 		g_ref->SetFillColorAlpha(kWhite, 0);
 
@@ -626,13 +626,13 @@ public:
 		// -- General Setting for 1st ratio plot -- //
 		g_ratio1->SetLineColor(color1);
 		g_ratio1->SetMarkerStyle(20);
-		g_ratio1->SetMarkerSize(1*sizemod);
+		g_ratio1->SetMarkerSize(1.5*sizemod);
 		g_ratio1->SetMarkerColor(color1);
 
 		// -- General Setting for 2nd ratio plot -- //
 		g_ratio2->SetLineColor(color2);
 		g_ratio2->SetMarkerStyle(20);
-		g_ratio2->SetMarkerSize(1*sizemod);
+		g_ratio2->SetMarkerSize(1.5*sizemod);
 		g_ratio2->SetMarkerColor(color2);
 
 		// -- X-axis Setting -- //		
@@ -654,7 +654,8 @@ public:
 		g_ratio1->GetYaxis()->SetTitleOffset( 0.35 );
 		if (sizemod > 1) g_ratio1->GetYaxis()->SetTitleOffset( 0.4 );
 		g_ratio1->GetYaxis()->SetTitleSize( 0.15);//*sizemod);
-		g_ratio1->GetYaxis()->SetLabelSize( 0.07*sizemod );
+		g_ratio1->GetYaxis()->SetLabelSize( 0.15*sizemod );
+      if (sizemod>1) g_ratio1->GetYaxis()->SetLabelSize( 0.10*sizemod );
 		g_ratio1->GetYaxis()->SetRangeUser( LowerEdge_Ratio, UpperEdge_Ratio );
 
 		// -- flat line = 1.00 -- //
@@ -709,7 +710,7 @@ public:
 		gPad->SetGridy(0);
 
 		// -- ensure additional space at the bottom side for ratio plot -- //
-		TopPad->SetBottomMargin(0.31);
+		TopPad->SetBottomMargin(0.32);
 		TopPad->SetRightMargin(0.05);
 		TopPad->SetTopMargin(0.06); // added by Hyunchul
 
@@ -727,7 +728,7 @@ public:
 		g1->SetLineColor(color1);
 		g1->SetLineWidth(1);
 		g1->SetMarkerColor(color1);
-		g1->SetMarkerSize(1*sizemod);
+		g1->SetMarkerSize(1.5*sizemod);
 		g1->SetMarkerStyle(20);
 		g1->SetFillColorAlpha(kWhite, 0);
 
@@ -735,7 +736,7 @@ public:
 		g2->SetLineColor(color2);
 		g2->SetLineWidth(1);
 		g2->SetMarkerColor(color2);
-		g2->SetMarkerSize(1*sizemod);
+		g2->SetMarkerSize(1.5*sizemod);
 		g2->SetMarkerStyle(20);
 		g2->SetFillColorAlpha(kWhite, 0);
 
@@ -743,7 +744,7 @@ public:
 		g3->SetLineColor(color3);
 		g3->SetLineWidth(1);
 		g3->SetMarkerColor(color3);
-		g3->SetMarkerSize(1*sizemod);
+		g3->SetMarkerSize(1.5*sizemod);
 		g3->SetMarkerStyle(20);
 		g3->SetFillColorAlpha(kWhite, 0);
 
@@ -751,7 +752,7 @@ public:
 		g_ref->SetLineColor(color_ref);
 		g_ref->SetLineWidth(1);
 		g_ref->SetMarkerColor(color_ref);
-		g_ref->SetMarkerSize(1*sizemod);
+		g_ref->SetMarkerSize(1.5*sizemod);
 		g_ref->SetMarkerStyle(20);
 		g_ref->SetFillColorAlpha(kWhite, 0);
 
@@ -821,19 +822,19 @@ public:
 		// -- General Setting for 1st ratio plot -- //
 		g_ratio1->SetLineColor(color1);
 		g_ratio1->SetMarkerStyle(20);
-		g_ratio1->SetMarkerSize(1*sizemod);
+		g_ratio1->SetMarkerSize(1.5*sizemod);
 		g_ratio1->SetMarkerColor(color1);
 
 		// -- General Setting for 2nd ratio plot -- //
 		g_ratio2->SetLineColor(color2);
 		g_ratio2->SetMarkerStyle(20);
-		g_ratio2->SetMarkerSize(1*sizemod);
+		g_ratio2->SetMarkerSize(1.5*sizemod);
 		g_ratio2->SetMarkerColor(color2);
 
 		// -- General Setting for 3rd ratio plot -- //
 		g_ratio3->SetLineColor(color3);
 		g_ratio3->SetMarkerStyle(20);
-		g_ratio3->SetMarkerSize(1*sizemod);
+		g_ratio3->SetMarkerSize(1.5*sizemod);
 		g_ratio3->SetMarkerColor(color3);
 
 		// -- X-axis Setting -- //		
